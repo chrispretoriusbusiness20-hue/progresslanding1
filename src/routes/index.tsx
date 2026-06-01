@@ -202,6 +202,14 @@ function QuotePage() {
       })
     : buildQuoteUrl({ firstName: firstName.trim(), lastName: lastName.trim() });
 
+  // Auto-open the prefilled quote in a new tab once a match is found.
+  useEffect(() => {
+    if (autoOpen && matched && !autoOpenedRef.current) {
+      autoOpenedRef.current = true;
+      window.open(quoteUrl, "_blank", "noopener,noreferrer");
+    }
+  }, [autoOpen, matched, quoteUrl]);
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       {/* Header */}
