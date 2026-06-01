@@ -466,8 +466,6 @@ function QuotePage() {
 
           <FavoritesQuickPick />
 
-          <SiteSurvey />
-
           <div className="-mx-2 sm:mx-0">
             <LazyIframe
               src={FORM_EMBED_URL}
@@ -475,6 +473,9 @@ function QuotePage() {
               className="block h-[1400px] w-full bg-transparent"
             />
           </div>
+
+          <SiteSurvey />
+
 
           <div className="mt-6 flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-sm text-muted-foreground">
