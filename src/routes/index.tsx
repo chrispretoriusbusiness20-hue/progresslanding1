@@ -25,6 +25,40 @@ export const Route = createFileRoute("/")({
           "Get a quote on fireplaces, braais, lighting and aircons from The Progress Group.",
       },
       { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://quote-joy-link.lovable.app/" },
+    ],
+    links: [
+      { rel: "canonical", href: "https://quote-joy-link.lovable.app/" },
+    ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          name: "The Progress Group — Quote Request",
+          url: "https://quote-joy-link.lovable.app/",
+        }),
+      },
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "LocalBusiness",
+          name: "The Progress Group",
+          description:
+            "Supply and installation of fireplaces, braais, lighting and aircons across South Africa.",
+          url: "https://quote-joy-link.lovable.app/",
+          address: {
+            "@type": "PostalAddress",
+            streetAddress: "189 Durban Road",
+            addressLocality: "Bellville",
+            addressRegion: "Western Cape",
+            postalCode: "7530",
+            addressCountry: "ZA",
+          },
+        }),
+      },
     ],
   }),
   component: QuotePage,
