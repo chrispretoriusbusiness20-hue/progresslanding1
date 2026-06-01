@@ -58,6 +58,35 @@ function CatalogPage() {
   const [query, setQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const { ids: favoriteIds, has: isFavorite, toggle: toggleFavorite, clear: clearFavorites } = useFavorites();
+
+  const favoriteProducts = useMemo(
+    () => favoriteIds.map((id) => products.find((p) => p.id === id)).filter((p): p is Product => Boolean(p)),
+    [favoriteIds],
+  );
+
+  // Recommended = products sharing subcategory/category with favorites, excluding favorites themselves.
+  const recommended = useMemo<Product[]>(() => {
+    if (favoriteProducts.length === 0) return [];
+    const favSet = new Set(favoriteIds);
+    const subWeight = new Map<string, number>();
+    const catWeight = new Map<string, number>();
+    for (const f of favoriteProducts) {
+      subWeight.set(f.subcategory, (subWeight.get(f.subcategory) ?? 0) + 3);
+      catWeight.set(f.category, (catWeight.get(f.category) ?? 0) + 1);
+    }
+    const scored = products
+      .filter((p) => !favSet.has(p.id))
+      .map((p) => ({
+        p,
+        score: (subWeight.get(p.subcategory) ?? 0) + (catWeight.get(p.category) ?? 0),
+      }))
+      .filter((x) => x.score > 0)
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 8)
+      .map((x) => x.p);
+    return scored;
+  }, [favoriteIds, favoriteProducts]);
 
   const grouped = useMemo<Grouped[]>(() => {
     const q = query.trim().toLowerCase();
@@ -98,6 +127,27 @@ function CatalogPage() {
       /* sessionStorage unavailable */
     }
   };
+
+  const sendFavoritesToQuote = async () => {
+    if (favoriteProducts.length === 0) return;
+    const list = favoriteProducts.map((p) => `• ${p.name}${p.price ? ` — ${p.price}` : ""}`).join("\n");
+    try {
+      await navigator.clipboard.writeText(list);
+    } catch {
+      /* ignore */
+    }
+    try {
+      sessionStorage.setItem("selectedProduct", favoriteProducts[0].name);
+      sessionStorage.setItem(
+        "favoriteProducts",
+        JSON.stringify(favoriteProducts.map((p) => ({ id: p.id, name: p.name, price: p.price }))),
+      );
+    } catch {
+      /* ignore */
+    }
+  };
+
+
 
   return (
     <div className="min-h-screen text-foreground">
