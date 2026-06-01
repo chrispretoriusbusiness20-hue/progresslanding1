@@ -501,6 +501,8 @@ function QuotePage() {
 
           <FavoritesQuickPick />
 
+          <SiteSurvey />
+
           <div className="-mx-2 sm:mx-0">
             <LazyIframe
               src={FORM_EMBED_URL}
