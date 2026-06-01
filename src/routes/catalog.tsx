@@ -1,32 +1,26 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { ArrowLeft, Search, Check, Flame } from "lucide-react";
-import productsData from "@/data/products.json";
+import { ArrowLeft, Search, Check, Flame, ImageOff } from "lucide-react";
+import productsData from "@/data/products-full.json";
 
 type Product = {
+  id: string;
   name: string;
-  price: string;
+  price: string | null;
+  image: string | null;
   url: string;
   category: string;
+  subcategory: string;
 };
 
 const products = productsData as Product[];
 
-const CATEGORY_LABELS: Record<string, string> = {
-  "closed-combustion-fireplaces": "Closed Combustion Fireplaces",
-  "pellet-fireplaces": "Pellet Fireplaces",
-  "gas-fireplaces": "Gas Fireplaces",
-  "biomass": "Biomass Fuel",
-  "flues-and-accessories": "Flues & Accessories",
-};
-
-const CATEGORY_ORDER = [
-  "closed-combustion-fireplaces",
-  "pellet-fireplaces",
-  "gas-fireplaces",
-  "biomass",
-  "flues-and-accessories",
-];
+// Build category list dynamically, sorted by item count desc for nicer UX.
+const CATEGORY_ORDER = (() => {
+  const counts = new Map<string, number>();
+  for (const p of products) counts.set(p.category, (counts.get(p.category) ?? 0) + 1);
+  return [...counts.entries()].sort((a, b) => b[1] - a[1]).map(([c]) => c);
+})();
 
 export const Route = createFileRoute("/catalog")({
   head: () => ({
@@ -35,13 +29,13 @@ export const Route = createFileRoute("/catalog")({
       {
         name: "description",
         content:
-          "Browse the complete Progress Group catalog of fireplaces, pellet stoves, gas units, biomass fuel and flue accessories. Pick a product and request an instant quote.",
+          "Browse all 700+ Progress Group products — fireplaces, braais, air conditioners, lighting, biomass and flue accessories. Pick a product and request an instant quote.",
       },
       { property: "og:title", content: "Full Catalog — The Progress Group" },
       {
         property: "og:description",
         content:
-          "Browse the complete Progress Group catalog and request an instant quote.",
+          "Browse all 700+ Progress Group products and request an instant quote.",
       },
       { property: "og:url", content: "https://quote-joy-link.lovable.app/catalog" },
     ],
@@ -52,21 +46,38 @@ export const Route = createFileRoute("/catalog")({
   component: CatalogPage,
 });
 
+type Grouped = {
+  category: string;
+  items: Product[];
+  bySub: { sub: string; items: Product[] }[];
+};
+
 function CatalogPage() {
   const [query, setQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
-  const [copiedName, setCopiedName] = useState<string | null>(null);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
 
-  const grouped = useMemo(() => {
+  const grouped = useMemo<Grouped[]>(() => {
     const q = query.trim().toLowerCase();
     const filtered = products.filter(
-      (p) => !q || p.name.toLowerCase().includes(q),
+      (p) =>
+        !q ||
+        p.name.toLowerCase().includes(q) ||
+        p.subcategory.toLowerCase().includes(q),
     );
-    return CATEGORY_ORDER.map((cat) => ({
-      category: cat,
-      label: CATEGORY_LABELS[cat] ?? cat,
-      items: filtered.filter((p) => p.category === cat),
-    })).filter((g) => g.items.length > 0);
+    return CATEGORY_ORDER.map((cat) => {
+      const items = filtered.filter((p) => p.category === cat);
+      const subMap = new Map<string, Product[]>();
+      for (const p of items) {
+        const sub = p.subcategory || "Other";
+        if (!subMap.has(sub)) subMap.set(sub, []);
+        subMap.get(sub)!.push(p);
+      }
+      const bySub = [...subMap.entries()]
+        .sort((a, b) => b[1].length - a[1].length)
+        .map(([sub, sItems]) => ({ sub, items: sItems }));
+      return { category: cat, items, bySub };
+    }).filter((g) => g.items.length > 0);
   }, [query]);
 
   const totalShown = grouped.reduce((n, g) => n + g.items.length, 0);
@@ -75,13 +86,12 @@ function CatalogPage() {
     try {
       await navigator.clipboard.writeText(p.name);
     } catch {
-      /* clipboard unavailable; still navigate */
+      /* clipboard unavailable */
     }
-    setCopiedName(p.name);
-    // Persist selection so the quote page can show it as a hint.
+    setCopiedId(p.id);
     try {
       sessionStorage.setItem("selectedProduct", p.name);
-      sessionStorage.setItem("selectedProductPrice", p.price);
+      if (p.price) sessionStorage.setItem("selectedProductPrice", p.price);
     } catch {
       /* sessionStorage unavailable */
     }
@@ -126,8 +136,8 @@ function CatalogPage() {
             </span>
           </h1>
           <p className="mt-6 max-w-2xl text-base text-foreground/75 sm:text-lg">
-            Browse our full range of fireplaces, pellet stoves, gas units,
-            biomass fuel and flue accessories. Tap a product to copy its name —
+            The complete Progress Group range — fireplaces, braais, HVAC,
+            lighting, flues and accessories. Tap a product to copy its name,
             then paste it into the quote form.
           </p>
 
@@ -138,7 +148,7 @@ function CatalogPage() {
               type="search"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search products by name…"
+              placeholder="Search 700+ products by name or range…"
               className="w-full border-2 border-foreground bg-background py-3 pl-11 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
             />
           </div>
@@ -179,7 +189,7 @@ function CatalogPage() {
                         : "border-foreground/40 bg-background text-foreground/70 hover:border-foreground hover:text-foreground"
                     }`}
                   >
-                    {g.label}{" "}
+                    {g.category}{" "}
                     <span className={isActive ? "text-primary-foreground/70" : "text-primary"}>
                       ({g.items.length})
                     </span>
@@ -198,63 +208,37 @@ function CatalogPage() {
             ? grouped.filter((g) => g.category === activeCategory)
             : grouped
           ).map((g) => (
-            <div key={g.category} id={g.category} className="scroll-mt-40">
+            <div key={g.category} className="scroll-mt-40">
               <div className="mb-6 flex flex-wrap items-end justify-between gap-4 border-b-2 border-foreground pb-3">
                 <h2 className="font-display text-2xl uppercase tracking-tight sm:text-3xl">
-                  {g.label}
+                  {g.category}
                 </h2>
                 <p className="text-xs font-bold uppercase tracking-widest text-primary">
                   {g.items.length} {g.items.length === 1 ? "product" : "products"}
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-                {g.items.map((p) => {
-                  const isCopied = copiedName === p.name;
-                  return (
-                    <article
-                      key={p.url}
-                      className="flex flex-col justify-between border-2 border-foreground bg-card p-5 shadow-brutal-sm transition hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-brutal"
-                    >
-                      <div>
-                        <p className="text-[10px] font-bold uppercase tracking-widest text-primary">
-                          {g.label}
-                        </p>
-                        <h3 className="mt-2 font-display text-lg leading-tight">
-                          {p.name}
-                        </h3>
-                        <p className="mt-3 font-display text-2xl text-primary">
-                          {p.price}
-                        </p>
-                      </div>
-
-                      <div className="mt-5 flex flex-col gap-2">
-                        <Link
-                          to="/"
-                          hash="form"
-                          onClick={() => handleSelect(p)}
-                          className="inline-flex items-center justify-center gap-2 border-2 border-foreground bg-primary px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-primary-foreground shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
-                        >
-                          {isCopied ? (
-                            <>
-                              <Check className="h-3.5 w-3.5" /> Copied — go to form
-                            </>
-                          ) : (
-                            <>Use this in my quote</>
-                          )}
-                        </Link>
-                        <a
-                          href={p.url}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="inline-flex items-center justify-center gap-1 border-2 border-foreground/40 px-4 py-2 text-[11px] font-bold uppercase tracking-widest text-foreground/70 transition hover:border-foreground hover:text-foreground"
-                        >
-                          View on progressgroup.co.za ↗
-                        </a>
-                      </div>
-                    </article>
-                  );
-                })}
+              <div className="space-y-10">
+                {g.bySub.map(({ sub, items }) => (
+                  <div key={sub}>
+                    <h3 className="mb-4 text-xs font-bold uppercase tracking-[0.2em] text-foreground/80">
+                      {sub}{" "}
+                      <span className="ml-1 font-normal text-foreground/40">
+                        ({items.length})
+                      </span>
+                    </h3>
+                    <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                      {items.map((p) => (
+                        <ProductCard
+                          key={p.id}
+                          p={p}
+                          isCopied={copiedId === p.id}
+                          onSelect={handleSelect}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           ))}
@@ -282,5 +266,75 @@ function CatalogPage() {
         </div>
       </footer>
     </div>
+  );
+}
+
+function ProductCard({
+  p,
+  isCopied,
+  onSelect,
+}: {
+  p: Product;
+  isCopied: boolean;
+  onSelect: (p: Product) => void;
+}) {
+  return (
+    <article className="flex flex-col overflow-hidden border-2 border-foreground bg-card shadow-brutal-sm transition hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-brutal">
+      <div className="relative aspect-square overflow-hidden border-b-2 border-foreground bg-background">
+        {p.image ? (
+          <img
+            src={p.image}
+            alt={p.name}
+            loading="lazy"
+            className="size-full object-cover"
+          />
+        ) : (
+          <div className="grid size-full place-items-center text-foreground/30">
+            <ImageOff className="size-8" />
+          </div>
+        )}
+        <span className="absolute left-2 top-2 border-2 border-foreground bg-background px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest text-foreground">
+          {p.subcategory || p.category}
+        </span>
+      </div>
+
+      <div className="flex flex-1 flex-col p-4">
+        <h3 className="line-clamp-2 font-display text-base leading-tight">
+          {p.name}
+        </h3>
+        {p.price ? (
+          <p className="mt-2 font-display text-xl text-primary">{p.price}</p>
+        ) : (
+          <p className="mt-2 text-xs uppercase tracking-widest text-foreground/50">
+            Price on request
+          </p>
+        )}
+
+        <div className="mt-auto flex flex-col gap-2 pt-4">
+          <Link
+            to="/"
+            hash="form"
+            onClick={() => onSelect(p)}
+            className="inline-flex items-center justify-center gap-2 border-2 border-foreground bg-primary px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-primary-foreground shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
+          >
+            {isCopied ? (
+              <>
+                <Check className="h-3.5 w-3.5" /> Copied — go to form
+              </>
+            ) : (
+              <>Use this in my quote</>
+            )}
+          </Link>
+          <a
+            href={p.url}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center justify-center gap-1 border-2 border-foreground/40 px-4 py-2 text-[11px] font-bold uppercase tracking-widest text-foreground/70 transition hover:border-foreground hover:text-foreground"
+          >
+            View details ↗
+          </a>
+        </div>
+      </div>
+    </article>
   );
 }
