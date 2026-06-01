@@ -167,15 +167,17 @@ function QuotePage() {
   const flueKitPrice = matched?.flueKitPrice ?? null;
   const platePrice = matched?.plate?.price ?? null;
   const cornerInstallPrice = matched?.cornerInstallPrice ?? null;
+  const transportPrice = matched?.transportPrice ?? null;
   const totalPriceNum =
-    productSubtotal !== null || flueKitPrice !== null || platePrice !== null || cornerInstallPrice !== null
-      ? (productSubtotal ?? 0) + (flueKitPrice ?? 0) + (platePrice ?? 0) + (cornerInstallPrice ?? 0)
+    productSubtotal !== null || flueKitPrice !== null || platePrice !== null || cornerInstallPrice !== null || transportPrice !== null
+      ? (productSubtotal ?? 0) + (flueKitPrice ?? 0) + (platePrice ?? 0) + (cornerInstallPrice ?? 0) + (transportPrice ?? 0)
       : null;
   const unitPriceLabel = unitPriceNum !== null ? formatRand(unitPriceNum) : null;
   const subtotalLabel = productSubtotal !== null ? formatRand(productSubtotal) : null;
   const flueKitLabel = flueKitPrice !== null ? formatRand(flueKitPrice) : null;
   const plateLabel = platePrice !== null ? formatRand(platePrice) : null;
   const cornerInstallLabel = cornerInstallPrice !== null ? formatRand(cornerInstallPrice) : null;
+  const transportLabel = transportPrice !== null ? formatRand(transportPrice) : null;
   const totalPriceLabel = totalPriceNum !== null ? formatRand(totalPriceNum) : null;
 
   const quoteUrl = matched
