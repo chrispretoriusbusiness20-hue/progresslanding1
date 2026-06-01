@@ -142,9 +142,16 @@ function QuotePage() {
   // Derive pricing guidance from the matched catalog entry (if any).
   const matched = lookup?.match ? lookup : null;
   const unitPriceNum = matched?.catalog ? parseRand(matched.catalog.unitPrice) : null;
-  const totalPriceNum =
+  const productSubtotal =
     unitPriceNum !== null && matched ? unitPriceNum * matched.quantity : null;
+  const flueKitPrice = matched?.flueKitPrice ?? null;
+  const totalPriceNum =
+    productSubtotal !== null
+      ? productSubtotal + (flueKitPrice ?? 0)
+      : flueKitPrice;
   const unitPriceLabel = unitPriceNum !== null ? formatRand(unitPriceNum) : null;
+  const subtotalLabel = productSubtotal !== null ? formatRand(productSubtotal) : null;
+  const flueKitLabel = flueKitPrice !== null ? formatRand(flueKitPrice) : null;
   const totalPriceLabel = totalPriceNum !== null ? formatRand(totalPriceNum) : null;
 
   const quoteUrl = matched
