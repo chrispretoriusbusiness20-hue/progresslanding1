@@ -342,8 +342,20 @@ function QuotePage() {
                           {lookup.catalog.name}
                         </a>{" "}
                         — {unitPriceLabel} × {lookup.quantity} ={" "}
-                        <span className="font-bold">{totalPriceLabel}</span>
+                        <span className="font-bold">{subtotalLabel}</span>
                       </p>
+                      {flueKitLabel && (
+                        <p className="mt-1 text-foreground">
+                          + Flue kit ({lookup.storyType} story, incl. VAT):{" "}
+                          <span className="font-bold">{flueKitLabel}</span>
+                        </p>
+                      )}
+                      {flueKitLabel && (
+                        <p className="mt-1 text-foreground">
+                          Total:{" "}
+                          <span className="font-bold">{totalPriceLabel}</span>
+                        </p>
+                      )}
                       {lookup.productRequested &&
                         lookup.productRequested.toLowerCase() !==
                           lookup.catalog.name.toLowerCase() && (
