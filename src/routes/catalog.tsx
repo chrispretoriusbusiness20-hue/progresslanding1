@@ -406,11 +406,15 @@ function CatalogPage() {
 function ProductCard({
   p,
   isCopied,
+  isFavorite,
   onSelect,
+  onToggleFavorite,
 }: {
   p: Product;
   isCopied: boolean;
+  isFavorite: boolean;
   onSelect: (p: Product) => void;
+  onToggleFavorite: (id: string) => void;
 }) {
   return (
     <article className="flex flex-col overflow-hidden border-2 border-foreground bg-card shadow-brutal-sm transition hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-brutal">
@@ -430,6 +434,17 @@ function ProductCard({
         <span className="absolute left-2 top-2 border-2 border-foreground bg-background px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest text-foreground">
           {p.subcategory || p.category}
         </span>
+        <button
+          type="button"
+          onClick={() => onToggleFavorite(p.id)}
+          aria-label={isFavorite ? `Remove ${p.name} from favorites` : `Save ${p.name} to favorites`}
+          aria-pressed={isFavorite}
+          className={`absolute right-2 top-2 flex h-9 w-9 items-center justify-center border-2 border-foreground shadow-brutal-sm transition hover:-translate-y-0.5 ${
+            isFavorite ? "bg-primary text-primary-foreground" : "bg-background text-foreground/70 hover:text-foreground"
+          }`}
+        >
+          <Heart className={`h-4 w-4 ${isFavorite ? "fill-current" : ""}`} />
+        </button>
       </div>
 
       <div className="flex flex-1 flex-col p-4">
@@ -472,3 +487,4 @@ function ProductCard({
     </article>
   );
 }
+
