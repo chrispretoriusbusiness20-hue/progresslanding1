@@ -365,15 +365,6 @@ function QuotePage() {
               Loading…
             </iframe>
           </div>
-            <iframe
-              src={FORM_EMBED_URL}
-              title="Progress Group quote request form"
-              className="h-[1400px] w-full"
-              loading="lazy"
-            >
-              Loading…
-            </iframe>
-          </div>
 
           <div className="mt-6 flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-sm text-muted-foreground">
