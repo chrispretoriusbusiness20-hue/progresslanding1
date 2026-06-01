@@ -298,7 +298,7 @@ function QuotePage() {
 
 
       {/* Form */}
-      <section id="form" className="bg-muted">
+      <section id="form" className="bg-background">
         <div className="mx-auto max-w-4xl px-6 py-16 sm:py-20">
           <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
             <div>
@@ -354,12 +354,13 @@ function QuotePage() {
             </p>
           )}
 
-          <div className="overflow-hidden border-2 border-foreground bg-background shadow-[8px_8px_0_0_var(--foreground)]">
+          <div className="-mx-2 sm:mx-0">
             <iframe
               src={FORM_EMBED_URL}
               title="Progress Group quote request form"
-              className="h-[1400px] w-full"
+              className="block h-[1400px] w-full bg-transparent"
               loading="lazy"
+              style={{ colorScheme: "light" }}
             >
               Loading…
             </iframe>
