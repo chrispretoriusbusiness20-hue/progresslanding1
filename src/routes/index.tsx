@@ -246,9 +246,8 @@ function QuotePage() {
     <div className="min-h-screen text-foreground">
       {/* Promo strip */}
       <div className="border-b border-foreground/15 bg-foreground text-background">
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-2 text-[10px] font-semibold uppercase tracking-[0.32em]">
-          <span className="text-gradient-ember">Winter Special — Atelier Pricing Until 30 June</span>
-          <span className="hidden text-background/60 sm:inline">Lighting · Fires · Aircon</span>
+        <div className="mx-auto flex max-w-6xl items-center justify-center px-6 py-2 text-[10px] font-semibold uppercase tracking-[0.32em]">
+          <span className="text-gradient-ember">Winter Special</span>
         </div>
       </div>
 
