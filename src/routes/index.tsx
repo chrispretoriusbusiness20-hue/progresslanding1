@@ -5,6 +5,7 @@ import { Flame, CheckCircle2, Clock, ShieldCheck, ArrowRight, Loader2, Sparkles 
 import { lookupQuoteSubmission } from "@/lib/quote-lookup.functions";
 
 import { FavoritesQuickPick } from "@/components/favorites-quick-pick";
+import { LazyIframe } from "@/components/lazy-iframe";
 
 
 const FORM_URL = "https://forms.gle/EkpVyEYTTTi22DK17";
@@ -500,16 +501,11 @@ function QuotePage() {
           <FavoritesQuickPick />
 
           <div className="-mx-2 sm:mx-0">
-
-            <iframe
+            <LazyIframe
               src={FORM_EMBED_URL}
               title="Progress Group quote request form"
               className="block h-[1400px] w-full bg-transparent"
-              loading="lazy"
-              style={{ colorScheme: "light" }}
-            >
-              Loading…
-            </iframe>
+            />
           </div>
 
           <div className="mt-6 flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -662,7 +658,7 @@ function QuotePage() {
             </div>
 
             <div className="overflow-hidden border-2 border-foreground bg-background shadow-[8px_8px_0_0_var(--foreground)]">
-              <iframe
+              <LazyIframe
                 src={quoteUrl}
                 title="Prefilled fireplace quote"
                 className="h-[1600px] w-full"
