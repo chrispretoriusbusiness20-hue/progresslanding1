@@ -29,27 +29,65 @@ export const Route = createFileRoute("/")({
   component: QuotePage,
 });
 
+type CatalogMatch = {
+  name: string;
+  unitPrice: string;
+  url: string;
+  category: string;
+};
+
+type LookupResult =
+  | {
+      match: true;
+      firstName: string;
+      lastName: string;
+      email: string;
+      phone: string;
+      productRequested: string;
+      quantity: number;
+      catalog: CatalogMatch | null;
+      submittedAt: string;
+    }
+  | { match: false };
+
+function parseRand(price: string): number | null {
+  // Handles formats like "R11514,00" or "R 11 514.00"
+  const cleaned = price.replace(/[^0-9.,]/g, "").replace(/\s/g, "");
+  // South African convention: comma is decimal separator
+  const normalized = cleaned.replace(/\.(?=\d{3}(\D|$))/g, "").replace(",", ".");
+  const n = Number.parseFloat(normalized);
+  return Number.isFinite(n) ? n : null;
+}
+
+function formatRand(n: number): string {
+  return `R${n.toLocaleString("en-ZA", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+}
+
 function buildQuoteUrl(params: {
   firstName: string;
   lastName: string;
   email?: string;
   phone?: string;
+  product?: string;
+  quantity?: number;
+  unitPrice?: string;
+  totalPrice?: string;
 }) {
   const url = new URL(QUOTE_APP_URL);
-  const set = (keys: string[], value?: string) => {
-    if (!value) return;
-    for (const k of keys) url.searchParams.set(k, value);
+  const set = (keys: string[], value?: string | number) => {
+    if (value === undefined || value === null || value === "") return;
+    for (const k of keys) url.searchParams.set(k, String(value));
   };
   set(["firstName", "first_name", "name"], params.firstName);
   set(["lastName", "last_name", "surname"], params.lastName);
   set(["email"], params.email);
   set(["phone", "tel"], params.phone);
+  set(["product"], params.product);
+  set(["quantity", "qty"], params.quantity);
+  set(["unitPrice", "unit_price"], params.unitPrice);
+  set(["price", "totalPrice", "total_price"], params.totalPrice);
   return url.toString();
 }
-
-type LookupResult =
-  | { match: true; firstName: string; lastName: string; email: string; phone: string; submittedAt: string }
-  | { match: false };
 
 function QuotePage() {
   const [firstName, setFirstName] = useState("");
