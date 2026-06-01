@@ -663,15 +663,48 @@ function QuotePage() {
       )}
 
       {/* Footer */}
-      <footer className="border-t border-border bg-background">
-        <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-4 px-6 py-8 text-sm text-muted-foreground sm:flex-row sm:items-center">
-          <span>© {new Date().getFullYear()} The Progress Group. All rights reserved.</span>
-          <a
-            href="https://progressgroup.co.za/"
-            className="font-semibold uppercase tracking-wider text-foreground hover:text-foreground/70"
-          >
-            progressgroup.co.za
-          </a>
+      <footer className="border-t border-foreground/15 bg-background">
+        <div className="mx-auto grid max-w-6xl gap-12 px-6 py-16 md:grid-cols-[1.4fr_1fr_1fr]">
+          <div>
+            <div className="flex items-center gap-3">
+              <span className="flex h-10 w-10 items-center justify-center border border-primary/60 bg-foreground text-primary">
+                <Flame className="h-5 w-5" />
+              </span>
+              <span className="font-display text-base leading-none">
+                PROGRESS
+                <span className="ml-1 italic text-gradient-ember">Progress</span>
+                <span className="mt-1 block font-body text-[10px] uppercase tracking-[0.32em] text-muted-foreground">
+                  Lighting · Fires · Aircon
+                </span>
+              </span>
+            </div>
+            <p className="mt-6 max-w-sm text-sm leading-relaxed text-muted-foreground">
+              An atelier composing fireplaces for South Africa's most considered
+              homes since 1992.
+            </p>
+          </div>
+          <div>
+            <p className="font-display text-[10px] uppercase tracking-[0.36em] text-primary">Contact</p>
+            <ul className="mt-4 space-y-2 text-sm text-foreground/80">
+              <li>WhatsApp · <a href="tel:+27689560320" className="hover:text-primary">068 956 0320</a></li>
+              <li><a href="mailto:Info@progressgroup.co.za" className="hover:text-primary">Info@progressgroup.co.za</a></li>
+              <li>Bellville · Cape Town · South Africa</li>
+            </ul>
+          </div>
+          <div>
+            <p className="font-display text-[10px] uppercase tracking-[0.36em] text-primary">Atelier</p>
+            <ul className="mt-4 space-y-2 text-sm text-foreground/80">
+              <li><a href="https://progressgroup.co.za/" className="hover:text-primary">progressgroup.co.za</a></li>
+              <li><Link to="/catalog" className="hover:text-primary">The Catalogue</Link></li>
+              <li><a href="#form" className="hover:text-primary">Private Consultation</a></li>
+            </ul>
+          </div>
+        </div>
+        <div className="border-t border-foreground/15">
+          <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-2 px-6 py-6 text-xs uppercase tracking-[0.28em] text-muted-foreground sm:flex-row sm:items-center">
+            <span>© {new Date().getFullYear()} The Progress Group · All rights reserved</span>
+            <span className="italic">Crafted in South Africa</span>
+          </div>
         </div>
       </footer>
     </div>
@@ -688,10 +721,10 @@ function Feature({
   body: string;
 }) {
   return (
-    <div className="border-l-2 border-primary pl-4">
+    <div className="border-l border-primary pl-4">
       <div className="flex items-center gap-2 text-foreground">
         {icon}
-        <span className="font-display text-sm uppercase tracking-wider">
+        <span className="font-display text-sm uppercase tracking-[0.24em]">
           {title}
         </span>
       </div>
@@ -699,4 +732,37 @@ function Feature({
     </div>
   );
 }
+
+function Stat({ value, label }: { value: string; label: string }) {
+  return (
+    <div>
+      <dt className="font-display text-3xl leading-none sm:text-4xl">{value}</dt>
+      <dd className="mt-2 text-[10px] font-semibold uppercase tracking-[0.32em] text-muted-foreground">
+        {label}
+      </dd>
+    </div>
+  );
+}
+
+function Pillar({
+  numeral,
+  title,
+  body,
+}: {
+  numeral: string;
+  title: string;
+  body: string;
+}) {
+  return (
+    <div className="group relative bg-background p-8 transition hover:bg-card">
+      <p className="font-display text-xs uppercase tracking-[0.4em] text-primary">
+        N°/ {numeral}
+      </p>
+      <h3 className="mt-4 font-display text-xl leading-tight">{title}</h3>
+      <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{body}</p>
+      <span className="absolute bottom-0 left-0 h-px w-0 bg-primary transition-all duration-500 group-hover:w-full" />
+    </div>
+  );
+}
+
 
