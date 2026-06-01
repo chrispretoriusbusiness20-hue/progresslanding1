@@ -298,7 +298,7 @@ function QuotePage() {
 
 
       {/* Form */}
-      <section id="form" className="bg-muted">
+      <section id="form" className="bg-background">
         <div className="mx-auto max-w-4xl px-6 py-16 sm:py-20">
           <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
             <div>
