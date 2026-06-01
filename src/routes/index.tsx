@@ -49,6 +49,8 @@ type LookupResult =
       storyType: "single" | "double" | null;
       storyText: string;
       flueKitPrice: number | null;
+      flooringText: string;
+      plate: { type: "glass"; price: number } | null;
       submittedAt: string;
     }
   | { match: false };
