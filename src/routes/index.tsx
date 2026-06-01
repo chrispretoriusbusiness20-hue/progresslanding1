@@ -79,6 +79,9 @@ function buildQuoteUrl(params: {
   totalPrice?: string;
   flueKit?: string;
   storyType?: string;
+  plate?: string;
+  plateType?: string;
+  flooring?: string;
 }) {
   const url = new URL(QUOTE_APP_URL);
   const set = (keys: string[], value?: string | number) => {
@@ -95,6 +98,9 @@ function buildQuoteUrl(params: {
   set(["price", "totalPrice", "total_price"], params.totalPrice);
   set(["flueKit", "flue_kit"], params.flueKit);
   set(["storyType", "story_type", "story"], params.storyType);
+  set(["plate", "floor_plate"], params.plate);
+  set(["plateType", "plate_type"], params.plateType);
+  set(["flooring"], params.flooring);
   return url.toString();
 }
 
