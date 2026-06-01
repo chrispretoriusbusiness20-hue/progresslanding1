@@ -128,6 +128,7 @@ export const lookupQuoteSubmission = createServerFn({ method: "POST" })
       story: header.findIndex((h) => /single or double story|story/i.test(h)),
       flooring: header.findIndex((h) => /flooring/i.test(h)),
       cornerInstall: header.findIndex((h) => /corner|installation position|install.*position/i.test(h)),
+      distance: header.findIndex((h) => /distance.*to.*you|distance|address|location|where/i.test(h)),
     };
 
     const target = norm(`${data.firstName} ${data.lastName}`);
