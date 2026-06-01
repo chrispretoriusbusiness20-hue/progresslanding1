@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { Flame, CheckCircle2, Clock, ShieldCheck, ArrowRight, Loader2, Sparkles } from "lucide-react";
 import { lookupQuoteSubmission } from "@/lib/quote-lookup.functions";
@@ -118,7 +118,6 @@ function QuotePage() {
   const [lookup, setLookup] = useState<LookupResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const loadCountRef = useRef(0);
 
   const lookupFn = useServerFn(lookupQuoteSubmission);
   const canContinue = firstName.trim().length > 0 && lastName.trim().length > 0;
@@ -139,7 +138,7 @@ function QuotePage() {
       setLookup(result);
       if (!result.match) {
         setError(
-          "We couldn't find a matching submission yet. Double-check your name & surname or try again in a moment.",
+          "We couldn't find a matching submission yet. Make sure you completed and submitted the form, then try again in a moment.",
         );
       }
     } catch (e) {
@@ -149,14 +148,12 @@ function QuotePage() {
     }
   };
 
-  // Google Forms reloads the iframe to the confirmation page after submit.
-  const handleIframeLoad = () => {
-    loadCountRef.current += 1;
-    if (loadCountRef.current > 1 && canContinue && !submitted) {
-      setSubmitted(true);
-      runLookup();
-    }
+  const handleSubmittedClick = () => {
+    if (!canContinue) return;
+    setSubmitted(true);
+    runLookup();
   };
+
 
   // Derive pricing guidance from the matched catalog entry (if any).
   const matched = lookup?.match ? lookup : null;
@@ -355,10 +352,24 @@ function QuotePage() {
               title="Progress Group quote request form"
               className="h-[1400px] w-full"
               loading="lazy"
-              onLoad={handleIframeLoad}
             >
               Loading…
             </iframe>
+          </div>
+
+          <div className="mt-6 flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-sm text-muted-foreground">
+              Answer every question above and hit <strong>Submit</strong> in the form. Then click this button so we can pull your details and build your quote.
+            </p>
+            <button
+              type="button"
+              onClick={handleSubmittedClick}
+              disabled={!canContinue || loading}
+              className="inline-flex items-center gap-2 border-2 border-foreground bg-primary px-5 py-3 text-sm font-bold uppercase tracking-wider text-primary-foreground shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4" />}
+              I've submitted the form
+            </button>
           </div>
 
           {submitted && (
