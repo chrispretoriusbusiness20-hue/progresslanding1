@@ -118,7 +118,6 @@ function QuotePage() {
   const [lookup, setLookup] = useState<LookupResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const loadCountRef = useRef(0);
 
   const lookupFn = useServerFn(lookupQuoteSubmission);
   const canContinue = firstName.trim().length > 0 && lastName.trim().length > 0;
@@ -139,7 +138,7 @@ function QuotePage() {
       setLookup(result);
       if (!result.match) {
         setError(
-          "We couldn't find a matching submission yet. Double-check your name & surname or try again in a moment.",
+          "We couldn't find a matching submission yet. Make sure you completed and submitted the form, then try again in a moment.",
         );
       }
     } catch (e) {
@@ -149,14 +148,12 @@ function QuotePage() {
     }
   };
 
-  // Google Forms reloads the iframe to the confirmation page after submit.
-  const handleIframeLoad = () => {
-    loadCountRef.current += 1;
-    if (loadCountRef.current > 1 && canContinue && !submitted) {
-      setSubmitted(true);
-      runLookup();
-    }
+  const handleSubmittedClick = () => {
+    if (!canContinue) return;
+    setSubmitted(true);
+    runLookup();
   };
+
 
   // Derive pricing guidance from the matched catalog entry (if any).
   const matched = lookup?.match ? lookup : null;
