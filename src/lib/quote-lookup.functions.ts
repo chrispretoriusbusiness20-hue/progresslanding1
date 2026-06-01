@@ -163,6 +163,10 @@ export const lookupQuoteSubmission = createServerFn({ method: "POST" })
       const isCornerInstall = /corner/.test(cornerInstallLower);
       const cornerInstallPrice = isCornerInstall ? 800 : null;
 
+      const destinationText = idx.distance >= 0 ? (row[idx.distance] ?? "").trim() : "";
+      const distanceKm = destinationText ? await computeDistanceKm(destinationText) : null;
+      const transport = distanceKm !== null ? transportPriceForKm(distanceKm) : null;
+
       return {
         match: true as const,
         firstName: data.firstName,
@@ -186,6 +190,10 @@ export const lookupQuoteSubmission = createServerFn({ method: "POST" })
         plate,
         cornerInstallPrice,
         cornerInstallText,
+        destinationText,
+        distanceKm: distanceKm !== null ? Math.round(distanceKm * 10) / 10 : null,
+        transportZone: transport?.zone ?? null,
+        transportPrice: transport?.price ?? null,
         submittedAt: (row[idx.timestamp] ?? "").trim(),
       };
     }
