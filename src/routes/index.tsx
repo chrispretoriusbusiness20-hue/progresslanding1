@@ -1,12 +1,16 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { Flame, CheckCircle2, Clock, ShieldCheck, ArrowRight, Loader2 } from "lucide-react";
+import { Flame, CheckCircle2, Clock, ShieldCheck, ArrowRight, Loader2, Zap } from "lucide-react";
 import { lookupQuoteSubmission } from "@/lib/quote-lookup.functions";
+import productsData from "@/data/products.json";
 
 const FORM_URL = "https://forms.gle/EkpVyEYTTTi22DK17";
 const FORM_EMBED_URL = `${FORM_URL}?embedded=true`;
 const QUOTE_APP_URL = "https://fireplacequotes.co.za/";
+
+type CatalogProduct = { name: string; price: string; url: string; category: string };
+const CATALOG = productsData as CatalogProduct[];
 
 export const Route = createFileRoute("/")({
   head: () => ({
