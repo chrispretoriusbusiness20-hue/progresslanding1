@@ -1,9 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { Flame, CheckCircle2, Clock, ShieldCheck, ArrowRight, Loader2, Zap } from "lucide-react";
+import { Flame, CheckCircle2, Clock, ShieldCheck, ArrowRight, Loader2, Zap, Sparkles } from "lucide-react";
 import { lookupQuoteSubmission } from "@/lib/quote-lookup.functions";
 import productsData from "@/data/products.json";
+import heroFireplace from "@/assets/hero-fireplace.jpg";
 
 const FORM_URL = "https://forms.gle/EkpVyEYTTTi22DK17";
 const FORM_EMBED_URL = `${FORM_URL}?embedded=true`;
