@@ -1,0 +1,1 @@
+drop policy if exists "Public read site-photos" on storage.objects;
