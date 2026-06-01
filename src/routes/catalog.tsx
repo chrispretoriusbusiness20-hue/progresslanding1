@@ -1,7 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { ArrowLeft, Search, Check, Flame, ImageOff } from "lucide-react";
+import { ArrowLeft, Search, Check, Flame, ImageOff, Heart, Sparkles, Trash2 } from "lucide-react";
 import productsData from "@/data/products-full.json";
+import { useFavorites } from "@/hooks/use-favorites";
+
 
 type Product = {
   id: string;
