@@ -105,6 +105,8 @@ function buildQuoteUrl(params: {
   set(["plate", "floor_plate"], params.plate);
   set(["plateType", "plate_type"], params.plateType);
   set(["flooring"], params.flooring);
+  set(["cornerInstall", "corner_install"], params.cornerInstall);
+  set(["cornerInstallPrice", "corner_install_price"], params.cornerInstallPrice);
   return url.toString();
 }
 
