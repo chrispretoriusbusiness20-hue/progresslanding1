@@ -1,0 +1,11 @@
+# The Progress Group — Quote Request
+
+> Online quoting tool for The Progress Group: fireplaces, braais, lighting and aircons. Customers fill in a short form and receive a tailored quote.
+
+## Pages
+
+- [Request a Quote](/): Fill out the quote form and get a prefilled quote with product, flue kit, floor plate, corner installation and transport pricing.
+
+## Optional
+
+- [The Progress Group main site](https://progressgroup.co.za/): Showroom, product catalog, and contact info.
