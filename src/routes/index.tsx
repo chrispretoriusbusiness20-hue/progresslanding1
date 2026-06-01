@@ -352,10 +352,24 @@ function QuotePage() {
               title="Progress Group quote request form"
               className="h-[1400px] w-full"
               loading="lazy"
-              onLoad={handleIframeLoad}
             >
               Loading…
             </iframe>
+          </div>
+
+          <div className="mt-6 flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-sm text-muted-foreground">
+              Answer every question above and hit <strong>Submit</strong> in the form. Then click this button so we can pull your details and build your quote.
+            </p>
+            <button
+              type="button"
+              onClick={handleSubmittedClick}
+              disabled={!canContinue || loading}
+              className="inline-flex items-center gap-2 border-2 border-foreground bg-primary px-5 py-3 text-sm font-bold uppercase tracking-wider text-primary-foreground shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4" />}
+              I've submitted the form
+            </button>
           </div>
 
           {submitted && (
