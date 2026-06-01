@@ -191,6 +191,8 @@ function QuotePage() {
         plate: plateLabel ?? undefined,
         plateType: matched.plate?.type ?? undefined,
         flooring: matched.flooringText || undefined,
+        cornerInstall: cornerInstallLabel ?? undefined,
+        cornerInstallPrice: cornerInstallLabel ?? undefined,
       })
     : buildQuoteUrl({ firstName: firstName.trim(), lastName: lastName.trim() });
 
