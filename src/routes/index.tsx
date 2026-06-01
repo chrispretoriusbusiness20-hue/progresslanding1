@@ -463,41 +463,6 @@ function QuotePage() {
             </a>
           </div>
 
-          <div className="mb-6 grid gap-4 sm:grid-cols-2">
-            <label className="block">
-              <span className="mb-2 block font-display text-xs uppercase tracking-wider text-foreground">
-                First name
-              </span>
-              <input
-                type="text"
-                value={firstName}
-                onChange={(e) => setFirstName(e.target.value.slice(0, 80))}
-                placeholder="Jane"
-                className="w-full border-2 border-foreground bg-background px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-primary"
-                autoComplete="given-name"
-                required
-              />
-            </label>
-            <label className="block">
-              <span className="mb-2 block font-display text-xs uppercase tracking-wider text-foreground">
-                Surname
-              </span>
-              <input
-                type="text"
-                value={lastName}
-                onChange={(e) => setLastName(e.target.value.slice(0, 80))}
-                placeholder="Doe"
-                className="w-full border-2 border-foreground bg-background px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-primary"
-                autoComplete="family-name"
-                required
-              />
-            </label>
-          </div>
-          {!canContinue && (
-            <p className="mb-4 text-sm text-muted-foreground">
-              Please enter your name and surname so we can match your form submission.
-            </p>
-          )}
 
           <FavoritesQuickPick />
 
