@@ -4,6 +4,8 @@ import { useServerFn } from "@tanstack/react-start";
 import { Flame, CheckCircle2, Clock, ShieldCheck, ArrowRight, Loader2, Sparkles } from "lucide-react";
 import { lookupQuoteSubmission } from "@/lib/quote-lookup.functions";
 import magmaImg from "@/assets/magma.jpg";
+import { FavoritesQuickPick } from "@/components/favorites-quick-pick";
+
 
 const FORM_URL = "https://forms.gle/EkpVyEYTTTi22DK17";
 const FORM_EMBED_URL = `${FORM_URL}?embedded=true`;
@@ -394,7 +396,10 @@ function QuotePage() {
             </p>
           )}
 
+          <FavoritesQuickPick />
+
           <div className="-mx-2 sm:mx-0">
+
             <iframe
               src={FORM_EMBED_URL}
               title="Progress Group quote request form"

@@ -1,7 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { ArrowLeft, Search, Check, Flame, ImageOff } from "lucide-react";
+import { ArrowLeft, Search, Check, Flame, ImageOff, Heart, Sparkles, Trash2 } from "lucide-react";
 import productsData from "@/data/products-full.json";
+import { useFavorites } from "@/hooks/use-favorites";
+
 
 type Product = {
   id: string;
@@ -56,6 +58,35 @@ function CatalogPage() {
   const [query, setQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const { ids: favoriteIds, has: isFavorite, toggle: toggleFavorite, clear: clearFavorites } = useFavorites();
+
+  const favoriteProducts = useMemo(
+    () => favoriteIds.map((id) => products.find((p) => p.id === id)).filter((p): p is Product => Boolean(p)),
+    [favoriteIds],
+  );
+
+  // Recommended = products sharing subcategory/category with favorites, excluding favorites themselves.
+  const recommended = useMemo<Product[]>(() => {
+    if (favoriteProducts.length === 0) return [];
+    const favSet = new Set(favoriteIds);
+    const subWeight = new Map<string, number>();
+    const catWeight = new Map<string, number>();
+    for (const f of favoriteProducts) {
+      subWeight.set(f.subcategory, (subWeight.get(f.subcategory) ?? 0) + 3);
+      catWeight.set(f.category, (catWeight.get(f.category) ?? 0) + 1);
+    }
+    const scored = products
+      .filter((p) => !favSet.has(p.id))
+      .map((p) => ({
+        p,
+        score: (subWeight.get(p.subcategory) ?? 0) + (catWeight.get(p.category) ?? 0),
+      }))
+      .filter((x) => x.score > 0)
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 8)
+      .map((x) => x.p);
+    return scored;
+  }, [favoriteIds, favoriteProducts]);
 
   const grouped = useMemo<Grouped[]>(() => {
     const q = query.trim().toLowerCase();
@@ -96,6 +127,27 @@ function CatalogPage() {
       /* sessionStorage unavailable */
     }
   };
+
+  const sendFavoritesToQuote = async () => {
+    if (favoriteProducts.length === 0) return;
+    const list = favoriteProducts.map((p) => `• ${p.name}${p.price ? ` — ${p.price}` : ""}`).join("\n");
+    try {
+      await navigator.clipboard.writeText(list);
+    } catch {
+      /* ignore */
+    }
+    try {
+      sessionStorage.setItem("selectedProduct", favoriteProducts[0].name);
+      sessionStorage.setItem(
+        "favoriteProducts",
+        JSON.stringify(favoriteProducts.map((p) => ({ id: p.id, name: p.name, price: p.price }))),
+      );
+    } catch {
+      /* ignore */
+    }
+  };
+
+
 
   return (
     <div className="min-h-screen text-foreground">
@@ -201,6 +253,85 @@ function CatalogPage() {
         </div>
       </nav>
 
+      {/* Favorites + recommended */}
+      {(favoriteProducts.length > 0 || recommended.length > 0) && (
+        <section className="border-b-2 border-foreground bg-accent/20 px-6 py-12">
+          <div className="mx-auto max-w-6xl space-y-12">
+            {favoriteProducts.length > 0 && (
+              <div>
+                <div className="mb-6 flex flex-wrap items-end justify-between gap-4 border-b-2 border-foreground pb-3">
+                  <div className="flex items-center gap-3">
+                    <Heart className="h-5 w-5 fill-primary text-primary" />
+                    <h2 className="font-display text-2xl uppercase tracking-tight sm:text-3xl">
+                      Your Favorites
+                    </h2>
+                    <span className="text-xs font-bold uppercase tracking-widest text-primary">
+                      ({favoriteProducts.length})
+                    </span>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    <Link
+                      to="/"
+                      hash="form"
+                      onClick={sendFavoritesToQuote}
+                      className="inline-flex items-center gap-2 border-2 border-foreground bg-primary px-4 py-2 text-xs font-bold uppercase tracking-wider text-primary-foreground shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
+                    >
+                      <Check className="h-3.5 w-3.5" /> Send all to quote
+                    </Link>
+                    <button
+                      onClick={clearFavorites}
+                      className="inline-flex items-center gap-1.5 border-2 border-foreground/40 px-3 py-2 text-xs font-bold uppercase tracking-wider text-foreground/70 transition hover:border-foreground hover:text-foreground"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" /> Clear
+                    </button>
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                  {favoriteProducts.map((p) => (
+                    <ProductCard
+                      key={p.id}
+                      p={p}
+                      isCopied={copiedId === p.id}
+                      isFavorite={isFavorite(p.id)}
+                      onSelect={handleSelect}
+                      onToggleFavorite={toggleFavorite}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {recommended.length > 0 && (
+              <div>
+                <div className="mb-6 flex flex-wrap items-end justify-between gap-4 border-b-2 border-foreground pb-3">
+                  <div className="flex items-center gap-3">
+                    <Sparkles className="h-5 w-5 text-primary" />
+                    <h2 className="font-display text-2xl uppercase tracking-tight sm:text-3xl">
+                      Recommended For You
+                    </h2>
+                  </div>
+                  <p className="text-xs font-bold uppercase tracking-widest text-primary">
+                    Based on your favorites
+                  </p>
+                </div>
+                <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                  {recommended.map((p) => (
+                    <ProductCard
+                      key={p.id}
+                      p={p}
+                      isCopied={copiedId === p.id}
+                      isFavorite={isFavorite(p.id)}
+                      onSelect={handleSelect}
+                      onToggleFavorite={toggleFavorite}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </section>
+      )}
+
       {/* Grouped grid */}
       <section className="px-6 pb-24 pt-12">
         <div className="mx-auto max-w-6xl space-y-16">
@@ -233,7 +364,9 @@ function CatalogPage() {
                           key={p.id}
                           p={p}
                           isCopied={copiedId === p.id}
+                          isFavorite={isFavorite(p.id)}
                           onSelect={handleSelect}
+                          onToggleFavorite={toggleFavorite}
                         />
                       ))}
                     </div>
@@ -252,6 +385,7 @@ function CatalogPage() {
           )}
         </div>
       </section>
+
 
       {/* Footer */}
       <footer className="border-t-2 border-foreground bg-background">
@@ -272,11 +406,15 @@ function CatalogPage() {
 function ProductCard({
   p,
   isCopied,
+  isFavorite,
   onSelect,
+  onToggleFavorite,
 }: {
   p: Product;
   isCopied: boolean;
+  isFavorite: boolean;
   onSelect: (p: Product) => void;
+  onToggleFavorite: (id: string) => void;
 }) {
   return (
     <article className="flex flex-col overflow-hidden border-2 border-foreground bg-card shadow-brutal-sm transition hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-brutal">
@@ -296,6 +434,17 @@ function ProductCard({
         <span className="absolute left-2 top-2 border-2 border-foreground bg-background px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest text-foreground">
           {p.subcategory || p.category}
         </span>
+        <button
+          type="button"
+          onClick={() => onToggleFavorite(p.id)}
+          aria-label={isFavorite ? `Remove ${p.name} from favorites` : `Save ${p.name} to favorites`}
+          aria-pressed={isFavorite}
+          className={`absolute right-2 top-2 flex h-9 w-9 items-center justify-center border-2 border-foreground shadow-brutal-sm transition hover:-translate-y-0.5 ${
+            isFavorite ? "bg-primary text-primary-foreground" : "bg-background text-foreground/70 hover:text-foreground"
+          }`}
+        >
+          <Heart className={`h-4 w-4 ${isFavorite ? "fill-current" : ""}`} />
+        </button>
       </div>
 
       <div className="flex flex-1 flex-col p-4">
@@ -338,3 +487,4 @@ function ProductCard({
     </article>
   );
 }
+
