@@ -363,7 +363,17 @@ function QuotePage() {
                           <span className="font-bold">{flueKitLabel}</span>
                         </p>
                       )}
-                      {flueKitLabel && (
+                      {plateLabel && lookup.plate && (
+                        <p className="mt-1 text-foreground">
+                          + {lookup.plate.type.charAt(0).toUpperCase() + lookup.plate.type.slice(1)} floor plate
+                          {lookup.flooringText && ` (${lookup.flooringText.toLowerCase()} floor)`}, incl. VAT:{" "}
+                          <span className="font-bold">{plateLabel}</span>
+                          <span className="ml-2 text-muted-foreground">
+                            (alt: Steel R1 450,00 · Granite R2 850,00)
+                          </span>
+                        </p>
+                      )}
+                      {(flueKitLabel || plateLabel) && (
                         <p className="mt-1 text-foreground">
                           Total:{" "}
                           <span className="font-bold">{totalPriceLabel}</span>
