@@ -141,7 +141,7 @@ function QuotePage() {
   const unitPriceNum = matched?.catalog ? parseRand(matched.catalog.unitPrice) : null;
   const totalPriceNum =
     unitPriceNum !== null && matched ? unitPriceNum * matched.quantity : null;
-  const unitPriceLabel = matched?.catalog?.unitPrice ?? null;
+  const unitPriceLabel = unitPriceNum !== null ? formatRand(unitPriceNum) : null;
   const totalPriceLabel = totalPriceNum !== null ? formatRand(totalPriceNum) : null;
 
   const quoteUrl = matched
