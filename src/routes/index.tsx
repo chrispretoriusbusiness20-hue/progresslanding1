@@ -114,6 +114,8 @@ function buildQuoteUrl(params: {
   set(["flooring"], params.flooring);
   set(["cornerInstall", "corner_install"], params.cornerInstall);
   set(["cornerInstallPrice", "corner_install_price"], params.cornerInstallPrice);
+  set(["transport", "transport_cost", "delivery"], params.transport);
+  set(["distance", "distanceKm", "distance_km"], params.distanceKm);
   return url.toString();
 }
 
