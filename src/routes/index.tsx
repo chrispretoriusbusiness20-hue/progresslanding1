@@ -84,6 +84,8 @@ function buildQuoteUrl(params: {
   plate?: string;
   plateType?: string;
   flooring?: string;
+  cornerInstall?: string;
+  cornerInstallPrice?: string;
 }) {
   const url = new URL(QUOTE_APP_URL);
   const set = (keys: string[], value?: string | number) => {
