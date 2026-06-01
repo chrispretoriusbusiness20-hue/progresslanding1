@@ -73,6 +73,17 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
 }
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
+  server: {
+    handlers: {
+      GET: async ({ request }) => {
+        const url = new URL(request.url);
+        if (url.hostname === "progressgroup.co.za") {
+          url.hostname = "www.progressgroup.co.za";
+          return Response.redirect(url.toString(), 301);
+        }
+      },
+    },
+  },
   head: () => ({
     meta: [
       { charSet: "utf-8" },
