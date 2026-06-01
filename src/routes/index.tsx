@@ -1,17 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { Flame, CheckCircle2, Clock, ShieldCheck, ArrowRight, Loader2, Zap, Sparkles } from "lucide-react";
+import { Flame, CheckCircle2, Clock, ShieldCheck, ArrowRight, Loader2, Sparkles } from "lucide-react";
 import { lookupQuoteSubmission } from "@/lib/quote-lookup.functions";
-import productsData from "@/data/products.json";
 import heroFireplace from "@/assets/hero-fireplace.jpg";
 
 const FORM_URL = "https://forms.gle/EkpVyEYTTTi22DK17";
 const FORM_EMBED_URL = `${FORM_URL}?embedded=true`;
 const QUOTE_APP_URL = "https://fireplacequotes.co.za/";
-
-type CatalogProduct = { name: string; price: string; url: string; category: string };
-const CATALOG = productsData as CatalogProduct[];
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -122,9 +118,7 @@ function QuotePage() {
   const [lookup, setLookup] = useState<LookupResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [autoOpen, setAutoOpen] = useState(true);
   const loadCountRef = useRef(0);
-  const autoOpenedRef = useRef(false);
 
   const lookupFn = useServerFn(lookupQuoteSubmission);
   const canContinue = firstName.trim().length > 0 && lastName.trim().length > 0;
@@ -203,14 +197,6 @@ function QuotePage() {
       })
     : buildQuoteUrl({ firstName: firstName.trim(), lastName: lastName.trim() });
 
-  // Auto-open the prefilled quote in a new tab once a match is found.
-  useEffect(() => {
-    if (autoOpen && matched && !autoOpenedRef.current) {
-      autoOpenedRef.current = true;
-      window.open(quoteUrl, "_blank", "noopener,noreferrer");
-    }
-  }, [autoOpen, matched, quoteUrl]);
-
   return (
     <div className="min-h-screen text-foreground">
       {/* Header */}
@@ -255,12 +241,6 @@ function QuotePage() {
             </p>
 
             <div className="mt-8 flex flex-wrap gap-3">
-              <a
-                href="#instant"
-                className="inline-flex items-center gap-2 border-2 border-foreground bg-foreground px-5 py-3 text-sm font-bold uppercase tracking-wider text-primary shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
-              >
-                <Zap className="h-4 w-4" /> Instant quote
-              </a>
               <a
                 href="#form"
                 className="inline-flex items-center gap-2 border-2 border-foreground bg-background px-5 py-3 text-sm font-bold uppercase tracking-wider text-foreground shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
@@ -312,23 +292,9 @@ function QuotePage() {
       </section>
 
 
-      {/* Instant Quote (skip Google Form) */}
-      <InstantQuote />
-
       {/* Form */}
       <section id="form" className="bg-muted">
         <div className="mx-auto max-w-4xl px-6 py-16 sm:py-20">
-          <label className="mb-6 flex items-center gap-2 text-sm">
-            <input
-              type="checkbox"
-              checked={autoOpen}
-              onChange={(e) => setAutoOpen(e.target.checked)}
-              className="h-4 w-4 accent-primary"
-            />
-            <span className="font-semibold uppercase tracking-wider">
-              Auto-open prefilled quote in a new tab once matched
-            </span>
-          </label>
           <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
             <div>
               <h2 className="text-3xl sm:text-4xl">FILL IN THE FORM</h2>
@@ -570,197 +536,3 @@ function Feature({
   );
 }
 
-function InstantQuote() {
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [productName, setProductName] = useState<string>("");
-  const [quantity, setQuantity] = useState(1);
-  const [story, setStory] = useState<"" | "single" | "double">("");
-  const [flooring, setFlooring] = useState<"" | "tile" | "laminate" | "carpet" | "other">("");
-  const [corner, setCorner] = useState(false);
-
-  const categories = useMemo(() => {
-    const map = new Map<string, CatalogProduct[]>();
-    for (const p of CATALOG) {
-      const arr = map.get(p.category) ?? [];
-      arr.push(p);
-      map.set(p.category, arr);
-    }
-    return Array.from(map.entries()).sort(([a], [b]) => a.localeCompare(b));
-  }, []);
-
-  const selectedProduct = CATALOG.find((p) => p.name === productName) ?? null;
-  const unitNum = selectedProduct ? parseRand(selectedProduct.price) : null;
-  const subtotal = unitNum !== null ? unitNum * quantity : null;
-  const flueKit = story === "double" ? 9500 : story === "single" ? 6785 : null;
-  const needsPlate = flooring === "laminate" || flooring === "carpet";
-  const platePrice = needsPlate ? 2450 : null;
-  const cornerPrice = corner ? 800 : null;
-  const total =
-    subtotal !== null || flueKit !== null || platePrice !== null || cornerPrice !== null
-      ? (subtotal ?? 0) + (flueKit ?? 0) + (platePrice ?? 0) + (cornerPrice ?? 0)
-      : null;
-
-  const canOpen = Boolean(firstName.trim() && lastName.trim() && selectedProduct);
-
-  const handleOpen = () => {
-    if (!canOpen || !selectedProduct) return;
-    const url = buildQuoteUrl({
-      firstName: firstName.trim(),
-      lastName: lastName.trim(),
-      email: email.trim() || undefined,
-      phone: phone.trim() || undefined,
-      product: selectedProduct.name,
-      quantity,
-      unitPrice: unitNum !== null ? formatRand(unitNum) : undefined,
-      totalPrice: total !== null ? formatRand(total) : undefined,
-      flueKit: flueKit !== null ? formatRand(flueKit) : undefined,
-      storyType: story || undefined,
-      plate: platePrice !== null ? formatRand(platePrice) : undefined,
-      plateType: needsPlate ? "glass" : undefined,
-      flooring: flooring || undefined,
-      cornerInstall: corner ? "Corner of room" : undefined,
-      cornerInstallPrice: cornerPrice !== null ? formatRand(cornerPrice) : undefined,
-    });
-    window.open(url, "_blank", "noopener,noreferrer");
-  };
-
-  const inputCls =
-    "w-full border-2 border-foreground bg-background px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-primary";
-  const labelCls = "mb-2 block font-display text-xs uppercase tracking-wider text-foreground";
-
-  return (
-    <section id="instant" className="border-b border-border bg-background">
-      <div className="mx-auto max-w-4xl px-6 py-16 sm:py-20">
-        <div className="mb-8">
-          <span className="inline-flex items-center gap-2 bg-primary px-3 py-1 text-xs font-bold uppercase tracking-widest text-primary-foreground">
-            <Zap className="h-3.5 w-3.5" /> Instant Quote
-          </span>
-          <h2 className="mt-4 text-3xl sm:text-4xl">SKIP THE FORM — QUOTE IN SECONDS</h2>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Answer a few questions and we'll open your prefilled quote on fireplacequotes.co.za immediately.
-          </p>
-        </div>
-
-        <div className="grid gap-4 sm:grid-cols-2">
-          <label className="block">
-            <span className={labelCls}>First name</span>
-            <input className={inputCls} value={firstName} onChange={(e) => setFirstName(e.target.value.slice(0, 80))} />
-          </label>
-          <label className="block">
-            <span className={labelCls}>Surname</span>
-            <input className={inputCls} value={lastName} onChange={(e) => setLastName(e.target.value.slice(0, 80))} />
-          </label>
-          <label className="block">
-            <span className={labelCls}>Email</span>
-            <input type="email" className={inputCls} value={email} onChange={(e) => setEmail(e.target.value.slice(0, 200))} />
-          </label>
-          <label className="block">
-            <span className={labelCls}>Phone</span>
-            <input className={inputCls} value={phone} onChange={(e) => setPhone(e.target.value.slice(0, 40))} />
-          </label>
-          <label className="block sm:col-span-2">
-            <span className={labelCls}>Product</span>
-            <select className={inputCls} value={productName} onChange={(e) => setProductName(e.target.value)}>
-              <option value="">— Select a product —</option>
-              {categories.map(([cat, items]) => (
-                <optgroup key={cat} label={cat.replace(/-/g, " ").toUpperCase()}>
-                  {items.map((p) => (
-                    <option key={p.name} value={p.name}>
-                      {p.name} — {p.price}
-                    </option>
-                  ))}
-                </optgroup>
-              ))}
-            </select>
-          </label>
-          <label className="block">
-            <span className={labelCls}>Quantity</span>
-            <input
-              type="number"
-              min={1}
-              max={99}
-              className={inputCls}
-              value={quantity}
-              onChange={(e) => setQuantity(Math.max(1, Math.min(99, Number(e.target.value) || 1)))}
-            />
-          </label>
-          <label className="block">
-            <span className={labelCls}>Single or double story?</span>
-            <select className={inputCls} value={story} onChange={(e) => setStory(e.target.value as typeof story)}>
-              <option value="">— None / N/A —</option>
-              <option value="single">Single story (+ R6 785 flue kit)</option>
-              <option value="double">Double story (+ R9 500 flue kit)</option>
-            </select>
-          </label>
-          <label className="block">
-            <span className={labelCls}>Flooring</span>
-            <select className={inputCls} value={flooring} onChange={(e) => setFlooring(e.target.value as typeof flooring)}>
-              <option value="">— Select —</option>
-              <option value="tile">Tile</option>
-              <option value="laminate">Laminate (+ R2 450 glass plate)</option>
-              <option value="carpet">Carpet (+ R2 450 glass plate)</option>
-              <option value="other">Other</option>
-            </select>
-          </label>
-          <label className="flex items-center gap-3 sm:col-span-2">
-            <input
-              type="checkbox"
-              checked={corner}
-              onChange={(e) => setCorner(e.target.checked)}
-              className="h-5 w-5 accent-primary"
-            />
-            <span className="text-sm font-semibold uppercase tracking-wider">
-              Install in corner of room (+ R800)
-            </span>
-          </label>
-        </div>
-
-        {total !== null && (
-          <div className="mt-6 border-2 border-foreground bg-muted px-4 py-3 text-sm">
-            {subtotal !== null && selectedProduct && (
-              <p>
-                {selectedProduct.name} × {quantity} ={" "}
-                <span className="font-bold">{formatRand(subtotal)}</span>
-              </p>
-            )}
-            {flueKit !== null && (
-              <p>
-                + {story} story flue kit: <span className="font-bold">{formatRand(flueKit)}</span>
-              </p>
-            )}
-            {platePrice !== null && (
-              <p>
-                + Glass floor plate: <span className="font-bold">{formatRand(platePrice)}</span>
-              </p>
-            )}
-            {cornerPrice !== null && (
-              <p>
-                + Corner installation: <span className="font-bold">{formatRand(cornerPrice)}</span>
-              </p>
-            )}
-            <p className="mt-1 border-t border-foreground/20 pt-1 text-base">
-              Total: <span className="font-bold">{formatRand(total)}</span>
-            </p>
-          </div>
-        )}
-
-        <button
-          type="button"
-          onClick={handleOpen}
-          disabled={!canOpen}
-          className="mt-6 inline-flex items-center gap-2 bg-primary px-6 py-3 text-sm font-bold uppercase tracking-wider text-primary-foreground shadow-[6px_6px_0_0_var(--foreground)] transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0_0_var(--foreground)] disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          <Zap className="h-4 w-4" /> Open prefilled quote now
-        </button>
-        {!canOpen && (
-          <p className="mt-3 text-xs text-muted-foreground">
-            Enter your name, surname and select a product to enable.
-          </p>
-        )}
-      </div>
-    </section>
-  );
-}
