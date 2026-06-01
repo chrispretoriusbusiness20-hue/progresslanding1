@@ -197,6 +197,8 @@ function QuotePage() {
         flooring: matched.flooringText || undefined,
         cornerInstall: cornerInstallLabel ?? undefined,
         cornerInstallPrice: cornerInstallLabel ?? undefined,
+        transport: transportLabel ?? undefined,
+        distanceKm: matched.distanceKm !== null ? `${matched.distanceKm} km` : undefined,
       })
     : buildQuoteUrl({ firstName: firstName.trim(), lastName: lastName.trim() });
 
