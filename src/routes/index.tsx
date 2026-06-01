@@ -5,6 +5,10 @@ import { Flame, CheckCircle2, Clock, ShieldCheck, ArrowRight, Loader2, Sparkles 
 import { lookupQuoteSubmission } from "@/lib/quote-lookup.functions";
 import magmaImg from "@/assets/magma.jpg";
 
+const FORM_URL = "https://forms.gle/EkpVyEYTTTi22DK17";
+const FORM_EMBED_URL = `${FORM_URL}?embedded=true`;
+const QUOTE_APP_URL = "https://fireplacequotes.co.za/";
+
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
