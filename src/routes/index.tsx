@@ -49,6 +49,8 @@ type LookupResult =
       storyType: "single" | "double" | null;
       storyText: string;
       flueKitPrice: number | null;
+      flooringText: string;
+      plate: { type: "glass"; price: number } | null;
       submittedAt: string;
     }
   | { match: false };
@@ -77,6 +79,9 @@ function buildQuoteUrl(params: {
   totalPrice?: string;
   flueKit?: string;
   storyType?: string;
+  plate?: string;
+  plateType?: string;
+  flooring?: string;
 }) {
   const url = new URL(QUOTE_APP_URL);
   const set = (keys: string[], value?: string | number) => {
@@ -93,6 +98,9 @@ function buildQuoteUrl(params: {
   set(["price", "totalPrice", "total_price"], params.totalPrice);
   set(["flueKit", "flue_kit"], params.flueKit);
   set(["storyType", "story_type", "story"], params.storyType);
+  set(["plate", "floor_plate"], params.plate);
+  set(["plateType", "plate_type"], params.plateType);
+  set(["flooring"], params.flooring);
   return url.toString();
 }
 
@@ -149,13 +157,15 @@ function QuotePage() {
   const productSubtotal =
     unitPriceNum !== null && matched ? unitPriceNum * matched.quantity : null;
   const flueKitPrice = matched?.flueKitPrice ?? null;
+  const platePrice = matched?.plate?.price ?? null;
   const totalPriceNum =
-    productSubtotal !== null
-      ? productSubtotal + (flueKitPrice ?? 0)
-      : flueKitPrice;
+    productSubtotal !== null || flueKitPrice !== null || platePrice !== null
+      ? (productSubtotal ?? 0) + (flueKitPrice ?? 0) + (platePrice ?? 0)
+      : null;
   const unitPriceLabel = unitPriceNum !== null ? formatRand(unitPriceNum) : null;
   const subtotalLabel = productSubtotal !== null ? formatRand(productSubtotal) : null;
   const flueKitLabel = flueKitPrice !== null ? formatRand(flueKitPrice) : null;
+  const plateLabel = platePrice !== null ? formatRand(platePrice) : null;
   const totalPriceLabel = totalPriceNum !== null ? formatRand(totalPriceNum) : null;
 
   const quoteUrl = matched
@@ -170,6 +180,9 @@ function QuotePage() {
         totalPrice: totalPriceLabel ?? undefined,
         flueKit: flueKitLabel ?? undefined,
         storyType: matched.storyType ?? undefined,
+        plate: plateLabel ?? undefined,
+        plateType: matched.plate?.type ?? undefined,
+        flooring: matched.flooringText || undefined,
       })
     : buildQuoteUrl({ firstName: firstName.trim(), lastName: lastName.trim() });
 
@@ -350,7 +363,17 @@ function QuotePage() {
                           <span className="font-bold">{flueKitLabel}</span>
                         </p>
                       )}
-                      {flueKitLabel && (
+                      {plateLabel && lookup.plate && (
+                        <p className="mt-1 text-foreground">
+                          + {lookup.plate.type.charAt(0).toUpperCase() + lookup.plate.type.slice(1)} floor plate
+                          {lookup.flooringText && ` (${lookup.flooringText.toLowerCase()} floor)`}, incl. VAT:{" "}
+                          <span className="font-bold">{plateLabel}</span>
+                          <span className="ml-2 text-muted-foreground">
+                            (alt: Steel R1 450,00 · Granite R2 850,00)
+                          </span>
+                        </p>
+                      )}
+                      {(flueKitLabel || plateLabel) && (
                         <p className="mt-1 text-foreground">
                           Total:{" "}
                           <span className="font-bold">{totalPriceLabel}</span>
