@@ -157,13 +157,15 @@ function QuotePage() {
   const productSubtotal =
     unitPriceNum !== null && matched ? unitPriceNum * matched.quantity : null;
   const flueKitPrice = matched?.flueKitPrice ?? null;
+  const platePrice = matched?.plate?.price ?? null;
   const totalPriceNum =
-    productSubtotal !== null
-      ? productSubtotal + (flueKitPrice ?? 0)
-      : flueKitPrice;
+    productSubtotal !== null || flueKitPrice !== null || platePrice !== null
+      ? (productSubtotal ?? 0) + (flueKitPrice ?? 0) + (platePrice ?? 0)
+      : null;
   const unitPriceLabel = unitPriceNum !== null ? formatRand(unitPriceNum) : null;
   const subtotalLabel = productSubtotal !== null ? formatRand(productSubtotal) : null;
   const flueKitLabel = flueKitPrice !== null ? formatRand(flueKitPrice) : null;
+  const plateLabel = platePrice !== null ? formatRand(platePrice) : null;
   const totalPriceLabel = totalPriceNum !== null ? formatRand(totalPriceNum) : null;
 
   const quoteUrl = matched
@@ -178,6 +180,9 @@ function QuotePage() {
         totalPrice: totalPriceLabel ?? undefined,
         flueKit: flueKitLabel ?? undefined,
         storyType: matched.storyType ?? undefined,
+        plate: plateLabel ?? undefined,
+        plateType: matched.plate?.type ?? undefined,
+        flooring: matched.flooringText || undefined,
       })
     : buildQuoteUrl({ firstName: firstName.trim(), lastName: lastName.trim() });
 
