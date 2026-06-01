@@ -3,11 +3,7 @@ import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { Flame, CheckCircle2, Clock, ShieldCheck, ArrowRight, Loader2, Sparkles } from "lucide-react";
 import { lookupQuoteSubmission } from "@/lib/quote-lookup.functions";
-
-
-const FORM_URL = "https://forms.gle/EkpVyEYTTTi22DK17";
-const FORM_EMBED_URL = `${FORM_URL}?embedded=true`;
-const QUOTE_APP_URL = "https://fireplacequotes.co.za/";
+import magmaImg from "@/assets/magma.jpg";
 
 export const Route = createFileRoute("/")({
   head: () => ({
