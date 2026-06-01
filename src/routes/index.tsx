@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { Flame, CheckCircle2, Clock, ShieldCheck, ArrowRight, Loader2, Sparkles } from "lucide-react";
 import { lookupQuoteSubmission } from "@/lib/quote-lookup.functions";
-
+import magmaImg from "@/assets/magma.jpg";
 
 const FORM_URL = "https://forms.gle/EkpVyEYTTTi22DK17";
 const FORM_EMBED_URL = `${FORM_URL}?embedded=true`;
@@ -219,7 +219,7 @@ function QuotePage() {
       {/* Hero */}
       <section className="relative overflow-hidden border-b-2 border-foreground">
         <div className="absolute inset-0 bg-dot-grid opacity-[0.06]" aria-hidden />
-        <div className="relative mx-auto max-w-4xl px-6 py-16 sm:py-24">
+        <div className="relative mx-auto grid max-w-6xl gap-8 px-6 py-16 lg:grid-cols-[1.1fr_1fr] lg:items-center lg:gap-12 lg:py-24">
           <div className="relative z-10">
             <span className="inline-flex items-center gap-1.5 border-2 border-foreground bg-primary px-3 py-1 text-xs font-bold uppercase tracking-widest text-primary-foreground shadow-brutal-sm">
               <Sparkles className="h-3 w-3" /> Online Quoting
@@ -262,6 +262,23 @@ function QuotePage() {
                 title="No obligation"
                 body="Free quote with no pressure to buy."
               />
+            </div>
+          </div>
+
+          <div className="relative hidden lg:block">
+            <div className="relative overflow-hidden border-2 border-foreground shadow-brutal">
+              <img
+                src={magmaImg}
+                alt="Molten magma flowing through volcanic rock"
+                className="aspect-[4/3] w-full object-cover"
+                width={960}
+                height={720}
+                loading="eager"
+              />
+              <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background/40 via-transparent to-transparent" />
+            </div>
+            <div className="absolute -bottom-3 -left-3 border-2 border-foreground bg-primary px-3 py-1 text-xs font-bold uppercase tracking-widest text-primary-foreground shadow-brutal-sm">
+              Heating · Lighting · Aircons
             </div>
           </div>
         </div>
