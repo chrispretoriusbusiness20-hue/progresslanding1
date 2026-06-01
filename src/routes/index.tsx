@@ -271,9 +271,23 @@ function QuotePage() {
         </div>
       </section>
 
+      {/* Instant Quote (skip Google Form) */}
+      <InstantQuote />
+
       {/* Form */}
       <section id="form" className="bg-muted">
         <div className="mx-auto max-w-4xl px-6 py-16 sm:py-20">
+          <label className="mb-6 flex items-center gap-2 text-sm">
+            <input
+              type="checkbox"
+              checked={autoOpen}
+              onChange={(e) => setAutoOpen(e.target.checked)}
+              className="h-4 w-4 accent-primary"
+            />
+            <span className="font-semibold uppercase tracking-wider">
+              Auto-open prefilled quote in a new tab once matched
+            </span>
+          </label>
           <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
             <div>
               <h2 className="text-3xl sm:text-4xl">FILL IN THE FORM</h2>
