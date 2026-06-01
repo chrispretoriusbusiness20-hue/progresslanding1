@@ -46,6 +46,9 @@ type LookupResult =
       productRequested: string;
       quantity: number;
       catalog: CatalogMatch | null;
+      storyType: "single" | "double" | null;
+      storyText: string;
+      flueKitPrice: number | null;
       submittedAt: string;
     }
   | { match: false };
@@ -72,6 +75,8 @@ function buildQuoteUrl(params: {
   quantity?: number;
   unitPrice?: string;
   totalPrice?: string;
+  flueKit?: string;
+  storyType?: string;
 }) {
   const url = new URL(QUOTE_APP_URL);
   const set = (keys: string[], value?: string | number) => {
@@ -86,6 +91,8 @@ function buildQuoteUrl(params: {
   set(["quantity", "qty"], params.quantity);
   set(["unitPrice", "unit_price"], params.unitPrice);
   set(["price", "totalPrice", "total_price"], params.totalPrice);
+  set(["flueKit", "flue_kit"], params.flueKit);
+  set(["storyType", "story_type", "story"], params.storyType);
   return url.toString();
 }
 
@@ -139,9 +146,16 @@ function QuotePage() {
   // Derive pricing guidance from the matched catalog entry (if any).
   const matched = lookup?.match ? lookup : null;
   const unitPriceNum = matched?.catalog ? parseRand(matched.catalog.unitPrice) : null;
-  const totalPriceNum =
+  const productSubtotal =
     unitPriceNum !== null && matched ? unitPriceNum * matched.quantity : null;
+  const flueKitPrice = matched?.flueKitPrice ?? null;
+  const totalPriceNum =
+    productSubtotal !== null
+      ? productSubtotal + (flueKitPrice ?? 0)
+      : flueKitPrice;
   const unitPriceLabel = unitPriceNum !== null ? formatRand(unitPriceNum) : null;
+  const subtotalLabel = productSubtotal !== null ? formatRand(productSubtotal) : null;
+  const flueKitLabel = flueKitPrice !== null ? formatRand(flueKitPrice) : null;
   const totalPriceLabel = totalPriceNum !== null ? formatRand(totalPriceNum) : null;
 
   const quoteUrl = matched
@@ -154,6 +168,8 @@ function QuotePage() {
         quantity: matched.quantity,
         unitPrice: unitPriceLabel ?? undefined,
         totalPrice: totalPriceLabel ?? undefined,
+        flueKit: flueKitLabel ?? undefined,
+        storyType: matched.storyType ?? undefined,
       })
     : buildQuoteUrl({ firstName: firstName.trim(), lastName: lastName.trim() });
 
@@ -326,8 +342,20 @@ function QuotePage() {
                           {lookup.catalog.name}
                         </a>{" "}
                         — {unitPriceLabel} × {lookup.quantity} ={" "}
-                        <span className="font-bold">{totalPriceLabel}</span>
+                        <span className="font-bold">{subtotalLabel}</span>
                       </p>
+                      {flueKitLabel && (
+                        <p className="mt-1 text-foreground">
+                          + Flue kit ({lookup.storyType} story, incl. VAT):{" "}
+                          <span className="font-bold">{flueKitLabel}</span>
+                        </p>
+                      )}
+                      {flueKitLabel && (
+                        <p className="mt-1 text-foreground">
+                          Total:{" "}
+                          <span className="font-bold">{totalPriceLabel}</span>
+                        </p>
+                      )}
                       {lookup.productRequested &&
                         lookup.productRequested.toLowerCase() !==
                           lookup.catalog.name.toLowerCase() && (

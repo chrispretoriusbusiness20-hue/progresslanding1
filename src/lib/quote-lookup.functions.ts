@@ -79,6 +79,7 @@ export const lookupQuoteSubmission = createServerFn({ method: "POST" })
       phone: header.findIndex((h) => /phone/i.test(h)),
       product: header.findIndex((h) => /product.*interest|which product/i.test(h)),
       quantity: header.findIndex((h) => /product\s*quantity/i.test(h)),
+      story: header.findIndex((h) => /single or double story|story/i.test(h)),
     };
 
     const target = norm(`${data.firstName} ${data.lastName}`);
@@ -90,6 +91,15 @@ export const lookupQuoteSubmission = createServerFn({ method: "POST" })
       const qtyText = (row[idx.quantity] ?? "").trim();
       const qty = Number.parseInt(qtyText, 10);
       const matched = matchProduct(productText);
+      const storyText = idx.story >= 0 ? (row[idx.story] ?? "").trim() : "";
+      const storyLower = storyText.toLowerCase();
+      const storyType: "single" | "double" | null = /double/.test(storyLower)
+        ? "double"
+        : /single/.test(storyLower)
+          ? "single"
+          : null;
+      const flueKitPrice =
+        storyType === "double" ? 9500 : storyType === "single" ? 6785 : null;
 
       return {
         match: true as const,
@@ -107,6 +117,9 @@ export const lookupQuoteSubmission = createServerFn({ method: "POST" })
               category: matched.category,
             }
           : null,
+        storyType,
+        storyText,
+        flueKitPrice,
         submittedAt: (row[idx.timestamp] ?? "").trim(),
       };
     }
