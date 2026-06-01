@@ -137,6 +137,8 @@ export const lookupQuoteSubmission = createServerFn({ method: "POST" })
         flueKitPrice,
         flooringText,
         plate,
+        cornerInstallPrice,
+        cornerInstallText,
         submittedAt: (row[idx.timestamp] ?? "").trim(),
       };
     }
