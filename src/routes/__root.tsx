@@ -92,10 +92,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "description", content: "The Progress Group supplies and installs fireplaces, braais, lighting and aircons across South Africa. Request a tailored quote online." },
       { name: "author", content: "The Progress Group" },
       { property: "og:title", content: "The Progress Group — Fireplaces, Braais, Lighting & Aircons" },
-      { property: "og:description", content: "Supply and installation of fireplaces, braais, lighting and aircons. Request a tailored quote online." },
+      { property: "og:description", content: "The Progress Group supplies and installs fireplaces, braais, lighting and aircons across South Africa. Request a tailored quote online." },
       { property: "og:site_name", content: "The Progress Group" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
+      { name: "twitter:title", content: "The Progress Group — Fireplaces, Braais, Lighting & Aircons" },
+      { name: "twitter:description", content: "The Progress Group supplies and installs fireplaces, braais, lighting and aircons across South Africa. Request a tailored quote online." },
+      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/5xv0qmivVVhv9FE5bA4bTElDxzo2/social-images/social-1780313139195-WhatsApp_Image_2026-06-01_at_13.25.19.webp" },
+      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/5xv0qmivVVhv9FE5bA4bTElDxzo2/social-images/social-1780313139195-WhatsApp_Image_2026-06-01_at_13.25.19.webp" },
     ],
     links: [
       {
