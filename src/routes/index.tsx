@@ -212,44 +212,62 @@ function QuotePage() {
   }, [autoOpen, matched, quoteUrl]);
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen text-foreground">
       {/* Header */}
-      <header className="border-b border-border bg-background">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
-          <a href="https://progressgroup.co.za/" className="flex items-center gap-2">
-            <span className="flex h-9 w-9 items-center justify-center bg-primary text-primary-foreground">
+      <header className="sticky top-0 z-50 border-b-2 border-foreground bg-background/85 backdrop-blur-md">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
+          <a href="https://progressgroup.co.za/" className="flex items-center gap-3 group">
+            <span className="relative flex h-10 w-10 items-center justify-center bg-foreground text-primary shadow-brutal-sm transition-transform group-hover:-translate-y-0.5">
               <Flame className="h-5 w-5" strokeWidth={2.5} />
             </span>
-            <span className="font-display text-lg tracking-tight">
-              THE PROGRESS GROUP
+            <span className="font-display text-base leading-none tracking-tight">
+              THE PROGRESS<br/><span className="text-gradient-ember">GROUP</span>
             </span>
           </a>
           <a
             href="https://progressgroup.co.za/"
-            className="hidden text-sm font-semibold uppercase tracking-wider text-foreground/70 hover:text-foreground sm:block"
+            className="hidden text-xs font-bold uppercase tracking-widest text-foreground/70 hover:text-foreground sm:block"
           >
-            ← Back to main site
+            ← Main site
           </a>
         </div>
       </header>
 
       {/* Hero */}
-      <section className="border-b border-border">
-        <div className="mx-auto max-w-6xl px-6 py-16 sm:py-24">
-          <div className="max-w-3xl">
-            <span className="inline-block bg-primary px-3 py-1 text-xs font-bold uppercase tracking-widest text-primary-foreground">
-              Online Quoting
+      <section className="relative overflow-hidden border-b-2 border-foreground">
+        <div className="absolute inset-0 bg-dot-grid opacity-[0.06]" aria-hidden />
+        <div className="relative mx-auto grid max-w-6xl gap-12 px-6 py-16 sm:py-24 lg:grid-cols-[1.1fr_1fr] lg:items-center">
+          <div className="relative z-10">
+            <span className="inline-flex items-center gap-1.5 border-2 border-foreground bg-primary px-3 py-1 text-xs font-bold uppercase tracking-widest text-primary-foreground shadow-brutal-sm">
+              <Sparkles className="h-3 w-3" /> Online Quoting
             </span>
-            <h1 className="mt-6 text-5xl leading-[0.95] sm:text-6xl md:text-7xl">
+            <h1 className="mt-6 font-display text-5xl leading-[0.92] sm:text-6xl md:text-7xl">
               REQUEST <br />
-              <span className="bg-primary px-3 text-primary-foreground">
-                YOUR QUOTE
+              YOUR{" "}
+              <span className="relative inline-block">
+                <span className="relative z-10 px-3 text-background">QUOTE</span>
+                <span className="absolute inset-0 -skew-x-6 bg-foreground" aria-hidden />
               </span>
             </h1>
-            <p className="mt-6 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg">
+            <p className="mt-6 max-w-xl text-base leading-relaxed text-foreground/75 sm:text-lg">
               Tell us what you need — fireplaces, braais, lighting or aircons —
               and our team will come back to you with a tailored quote.
             </p>
+
+            <div className="mt-8 flex flex-wrap gap-3">
+              <a
+                href="#instant"
+                className="inline-flex items-center gap-2 border-2 border-foreground bg-foreground px-5 py-3 text-sm font-bold uppercase tracking-wider text-primary shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
+              >
+                <Zap className="h-4 w-4" /> Instant quote
+              </a>
+              <a
+                href="#form"
+                className="inline-flex items-center gap-2 border-2 border-foreground bg-background px-5 py-3 text-sm font-bold uppercase tracking-wider text-foreground shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
+              >
+                Full form <ArrowRight className="h-4 w-4" />
+              </a>
+            </div>
 
             <div className="mt-10 grid gap-6 sm:grid-cols-3">
               <Feature
@@ -269,8 +287,30 @@ function QuotePage() {
               />
             </div>
           </div>
+
+          {/* Hero image */}
+          <div className="relative animate-float-slow">
+            <div className="absolute -inset-1 translate-x-3 translate-y-3 bg-foreground" aria-hidden />
+            <div className="relative overflow-hidden border-2 border-foreground shadow-glow">
+              <img
+                src={heroFireplace}
+                alt="Modern minimalist fireplace with dancing amber flames"
+                width={1536}
+                height={1280}
+                className="aspect-[4/5] w-full object-cover"
+              />
+              <span className="pointer-events-none absolute left-1/4 bottom-10 h-1.5 w-1.5 rounded-full bg-[var(--ember)] animate-ember" style={{ animationDelay: "0s" }} />
+              <span className="pointer-events-none absolute left-2/3 bottom-16 h-2 w-2 rounded-full bg-primary animate-ember" style={{ animationDelay: "1.2s" }} />
+              <span className="pointer-events-none absolute left-1/2 bottom-8 h-1 w-1 rounded-full bg-[var(--ember)] animate-ember" style={{ animationDelay: "2.4s" }} />
+              <span className="pointer-events-none absolute left-[35%] bottom-12 h-1 w-1 rounded-full bg-[var(--primary-glow)] animate-ember" style={{ animationDelay: "3s" }} />
+            </div>
+            <div className="absolute -bottom-4 -left-4 border-2 border-foreground bg-primary px-3 py-2 text-xs font-bold uppercase tracking-widest text-primary-foreground shadow-brutal-sm">
+              Heating · Lighting · Aircons
+            </div>
+          </div>
         </div>
       </section>
+
 
       {/* Instant Quote (skip Google Form) */}
       <InstantQuote />
