@@ -81,6 +81,7 @@ export const lookupQuoteSubmission = createServerFn({ method: "POST" })
       quantity: header.findIndex((h) => /product\s*quantity/i.test(h)),
       story: header.findIndex((h) => /single or double story|story/i.test(h)),
       flooring: header.findIndex((h) => /flooring/i.test(h)),
+      cornerInstall: header.findIndex((h) => /corner|installation position|install.*position/i.test(h)),
     };
 
     const target = norm(`${data.firstName} ${data.lastName}`);
@@ -110,6 +111,11 @@ export const lookupQuoteSubmission = createServerFn({ method: "POST" })
         ? { type: "glass", price: 2450 }
         : null;
 
+      const cornerInstallText = idx.cornerInstall >= 0 ? (row[idx.cornerInstall] ?? "").trim() : "";
+      const cornerInstallLower = cornerInstallText.toLowerCase();
+      const isCornerInstall = /corner/.test(cornerInstallLower);
+      const cornerInstallPrice = isCornerInstall ? 800 : null;
+
       return {
         match: true as const,
         firstName: data.firstName,
@@ -131,6 +137,8 @@ export const lookupQuoteSubmission = createServerFn({ method: "POST" })
         flueKitPrice,
         flooringText,
         plate,
+        cornerInstallPrice,
+        cornerInstallText,
         submittedAt: (row[idx.timestamp] ?? "").trim(),
       };
     }

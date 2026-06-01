@@ -51,6 +51,8 @@ type LookupResult =
       flueKitPrice: number | null;
       flooringText: string;
       plate: { type: "glass"; price: number } | null;
+      cornerInstallPrice: number | null;
+      cornerInstallText: string;
       submittedAt: string;
     }
   | { match: false };
@@ -82,6 +84,8 @@ function buildQuoteUrl(params: {
   plate?: string;
   plateType?: string;
   flooring?: string;
+  cornerInstall?: string;
+  cornerInstallPrice?: string;
 }) {
   const url = new URL(QUOTE_APP_URL);
   const set = (keys: string[], value?: string | number) => {
@@ -101,6 +105,8 @@ function buildQuoteUrl(params: {
   set(["plate", "floor_plate"], params.plate);
   set(["plateType", "plate_type"], params.plateType);
   set(["flooring"], params.flooring);
+  set(["cornerInstall", "corner_install"], params.cornerInstall);
+  set(["cornerInstallPrice", "corner_install_price"], params.cornerInstallPrice);
   return url.toString();
 }
 
@@ -158,14 +164,16 @@ function QuotePage() {
     unitPriceNum !== null && matched ? unitPriceNum * matched.quantity : null;
   const flueKitPrice = matched?.flueKitPrice ?? null;
   const platePrice = matched?.plate?.price ?? null;
+  const cornerInstallPrice = matched?.cornerInstallPrice ?? null;
   const totalPriceNum =
-    productSubtotal !== null || flueKitPrice !== null || platePrice !== null
-      ? (productSubtotal ?? 0) + (flueKitPrice ?? 0) + (platePrice ?? 0)
+    productSubtotal !== null || flueKitPrice !== null || platePrice !== null || cornerInstallPrice !== null
+      ? (productSubtotal ?? 0) + (flueKitPrice ?? 0) + (platePrice ?? 0) + (cornerInstallPrice ?? 0)
       : null;
   const unitPriceLabel = unitPriceNum !== null ? formatRand(unitPriceNum) : null;
   const subtotalLabel = productSubtotal !== null ? formatRand(productSubtotal) : null;
   const flueKitLabel = flueKitPrice !== null ? formatRand(flueKitPrice) : null;
   const plateLabel = platePrice !== null ? formatRand(platePrice) : null;
+  const cornerInstallLabel = cornerInstallPrice !== null ? formatRand(cornerInstallPrice) : null;
   const totalPriceLabel = totalPriceNum !== null ? formatRand(totalPriceNum) : null;
 
   const quoteUrl = matched
@@ -183,6 +191,8 @@ function QuotePage() {
         plate: plateLabel ?? undefined,
         plateType: matched.plate?.type ?? undefined,
         flooring: matched.flooringText || undefined,
+        cornerInstall: cornerInstallLabel ?? undefined,
+        cornerInstallPrice: cornerInstallLabel ?? undefined,
       })
     : buildQuoteUrl({ firstName: firstName.trim(), lastName: lastName.trim() });
 
@@ -373,7 +383,13 @@ function QuotePage() {
                           </span>
                         </p>
                       )}
-                      {(flueKitLabel || plateLabel) && (
+                      {cornerInstallLabel && (
+                        <p className="mt-1 text-foreground">
+                          + Corner installation, incl. VAT:{" "}
+                          <span className="font-bold">{cornerInstallLabel}</span>
+                        </p>
+                      )}
+                      {(flueKitLabel || plateLabel || cornerInstallLabel) && (
                         <p className="mt-1 text-foreground">
                           Total:{" "}
                           <span className="font-bold">{totalPriceLabel}</span>
