@@ -77,14 +77,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "The Progress Group — Fireplaces, Braais, Lighting & Aircons" },
+      { name: "description", content: "The Progress Group supplies and installs fireplaces, braais, lighting and aircons across South Africa. Request a tailored quote online." },
+      { name: "author", content: "The Progress Group" },
+      { property: "og:title", content: "The Progress Group — Fireplaces, Braais, Lighting & Aircons" },
+      { property: "og:description", content: "Supply and installation of fireplaces, braais, lighting and aircons. Request a tailored quote online." },
+      { property: "og:site_name", content: "The Progress Group" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
-      { name: "twitter:site", content: "@Lovable" },
     ],
     links: [
       {
