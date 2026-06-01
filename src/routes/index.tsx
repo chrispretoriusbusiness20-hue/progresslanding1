@@ -46,6 +46,9 @@ type LookupResult =
       productRequested: string;
       quantity: number;
       catalog: CatalogMatch | null;
+      storyType: "single" | "double" | null;
+      storyText: string;
+      flueKitPrice: number | null;
       submittedAt: string;
     }
   | { match: false };
