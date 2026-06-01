@@ -219,7 +219,7 @@ function QuotePage() {
       {/* Hero */}
       <section className="relative overflow-hidden border-b-2 border-foreground">
         <div className="absolute inset-0 bg-dot-grid opacity-[0.06]" aria-hidden />
-        <div className="relative mx-auto grid max-w-6xl gap-12 px-6 py-16 sm:py-24 lg:grid-cols-[1.1fr_1fr] lg:items-center">
+        <div className="relative mx-auto max-w-4xl px-6 py-16 sm:py-24">
           <div className="relative z-10">
             <span className="inline-flex items-center gap-1.5 border-2 border-foreground bg-primary px-3 py-1 text-xs font-bold uppercase tracking-widest text-primary-foreground shadow-brutal-sm">
               <Sparkles className="h-3 w-3" /> Online Quoting
@@ -262,27 +262,6 @@ function QuotePage() {
                 title="No obligation"
                 body="Free quote with no pressure to buy."
               />
-            </div>
-          </div>
-
-          {/* Hero image */}
-          <div className="relative animate-float-slow">
-            <div className="absolute -inset-1 translate-x-3 translate-y-3 bg-foreground" aria-hidden />
-            <div className="relative overflow-hidden border-2 border-foreground shadow-glow">
-              <img
-                src={heroFireplace}
-                alt="Modern minimalist fireplace with dancing amber flames"
-                width={1536}
-                height={1280}
-                className="aspect-[4/5] w-full object-cover"
-              />
-              <span className="pointer-events-none absolute left-1/4 bottom-10 h-1.5 w-1.5 rounded-full bg-[var(--ember)] animate-ember" style={{ animationDelay: "0s" }} />
-              <span className="pointer-events-none absolute left-2/3 bottom-16 h-2 w-2 rounded-full bg-primary animate-ember" style={{ animationDelay: "1.2s" }} />
-              <span className="pointer-events-none absolute left-1/2 bottom-8 h-1 w-1 rounded-full bg-[var(--ember)] animate-ember" style={{ animationDelay: "2.4s" }} />
-              <span className="pointer-events-none absolute left-[35%] bottom-12 h-1 w-1 rounded-full bg-[var(--primary-glow)] animate-ember" style={{ animationDelay: "3s" }} />
-            </div>
-            <div className="absolute -bottom-4 -left-4 border-2 border-foreground bg-primary px-3 py-2 text-xs font-bold uppercase tracking-widest text-primary-foreground shadow-brutal-sm">
-              Heating · Lighting · Aircons
             </div>
           </div>
         </div>
