@@ -51,6 +51,8 @@ type LookupResult =
       flueKitPrice: number | null;
       flooringText: string;
       plate: { type: "glass"; price: number } | null;
+      cornerInstallPrice: number | null;
+      cornerInstallText: string;
       submittedAt: string;
     }
   | { match: false };
