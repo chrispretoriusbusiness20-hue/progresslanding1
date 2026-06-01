@@ -111,6 +111,11 @@ export const lookupQuoteSubmission = createServerFn({ method: "POST" })
         ? { type: "glass", price: 2450 }
         : null;
 
+      const cornerInstallText = idx.cornerInstall >= 0 ? (row[idx.cornerInstall] ?? "").trim() : "";
+      const cornerInstallLower = cornerInstallText.toLowerCase();
+      const isCornerInstall = /corner/.test(cornerInstallLower);
+      const cornerInstallPrice = isCornerInstall ? 800 : null;
+
       return {
         match: true as const,
         firstName: data.firstName,
