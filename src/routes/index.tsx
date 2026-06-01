@@ -136,8 +136,25 @@ function QuotePage() {
     }
   };
 
-  const quoteUrl = lookup && lookup.match
-    ? buildQuoteUrl(lookup)
+  // Derive pricing guidance from the matched catalog entry (if any).
+  const matched = lookup?.match ? lookup : null;
+  const unitPriceNum = matched?.catalog ? parseRand(matched.catalog.unitPrice) : null;
+  const totalPriceNum =
+    unitPriceNum !== null && matched ? unitPriceNum * matched.quantity : null;
+  const unitPriceLabel = matched?.catalog?.unitPrice ?? null;
+  const totalPriceLabel = totalPriceNum !== null ? formatRand(totalPriceNum) : null;
+
+  const quoteUrl = matched
+    ? buildQuoteUrl({
+        firstName: matched.firstName,
+        lastName: matched.lastName,
+        email: matched.email,
+        phone: matched.phone,
+        product: matched.catalog?.name ?? matched.productRequested,
+        quantity: matched.quantity,
+        unitPrice: unitPriceLabel ?? undefined,
+        totalPrice: totalPriceLabel ?? undefined,
+      })
     : buildQuoteUrl({ firstName: firstName.trim(), lastName: lastName.trim() });
 
   return (
