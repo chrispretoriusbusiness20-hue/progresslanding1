@@ -443,7 +443,15 @@ function QuotePage() {
                           <span className="font-bold">{cornerInstallLabel}</span>
                         </p>
                       )}
-                      {(flueKitLabel || plateLabel || cornerInstallLabel) && (
+                      {transportLabel && (
+                        <p className="mt-1 text-foreground">
+                          + Transport
+                          {lookup.distanceKm !== null && ` (${lookup.distanceKm} km — ${lookup.transportZone})`}
+                          , incl. VAT:{" "}
+                          <span className="font-bold">{transportLabel}</span>
+                        </p>
+                      )}
+                      {(flueKitLabel || plateLabel || cornerInstallLabel || transportLabel) && (
                         <p className="mt-1 text-foreground">
                           Total:{" "}
                           <span className="font-bold">{totalPriceLabel}</span>
