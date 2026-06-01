@@ -396,7 +396,10 @@ function QuotePage() {
             </p>
           )}
 
+          <FavoritesQuickPick />
+
           <div className="-mx-2 sm:mx-0">
+
             <iframe
               src={FORM_EMBED_URL}
               title="Progress Group quote request form"
