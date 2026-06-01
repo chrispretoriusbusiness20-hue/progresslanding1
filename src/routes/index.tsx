@@ -168,6 +168,8 @@ function QuotePage() {
         quantity: matched.quantity,
         unitPrice: unitPriceLabel ?? undefined,
         totalPrice: totalPriceLabel ?? undefined,
+        flueKit: flueKitLabel ?? undefined,
+        storyType: matched.storyType ?? undefined,
       })
     : buildQuoteUrl({ firstName: firstName.trim(), lastName: lastName.trim() });
 
