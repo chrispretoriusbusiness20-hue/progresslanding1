@@ -253,6 +253,85 @@ function CatalogPage() {
         </div>
       </nav>
 
+      {/* Favorites + recommended */}
+      {(favoriteProducts.length > 0 || recommended.length > 0) && (
+        <section className="border-b-2 border-foreground bg-accent/20 px-6 py-12">
+          <div className="mx-auto max-w-6xl space-y-12">
+            {favoriteProducts.length > 0 && (
+              <div>
+                <div className="mb-6 flex flex-wrap items-end justify-between gap-4 border-b-2 border-foreground pb-3">
+                  <div className="flex items-center gap-3">
+                    <Heart className="h-5 w-5 fill-primary text-primary" />
+                    <h2 className="font-display text-2xl uppercase tracking-tight sm:text-3xl">
+                      Your Favorites
+                    </h2>
+                    <span className="text-xs font-bold uppercase tracking-widest text-primary">
+                      ({favoriteProducts.length})
+                    </span>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    <Link
+                      to="/"
+                      hash="form"
+                      onClick={sendFavoritesToQuote}
+                      className="inline-flex items-center gap-2 border-2 border-foreground bg-primary px-4 py-2 text-xs font-bold uppercase tracking-wider text-primary-foreground shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
+                    >
+                      <Check className="h-3.5 w-3.5" /> Send all to quote
+                    </Link>
+                    <button
+                      onClick={clearFavorites}
+                      className="inline-flex items-center gap-1.5 border-2 border-foreground/40 px-3 py-2 text-xs font-bold uppercase tracking-wider text-foreground/70 transition hover:border-foreground hover:text-foreground"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" /> Clear
+                    </button>
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                  {favoriteProducts.map((p) => (
+                    <ProductCard
+                      key={p.id}
+                      p={p}
+                      isCopied={copiedId === p.id}
+                      isFavorite={isFavorite(p.id)}
+                      onSelect={handleSelect}
+                      onToggleFavorite={toggleFavorite}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {recommended.length > 0 && (
+              <div>
+                <div className="mb-6 flex flex-wrap items-end justify-between gap-4 border-b-2 border-foreground pb-3">
+                  <div className="flex items-center gap-3">
+                    <Sparkles className="h-5 w-5 text-primary" />
+                    <h2 className="font-display text-2xl uppercase tracking-tight sm:text-3xl">
+                      Recommended For You
+                    </h2>
+                  </div>
+                  <p className="text-xs font-bold uppercase tracking-widest text-primary">
+                    Based on your favorites
+                  </p>
+                </div>
+                <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                  {recommended.map((p) => (
+                    <ProductCard
+                      key={p.id}
+                      p={p}
+                      isCopied={copiedId === p.id}
+                      isFavorite={isFavorite(p.id)}
+                      onSelect={handleSelect}
+                      onToggleFavorite={toggleFavorite}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </section>
+      )}
+
       {/* Grouped grid */}
       <section className="px-6 pb-24 pt-12">
         <div className="mx-auto max-w-6xl space-y-16">
@@ -285,7 +364,9 @@ function CatalogPage() {
                           key={p.id}
                           p={p}
                           isCopied={copiedId === p.id}
+                          isFavorite={isFavorite(p.id)}
                           onSelect={handleSelect}
+                          onToggleFavorite={toggleFavorite}
                         />
                       ))}
                     </div>
@@ -304,6 +385,7 @@ function CatalogPage() {
           )}
         </div>
       </section>
+
 
       {/* Footer */}
       <footer className="border-t-2 border-foreground bg-background">
