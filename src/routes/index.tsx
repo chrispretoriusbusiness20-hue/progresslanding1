@@ -54,6 +54,10 @@ type LookupResult =
       plate: { type: "glass"; price: number } | null;
       cornerInstallPrice: number | null;
       cornerInstallText: string;
+      destinationText: string;
+      distanceKm: number | null;
+      transportZone: string | null;
+      transportPrice: number | null;
       submittedAt: string;
     }
   | { match: false };
@@ -87,6 +91,8 @@ function buildQuoteUrl(params: {
   flooring?: string;
   cornerInstall?: string;
   cornerInstallPrice?: string;
+  transport?: string;
+  distanceKm?: string;
 }) {
   const url = new URL(QUOTE_APP_URL);
   const set = (keys: string[], value?: string | number) => {
@@ -108,6 +114,8 @@ function buildQuoteUrl(params: {
   set(["flooring"], params.flooring);
   set(["cornerInstall", "corner_install"], params.cornerInstall);
   set(["cornerInstallPrice", "corner_install_price"], params.cornerInstallPrice);
+  set(["transport", "transport_cost", "delivery"], params.transport);
+  set(["distance", "distanceKm", "distance_km"], params.distanceKm);
   return url.toString();
 }
 
@@ -163,15 +171,17 @@ function QuotePage() {
   const flueKitPrice = matched?.flueKitPrice ?? null;
   const platePrice = matched?.plate?.price ?? null;
   const cornerInstallPrice = matched?.cornerInstallPrice ?? null;
+  const transportPrice = matched?.transportPrice ?? null;
   const totalPriceNum =
-    productSubtotal !== null || flueKitPrice !== null || platePrice !== null || cornerInstallPrice !== null
-      ? (productSubtotal ?? 0) + (flueKitPrice ?? 0) + (platePrice ?? 0) + (cornerInstallPrice ?? 0)
+    productSubtotal !== null || flueKitPrice !== null || platePrice !== null || cornerInstallPrice !== null || transportPrice !== null
+      ? (productSubtotal ?? 0) + (flueKitPrice ?? 0) + (platePrice ?? 0) + (cornerInstallPrice ?? 0) + (transportPrice ?? 0)
       : null;
   const unitPriceLabel = unitPriceNum !== null ? formatRand(unitPriceNum) : null;
   const subtotalLabel = productSubtotal !== null ? formatRand(productSubtotal) : null;
   const flueKitLabel = flueKitPrice !== null ? formatRand(flueKitPrice) : null;
   const plateLabel = platePrice !== null ? formatRand(platePrice) : null;
   const cornerInstallLabel = cornerInstallPrice !== null ? formatRand(cornerInstallPrice) : null;
+  const transportLabel = transportPrice !== null ? formatRand(transportPrice) : null;
   const totalPriceLabel = totalPriceNum !== null ? formatRand(totalPriceNum) : null;
 
   const quoteUrl = matched
@@ -191,6 +201,8 @@ function QuotePage() {
         flooring: matched.flooringText || undefined,
         cornerInstall: cornerInstallLabel ?? undefined,
         cornerInstallPrice: cornerInstallLabel ?? undefined,
+        transport: transportLabel ?? undefined,
+        distanceKm: matched.distanceKm !== null ? `${matched.distanceKm} km` : undefined,
       })
     : buildQuoteUrl({ firstName: firstName.trim(), lastName: lastName.trim() });
 
@@ -431,7 +443,15 @@ function QuotePage() {
                           <span className="font-bold">{cornerInstallLabel}</span>
                         </p>
                       )}
-                      {(flueKitLabel || plateLabel || cornerInstallLabel) && (
+                      {transportLabel && (
+                        <p className="mt-1 text-foreground">
+                          + Transport
+                          {lookup.distanceKm !== null && ` (${lookup.distanceKm} km — ${lookup.transportZone})`}
+                          , incl. VAT:{" "}
+                          <span className="font-bold">{transportLabel}</span>
+                        </p>
+                      )}
+                      {(flueKitLabel || plateLabel || cornerInstallLabel || transportLabel) && (
                         <p className="mt-1 text-foreground">
                           Total:{" "}
                           <span className="font-bold">{totalPriceLabel}</span>

@@ -5,6 +5,52 @@ import productsData from "@/data/products.json";
 const SPREADSHEET_ID = "1LXuqaffpiqcL41fwqULVAanot7GpABpKGLX3r7cF8Hs";
 const SHEET_NAME = "Form responses 4";
 const GATEWAY = "https://connector-gateway.lovable.dev/google_sheets/v4";
+const MAPS_GATEWAY = "https://connector-gateway.lovable.dev/google_maps";
+const ORIGIN_ADDRESS = "189 Durban Road, Bellville, Cape Town, South Africa";
+
+// Transport zones (km thresholds → price ZAR incl VAT).
+function transportPriceForKm(km: number): { zone: string; price: number } {
+  if (km <= 25) return { zone: "0–25 km", price: 0 };
+  if (km <= 50) return { zone: "25–50 km", price: 450 };
+  if (km <= 100) return { zone: "50–100 km", price: 900 };
+  if (km <= 200) return { zone: "100–200 km", price: 1500 };
+  return { zone: "200 km+", price: 1800 };
+}
+
+async function computeDistanceKm(destination: string): Promise<number | null> {
+  const lovableKey = process.env.LOVABLE_API_KEY;
+  const mapsKey = process.env.GOOGLE_MAPS_API_KEY;
+  if (!lovableKey || !mapsKey) return null;
+  const trimmed = destination.trim();
+  if (!trimmed) return null;
+  // If user typed a bare number, treat it as km directly.
+  if (/^[\d.,\s]+(km|kms|kilometers?)?$/i.test(trimmed)) {
+    const n = Number.parseFloat(trimmed.replace(/[^0-9.,]/g, "").replace(",", "."));
+    if (Number.isFinite(n) && n > 0 && n < 5000) return n;
+  }
+  try {
+    const res = await fetch(`${MAPS_GATEWAY}/routes/directions/v2:computeRoutes`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${lovableKey}`,
+        "X-Connection-Api-Key": mapsKey,
+        "Content-Type": "application/json",
+        "X-Goog-FieldMask": "routes.distanceMeters",
+      },
+      body: JSON.stringify({
+        origin: { address: ORIGIN_ADDRESS },
+        destination: { address: trimmed },
+        travelMode: "DRIVE",
+      }),
+    });
+    if (!res.ok) return null;
+    const data = (await res.json()) as { routes?: { distanceMeters?: number }[] };
+    const meters = data.routes?.[0]?.distanceMeters;
+    return typeof meters === "number" ? meters / 1000 : null;
+  } catch {
+    return null;
+  }
+}
 
 type Product = { name: string; price: string; url: string; category: string };
 const PRODUCTS = productsData as Product[];
@@ -82,6 +128,7 @@ export const lookupQuoteSubmission = createServerFn({ method: "POST" })
       story: header.findIndex((h) => /single or double story|story/i.test(h)),
       flooring: header.findIndex((h) => /flooring/i.test(h)),
       cornerInstall: header.findIndex((h) => /corner|installation position|install.*position/i.test(h)),
+      distance: header.findIndex((h) => /distance.*to.*you|distance|address|location|where/i.test(h)),
     };
 
     const target = norm(`${data.firstName} ${data.lastName}`);
@@ -116,6 +163,10 @@ export const lookupQuoteSubmission = createServerFn({ method: "POST" })
       const isCornerInstall = /corner/.test(cornerInstallLower);
       const cornerInstallPrice = isCornerInstall ? 800 : null;
 
+      const destinationText = idx.distance >= 0 ? (row[idx.distance] ?? "").trim() : "";
+      const distanceKm = destinationText ? await computeDistanceKm(destinationText) : null;
+      const transport = distanceKm !== null ? transportPriceForKm(distanceKm) : null;
+
       return {
         match: true as const,
         firstName: data.firstName,
@@ -139,6 +190,10 @@ export const lookupQuoteSubmission = createServerFn({ method: "POST" })
         plate,
         cornerInstallPrice,
         cornerInstallText,
+        destinationText,
+        distanceKm: distanceKm !== null ? Math.round(distanceKm * 10) / 10 : null,
+        transportZone: transport?.zone ?? null,
+        transportPrice: transport?.price ?? null,
         submittedAt: (row[idx.timestamp] ?? "").trim(),
       };
     }
