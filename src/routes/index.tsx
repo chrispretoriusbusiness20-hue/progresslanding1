@@ -244,97 +244,188 @@ function QuotePage() {
 
   return (
     <div className="min-h-screen text-foreground">
+      {/* Promo strip */}
+      <div className="border-b border-foreground/15 bg-foreground text-background">
+        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-2 text-[10px] font-semibold uppercase tracking-[0.32em]">
+          <span className="text-gradient-ember">Winter Special — Atelier Pricing Until 30 June</span>
+          <span className="hidden text-background/60 sm:inline">Lighting · Fires · Aircon</span>
+        </div>
+      </div>
+
       {/* Header */}
-      <header className="sticky top-0 z-50 border-b-2 border-foreground bg-background/85 backdrop-blur-md">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
+      <header className="sticky top-0 z-50 border-b border-foreground/15 bg-background/85 backdrop-blur-md">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
           <a href="https://progressgroup.co.za/" className="flex items-center gap-3 group">
-            <span className="relative flex h-10 w-10 items-center justify-center bg-foreground text-primary shadow-brutal-sm transition-transform group-hover:-translate-y-0.5">
-              <Flame className="h-5 w-5" strokeWidth={2.5} />
+            <span className="relative flex h-10 w-10 items-center justify-center border border-primary/60 bg-foreground text-primary transition-transform group-hover:-translate-y-0.5">
+              <Flame className="h-5 w-5" strokeWidth={2} />
             </span>
             <span className="font-display text-base leading-none tracking-tight">
-              THE PROGRESS<br/><span className="text-gradient-ember">GROUP</span>
+              PROGRESS
+              <span className="ml-1 italic text-gradient-ember">Progress</span>
+              <span className="mt-1 block font-body text-[10px] uppercase tracking-[0.32em] text-muted-foreground">
+                Lighting · Fires · Aircon
+              </span>
             </span>
           </a>
-          <a
-            href="https://progressgroup.co.za/"
-            className="hidden text-xs font-bold uppercase tracking-widest text-foreground/70 hover:text-foreground sm:block"
-          >
-            ← Main site
-          </a>
+          <nav className="hidden items-center gap-8 text-[11px] font-semibold uppercase tracking-[0.32em] text-foreground/70 md:flex">
+            <a href="https://progressgroup.co.za/" className="hover:text-primary">Home</a>
+            <a href="https://progressgroup.co.za/about" className="hover:text-primary">About</a>
+            <a href="https://progressgroup.co.za/contact" className="hover:text-primary">Contact</a>
+            <a
+              href="#form"
+              className="border border-primary/70 px-4 py-2 text-primary transition hover:bg-primary hover:text-primary-foreground"
+            >
+              Enquire
+            </a>
+          </nav>
         </div>
       </header>
 
       {/* Hero */}
-      <section className="relative overflow-hidden border-b-2 border-foreground">
-        <div className="absolute inset-0 bg-dot-grid opacity-[0.06]" aria-hidden />
-        <div className="relative mx-auto grid max-w-6xl gap-8 px-6 py-16 lg:grid-cols-[1.1fr_1fr] lg:items-center lg:gap-12 lg:py-24">
+      <section className="relative overflow-hidden border-b border-foreground/15">
+        <div className="absolute inset-0 bg-dot-grid opacity-[0.05]" aria-hidden />
+        <div className="pointer-events-none absolute -right-32 top-1/3 hidden h-[28rem] w-[28rem] -translate-y-1/2 rounded-full bg-primary/10 blur-3xl lg:block" aria-hidden />
+        <div className="relative mx-auto grid max-w-6xl gap-12 px-6 py-20 lg:grid-cols-[1.05fr_1fr] lg:items-center lg:py-32">
           <div className="relative z-10">
-            <span className="inline-flex items-center gap-1.5 border-2 border-foreground bg-primary px-3 py-1 text-xs font-bold uppercase tracking-widest text-primary-foreground shadow-brutal-sm">
-              <Sparkles className="h-3 w-3" /> Online Quoting
-            </span>
-            <h1 className="mt-6 font-display text-5xl leading-[0.92] sm:text-6xl md:text-7xl">
-              REQUEST <br />
-              YOUR{" "}
-              <span className="relative inline-block">
-                <span className="relative z-10 px-3 text-background">QUOTE</span>
-                <span className="absolute inset-0 -skew-x-6 bg-foreground" aria-hidden />
-              </span>
+            <div className="flex flex-wrap items-center gap-3 text-[10px] font-semibold uppercase tracking-[0.36em] text-muted-foreground">
+              <span className="h-px w-10 bg-primary" />
+              <span>Est. 1992 · South Africa</span>
+            </div>
+            <p className="mt-6 font-display text-lg italic text-primary">
+              Bespoke Fireplace Atelier
+            </p>
+            <p className="mt-1 text-[10px] font-semibold uppercase tracking-[0.42em] text-muted-foreground">
+              N°/ XXIV — The Art of Fire
+            </p>
+            <h1 className="mt-8 font-display text-6xl leading-[0.88] sm:text-7xl md:text-[7.5rem]">
+              Heat,
+              <br />
+              <span className="italic text-gradient-ember">refined.</span>
             </h1>
-            <p className="mt-6 max-w-xl text-base leading-relaxed text-foreground/75 sm:text-lg">
-              Tell us what you need — fireplaces, braais, lighting or aircons —
-              and our team will come back to you with a tailored quote.
+            <p className="mt-8 max-w-xl text-base leading-relaxed text-foreground/75 sm:text-lg">
+              Architect-grade fireplaces, commissioned and installed by an
+              atelier serving South Africa's most considered homes for three
+              decades.
             </p>
 
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Link
-                to="/catalog"
-                className="inline-flex items-center gap-2 border-2 border-foreground bg-primary px-5 py-3 text-sm font-bold uppercase tracking-wider text-primary-foreground shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
-              >
-                Browse full catalog <ArrowRight className="h-4 w-4" />
-              </Link>
+            <div className="mt-10 flex flex-wrap gap-3">
               <a
                 href="#form"
-                className="inline-flex items-center gap-2 border-2 border-foreground bg-background px-5 py-3 text-sm font-bold uppercase tracking-wider text-foreground shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
+                className="inline-flex items-center gap-2 border border-primary bg-primary px-6 py-3.5 text-xs font-semibold uppercase tracking-[0.28em] text-primary-foreground shadow-glow transition hover:-translate-y-0.5"
               >
-                Full form <ArrowRight className="h-4 w-4" />
+                <Sparkles className="h-4 w-4" /> Book a Private Consultation
               </a>
+              <Link
+                to="/catalog"
+                className="inline-flex items-center gap-2 border border-foreground/40 bg-transparent px-6 py-3.5 text-xs font-semibold uppercase tracking-[0.28em] text-foreground transition hover:border-primary hover:text-primary"
+              >
+                View the Magma 001 <ArrowRight className="h-4 w-4" />
+              </Link>
             </div>
 
-            <div className="mt-10 grid gap-6 sm:grid-cols-3">
-              <Feature
-                icon={<Clock className="h-5 w-5" />}
-                title="Fast turnaround"
-                body="Most quotes returned within 1 business day."
-              />
-              <Feature
-                icon={<ShieldCheck className="h-5 w-5" />}
-                title="Trusted experts"
-                body="Years of experience across heating & lighting."
-              />
-              <Feature
-                icon={<CheckCircle2 className="h-5 w-5" />}
-                title="No obligation"
-                body="Free quote with no pressure to buy."
-              />
-            </div>
+            <dl className="mt-14 grid max-w-xl grid-cols-2 gap-x-8 gap-y-6 border-t border-foreground/15 pt-8 sm:grid-cols-4">
+              <Stat value="32" label="Years" />
+              <Stat value="600+" label="Installations" />
+              <Stat value="4.9" label="Atelier rating" />
+              <Stat value="100%" label="Bespoke" />
+            </dl>
           </div>
 
           <div className="relative hidden lg:block">
-            <div className="relative overflow-hidden border-2 border-foreground shadow-brutal">
+            <div className="absolute -inset-6 -z-10 border border-primary/30" aria-hidden />
+            <div className="relative overflow-hidden border border-foreground/20">
               <img
                 src={magmaImg}
-                alt="Molten magma flowing through volcanic rock"
-                className="aspect-[4/3] w-full object-cover"
+                alt="Bespoke luxury fireplace in a designer penthouse"
+                className="aspect-[4/5] w-full object-cover"
                 width={960}
-                height={720}
+                height={1200}
                 loading="eager"
               />
-              <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background/40 via-transparent to-transparent" />
-            </div>
-            <div className="absolute -bottom-3 -left-3 border-2 border-foreground bg-primary px-3 py-1 text-xs font-bold uppercase tracking-widest text-primary-foreground shadow-brutal-sm">
-              Heating · Lighting · Aircons
+              <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background/70 via-transparent to-transparent" />
+              <div className="absolute bottom-6 left-6 right-6 border-t border-primary/50 pt-4 text-background">
+                <p className="font-display text-[10px] uppercase tracking-[0.36em] text-primary">N°/ I</p>
+                <p className="mt-1 font-display text-lg italic">The House</p>
+              </div>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* The House — pillars */}
+      <section className="border-b border-foreground/15">
+        <div className="mx-auto max-w-6xl px-6 py-20 sm:py-28">
+          <div className="mb-14 max-w-3xl">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.42em] text-muted-foreground">
+              N°/ I — The House
+            </p>
+            <h2 className="mt-4 font-display text-4xl leading-tight sm:text-5xl">
+              A maison built on a singular conviction:
+              <span className="italic text-gradient-ember"> warmth should be designed.</span>
+            </h2>
+          </div>
+          <div className="grid gap-px overflow-hidden border border-foreground/15 bg-foreground/15 sm:grid-cols-2 lg:grid-cols-4">
+            <Pillar numeral="i" title="Atelier Provenance" body="Sourced from Europe's most discreet manufacturers. Pieces, not products." />
+            <Pillar numeral="ii" title="Master Installation" body="Engineer-led teams. Surveyed, drafted, and signed off by hand." />
+            <Pillar numeral="iii" title="Lifetime Stewardship" body="A relationship — not a transaction. Annual care, on call, for life." />
+            <Pillar numeral="iv" title="Quiet Luxury" body="Designed to disappear into your architecture. Felt before it is seen." />
+          </div>
+        </div>
+      </section>
+
+      {/* The Flagship — Magma 001 */}
+      <section className="relative border-b border-foreground/15">
+        <div className="mx-auto grid max-w-6xl gap-12 px-6 py-20 lg:grid-cols-[1fr_1.1fr] lg:items-center lg:py-28">
+          <div className="relative order-2 lg:order-1">
+            <div className="absolute -inset-5 -z-10 border border-primary/30" aria-hidden />
+            <div className="overflow-hidden border border-foreground/20">
+              <img
+                src={magmaImg}
+                alt="Magma 001 Freestanding Fireplace — Featured 10kW"
+                className="aspect-[4/5] w-full object-cover"
+                loading="lazy"
+              />
+            </div>
+            <div className="absolute left-4 top-4 border border-primary bg-background/90 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.32em] text-primary">
+              Featured · 10kW
+            </div>
+          </div>
+          <div className="order-1 lg:order-2">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.42em] text-muted-foreground">
+              N°/ II — The Flagship
+            </p>
+            <h2 className="mt-4 font-display text-5xl leading-[0.95] sm:text-6xl">
+              Magma 001
+              <br />
+              <span className="italic text-gradient-ember">Freestanding 10kW</span>
+            </h2>
+            <p className="mt-6 max-w-lg text-base leading-relaxed text-foreground/75">
+              Double combustion. Hot air outlet frontally from the slots over
+              the glass. Designed for medium-sized rooms where presence matters
+              as much as performance.
+            </p>
+            <dl className="mt-10 grid max-w-md grid-cols-2 gap-x-8 gap-y-6 border-t border-foreground/15 pt-8">
+              <Stat value="10kW" label="Output" />
+              <Stat value="360m³" label="Heating capacity" />
+              <Stat value="100kg" label="Weight" />
+              <Stat value="R11 514" label="From" />
+            </dl>
+            <Link
+              to="/catalog"
+              className="mt-10 inline-flex items-center gap-2 border border-primary bg-primary px-6 py-3.5 text-xs font-semibold uppercase tracking-[0.28em] text-primary-foreground shadow-glow transition hover:-translate-y-0.5"
+            >
+              View Magma 001 <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Atelier guarantees (replacement for old hero feature row) */}
+      <section className="border-b border-foreground/15 bg-card/40">
+        <div className="mx-auto grid max-w-6xl gap-10 px-6 py-12 sm:grid-cols-3">
+          <Feature icon={<Clock className="h-5 w-5" />} title="One business day" body="Quotes returned within 24 hours, by hand." />
+          <Feature icon={<ShieldCheck className="h-5 w-5" />} title="Three decades" body="Engineer-led installations across South Africa since 1992." />
+          <Feature icon={<CheckCircle2 className="h-5 w-5" />} title="No obligation" body="Private consultation. No pressure, no scripts." />
         </div>
       </section>
 
@@ -572,15 +663,48 @@ function QuotePage() {
       )}
 
       {/* Footer */}
-      <footer className="border-t border-border bg-background">
-        <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-4 px-6 py-8 text-sm text-muted-foreground sm:flex-row sm:items-center">
-          <span>© {new Date().getFullYear()} The Progress Group. All rights reserved.</span>
-          <a
-            href="https://progressgroup.co.za/"
-            className="font-semibold uppercase tracking-wider text-foreground hover:text-foreground/70"
-          >
-            progressgroup.co.za
-          </a>
+      <footer className="border-t border-foreground/15 bg-background">
+        <div className="mx-auto grid max-w-6xl gap-12 px-6 py-16 md:grid-cols-[1.4fr_1fr_1fr]">
+          <div>
+            <div className="flex items-center gap-3">
+              <span className="flex h-10 w-10 items-center justify-center border border-primary/60 bg-foreground text-primary">
+                <Flame className="h-5 w-5" />
+              </span>
+              <span className="font-display text-base leading-none">
+                PROGRESS
+                <span className="ml-1 italic text-gradient-ember">Progress</span>
+                <span className="mt-1 block font-body text-[10px] uppercase tracking-[0.32em] text-muted-foreground">
+                  Lighting · Fires · Aircon
+                </span>
+              </span>
+            </div>
+            <p className="mt-6 max-w-sm text-sm leading-relaxed text-muted-foreground">
+              An atelier composing fireplaces for South Africa's most considered
+              homes since 1992.
+            </p>
+          </div>
+          <div>
+            <p className="font-display text-[10px] uppercase tracking-[0.36em] text-primary">Contact</p>
+            <ul className="mt-4 space-y-2 text-sm text-foreground/80">
+              <li>WhatsApp · <a href="tel:+27689560320" className="hover:text-primary">068 956 0320</a></li>
+              <li><a href="mailto:Info@progressgroup.co.za" className="hover:text-primary">Info@progressgroup.co.za</a></li>
+              <li>Bellville · Cape Town · South Africa</li>
+            </ul>
+          </div>
+          <div>
+            <p className="font-display text-[10px] uppercase tracking-[0.36em] text-primary">Atelier</p>
+            <ul className="mt-4 space-y-2 text-sm text-foreground/80">
+              <li><a href="https://progressgroup.co.za/" className="hover:text-primary">progressgroup.co.za</a></li>
+              <li><Link to="/catalog" className="hover:text-primary">The Catalogue</Link></li>
+              <li><a href="#form" className="hover:text-primary">Private Consultation</a></li>
+            </ul>
+          </div>
+        </div>
+        <div className="border-t border-foreground/15">
+          <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-2 px-6 py-6 text-xs uppercase tracking-[0.28em] text-muted-foreground sm:flex-row sm:items-center">
+            <span>© {new Date().getFullYear()} The Progress Group · All rights reserved</span>
+            <span className="italic">Crafted in South Africa</span>
+          </div>
         </div>
       </footer>
     </div>
@@ -597,10 +721,10 @@ function Feature({
   body: string;
 }) {
   return (
-    <div className="border-l-2 border-primary pl-4">
+    <div className="border-l border-primary pl-4">
       <div className="flex items-center gap-2 text-foreground">
         {icon}
-        <span className="font-display text-sm uppercase tracking-wider">
+        <span className="font-display text-sm uppercase tracking-[0.24em]">
           {title}
         </span>
       </div>
@@ -608,4 +732,37 @@ function Feature({
     </div>
   );
 }
+
+function Stat({ value, label }: { value: string; label: string }) {
+  return (
+    <div>
+      <dt className="font-display text-3xl leading-none sm:text-4xl">{value}</dt>
+      <dd className="mt-2 text-[10px] font-semibold uppercase tracking-[0.32em] text-muted-foreground">
+        {label}
+      </dd>
+    </div>
+  );
+}
+
+function Pillar({
+  numeral,
+  title,
+  body,
+}: {
+  numeral: string;
+  title: string;
+  body: string;
+}) {
+  return (
+    <div className="group relative bg-background p-8 transition hover:bg-card">
+      <p className="font-display text-xs uppercase tracking-[0.4em] text-primary">
+        N°/ {numeral}
+      </p>
+      <h3 className="mt-4 font-display text-xl leading-tight">{title}</h3>
+      <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{body}</p>
+      <span className="absolute bottom-0 left-0 h-px w-0 bg-primary transition-all duration-500 group-hover:w-full" />
+    </div>
+  );
+}
+
 
