@@ -102,6 +102,14 @@ export const lookupQuoteSubmission = createServerFn({ method: "POST" })
       const flueKitPrice =
         storyType === "double" ? 9500 : storyType === "single" ? 6785 : null;
 
+      const flooringText = idx.flooring >= 0 ? (row[idx.flooring] ?? "").trim() : "";
+      const flooringLower = flooringText.toLowerCase();
+      const needsPlate = /laminat|carpet/.test(flooringLower);
+      // Default to glass plate (most common). Steel R1450 / Glass R2450 / Granite R2850 — all incl VAT.
+      const plate: { type: "glass"; price: number } | null = needsPlate
+        ? { type: "glass", price: 2450 }
+        : null;
+
       return {
         match: true as const,
         firstName: data.firstName,
@@ -121,6 +129,8 @@ export const lookupQuoteSubmission = createServerFn({ method: "POST" })
         storyType,
         storyText,
         flueKitPrice,
+        flooringText,
+        plate,
         submittedAt: (row[idx.timestamp] ?? "").trim(),
       };
     }
