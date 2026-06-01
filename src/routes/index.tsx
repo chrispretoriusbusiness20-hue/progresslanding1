@@ -296,23 +296,51 @@ function QuotePage() {
                 </p>
               )}
               {!loading && lookup?.match && (
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                  <div className="text-sm">
-                    <p className="font-semibold">
-                      ✓ Matched — synced email{lookup.phone ? " & phone" : ""} from your submission.
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {lookup.email} {lookup.phone && `· ${lookup.phone}`}
-                    </p>
+                <div className="space-y-3">
+                  <div className="flex flex-wrap items-center justify-between gap-3">
+                    <div className="text-sm">
+                      <p className="font-semibold">
+                        ✓ Matched — synced email{lookup.phone ? " & phone" : ""}
+                        {lookup.catalog ? " & price guidance" : ""} from your submission.
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {lookup.email} {lookup.phone && `· ${lookup.phone}`}
+                      </p>
+                    </div>
+                    <a
+                      href={quoteUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-1 text-sm font-bold uppercase tracking-wider underline decoration-primary decoration-4 underline-offset-4"
+                    >
+                      Open quote <ArrowRight className="h-4 w-4" />
+                    </a>
                   </div>
-                  <a
-                    href={quoteUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex items-center gap-1 text-sm font-bold uppercase tracking-wider underline decoration-primary decoration-4 underline-offset-4"
-                  >
-                    Open quote <ArrowRight className="h-4 w-4" />
-                  </a>
+                  {lookup.catalog ? (
+                    <div className="border-t border-primary/40 pt-3 text-xs">
+                      <p className="font-display uppercase tracking-wider text-foreground">
+                        Price guidance (from progressgroup.co.za)
+                      </p>
+                      <p className="mt-1 text-foreground">
+                        <a href={lookup.catalog.url} target="_blank" rel="noreferrer" className="underline">
+                          {lookup.catalog.name}
+                        </a>{" "}
+                        — {unitPriceLabel} × {lookup.quantity} ={" "}
+                        <span className="font-bold">{totalPriceLabel}</span>
+                      </p>
+                      {lookup.productRequested &&
+                        lookup.productRequested.toLowerCase() !==
+                          lookup.catalog.name.toLowerCase() && (
+                          <p className="mt-1 text-muted-foreground">
+                            Requested: "{lookup.productRequested}" — matched to closest catalog item.
+                          </p>
+                        )}
+                    </div>
+                  ) : lookup.productRequested ? (
+                    <p className="border-t border-primary/40 pt-3 text-xs text-muted-foreground">
+                      No catalog price match for "{lookup.productRequested}" — quote manually.
+                    </p>
+                  ) : null}
                 </div>
               )}
               {!loading && error && (
