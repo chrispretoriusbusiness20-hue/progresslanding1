@@ -383,7 +383,13 @@ function QuotePage() {
                           </span>
                         </p>
                       )}
-                      {(flueKitLabel || plateLabel) && (
+                      {cornerInstallLabel && (
+                        <p className="mt-1 text-foreground">
+                          + Corner installation, incl. VAT:{" "}
+                          <span className="font-bold">{cornerInstallLabel}</span>
+                        </p>
+                      )}
+                      {(flueKitLabel || plateLabel || cornerInstallLabel) && (
                         <p className="mt-1 text-foreground">
                           Total:{" "}
                           <span className="font-bold">{totalPriceLabel}</span>
