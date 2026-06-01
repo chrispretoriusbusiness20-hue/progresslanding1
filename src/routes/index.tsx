@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { Flame, CheckCircle2, Clock, ShieldCheck, ArrowRight, Loader2, Sparkles } from "lucide-react";
 import { lookupQuoteSubmission } from "@/lib/quote-lookup.functions";
-import magmaImg from "@/assets/magma.jpg";
+
 import { FavoritesQuickPick } from "@/components/favorites-quick-pick";
 
 
@@ -333,19 +333,26 @@ function QuotePage() {
 
           <div className="relative hidden lg:block">
             <div className="absolute -inset-6 -z-10 border border-primary/30" aria-hidden />
-            <div className="relative overflow-hidden border border-foreground/20">
-              <img
-                src={magmaImg}
-                alt="Bespoke luxury fireplace in a designer penthouse"
-                className="aspect-[4/5] w-full object-cover"
-                width={960}
-                height={1200}
-                loading="eager"
-              />
-              <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background/70 via-transparent to-transparent" />
-              <div className="absolute bottom-6 left-6 right-6 border-t border-primary/50 pt-4 text-background">
-                <p className="font-display text-[10px] uppercase tracking-[0.36em] text-primary">N°/ I</p>
-                <p className="mt-1 font-display text-lg italic">The House</p>
+            <div className="relative flex aspect-[4/5] w-full flex-col justify-between overflow-hidden border border-foreground/20 bg-gradient-to-br from-card via-background to-card p-10">
+              <div className="pointer-events-none absolute inset-0 bg-dot-grid opacity-[0.08]" aria-hidden />
+              <div className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-primary/20 blur-3xl" aria-hidden />
+              <div className="pointer-events-none absolute -bottom-32 -left-20 h-80 w-80 rounded-full bg-ember/20 blur-3xl" aria-hidden />
+              <div className="relative">
+                <p className="font-display text-[10px] uppercase tracking-[0.42em] text-primary">N°/ I</p>
+                <p className="mt-2 font-display text-2xl italic text-foreground">The House</p>
+              </div>
+              <div className="relative">
+                <Flame className="h-20 w-20 text-primary/80" strokeWidth={1.2} />
+                <p className="mt-8 font-display text-5xl italic leading-[0.95] text-gradient-ember">
+                  Felt
+                  <br />
+                  before
+                  <br />
+                  it is seen.
+                </p>
+              </div>
+              <div className="relative border-t border-primary/40 pt-4 text-[10px] font-semibold uppercase tracking-[0.36em] text-muted-foreground">
+                The Progress Atelier · Since 1992
               </div>
             </div>
           </div>
@@ -378,13 +385,17 @@ function QuotePage() {
         <div className="mx-auto grid max-w-6xl gap-12 px-6 py-20 lg:grid-cols-[1fr_1.1fr] lg:items-center lg:py-28">
           <div className="relative order-2 lg:order-1">
             <div className="absolute -inset-5 -z-10 border border-primary/30" aria-hidden />
-            <div className="overflow-hidden border border-foreground/20">
-              <img
-                src={magmaImg}
-                alt="Magma 001 Freestanding Fireplace — Featured 10kW"
-                className="aspect-[4/5] w-full object-cover"
-                loading="lazy"
-              />
+            <div className="relative flex aspect-[4/5] w-full flex-col justify-between overflow-hidden border border-foreground/20 bg-gradient-to-tr from-card via-background to-card p-10">
+              <div className="pointer-events-none absolute inset-0 bg-dot-grid opacity-[0.08]" aria-hidden />
+              <div className="pointer-events-none absolute -bottom-24 -right-24 h-72 w-72 rounded-full bg-primary/25 blur-3xl" aria-hidden />
+              <div className="relative">
+                <p className="font-display text-[10px] uppercase tracking-[0.42em] text-primary">N°/ II</p>
+                <p className="mt-2 font-display text-2xl italic text-foreground">The Flagship</p>
+              </div>
+              <Flame className="relative mx-auto h-28 w-28 text-primary animate-float-slow" strokeWidth={1.1} />
+              <div className="relative border-t border-primary/40 pt-4 text-center font-display text-3xl italic text-gradient-ember">
+                Magma 001
+              </div>
             </div>
             <div className="absolute left-4 top-4 border border-primary bg-background/90 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.32em] text-primary">
               Featured · 10kW
