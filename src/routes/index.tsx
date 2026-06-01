@@ -1,6 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useRef, useState } from "react";
-import { Flame, CheckCircle2, Clock, ShieldCheck, ArrowRight } from "lucide-react";
+import { useServerFn } from "@tanstack/react-start";
+import { Flame, CheckCircle2, Clock, ShieldCheck, ArrowRight, Loader2 } from "lucide-react";
+import { lookupQuoteSubmission } from "@/lib/quote-lookup.functions";
 
 const FORM_URL = "https://forms.gle/EkpVyEYTTTi22DK17";
 const FORM_EMBED_URL = `${FORM_URL}?embedded=true`;
@@ -27,40 +29,78 @@ export const Route = createFileRoute("/")({
   component: QuotePage,
 });
 
-function buildQuoteUrl(firstName: string, lastName: string) {
+function buildQuoteUrl(params: {
+  firstName: string;
+  lastName: string;
+  email?: string;
+  phone?: string;
+}) {
   const url = new URL(QUOTE_APP_URL);
-  if (firstName) {
-    url.searchParams.set("firstName", firstName);
-    url.searchParams.set("first_name", firstName);
-    url.searchParams.set("name", firstName);
-  }
-  if (lastName) {
-    url.searchParams.set("lastName", lastName);
-    url.searchParams.set("last_name", lastName);
-    url.searchParams.set("surname", lastName);
-  }
+  const set = (keys: string[], value?: string) => {
+    if (!value) return;
+    for (const k of keys) url.searchParams.set(k, value);
+  };
+  set(["firstName", "first_name", "name"], params.firstName);
+  set(["lastName", "last_name", "surname"], params.lastName);
+  set(["email"], params.email);
+  set(["phone", "tel"], params.phone);
   return url.toString();
 }
+
+type LookupResult =
+  | { match: true; firstName: string; lastName: string; email: string; phone: string; submittedAt: string }
+  | { match: false };
 
 function QuotePage() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [lookup, setLookup] = useState<LookupResult | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const loadCountRef = useRef(0);
 
+  const lookupFn = useServerFn(lookupQuoteSubmission);
   const canContinue = firstName.trim().length > 0 && lastName.trim().length > 0;
 
-  // Google Forms reloads the iframe to the "formResponse" confirmation page
-  // after the user clicks Submit. The first load is the form itself; any
-  // subsequent load means the user has submitted.
-  const handleIframeLoad = () => {
-    loadCountRef.current += 1;
-    if (loadCountRef.current > 1 && canContinue) {
-      setSubmitted(true);
+  const runLookup = async (attempt = 1) => {
+    if (!canContinue) return;
+    setLoading(true);
+    setError(null);
+    try {
+      const result = (await lookupFn({
+        data: { firstName: firstName.trim(), lastName: lastName.trim() },
+      })) as LookupResult;
+      if (!result.match && attempt < 4) {
+        // Google can take a few seconds to push the response to the linked sheet.
+        await new Promise((r) => setTimeout(r, 2500));
+        return runLookup(attempt + 1);
+      }
+      setLookup(result);
+      if (!result.match) {
+        setError(
+          "We couldn't find a matching submission yet. Double-check your name & surname or try again in a moment.",
+        );
+      }
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Lookup failed");
+    } finally {
+      setLoading(false);
     }
   };
 
-  const quoteUrl = buildQuoteUrl(firstName.trim(), lastName.trim());
+  // Google Forms reloads the iframe to the confirmation page after submit.
+  const handleIframeLoad = () => {
+    loadCountRef.current += 1;
+    if (loadCountRef.current > 1 && canContinue && !submitted) {
+      setSubmitted(true);
+      runLookup();
+    }
+  };
+
+  const quoteUrl = lookup && lookup.match
+    ? buildQuoteUrl(lookup)
+    : buildQuoteUrl({ firstName: firstName.trim(), lastName: lastName.trim() });
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -99,8 +139,7 @@ function QuotePage() {
             </h1>
             <p className="mt-6 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg">
               Tell us what you need — fireplaces, braais, lighting or aircons —
-              and our team will come back to you with a tailored quote. Quality,
-              innovation and superior design, every time.
+              and our team will come back to you with a tailored quote.
             </p>
 
             <div className="mt-10 grid gap-6 sm:grid-cols-3">
@@ -131,8 +170,8 @@ function QuotePage() {
             <div>
               <h2 className="text-3xl sm:text-4xl">FILL IN THE FORM</h2>
               <p className="mt-2 text-sm text-muted-foreground">
-                Enter your name, complete the form, and we'll open your
-                personalised quote instantly.
+                Enter your name and surname EXACTLY as you'll type them in the
+                form. We use them to match your submission and prefill your quote.
               </p>
             </div>
             <a
@@ -145,7 +184,6 @@ function QuotePage() {
             </a>
           </div>
 
-          {/* Name capture — used to prefill the fireplacequotes app */}
           <div className="mb-6 grid gap-4 sm:grid-cols-2">
             <label className="block">
               <span className="mb-2 block font-display text-xs uppercase tracking-wider text-foreground">
@@ -178,7 +216,7 @@ function QuotePage() {
           </div>
           {!canContinue && (
             <p className="mb-4 text-sm text-muted-foreground">
-              Please enter your name and surname so we can prepare your quote.
+              Please enter your name and surname so we can match your form submission.
             </p>
           )}
 
@@ -195,25 +233,51 @@ function QuotePage() {
           </div>
 
           {submitted && (
-            <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-2 border-primary bg-primary/10 px-4 py-3">
-              <p className="text-sm font-semibold">
-                Form submitted — your personalised quote is loading below.
-              </p>
-              <a
-                href={quoteUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center gap-1 text-sm font-bold uppercase tracking-wider underline decoration-primary decoration-4 underline-offset-4"
-              >
-                Open quote <ArrowRight className="h-4 w-4" />
-              </a>
+            <div className="mt-4 border-2 border-primary bg-primary/10 px-4 py-3">
+              {loading && (
+                <p className="flex items-center gap-2 text-sm font-semibold">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Form submitted — matching your details with the responses sheet…
+                </p>
+              )}
+              {!loading && lookup?.match && (
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div className="text-sm">
+                    <p className="font-semibold">
+                      ✓ Matched — synced email{lookup.phone ? " & phone" : ""} from your submission.
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {lookup.email} {lookup.phone && `· ${lookup.phone}`}
+                    </p>
+                  </div>
+                  <a
+                    href={quoteUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-1 text-sm font-bold uppercase tracking-wider underline decoration-primary decoration-4 underline-offset-4"
+                  >
+                    Open quote <ArrowRight className="h-4 w-4" />
+                  </a>
+                </div>
+              )}
+              {!loading && error && (
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <p className="text-sm text-foreground">{error}</p>
+                  <button
+                    onClick={() => runLookup()}
+                    className="border-2 border-foreground bg-background px-3 py-1.5 text-xs font-bold uppercase tracking-wider hover:bg-foreground hover:text-background"
+                  >
+                    Retry match
+                  </button>
+                </div>
+              )}
             </div>
           )}
         </div>
       </section>
 
-      {/* Quote preview (appears after submit) */}
-      {submitted && (
+      {/* Quote preview */}
+      {submitted && lookup?.match && (
         <section id="quote" className="border-t border-border bg-background">
           <div className="mx-auto max-w-6xl px-6 py-16 sm:py-20">
             <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
@@ -225,7 +289,7 @@ function QuotePage() {
                   {firstName.toUpperCase()} {lastName.toUpperCase()} — PREFILLED QUOTE
                 </h2>
                 <p className="mt-2 text-sm text-muted-foreground">
-                  Pulled live from fireplacequotes.co.za and synced with your name.
+                  Live from fireplacequotes.co.za — synced with your name, email and phone.
                 </p>
               </div>
               <a
