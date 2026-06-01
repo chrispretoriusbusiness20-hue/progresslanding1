@@ -54,6 +54,10 @@ type LookupResult =
       plate: { type: "glass"; price: number } | null;
       cornerInstallPrice: number | null;
       cornerInstallText: string;
+      destinationText: string;
+      distanceKm: number | null;
+      transportZone: string | null;
+      transportPrice: number | null;
       submittedAt: string;
     }
   | { match: false };
