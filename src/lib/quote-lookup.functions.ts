@@ -79,6 +79,7 @@ export const lookupQuoteSubmission = createServerFn({ method: "POST" })
       phone: header.findIndex((h) => /phone/i.test(h)),
       product: header.findIndex((h) => /product.*interest|which product/i.test(h)),
       quantity: header.findIndex((h) => /product\s*quantity/i.test(h)),
+      story: header.findIndex((h) => /single or double story|story/i.test(h)),
     };
 
     const target = norm(`${data.firstName} ${data.lastName}`);
