@@ -29,27 +29,65 @@ export const Route = createFileRoute("/")({
   component: QuotePage,
 });
 
+type CatalogMatch = {
+  name: string;
+  unitPrice: string;
+  url: string;
+  category: string;
+};
+
+type LookupResult =
+  | {
+      match: true;
+      firstName: string;
+      lastName: string;
+      email: string;
+      phone: string;
+      productRequested: string;
+      quantity: number;
+      catalog: CatalogMatch | null;
+      submittedAt: string;
+    }
+  | { match: false };
+
+function parseRand(price: string): number | null {
+  // Handles formats like "R11514,00" or "R 11 514.00"
+  const cleaned = price.replace(/[^0-9.,]/g, "").replace(/\s/g, "");
+  // South African convention: comma is decimal separator
+  const normalized = cleaned.replace(/\.(?=\d{3}(\D|$))/g, "").replace(",", ".");
+  const n = Number.parseFloat(normalized);
+  return Number.isFinite(n) ? n : null;
+}
+
+function formatRand(n: number): string {
+  return `R${n.toLocaleString("en-ZA", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+}
+
 function buildQuoteUrl(params: {
   firstName: string;
   lastName: string;
   email?: string;
   phone?: string;
+  product?: string;
+  quantity?: number;
+  unitPrice?: string;
+  totalPrice?: string;
 }) {
   const url = new URL(QUOTE_APP_URL);
-  const set = (keys: string[], value?: string) => {
-    if (!value) return;
-    for (const k of keys) url.searchParams.set(k, value);
+  const set = (keys: string[], value?: string | number) => {
+    if (value === undefined || value === null || value === "") return;
+    for (const k of keys) url.searchParams.set(k, String(value));
   };
   set(["firstName", "first_name", "name"], params.firstName);
   set(["lastName", "last_name", "surname"], params.lastName);
   set(["email"], params.email);
   set(["phone", "tel"], params.phone);
+  set(["product"], params.product);
+  set(["quantity", "qty"], params.quantity);
+  set(["unitPrice", "unit_price"], params.unitPrice);
+  set(["price", "totalPrice", "total_price"], params.totalPrice);
   return url.toString();
 }
-
-type LookupResult =
-  | { match: true; firstName: string; lastName: string; email: string; phone: string; submittedAt: string }
-  | { match: false };
 
 function QuotePage() {
   const [firstName, setFirstName] = useState("");
@@ -98,8 +136,25 @@ function QuotePage() {
     }
   };
 
-  const quoteUrl = lookup && lookup.match
-    ? buildQuoteUrl(lookup)
+  // Derive pricing guidance from the matched catalog entry (if any).
+  const matched = lookup?.match ? lookup : null;
+  const unitPriceNum = matched?.catalog ? parseRand(matched.catalog.unitPrice) : null;
+  const totalPriceNum =
+    unitPriceNum !== null && matched ? unitPriceNum * matched.quantity : null;
+  const unitPriceLabel = matched?.catalog?.unitPrice ?? null;
+  const totalPriceLabel = totalPriceNum !== null ? formatRand(totalPriceNum) : null;
+
+  const quoteUrl = matched
+    ? buildQuoteUrl({
+        firstName: matched.firstName,
+        lastName: matched.lastName,
+        email: matched.email,
+        phone: matched.phone,
+        product: matched.catalog?.name ?? matched.productRequested,
+        quantity: matched.quantity,
+        unitPrice: unitPriceLabel ?? undefined,
+        totalPrice: totalPriceLabel ?? undefined,
+      })
     : buildQuoteUrl({ firstName: firstName.trim(), lastName: lastName.trim() });
 
   return (
@@ -241,23 +296,51 @@ function QuotePage() {
                 </p>
               )}
               {!loading && lookup?.match && (
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                  <div className="text-sm">
-                    <p className="font-semibold">
-                      ✓ Matched — synced email{lookup.phone ? " & phone" : ""} from your submission.
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {lookup.email} {lookup.phone && `· ${lookup.phone}`}
-                    </p>
+                <div className="space-y-3">
+                  <div className="flex flex-wrap items-center justify-between gap-3">
+                    <div className="text-sm">
+                      <p className="font-semibold">
+                        ✓ Matched — synced email{lookup.phone ? " & phone" : ""}
+                        {lookup.catalog ? " & price guidance" : ""} from your submission.
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {lookup.email} {lookup.phone && `· ${lookup.phone}`}
+                      </p>
+                    </div>
+                    <a
+                      href={quoteUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-1 text-sm font-bold uppercase tracking-wider underline decoration-primary decoration-4 underline-offset-4"
+                    >
+                      Open quote <ArrowRight className="h-4 w-4" />
+                    </a>
                   </div>
-                  <a
-                    href={quoteUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex items-center gap-1 text-sm font-bold uppercase tracking-wider underline decoration-primary decoration-4 underline-offset-4"
-                  >
-                    Open quote <ArrowRight className="h-4 w-4" />
-                  </a>
+                  {lookup.catalog ? (
+                    <div className="border-t border-primary/40 pt-3 text-xs">
+                      <p className="font-display uppercase tracking-wider text-foreground">
+                        Price guidance (from progressgroup.co.za)
+                      </p>
+                      <p className="mt-1 text-foreground">
+                        <a href={lookup.catalog.url} target="_blank" rel="noreferrer" className="underline">
+                          {lookup.catalog.name}
+                        </a>{" "}
+                        — {unitPriceLabel} × {lookup.quantity} ={" "}
+                        <span className="font-bold">{totalPriceLabel}</span>
+                      </p>
+                      {lookup.productRequested &&
+                        lookup.productRequested.toLowerCase() !==
+                          lookup.catalog.name.toLowerCase() && (
+                          <p className="mt-1 text-muted-foreground">
+                            Requested: "{lookup.productRequested}" — matched to closest catalog item.
+                          </p>
+                        )}
+                    </div>
+                  ) : lookup.productRequested ? (
+                    <p className="border-t border-primary/40 pt-3 text-xs text-muted-foreground">
+                      No catalog price match for "{lookup.productRequested}" — quote manually.
+                    </p>
+                  ) : null}
                 </div>
               )}
               {!loading && error && (
