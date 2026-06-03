@@ -471,7 +471,7 @@ function ProductCard({
                 <Check className="h-3.5 w-3.5" /> Copied — go to form
               </>
             ) : (
-              <>Add to cart</>
+              <>Get quote</>
             )}
           </Link>
           <a
