@@ -440,7 +440,116 @@ function QuotePage() {
           <Feature icon={<CheckCircle2 className="h-5 w-5" />} title="No obligation" body="Private consultation. No pressure, no scripts." />
         </div>
       </section>
+      {/* About Us */}
+      <section className="border-b border-foreground/15">
+        <div className="mx-auto max-w-6xl px-6 py-20 sm:py-28">
+          <div className="mb-14 max-w-3xl">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.42em] text-muted-foreground">
+              About Us
+            </p>
+            <h2 className="mt-4 font-display text-4xl leading-tight sm:text-5xl">
+              The Progress Group
+              <span className="italic text-gradient-ember"> — a family since 1992.</span>
+            </h2>
+          </div>
 
+          <div className="grid gap-10 lg:grid-cols-2">
+            <div className="space-y-6 text-base leading-relaxed text-foreground/80">
+              <p>
+                We offer a wide range of quality lighting, including chandeliers,
+                pendant lights, LED options, downlights, fan lights, outdoor
+                lighting, fluorescents, wall-mounted lights and both table and
+                floor lamps. Each piece is designed to suit different homes, styles
+                and spaces. So, you can easily brighten up your home the way you
+                like it.
+              </p>
+              <p>
+                Right across South Africa, families enjoy the warmth of our
+                fireplaces during the cold winter months. We use only strong,
+                reliable materials to make sure each fireplace works well, looks
+                great and lasts a long time. We keep things simple and smart with
+                options that are built to be energy efficient and good for the
+                environment. You can pick from a variety of styles, including closed
+                combustion fireplaces, built-in units, double-sided designs,
+                decorative ceramic fireplaces, freestanding models, gas, biofuel,
+                pellet or MCZ fireplaces. So, place your order and become part of{" "}
+                <strong>The Progress Group</strong> family.
+              </p>
+              <p>
+                Our South African summers are perfect for outdoor cooking and
+                gatherings. Treat your friends and family to great food with one
+                of our top-quality braais. We offer built-in, freestanding, gas
+                and portable options that work just as well indoors as they do
+                outside. They are made to last and are easy to use.
+              </p>
+              <p>
+                Our pellet boilers offer an energy-saving way to heat homes and
+                businesses. So, you can enjoy the same level of comfort you would
+                expect from traditional systems, while maintaining Mother Earth and
+                your pocket, too.
+              </p>
+            </div>
+
+            <div className="space-y-6 text-base leading-relaxed text-foreground/80">
+              <p>
+                We also offer a smart range of energy-saving air conditioners.
+                Choose from split, cassette, inverter or window-type units that
+                bring comfort and cool air to any space, whether it is your home or
+                business.
+              </p>
+              <p>
+                From homeowners and designers to builders and business owners,
+                people across South Africa choose us every time for our great
+                products, trusted advice and friendly service. Once you shop with
+                us, you are part of The Progress Group family, who can enjoy a
+                truly South African lifestyle.
+              </p>
+              <p>
+                Based in Cape Town, we have been around since the 1980s. We focus
+                on retail and wholesale sales of fireplaces, braais, lighting and
+                air conditioning. We manufacture our own high-quality fireplaces and
+                braais and offer a wide selection of lighting to suit different
+                needs and styles.
+              </p>
+              <p>
+                We are known for giving helpful advice. Builders, architects and
+                homeowners often rely on us when choosing the right fireplace. If
+                you are planning a building project, you are welcome to reach out.
+                We are always happy to help you plan your fireplace setup with care
+                and confidence.
+              </p>
+              <p>
+                This site has plenty of useful information to help you understand
+                our products and choose what suits you best. If there is anything
+                else you want to know that you cannot find here, feel free to give
+                us a call or send an email.
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-12 border-t border-foreground/15 pt-8">
+            <div className="flex flex-wrap items-center justify-between gap-6">
+              <div>
+                <p className="text-sm font-semibold uppercase tracking-wider text-foreground">
+                  Call us
+                </p>
+                <a
+                  href="tel:0219453636"
+                  className="mt-1 font-display text-2xl text-primary transition hover:text-foreground"
+                >
+                  021 945 3636
+                </a>
+              </div>
+              <a
+                href="#form"
+                className="inline-flex items-center gap-2 border border-primary bg-primary px-6 py-3.5 text-xs font-semibold uppercase tracking-[0.28em] text-primary-foreground shadow-glow transition hover:-translate-y-0.5"
+              >
+                <Sparkles className="h-4 w-4" /> Get a Quote
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* Form */}
       <section id="form" className="bg-background">
