@@ -159,44 +159,65 @@ function buildQuoteUrl(params: {
 function QuotePage() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [product, setProduct] = useState("");
+  const [quantity, setQuantity] = useState(1);
+  const [storyType, setStoryType] = useState<"single" | "double" | "">("");
+  const [flooring, setFlooring] = useState("");
+  const [cornerInstall, setCornerInstall] = useState(false);
+  const [address, setAddress] = useState("");
+  const [message, setMessage] = useState("");
+
   const [submitted, setSubmitted] = useState(false);
   const [lookup, setLookup] = useState<LookupResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const lookupFn = useServerFn(lookupQuoteSubmission);
-  const canContinue = firstName.trim().length > 0 && lastName.trim().length > 0;
+  const submitFn = useServerFn(submitQuoteRequest);
+  const canContinue = useMemo(
+    () =>
+      firstName.trim().length > 0 &&
+      lastName.trim().length > 0 &&
+      /.+@.+\..+/.test(email.trim()) &&
+      phone.trim().length >= 5 &&
+      product.trim().length > 0,
+    [firstName, lastName, email, phone, product],
+  );
 
-  const runLookup = async (attempt = 1) => {
-    if (!canContinue) return;
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!canContinue || loading) return;
     setLoading(true);
     setError(null);
     try {
-      const result = (await lookupFn({
-        data: { firstName: firstName.trim(), lastName: lastName.trim() },
+      const result = (await submitFn({
+        data: {
+          firstName: firstName.trim(),
+          lastName: lastName.trim(),
+          email: email.trim(),
+          phone: phone.trim(),
+          product: product.trim(),
+          quantity,
+          storyType: storyType === "" ? null : storyType,
+          flooring: flooring || undefined,
+          cornerInstall,
+          address: address.trim() || undefined,
+          message: message.trim() || undefined,
+        },
       })) as LookupResult;
-      if (!result.match && attempt < 4) {
-        // Google can take a few seconds to push the response to the linked sheet.
-        await new Promise((r) => setTimeout(r, 2500));
-        return runLookup(attempt + 1);
-      }
       setLookup(result);
-      if (!result.match) {
-        setError(
-          "We couldn't find a matching submission yet. Make sure you completed and submitted the form, then try again in a moment.",
-        );
+      setSubmitted(true);
+      if (typeof window !== "undefined") {
+        setTimeout(() => {
+          document.getElementById("quote")?.scrollIntoView({ behavior: "smooth" });
+        }, 50);
       }
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Lookup failed");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Submission failed");
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleSubmittedClick = () => {
-    if (!canContinue) return;
-    setSubmitted(true);
-    runLookup();
   };
 
 
