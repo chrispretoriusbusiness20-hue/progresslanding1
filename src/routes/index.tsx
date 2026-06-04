@@ -561,9 +561,7 @@ function QuotePage() {
                 </a>
               </div>
               <a
-                href={FORM_URL}
-                target="_blank"
-                rel="noreferrer"
+                href="#form"
                 className="inline-flex items-center gap-2 border border-primary bg-primary px-6 py-3.5 text-xs font-semibold uppercase tracking-[0.28em] text-primary-foreground shadow-glow transition hover:-translate-y-0.5"
               >
                 <Sparkles className="h-4 w-4" /> Get a Quote
