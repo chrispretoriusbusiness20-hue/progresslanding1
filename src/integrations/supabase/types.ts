@@ -111,6 +111,69 @@ export type Database = {
           },
         ]
       }
+      quote_requests: {
+        Row: {
+          address: string | null
+          corner_install: boolean
+          created_at: string
+          distance_km: number | null
+          email: string
+          first_name: string
+          flooring: string | null
+          id: string
+          last_name: string
+          matched_product: string | null
+          message: string | null
+          phone: string
+          product_requested: string | null
+          quantity: number
+          story_type: string | null
+          total_zar: number | null
+          transport_zar: number | null
+          unit_price_zar: number | null
+        }
+        Insert: {
+          address?: string | null
+          corner_install?: boolean
+          created_at?: string
+          distance_km?: number | null
+          email: string
+          first_name: string
+          flooring?: string | null
+          id?: string
+          last_name: string
+          matched_product?: string | null
+          message?: string | null
+          phone: string
+          product_requested?: string | null
+          quantity?: number
+          story_type?: string | null
+          total_zar?: number | null
+          transport_zar?: number | null
+          unit_price_zar?: number | null
+        }
+        Update: {
+          address?: string | null
+          corner_install?: boolean
+          created_at?: string
+          distance_km?: number | null
+          email?: string
+          first_name?: string
+          flooring?: string | null
+          id?: string
+          last_name?: string
+          matched_product?: string | null
+          message?: string | null
+          phone?: string
+          product_requested?: string | null
+          quantity?: number
+          story_type?: string | null
+          total_zar?: number | null
+          transport_zar?: number | null
+          unit_price_zar?: number | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
