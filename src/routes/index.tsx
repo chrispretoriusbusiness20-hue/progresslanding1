@@ -1,17 +1,16 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { Flame, CheckCircle2, Clock, ShieldCheck, ArrowRight, Loader2, Sparkles } from "lucide-react";
-import { lookupQuoteSubmission } from "@/lib/quote-lookup.functions";
+import { submitQuoteRequest } from "@/lib/quote-submit.functions";
+import productsData from "@/data/products.json";
 
-import { FavoritesQuickPick } from "@/components/favorites-quick-pick";
 import { LazyIframe } from "@/components/lazy-iframe";
 import { SiteSurvey } from "@/components/site-survey";
 
 
-const FORM_URL = "https://forms.gle/EkpVyEYTTTi22DK17";
-const FORM_EMBED_URL = `${FORM_URL}?embedded=true`;
 const QUOTE_APP_URL = "https://fireplacequotes.co.za/";
+const PRODUCT_NAMES = (productsData as { name: string }[]).map((p) => p.name);
 
 export const Route = createFileRoute("/")({
   head: () => ({
