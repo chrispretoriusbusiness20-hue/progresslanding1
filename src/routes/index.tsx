@@ -829,6 +829,17 @@ function QuotePage() {
   );
 }
 
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <label className="block">
+      <span className="mb-1 block text-[11px] font-semibold uppercase tracking-[0.24em] text-foreground/70">
+        {label}
+      </span>
+      {children}
+    </label>
+  );
+}
+
 function Feature({
   icon,
   title,
