@@ -573,161 +573,175 @@ function QuotePage() {
 
       {/* Form */}
       <section id="form" className="bg-background">
-        <div className="mx-auto max-w-4xl px-6 py-16 sm:py-20">
-          <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
-            <div>
-              <h2 className="text-3xl sm:text-4xl">FILL IN THE FORM</h2>
-              <p className="mt-2 text-sm text-muted-foreground">
-                Enter your name and surname EXACTLY as you'll type them in the
-                form. We use them to match your submission and prefill your quote.
-              </p>
+        <div className="mx-auto max-w-3xl px-6 py-16 sm:py-20">
+          <div className="mb-8">
+            <h2 className="text-3xl sm:text-4xl">REQUEST A QUOTE</h2>
+            <p className="mt-2 text-sm text-muted-foreground">
+              Fill in your details below. We'll match your product to our catalog and
+              calculate transport so your quote is ready in seconds.
+            </p>
+          </div>
+
+          <form
+            onSubmit={handleSubmit}
+            className="space-y-5 border-2 border-foreground bg-card p-6 shadow-brutal-sm sm:p-8"
+          >
+            <div className="grid gap-4 sm:grid-cols-2">
+              <Field label="First name *">
+                <input
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                  required
+                  className="form-input"
+                  autoComplete="given-name"
+                />
+              </Field>
+              <Field label="Surname *">
+                <input
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                  required
+                  className="form-input"
+                  autoComplete="family-name"
+                />
+              </Field>
+              <Field label="Email *">
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  className="form-input"
+                  autoComplete="email"
+                />
+              </Field>
+              <Field label="Phone *">
+                <input
+                  type="tel"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  required
+                  className="form-input"
+                  autoComplete="tel"
+                />
+              </Field>
             </div>
-            <a
-              href={FORM_URL}
-              target="_blank"
-              rel="noreferrer"
-              className="text-sm font-semibold uppercase tracking-wider text-foreground underline decoration-primary decoration-4 underline-offset-4 hover:text-foreground/80"
-            >
-              Open in new tab ↗
-            </a>
-          </div>
 
+            <div className="grid gap-4 sm:grid-cols-[2fr_1fr]">
+              <Field label="Product of interest *">
+                <input
+                  list="product-options"
+                  value={product}
+                  onChange={(e) => setProduct(e.target.value)}
+                  required
+                  placeholder="e.g. Magma 001"
+                  className="form-input"
+                />
+                <datalist id="product-options">
+                  {PRODUCT_NAMES.map((n) => (
+                    <option key={n} value={n} />
+                  ))}
+                </datalist>
+              </Field>
+              <Field label="Quantity">
+                <input
+                  type="number"
+                  min={1}
+                  max={50}
+                  value={quantity}
+                  onChange={(e) => setQuantity(Math.max(1, Number(e.target.value) || 1))}
+                  className="form-input"
+                />
+              </Field>
+            </div>
 
-          <FavoritesQuickPick />
+            <div className="grid gap-4 sm:grid-cols-2">
+              <Field label="Single or double story?">
+                <select
+                  value={storyType}
+                  onChange={(e) => setStoryType(e.target.value as "single" | "double" | "")}
+                  className="form-input"
+                >
+                  <option value="">Not applicable</option>
+                  <option value="single">Single story</option>
+                  <option value="double">Double story</option>
+                </select>
+              </Field>
+              <Field label="Flooring type">
+                <select
+                  value={flooring}
+                  onChange={(e) => setFlooring(e.target.value)}
+                  className="form-input"
+                >
+                  <option value="">Select…</option>
+                  <option value="Tile">Tile</option>
+                  <option value="Laminate">Laminate</option>
+                  <option value="Carpet">Carpet</option>
+                  <option value="Wood">Wood</option>
+                  <option value="Concrete">Concrete</option>
+                  <option value="Other">Other</option>
+                </select>
+              </Field>
+            </div>
 
-          <div className="-mx-2 sm:mx-0">
-            <LazyIframe
-              src={FORM_EMBED_URL}
-              title="Progress Group quote request form"
-              className="block h-[1400px] w-full bg-transparent"
-            />
-          </div>
+            <Field label="Installation / delivery address">
+              <input
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                placeholder="Street, suburb, city — used to estimate transport"
+                className="form-input"
+                autoComplete="street-address"
+              />
+            </Field>
+
+            <label className="flex items-center gap-2 text-sm text-foreground">
+              <input
+                type="checkbox"
+                checked={cornerInstall}
+                onChange={(e) => setCornerInstall(e.target.checked)}
+                className="h-4 w-4 accent-primary"
+              />
+              Corner installation position (+R800)
+            </label>
+
+            <Field label="Anything else we should know?">
+              <textarea
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                rows={3}
+                className="form-input"
+              />
+            </Field>
+
+            {error && (
+              <p className="border-2 border-destructive bg-destructive/10 px-3 py-2 text-sm text-destructive">
+                {error}
+              </p>
+            )}
+
+            <div className="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <p className="text-xs text-muted-foreground">
+                By submitting you agree to be contacted about your enquiry.
+              </p>
+              <button
+                type="submit"
+                disabled={!canContinue || loading}
+                className="inline-flex items-center gap-2 border-2 border-foreground bg-primary px-6 py-3 text-sm font-bold uppercase tracking-wider text-primary-foreground shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {loading ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <CheckCircle2 className="h-4 w-4" />
+                )}
+                {loading ? "Building your quote…" : "Get my quote"}
+              </button>
+            </div>
+          </form>
 
           <SiteSurvey />
-
-
-          <div className="mt-6 flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <p className="text-sm text-muted-foreground">
-              Answer every question above and hit <strong>Submit</strong> in the form. Then click this button so we can pull your details and build your quote.
-            </p>
-            <button
-              type="button"
-              onClick={handleSubmittedClick}
-              disabled={!canContinue || loading}
-              className="inline-flex items-center gap-2 border-2 border-foreground bg-primary px-5 py-3 text-sm font-bold uppercase tracking-wider text-primary-foreground shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4" />}
-              I've submitted the form
-            </button>
-          </div>
-
-          {submitted && (
-            <div className="mt-4 border-2 border-primary bg-primary/10 px-4 py-3">
-              {loading && (
-                <p className="flex items-center gap-2 text-sm font-semibold">
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  Form submitted — matching your details with the responses sheet…
-                </p>
-              )}
-              {!loading && lookup?.match && (
-                <div className="space-y-3">
-                  <div className="flex flex-wrap items-center justify-between gap-3">
-                    <div className="text-sm">
-                      <p className="font-semibold">
-                        ✓ Matched — synced email{lookup.phone ? " & phone" : ""}
-                        {lookup.catalog ? " & price guidance" : ""} from your submission.
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        {lookup.email} {lookup.phone && `· ${lookup.phone}`}
-                      </p>
-                    </div>
-                    <a
-                      href={quoteUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="inline-flex items-center gap-1 text-sm font-bold uppercase tracking-wider underline decoration-primary decoration-4 underline-offset-4"
-                    >
-                      Open quote <ArrowRight className="h-4 w-4" />
-                    </a>
-                  </div>
-                  {lookup.catalog ? (
-                    <div className="border-t border-primary/40 pt-3 text-xs">
-                      <p className="font-display uppercase tracking-wider text-foreground">
-                        Price guidance (from progressgroup.co.za)
-                      </p>
-                      <p className="mt-1 text-foreground">
-                        <a href={lookup.catalog.url} target="_blank" rel="noreferrer" className="underline">
-                          {lookup.catalog.name}
-                        </a>{" "}
-                        — {unitPriceLabel} × {lookup.quantity} ={" "}
-                        <span className="font-bold">{subtotalLabel}</span>
-                      </p>
-                      {flueKitLabel && (
-                        <p className="mt-1 text-foreground">
-                          + Flue kit ({lookup.storyType} story, incl. VAT):{" "}
-                          <span className="font-bold">{flueKitLabel}</span>
-                        </p>
-                      )}
-                      {plateLabel && lookup.plate && (
-                        <p className="mt-1 text-foreground">
-                          + {lookup.plate.type.charAt(0).toUpperCase() + lookup.plate.type.slice(1)} floor plate
-                          {lookup.flooringText && ` (${lookup.flooringText.toLowerCase()} floor)`}, incl. VAT:{" "}
-                          <span className="font-bold">{plateLabel}</span>
-                          <span className="ml-2 text-muted-foreground">
-                            (alt: Steel R1 450,00 · Granite R2 850,00)
-                          </span>
-                        </p>
-                      )}
-                      {cornerInstallLabel && (
-                        <p className="mt-1 text-foreground">
-                          + Corner installation, incl. VAT:{" "}
-                          <span className="font-bold">{cornerInstallLabel}</span>
-                        </p>
-                      )}
-                      {transportLabel && (
-                        <p className="mt-1 text-foreground">
-                          + Transport
-                          {lookup.distanceKm !== null && ` (${lookup.distanceKm} km — ${lookup.transportZone})`}
-                          , incl. VAT:{" "}
-                          <span className="font-bold">{transportLabel}</span>
-                        </p>
-                      )}
-                      {(flueKitLabel || plateLabel || cornerInstallLabel || transportLabel) && (
-                        <p className="mt-1 text-foreground">
-                          Total:{" "}
-                          <span className="font-bold">{totalPriceLabel}</span>
-                        </p>
-                      )}
-                      {lookup.productRequested &&
-                        lookup.productRequested.toLowerCase() !==
-                          lookup.catalog.name.toLowerCase() && (
-                          <p className="mt-1 text-muted-foreground">
-                            Requested: "{lookup.productRequested}" — matched to closest catalog item.
-                          </p>
-                        )}
-                    </div>
-                  ) : lookup.productRequested ? (
-                    <p className="border-t border-primary/40 pt-3 text-xs text-muted-foreground">
-                      No catalog price match for "{lookup.productRequested}" — quote manually.
-                    </p>
-                  ) : null}
-                </div>
-              )}
-              {!loading && error && (
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                  <p className="text-sm text-foreground">{error}</p>
-                  <button
-                    onClick={() => runLookup()}
-                    className="border-2 border-foreground bg-background px-3 py-1.5 text-xs font-bold uppercase tracking-wider hover:bg-foreground hover:text-background"
-                  >
-                    Retry match
-                  </button>
-                </div>
-              )}
-            </div>
-          )}
         </div>
       </section>
+
 
       {/* Quote preview */}
       {submitted && lookup?.match && (
