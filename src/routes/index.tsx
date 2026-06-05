@@ -966,4 +966,60 @@ function Pillar({
   );
 }
 
+function LightingPromoCard({
+  image,
+  eyebrow,
+  badge,
+  title,
+  body,
+  meta,
+  tag,
+}: {
+  image: string;
+  eyebrow: string;
+  badge: string;
+  title: string;
+  body: string;
+  meta: string;
+  tag: string;
+}) {
+  return (
+    <article className="group relative flex flex-col border-2 border-foreground bg-background shadow-brutal-sm transition hover:-translate-y-1 hover:shadow-brutal">
+      <div className="relative overflow-hidden border-b-2 border-foreground">
+        <img
+          src={image}
+          alt={title}
+          loading="lazy"
+          width={1024}
+          height={1280}
+          className="aspect-[4/5] w-full object-cover transition duration-700 group-hover:scale-105"
+        />
+        <span className="absolute left-0 top-0 bg-foreground px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.32em] text-background">
+          {eyebrow}
+        </span>
+        <span className="absolute right-0 top-0 bg-primary px-4 py-2 font-display text-lg italic text-primary-foreground shadow-glow">
+          {badge}
+        </span>
+        <span className="absolute bottom-3 left-3 border border-background/60 bg-foreground/70 px-2.5 py-1 text-[9px] font-semibold uppercase tracking-[0.28em] text-background backdrop-blur">
+          {tag}
+        </span>
+      </div>
+      <div className="flex flex-1 flex-col p-6">
+        <h3 className="font-display text-2xl leading-tight">{title}</h3>
+        <p className="mt-3 flex-1 text-sm leading-relaxed text-muted-foreground">{body}</p>
+        <div className="mt-5 flex items-center justify-between border-t border-foreground/15 pt-4">
+          <span className="font-display text-base text-primary">{meta}</span>
+          <a
+            href="#form"
+            className="inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-[0.32em] text-foreground hover:text-primary"
+          >
+            Quote <ArrowRight className="h-3 w-3" />
+          </a>
+        </div>
+      </div>
+    </article>
+  );
+}
+
+
 
