@@ -1,9 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { Flame, CheckCircle2, Clock, ShieldCheck, ArrowRight, Loader2, Sparkles } from "lucide-react";
+import { Flame, CheckCircle2, Clock, ShieldCheck, ArrowRight, Loader2, Sparkles, Lightbulb } from "lucide-react";
 import { submitQuoteRequest } from "@/lib/quote-submit.functions";
 import productsData from "@/data/products.json";
+import lightingChandelier from "@/assets/lighting-chandelier.jpg";
+import lightingPendants from "@/assets/lighting-pendants.jpg";
+import lightingOutdoor from "@/assets/lighting-outdoor.jpg";
 
 import { LazyIframe } from "@/components/lazy-iframe";
 import { SiteSurvey } from "@/components/site-survey";
