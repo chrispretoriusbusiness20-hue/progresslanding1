@@ -574,8 +574,77 @@ function QuotePage() {
         </div>
       </section>
 
+      {/* Lighting Promotions */}
+      <section className="relative overflow-hidden border-b border-foreground/15 bg-card/40">
+        <div className="pointer-events-none absolute -left-32 top-1/4 hidden h-[24rem] w-[24rem] rounded-full bg-primary/10 blur-3xl lg:block" aria-hidden />
+        <div className="relative mx-auto max-w-6xl px-6 py-20 sm:py-28">
+          <div className="mb-14 flex flex-wrap items-end justify-between gap-6">
+            <div className="max-w-2xl">
+              <div className="flex items-center gap-3 text-[10px] font-semibold uppercase tracking-[0.42em] text-muted-foreground">
+                <span className="h-px w-10 bg-primary" />
+                <span>N°/ ii — The Light Edit</span>
+              </div>
+              <h2 className="mt-6 font-display text-4xl leading-tight sm:text-5xl">
+                Lighting,
+                <span className="italic text-gradient-ember"> on promotion.</span>
+              </h2>
+              <p className="mt-4 max-w-xl text-base leading-relaxed text-foreground/75">
+                Three curated collections, structured for winter. Chandeliers,
+                pendants and architectural outdoor — every piece quoted with
+                installation in one breath.
+              </p>
+            </div>
+            <a
+              href="#form"
+              className="inline-flex items-center gap-2 border border-primary bg-primary px-5 py-3 text-xs font-semibold uppercase tracking-[0.28em] text-primary-foreground shadow-glow transition hover:-translate-y-0.5"
+            >
+              <Lightbulb className="h-4 w-4" /> Quote the Light
+            </a>
+          </div>
+
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <LightingPromoCard
+              image={lightingChandelier}
+              eyebrow="Promo 01"
+              badge="−25%"
+              title="Crystal Chandeliers"
+              body="Hand-assembled statement pieces for stairwells, foyers and double-volume rooms."
+              meta="From R 8 400"
+              tag="Winter Atelier"
+            />
+            <LightingPromoCard
+              image={lightingPendants}
+              eyebrow="Promo 02"
+              badge="−15%"
+              title="Brass Pendant Sets"
+              body="Curated clusters of 3, 5 and 7 — engineered drops, Edison-warm glow."
+              meta="From R 2 950 / set"
+              tag="In Stock"
+            />
+            <LightingPromoCard
+              image={lightingOutdoor}
+              eyebrow="Promo 03"
+              badge="Free Install"
+              title="Architectural Outdoor"
+              body="Bollards, uplights and wall washers — IP65 rated, designed for the SA climate."
+              meta="From R 1 280 / unit"
+              tag="Engineer-led"
+            />
+          </div>
+
+          <div className="mt-10 flex flex-wrap items-center gap-4 border-t border-foreground/15 pt-6 text-[11px] font-semibold uppercase tracking-[0.32em] text-muted-foreground">
+            <span className="text-foreground">Promotions valid through winter</span>
+            <span className="hidden h-px flex-1 bg-foreground/15 sm:block" />
+            <Link to="/catalog" className="inline-flex items-center gap-2 text-primary hover:text-foreground">
+              Browse all lighting <ArrowRight className="h-3.5 w-3.5" />
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* Form */}
       <section id="form" className="bg-background">
+
         <div className="mx-auto max-w-3xl px-6 py-16 sm:py-20">
           <div className="mb-8">
             <h2 className="text-3xl sm:text-4xl">REQUEST A QUOTE</h2>
