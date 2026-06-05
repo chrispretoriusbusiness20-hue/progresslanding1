@@ -316,7 +316,7 @@ function QuotePage() {
               Bespoke Fireplace Atelier
             </p>
             <p className="mt-1 text-[10px] font-semibold uppercase tracking-[0.42em] text-muted-foreground">
-              N°/ XXIV — The Art of Fire
+              N°/ i — The Art of Fire
             </p>
             <h1 className="mt-8 font-display text-6xl leading-[0.88] sm:text-7xl md:text-[7.5rem]">
               Heat,
@@ -359,7 +359,7 @@ function QuotePage() {
               <div className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-primary/20 blur-3xl" aria-hidden />
               <div className="pointer-events-none absolute -bottom-32 -left-20 h-80 w-80 rounded-full bg-ember/20 blur-3xl" aria-hidden />
               <div className="relative">
-                <p className="font-display text-[10px] uppercase tracking-[0.42em] text-primary">N°/ I</p>
+                <p className="font-display text-[10px] uppercase tracking-[0.42em] text-primary">N°/ i</p>
                 <p className="mt-2 font-display text-2xl italic text-foreground">The House</p>
               </div>
               <div className="relative">
@@ -385,10 +385,10 @@ function QuotePage() {
         <div className="mx-auto max-w-6xl px-6 py-20 sm:py-28">
           <div className="mb-14 max-w-3xl">
             <p className="text-[10px] font-semibold uppercase tracking-[0.42em] text-muted-foreground">
-              N°/ I — The House
+              N°/ i — The House
             </p>
             <h2 className="mt-4 font-display text-4xl leading-tight sm:text-5xl">
-              A maison built on a singular conviction:
+              A PLACE built on a singular conviction:
               <span className="italic text-gradient-ember"> warmth should be designed.</span>
             </h2>
           </div>
