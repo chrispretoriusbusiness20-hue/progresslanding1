@@ -60,7 +60,17 @@ async function fetchAsDataURL(url: string): Promise<string | null> {
 export async function generateQuotePDF(input: QuoteInput): Promise<void> {
   const doc = new jsPDF({ unit: "mm", format: "a4" });
   const pageW = doc.internal.pageSize.getWidth();
+  const pageH = doc.internal.pageSize.getHeight();
   const margin = 14;
+  const bottomMargin = 14;
+
+  const ensureSpace = (needed: number) => {
+    if (y + needed > pageH - bottomMargin) {
+      doc.addPage();
+      y = margin;
+    }
+  };
+  let y = margin;
 
   const items: QuoteLineItem[] = [];
   if (input.unitPrice !== null && input.unitPrice > 0) {
@@ -95,7 +105,7 @@ export async function generateQuotePDF(input: QuoteInput): Promise<void> {
   const logoData = await fetchAsDataURL(progressLogo.url);
 
   // ---------- Header ----------
-  let y = margin;
+  // header start
   if (logoData) {
     try {
       const imgW = 70;
