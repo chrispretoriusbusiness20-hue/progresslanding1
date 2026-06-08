@@ -24,18 +24,21 @@ export type QuoteInput = {
   transportZone?: string | null;
   notes?: string;
   extrasForAccount?: string;
+  asInvoice?: boolean;
 };
+
 
 const ZAR = (n: number) =>
   `R ${n.toLocaleString("en-ZA", { minimumFractionDigits: 2, maximumFractionDigits: 2 }).replace(/,/g, " ").replace(/\.(\d{2})$/, ",$1")}`;
 
-function generateQuoteNumber(): string {
+function generateQuoteNumber(prefix: string = "Q"): string {
   const d = new Date();
   const dd = String(d.getDate()).padStart(2, "0");
   const mm = String(d.getMonth() + 1).padStart(2, "0");
   const rand = Math.floor(Math.random() * 900 + 100);
-  return `Q${rand} - ${dd}${mm}`;
+  return `${prefix}${rand} - ${dd}${mm}`;
 }
+
 
 function formatDate(): string {
   const d = new Date();
@@ -140,19 +143,22 @@ export async function generateQuotePDF(input: QuoteInput): Promise<void> {
   y += 8;
 
   // ---------- Quotation header table ----------
-  const quoteNo = generateQuoteNumber();
+  const isInvoice = !!input.asInvoice;
+  const docLabel = isInvoice ? "Invoice" : "Quotation";
+  const quoteNo = generateQuoteNumber(isInvoice ? "INV" : "Q");
   autoTable(doc, {
     startY: y,
     theme: "grid",
     styles: { fontSize: 9, cellPadding: 2, lineColor: [0, 0, 0], lineWidth: 0.2 },
     body: [
       [
-        { content: `Quotation No: ${quoteNo}`, styles: { fontStyle: "bold" } },
+        { content: `${docLabel} No: ${quoteNo}`, styles: { fontStyle: "bold" } },
         { content: `Date: ${formatDate()}`, styles: { fontStyle: "bold" } },
       ],
     ],
     margin: { left: margin, right: margin },
   });
+
   // @ts-expect-error lastAutoTable is attached by plugin
   y = doc.lastAutoTable.finalY;
 
@@ -480,6 +486,6 @@ export async function generateQuotePDF(input: QuoteInput): Promise<void> {
   }
 
 
-  doc.save(`Progress-Quote-${quoteNo.replace(/\s/g, "")}.pdf`);
+  doc.save(`Progress-${isInvoice ? "Invoice" : "Quote"}-${quoteNo.replace(/\s/g, "")}.pdf`);
 }
 
