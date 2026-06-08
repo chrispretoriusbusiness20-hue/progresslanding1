@@ -1,17 +1,11 @@
 import { useState } from "react";
-import { Loader2, Upload, X, Image as ImageIcon, Ruler, ClipboardCopy, Check } from "lucide-react";
+import { Loader2, Upload, X, Image as ImageIcon, ClipboardCopy, Check } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 type UploadedPhoto = {
   id: string;
   url: string;
   name: string;
-};
-
-type Dimensions = {
-  width: string;
-  height: string;
-  depth: string;
 };
 
 const SUPABASE_BUCKET = "site-photos";
