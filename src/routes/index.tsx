@@ -597,6 +597,104 @@ function QuotePage() {
   );
 }
 
+function InstantQuote({
+  productName,
+  quantity,
+  storyType,
+  flooring,
+  cornerInstall,
+}: {
+  productName: string;
+  quantity: number;
+  storyType: "single" | "double" | "";
+  flooring: string;
+  cornerInstall: boolean;
+}) {
+  const priceStr = PRODUCT_PRICE_MAP.get(productName) ?? null;
+  const unitPrice = priceStr ? parseRand(priceStr) : null;
+  const subtotal = unitPrice !== null ? unitPrice * quantity : null;
+  const flueKit =
+    storyType === "double" ? 9500 : storyType === "single" ? 6785 : null;
+  const needsPlate = /laminat|carpet/i.test(flooring);
+  const plate = needsPlate ? 2450 : null;
+  const corner = cornerInstall ? 800 : null;
+  const total =
+    subtotal !== null || flueKit !== null || plate !== null || corner !== null
+      ? (subtotal ?? 0) + (flueKit ?? 0) + (plate ?? 0) + (corner ?? 0)
+      : null;
+
+  const rows: { label: string; value: number | null; hint?: string }[] = [
+    {
+      label: unitPrice !== null ? `${productName} × ${quantity}` : "Select a product",
+      value: subtotal,
+      hint: unitPrice !== null ? `${formatRand(unitPrice)} each` : undefined,
+    },
+    {
+      label: "Flue kit",
+      value: flueKit,
+      hint:
+        storyType === ""
+          ? "Choose single or double story"
+          : storyType === "double"
+            ? "Double story"
+            : "Single story",
+    },
+    {
+      label: "Glass floor plate",
+      value: plate,
+      hint: needsPlate ? "Required for laminate / carpet" : "Not required",
+    },
+    { label: "Corner installation", value: corner, hint: cornerInstall ? "+R800" : "Standard wall" },
+  ];
+
+  return (
+    <div className="border-2 border-foreground bg-secondary/30 p-5 sm:p-6">
+      <div className="mb-3 flex items-center justify-between">
+        <span className="inline-block bg-primary px-2 py-1 text-[10px] font-bold uppercase tracking-widest text-primary-foreground">
+          Instant Quote
+        </span>
+        <span className="text-[10px] font-semibold uppercase tracking-[0.24em] text-muted-foreground">
+          Live estimate
+        </span>
+      </div>
+      <ul className="divide-y divide-foreground/15 text-sm">
+        {rows.map((r) => (
+          <li key={r.label} className="flex items-baseline justify-between gap-4 py-2">
+            <div className="min-w-0">
+              <p className="truncate font-semibold text-foreground">{r.label}</p>
+              {r.hint && <p className="text-xs text-muted-foreground">{r.hint}</p>}
+            </div>
+            <span className="shrink-0 font-mono text-sm font-semibold text-foreground">
+              {r.value !== null ? formatRand(r.value) : "—"}
+            </span>
+          </li>
+        ))}
+        <li className="flex items-baseline justify-between gap-4 py-2">
+          <div>
+            <p className="font-semibold text-foreground">Transport</p>
+            <p className="text-xs text-muted-foreground">
+              Calculated from your address on submit
+            </p>
+          </div>
+          <span className="shrink-0 font-mono text-xs text-muted-foreground">on submit</span>
+        </li>
+      </ul>
+      <div className="mt-3 flex items-baseline justify-between border-t-2 border-foreground pt-3">
+        <span className="text-xs font-bold uppercase tracking-[0.24em] text-foreground">
+          Estimated total
+        </span>
+        <span className="font-mono text-xl font-bold text-foreground">
+          {total !== null ? formatRand(total) : "—"}
+        </span>
+      </div>
+      <p className="mt-2 text-[11px] text-muted-foreground">
+        Excludes transport. Final quote confirmed after we calculate distance from Bellville to your address.
+      </p>
+    </div>
+  );
+}
+
+
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <label className="block">
