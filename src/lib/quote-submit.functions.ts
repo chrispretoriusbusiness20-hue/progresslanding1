@@ -172,6 +172,29 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
       total_zar: totalPriceNum,
     });
 
+    await appendToQuoteSheet([
+      new Date().toISOString(),
+      `${data.firstName} ${data.lastName}`.trim(),
+      data.email,
+      data.phone,
+      data.product,
+      matched?.name ?? "",
+      data.quantity,
+      data.storyType ?? "",
+      data.flooring ?? "",
+      data.cornerInstall ? "Yes" : "No",
+      data.address ?? "",
+      distanceKm !== null ? Math.round(distanceKm * 10) / 10 : "",
+      transport?.zone ?? "",
+      transport?.price ?? "",
+      unitPriceNum ?? "",
+      flueKitPrice ?? "",
+      plate?.price ?? "",
+      cornerInstallPrice ?? "",
+      totalPriceNum ?? "",
+      data.message ?? "",
+    ]);
+
     return {
       match: true as const,
       firstName: data.firstName,
