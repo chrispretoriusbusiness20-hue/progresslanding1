@@ -102,6 +102,8 @@ type LookupResult =
       transportPrice: number | null;
       bookingLink?: string | null;
       submittedAt: string;
+      notificationSubject: string;
+      notificationHtml: string;
     }
   | { match: false };
 
