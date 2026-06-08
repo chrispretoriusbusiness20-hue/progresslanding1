@@ -171,6 +171,7 @@ function QuotePage() {
   const [quantity, setQuantity] = useState(1);
   const [storyType, setStoryType] = useState<"single" | "double" | "">("");
   const [flooring, setFlooring] = useState("");
+  const [plateType, setPlateType] = useState<"glass" | "granite">("glass");
   const [cornerInstall, setCornerInstall] = useState(false);
   const [address, setAddress] = useState("");
   const [message, setMessage] = useState("");
