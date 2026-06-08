@@ -219,6 +219,9 @@ export async function generateQuotePDF(input: QuoteInput): Promise<void> {
   if (input.cornerInstall) notesLines.push("Installation: Corner installation");
   if (input.transportPrice !== null) notesLines.push("Delivery included.");
   if (input.notes) notesLines.push(input.notes);
+  if (input.extrasForAccount) {
+    notesLines.push(`Flues / extras for client account: ${input.extrasForAccount}`);
+  }
   for (const line of notesLines) {
     const wrapped = doc.splitTextToSize(line, pageW - margin * 2);
     doc.text(wrapped, margin, y);
