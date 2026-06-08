@@ -430,6 +430,28 @@ function QuotePage() {
               />
             </Field>
 
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <Field label="Preferred site visit date">
+                <input
+                  type="date"
+                  value={preferredDate}
+                  onChange={(e) => setPreferredDate(e.target.value)}
+                  min={new Date().toISOString().slice(0, 10)}
+                  className="form-input"
+                />
+              </Field>
+              <Field label="Preferred time (SAST)">
+                <input
+                  type="time"
+                  value={preferredTime}
+                  onChange={(e) => setPreferredTime(e.target.value)}
+                  step={900}
+                  className="form-input"
+                />
+              </Field>
+            </div>
+
+
             <label className="flex items-center gap-2 text-sm text-foreground">
               <input
                 type="checkbox"
