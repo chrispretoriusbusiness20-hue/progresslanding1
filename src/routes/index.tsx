@@ -604,7 +604,7 @@ function QuotePage() {
               />
             </a>
             <p className="mt-6 max-w-sm text-sm leading-relaxed text-muted-foreground">
-              An atelier composing fireplaces for South Africa's most considered
+              Progress composing fireplaces for South Africa's most considered
               homes since 1992.
             </p>
           </div>
@@ -619,7 +619,7 @@ function QuotePage() {
             </ul>
           </div>
           <div>
-            <p className="font-display text-[10px] uppercase tracking-[0.36em] text-primary">Atelier</p>
+            <p className="font-display text-[10px] uppercase tracking-[0.36em] text-primary">Progress</p>
             <ul className="mt-4 space-y-2 text-sm text-foreground/80">
               <li><a href="https://progressgroup.co.za/" className="hover:text-primary">progressgroup.co.za</a></li>
               <li><Link to="/catalog" className="hover:text-primary">The Catalogue</Link></li>
