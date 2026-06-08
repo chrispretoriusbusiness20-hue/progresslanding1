@@ -4,9 +4,56 @@ import productsData from "@/data/products.json";
 
 const MAPS_GATEWAY = "https://connector-gateway.lovable.dev/google_maps";
 const SHEETS_GATEWAY = "https://connector-gateway.lovable.dev/google_sheets/v4";
+const CALENDAR_GATEWAY = "https://connector-gateway.lovable.dev/google_calendar/calendar/v3";
 const QUOTE_SHEET_ID = "1AVvNPoavrAf0ptWt4dUXdA2zmGqNjA70ebPXn-gJgW8";
 const ORIGIN_ADDRESS =
   "Progress Lighting & Fires, 189 Durban Rd, Bellville, Cape Town, 7530, South Africa";
+
+async function createCalendarBooking(args: {
+  summary: string;
+  description: string;
+  location?: string;
+  startISO: string;
+  endISO: string;
+  attendeeEmail: string;
+  attendeeName: string;
+}): Promise<{ htmlLink: string | null } | null> {
+  const lovableKey = process.env.LOVABLE_API_KEY;
+  const calKey = process.env.GOOGLE_CALENDAR_API_KEY;
+  if (!lovableKey || !calKey) return null;
+  try {
+    const res = await fetch(
+      `${CALENDAR_GATEWAY}/calendars/primary/events?sendUpdates=all`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${lovableKey}`,
+          "X-Connection-Api-Key": calKey,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          summary: args.summary,
+          description: args.description,
+          location: args.location,
+          start: { dateTime: args.startISO, timeZone: "Africa/Johannesburg" },
+          end: { dateTime: args.endISO, timeZone: "Africa/Johannesburg" },
+          attendees: [
+            { email: args.attendeeEmail, displayName: args.attendeeName },
+          ],
+        }),
+      },
+    );
+    if (!res.ok) {
+      console.error("Calendar create failed", res.status, await res.text());
+      return null;
+    }
+    const data = (await res.json()) as { htmlLink?: string };
+    return { htmlLink: data.htmlLink ?? null };
+  } catch (err) {
+    console.error("Calendar create error", err);
+    return null;
+  }
+}
 
 async function appendToQuoteSheet(row: (string | number | null)[]): Promise<void> {
   const lovableKey = process.env.LOVABLE_API_KEY;
@@ -117,6 +164,8 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
       cornerInstall: z.boolean().default(false),
       address: z.string().trim().max(300).optional(),
       message: z.string().trim().max(2000).optional(),
+      preferredDate: z.string().trim().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+      preferredTime: z.string().trim().regex(/^\d{2}:\d{2}$/).optional(),
     }),
   )
   .handler(async ({ data }) => {
@@ -195,6 +244,40 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
       data.message ?? "",
     ]);
 
+    let bookingLink: string | null = null;
+    if (data.preferredDate && data.preferredTime) {
+      // Build a SAST (+02:00) datetime; Africa/Johannesburg has no DST.
+      const startISO = `${data.preferredDate}T${data.preferredTime}:00+02:00`;
+      const startMs = Date.parse(startISO);
+      if (Number.isFinite(startMs)) {
+        const endISO = new Date(startMs + 60 * 60 * 1000).toISOString();
+        const lines = [
+          `Customer: ${data.firstName} ${data.lastName}`,
+          `Email: ${data.email}`,
+          `Phone: ${data.phone}`,
+          `Product: ${matched?.name ?? data.product} (x${data.quantity})`,
+          data.storyType ? `Story: ${data.storyType}` : "",
+          data.flooring ? `Flooring: ${data.flooring}` : "",
+          data.cornerInstall ? "Corner installation: yes" : "",
+          data.address ? `Address: ${data.address}` : "",
+          distanceKm !== null ? `Distance: ${Math.round(distanceKm * 10) / 10} km` : "",
+          totalPriceNum !== null ? `Estimated total: R${totalPriceNum}` : "",
+          data.message ? `Notes: ${data.message}` : "",
+        ].filter(Boolean);
+        const booking = await createCalendarBooking({
+          summary: `Site visit — ${data.firstName} ${data.lastName} (${matched?.name ?? data.product})`,
+          description: lines.join("\n"),
+          location: data.address,
+          startISO,
+          endISO,
+          attendeeEmail: data.email,
+          attendeeName: `${data.firstName} ${data.lastName}`.trim(),
+        });
+        bookingLink = booking?.htmlLink ?? null;
+      }
+    }
+
+
     return {
       match: true as const,
       firstName: data.firstName,
@@ -222,6 +305,9 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
       distanceKm: distanceKm !== null ? Math.round(distanceKm * 10) / 10 : null,
       transportZone: transport?.zone ?? null,
       transportPrice: transport?.price ?? null,
+      bookingLink,
+      preferredDate: data.preferredDate ?? null,
+      preferredTime: data.preferredTime ?? null,
       submittedAt: new Date().toISOString(),
     };
   });
