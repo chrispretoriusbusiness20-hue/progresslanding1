@@ -93,7 +93,7 @@ type LookupResult =
       storyText: string;
       flueKitPrice: number | null;
       flooringText: string;
-      plate: { type: "glass"; price: number } | null;
+      plate: { type: "glass" | "granite"; price: number } | null;
       cornerInstallPrice: number | null;
       cornerInstallText: string;
       destinationText: string;
