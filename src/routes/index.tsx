@@ -482,7 +482,7 @@ function QuotePage() {
 
 
       {/* Quote preview */}
-      {submitted && lookup?.match && (
+      {showQuote && (
         <section id="quote" className="border-t border-border bg-background">
           <div className="mx-auto max-w-6xl px-6 py-16 sm:py-20">
             <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
