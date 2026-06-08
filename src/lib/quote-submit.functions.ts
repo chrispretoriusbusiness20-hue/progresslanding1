@@ -324,6 +324,50 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
       }
     }
 
+    const esc = (s: string) =>
+      s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    const fmtR = (n: number) => `R${n.toLocaleString("en-ZA")}`;
+    const rows: [string, string][] = [
+      ["Customer", `${data.firstName} ${data.lastName}`],
+      ["Email", data.email],
+      ["Phone", data.phone],
+      ["Product requested", data.product],
+      ["Matched product", matched?.name ?? "—"],
+      ["Quantity", String(data.quantity)],
+      ["Story type", data.storyType ?? "—"],
+      ["Flooring", data.flooring ?? "—"],
+      ["Plate", plate ? `${plate.type} (${fmtR(plate.price)})` : "—"],
+      ["Corner install", data.cornerInstall ? `Yes${cornerInstallPrice ? ` (${fmtR(cornerInstallPrice)})` : ""}` : "No"],
+      ["Address", data.address ?? "—"],
+      ["Distance", distanceKm !== null ? `${Math.round(distanceKm * 10) / 10} km` : "—"],
+      ["Transport", transport ? `${transport.zone} (${fmtR(transport.price)})` : "—"],
+      ["Unit price", unitPriceNum !== null ? fmtR(unitPriceNum) : "—"],
+      ["Flue kit", flueKitPrice !== null ? fmtR(flueKitPrice) : "—"],
+      ["Estimated total", totalPriceNum !== null ? fmtR(totalPriceNum) : "—"],
+      ["Preferred date/time", data.preferredDate ? `${data.preferredDate} ${data.preferredTime ?? ""}`.trim() : "—"],
+      ["Booking link", bookingLink ?? "—"],
+      ["Message", data.message ?? "—"],
+    ];
+    const html = `
+      <div style="font-family:Arial,sans-serif;color:#111;max-width:640px">
+        <h2 style="margin:0 0 12px">New quote request</h2>
+        <p style="margin:0 0 16px;color:#555">Submitted ${new Date().toLocaleString("en-ZA", { timeZone: "Africa/Johannesburg" })} (SAST)</p>
+        <table style="border-collapse:collapse;width:100%">
+          ${rows
+            .map(
+              ([k, v]) =>
+                `<tr><td style="padding:6px 10px;border:1px solid #eee;background:#fafafa;width:180px;font-weight:600">${esc(k)}</td><td style="padding:6px 10px;border:1px solid #eee">${esc(String(v))}</td></tr>`,
+            )
+            .join("")}
+        </table>
+      </div>`;
+    await sendQuoteNotificationEmail({
+      subject: `New quote — ${data.firstName} ${data.lastName} (${matched?.name ?? data.product})`,
+      html,
+    });
+
+
+
 
     return {
       match: true as const,
