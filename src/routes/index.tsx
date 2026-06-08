@@ -536,6 +536,7 @@ function QuotePage() {
               quantity={quantity}
               storyType={storyType}
               flooring={flooring}
+              plateType={plateType}
               cornerInstall={cornerInstall}
             />
 
