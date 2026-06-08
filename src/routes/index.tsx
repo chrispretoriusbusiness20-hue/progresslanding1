@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { CheckCircle2, Loader2 } from "lucide-react";
+import { CheckCircle2, FileDown, Loader2 } from "lucide-react";
 import { submitQuoteRequest } from "@/lib/quote-submit.functions";
 import { generateQuotePDF } from "@/lib/quote-pdf";
 import productsData from "@/data/products.json";
@@ -559,39 +559,73 @@ function QuotePage() {
               <p className="text-lg text-muted-foreground">
                 Thank you for the enquiry find quote attached
               </p>
-              <button
-                type="button"
-                onClick={async () => {
-                  try {
-                    const priceStr = PRODUCT_PRICE_MAP.get(product) ?? null;
-                    const unitPrice = priceStr ? parseRand(priceStr) : null;
-                    await generateQuotePDF({
-                      firstName: firstName.trim() || "Customer",
-                      lastName: lastName.trim(),
-                      email: email.trim(),
-                      phone: phone.trim(),
-                      address: address.trim() || undefined,
-                      productName: product,
-                      quantity,
-                      unitPrice,
-                      storyType,
-                      flooring,
-                      cornerInstall,
-                      transportPrice: matched ? matched.transportPrice : null,
-                      transportZone: matched ? matched.transportZone : null,
-                      notes: message.trim() || undefined,
-                      extrasForAccount: extrasForAccount.trim() || undefined,
-                      asInvoice: true,
-                    });
-                  } catch (err) {
-                    console.error("Invoice generation failed", err);
-                  }
-                }}
-                className="inline-flex items-center justify-center gap-2 border-2 border-foreground bg-primary px-6 py-3 text-sm font-bold uppercase tracking-wider text-primary-foreground shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
-              >
-                <CheckCircle2 className="h-4 w-4" />
-                Order Now — Get Invoice
-              </button>
+              <div className="flex flex-wrap gap-3">
+                <button
+                  type="button"
+                  onClick={async () => {
+                    try {
+                      const priceStr = PRODUCT_PRICE_MAP.get(product) ?? null;
+                      const unitPrice = priceStr ? parseRand(priceStr) : null;
+                      await generateQuotePDF({
+                        firstName: firstName.trim() || "Customer",
+                        lastName: lastName.trim(),
+                        email: email.trim(),
+                        phone: phone.trim(),
+                        address: address.trim() || undefined,
+                        productName: product,
+                        quantity,
+                        unitPrice,
+                        storyType,
+                        flooring,
+                        cornerInstall,
+                        transportPrice: matched ? matched.transportPrice : null,
+                        transportZone: matched ? matched.transportZone : null,
+                        notes: message.trim() || undefined,
+                        extrasForAccount: extrasForAccount.trim() || undefined,
+                      });
+                    } catch (err) {
+                      console.error("Quote generation failed", err);
+                    }
+                  }}
+                  className="inline-flex items-center justify-center gap-2 border-2 border-foreground bg-background px-5 py-3 text-sm font-bold uppercase tracking-wider text-foreground shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
+                >
+                  <FileDown className="h-4 w-4" />
+                  Download Quote
+                </button>
+                <button
+                  type="button"
+                  onClick={async () => {
+                    try {
+                      const priceStr = PRODUCT_PRICE_MAP.get(product) ?? null;
+                      const unitPrice = priceStr ? parseRand(priceStr) : null;
+                      await generateQuotePDF({
+                        firstName: firstName.trim() || "Customer",
+                        lastName: lastName.trim(),
+                        email: email.trim(),
+                        phone: phone.trim(),
+                        address: address.trim() || undefined,
+                        productName: product,
+                        quantity,
+                        unitPrice,
+                        storyType,
+                        flooring,
+                        cornerInstall,
+                        transportPrice: matched ? matched.transportPrice : null,
+                        transportZone: matched ? matched.transportZone : null,
+                        notes: message.trim() || undefined,
+                        extrasForAccount: extrasForAccount.trim() || undefined,
+                        asInvoice: true,
+                      });
+                    } catch (err) {
+                      console.error("Invoice generation failed", err);
+                    }
+                  }}
+                  className="inline-flex items-center justify-center gap-2 border-2 border-foreground bg-primary px-5 py-3 text-sm font-bold uppercase tracking-wider text-primary-foreground shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
+                >
+                  <CheckCircle2 className="h-4 w-4" />
+                  Order Now — Get Invoice
+                </button>
+              </div>
             </div>
 
             <div className="overflow-hidden border-2 border-foreground bg-background shadow-[8px_8px_0_0_var(--foreground)]">
