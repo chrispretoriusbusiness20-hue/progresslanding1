@@ -133,6 +133,7 @@ function buildQuoteUrl(params: {
   flooring?: string;
   cornerInstall?: string;
   cornerInstallPrice?: string;
+  installEstimate?: string;
   transport?: string;
   distanceKm?: string;
 }) {
@@ -156,6 +157,7 @@ function buildQuoteUrl(params: {
   set(["flooring"], params.flooring);
   set(["cornerInstall", "corner_install"], params.cornerInstall);
   set(["cornerInstallPrice", "corner_install_price"], params.cornerInstallPrice);
+  set(["installEstimate", "install_estimate"], params.installEstimate);
   set(["transport", "transport_cost", "delivery"], params.transport);
   set(["distance", "distanceKm", "distance_km"], params.distanceKm);
   return url.toString();
@@ -270,9 +272,10 @@ function QuotePage() {
   const platePrice = matched?.plate?.price ?? null;
   const cornerInstallPrice = matched?.cornerInstallPrice ?? null;
   const transportPrice = matched?.transportPrice ?? null;
+  const installEstimate = 5500;
   const totalPriceNum =
     productSubtotal !== null || flueKitPrice !== null || platePrice !== null || cornerInstallPrice !== null || transportPrice !== null
-      ? (productSubtotal ?? 0) + (flueKitPrice ?? 0) + (platePrice ?? 0) + (cornerInstallPrice ?? 0) + (transportPrice ?? 0)
+      ? (productSubtotal ?? 0) + (flueKitPrice ?? 0) + (platePrice ?? 0) + installEstimate + (cornerInstallPrice ?? 0) + (transportPrice ?? 0)
       : null;
   const unitPriceLabel = unitPriceNum !== null ? formatRand(unitPriceNum) : null;
   const subtotalLabel = productSubtotal !== null ? formatRand(productSubtotal) : null;
@@ -299,6 +302,7 @@ function QuotePage() {
         flooring: matched.flooringText || undefined,
         cornerInstall: cornerInstallLabel ?? undefined,
         cornerInstallPrice: cornerInstallLabel ?? undefined,
+        installEstimate: formatRand(installEstimate),
         transport: transportLabel ?? undefined,
         distanceKm: matched.distanceKm !== null ? `${matched.distanceKm} km` : undefined,
       })
@@ -643,9 +647,10 @@ function InstantQuote({
   const needsPlate = /laminat|carpet/i.test(flooring);
   const plate = needsPlate ? 1500 : null;
   const corner = cornerInstall ? 800 : null;
+  const installEstimate = 5500;
   const total =
     subtotal !== null || flueKit !== null || plate !== null || corner !== null
-      ? (subtotal ?? 0) + (flueKit ?? 0) + (plate ?? 0) + (corner ?? 0)
+      ? (subtotal ?? 0) + (flueKit ?? 0) + (plate ?? 0) + (corner ?? 0) + installEstimate
       : null;
 
   const rows: { label: string; value: number | null; hint?: string }[] = [
@@ -670,6 +675,7 @@ function InstantQuote({
       hint: needsPlate ? "Required for laminate / carpet" : "Not required",
     },
     { label: "Corner installation", value: corner, hint: cornerInstall ? "+R800" : "Standard wall" },
+    { label: "Installation estimate", value: installEstimate, hint: "Standard installation" },
   ];
 
   return (
