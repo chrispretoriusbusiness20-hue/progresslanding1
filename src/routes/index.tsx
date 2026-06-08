@@ -295,15 +295,6 @@ function QuotePage() {
               className="h-12 w-auto sm:h-14 transition-transform group-hover:-translate-y-0.5"
             />
           </a>
-          <nav className="hidden items-center gap-8 text-[11px] font-semibold uppercase tracking-[0.32em] text-foreground/70 md:flex">
-            <a href="https://progressgroup.co.za/contact" className="hover:text-primary">Contact</a>
-            <a
-              href="#form"
-              className="border border-primary/70 px-4 py-2 text-primary transition hover:bg-primary hover:text-primary-foreground"
-            >
-              Enquire
-            </a>
-          </nav>
         </div>
       </header>
 
