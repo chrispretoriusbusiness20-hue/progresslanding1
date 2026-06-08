@@ -32,12 +32,13 @@ function encodeRawEmail(to: string, subject: string, htmlBody: string, cc?: stri
 async function sendQuoteNotificationEmail(args: {
   subject: string;
   html: string;
+  cc?: string;
 }): Promise<void> {
   const lovableKey = process.env.LOVABLE_API_KEY;
   const gmailKey = process.env.GOOGLE_MAIL_API_KEY;
   if (!lovableKey || !gmailKey) return;
   try {
-    const raw = encodeRawEmail(QUOTE_NOTIFY_EMAIL, args.subject, args.html);
+    const raw = encodeRawEmail(QUOTE_NOTIFY_EMAIL, args.subject, args.html, args.cc);
     const res = await fetch(`${GMAIL_GATEWAY}/users/me/messages/send`, {
       method: "POST",
       headers: {
