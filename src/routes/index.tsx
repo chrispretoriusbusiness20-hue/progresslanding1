@@ -93,7 +93,7 @@ type LookupResult =
       storyText: string;
       flueKitPrice: number | null;
       flooringText: string;
-      plate: { type: "glass"; price: number } | null;
+      plate: { type: "glass" | "granite"; price: number } | null;
       cornerInstallPrice: number | null;
       cornerInstallText: string;
       destinationText: string;
@@ -171,6 +171,7 @@ function QuotePage() {
   const [quantity, setQuantity] = useState(1);
   const [storyType, setStoryType] = useState<"single" | "double" | "">("");
   const [flooring, setFlooring] = useState("");
+  const [plateType, setPlateType] = useState<"glass" | "granite">("glass");
   const [cornerInstall, setCornerInstall] = useState(false);
   const [address, setAddress] = useState("");
   const [message, setMessage] = useState("");
@@ -220,6 +221,7 @@ function QuotePage() {
           quantity,
           storyType: storyType === "" ? null : storyType,
           flooring: flooring || undefined,
+          plateType: flooring && !/tile/i.test(flooring) ? plateType : undefined,
           cornerInstall,
           address: address.trim() || undefined,
           message: message.trim() || undefined,
@@ -242,9 +244,11 @@ function QuotePage() {
           unitPrice,
           storyType,
           flooring,
+          plateType,
           cornerInstall,
           transportPrice: result.match ? result.transportPrice : null,
           transportZone: result.match ? result.transportZone : null,
+          distanceKm: result.match ? result.distanceKm : null,
           notes: message.trim() || undefined,
           extrasForAccount: extrasForAccount.trim() || undefined,
         });
@@ -470,6 +474,20 @@ function QuotePage() {
               </Field>
             </div>
 
+            {flooring && !/tile/i.test(flooring) && (
+              <Field label="Floor plate (required for non-tile floors)">
+                <select
+                  value={plateType}
+                  onChange={(e) => setPlateType(e.target.value as "glass" | "granite")}
+                  className="form-input"
+                >
+                  <option value="glass">Glass plate · R2 495</option>
+                  <option value="granite">Granite plate · R2 895</option>
+                </select>
+              </Field>
+            )}
+
+
             <Field label="Installation / delivery address">
               <AddressAutocomplete
                 value={address}
@@ -518,6 +536,7 @@ function QuotePage() {
               quantity={quantity}
               storyType={storyType}
               flooring={flooring}
+              plateType={plateType}
               cornerInstall={cornerInstall}
             />
 
@@ -577,9 +596,11 @@ function QuotePage() {
                         unitPrice,
                         storyType,
                         flooring,
+                        plateType,
                         cornerInstall,
                         transportPrice: matched ? matched.transportPrice : null,
                         transportZone: matched ? matched.transportZone : null,
+                        distanceKm: matched ? matched.distanceKm : null,
                         notes: message.trim() || undefined,
                         extrasForAccount: extrasForAccount.trim() || undefined,
                       });
@@ -609,9 +630,11 @@ function QuotePage() {
                         unitPrice,
                         storyType,
                         flooring,
+                        plateType,
                         cornerInstall,
                         transportPrice: matched ? matched.transportPrice : null,
                         transportZone: matched ? matched.transportZone : null,
+                        distanceKm: matched ? matched.distanceKm : null,
                         notes: message.trim() || undefined,
                         extrasForAccount: extrasForAccount.trim() || undefined,
                         asInvoice: true,
@@ -687,21 +710,23 @@ function InstantQuote({
   quantity,
   storyType,
   flooring,
+  plateType,
   cornerInstall,
 }: {
   productName: string;
   quantity: number;
   storyType: "single" | "double" | "";
   flooring: string;
+  plateType: "glass" | "granite";
   cornerInstall: boolean;
 }) {
   const priceStr = PRODUCT_PRICE_MAP.get(productName) ?? null;
   const unitPrice = priceStr ? parseRand(priceStr) : null;
   const subtotal = unitPrice !== null ? unitPrice * quantity : null;
   const flueKit =
-    storyType === "double" ? 9000 : storyType === "single" ? 7000 : null;
-  const needsPlate = /laminat|carpet/i.test(flooring);
-  const plate = needsPlate ? 1500 : null;
+    storyType === "double" ? 9650 : storyType === "single" ? 7650 : null;
+  const needsPlate = flooring.length > 0 && !/tile/i.test(flooring);
+  const plate = needsPlate ? (plateType === "granite" ? 2895 : 2495) : null;
   const corner = cornerInstall ? 800 : null;
   const total =
     subtotal !== null || flueKit !== null || plate !== null || corner !== null
@@ -727,13 +752,13 @@ function InstantQuote({
     ...(needsPlate
       ? [
           {
-            label: "Glass floor plate" as string,
+            label: `${plateType === "granite" ? "Granite" : "Glass"} floor plate` as string,
             value: plate as number | null,
-            hint: "Required for laminate / carpet" as string,
+            hint: "Required for non-tile floors" as string,
           },
         ]
       : []),
-    { label: "Corner installation", value: corner, hint: cornerInstall ? "+R800" : "Standard wall" },
+    { label: "Corner installation", value: corner, hint: cornerInstall ? "+R800 (+R650 if ≤50 km)" : "Standard wall" },
   ];
 
   return (

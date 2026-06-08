@@ -157,6 +157,7 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
       quantity: z.number().int().min(1).max(50).default(1),
       storyType: z.enum(["single", "double"]).nullable(),
       flooring: z.string().trim().max(80).optional(),
+      plateType: z.enum(["glass", "granite"]).optional(),
       cornerInstall: z.boolean().default(false),
       address: z.string().trim().max(300).optional(),
       message: z.string().trim().max(2000).optional(),
@@ -173,18 +174,21 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
     const productSubtotal = unitPriceNum !== null ? unitPriceNum * data.quantity : null;
 
     const flueKitPrice =
-      data.storyType === "double" ? 9000 : data.storyType === "single" ? 7000 : null;
+      data.storyType === "double" ? 9650 : data.storyType === "single" ? 7650 : null;
 
     const flooringLower = (data.flooring ?? "").toLowerCase();
-    const needsPlate = /laminat|carpet/.test(flooringLower);
-    const plate: { type: "glass"; price: number } | null = needsPlate
-      ? { type: "glass", price: 1500 }
+    const needsPlate = flooringLower.length > 0 && !/tile/.test(flooringLower);
+    const plateType: "glass" | "granite" = data.plateType === "granite" ? "granite" : "glass";
+    const plate: { type: "glass" | "granite"; price: number } | null = needsPlate
+      ? { type: plateType, price: plateType === "granite" ? 2895 : 2495 }
       : null;
-
-    const cornerInstallPrice = data.cornerInstall ? 800 : null;
 
     const distanceKm = data.address ? await computeDistanceKm(data.address) : null;
     const transport = distanceKm !== null ? transportPriceForKm(distanceKm) : null;
+
+    const cornerInstallPrice = data.cornerInstall
+      ? 800 + (distanceKm !== null && distanceKm <= 50 ? 650 : 0)
+      : null;
 
     const totalPriceNum =
       productSubtotal !== null ||
