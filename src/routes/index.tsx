@@ -175,6 +175,18 @@ function QuotePage() {
   const [lookup, setLookup] = useState<LookupResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [headerHidden, setHeaderHidden] = useState(false);
+
+  useEffect(() => {
+    let lastScrollY = window.scrollY;
+    const onScroll = () => {
+      const currentY = window.scrollY;
+      setHeaderHidden(currentY > lastScrollY && currentY > 80);
+      lastScrollY = currentY;
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   const submitFn = useServerFn(submitQuoteRequest);
   const canContinue = useMemo(
