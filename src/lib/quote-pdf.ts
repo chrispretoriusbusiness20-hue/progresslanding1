@@ -80,6 +80,7 @@ export async function generateQuotePDF(input: QuoteInput): Promise<void> {
   if (input.flooring && /laminat|carpet/i.test(input.flooring)) {
     items.push({ quantity: 1, description: "Glass floor plate", unitPrice: 1500 });
   }
+  items.push({ quantity: 1, description: "Installation estimate", unitPrice: 5500 });
   if (input.cornerInstall) {
     items.push({ quantity: 1, description: "Corner installation", unitPrice: 800 });
   }
