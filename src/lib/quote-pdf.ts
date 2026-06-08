@@ -86,18 +86,33 @@ export async function generateQuotePDF(input: QuoteInput): Promise<void> {
     });
   }
   if (input.storyType) {
-    const flueUnit = input.storyType === "double" ? 9000 : 7000;
+    const flueUnit = input.storyType === "double" ? 9650 : 7650;
     items.push({
       quantity: 1,
       description: `Flue Kit (${input.storyType} story)`,
       unitPrice: flueUnit,
     });
   }
-  if (input.flooring && /laminat|carpet/i.test(input.flooring)) {
-    items.push({ quantity: 1, description: "Glass floor plate", unitPrice: 1500 });
+  {
+    const flooringLower = (input.flooring ?? "").toLowerCase();
+    const needsPlate = flooringLower.length > 0 && !/tile/.test(flooringLower);
+    if (needsPlate) {
+      const plateType = input.plateType === "granite" ? "granite" : "glass";
+      const platePrice = plateType === "granite" ? 2895 : 2495;
+      items.push({
+        quantity: 1,
+        description: `${plateType === "granite" ? "Granite" : "Glass"} floor plate`,
+        unitPrice: platePrice,
+      });
+    }
   }
   if (input.cornerInstall) {
-    items.push({ quantity: 1, description: "Corner installation", unitPrice: 800 });
+    const nearby = input.distanceKm !== null && input.distanceKm !== undefined && input.distanceKm <= 50;
+    items.push({
+      quantity: 1,
+      description: nearby ? "Corner installation (within 50 km)" : "Corner installation",
+      unitPrice: nearby ? 800 + 650 : 800,
+    });
   }
   if (input.transportPrice !== null && input.transportPrice > 0) {
     items.push({
