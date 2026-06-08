@@ -175,6 +175,7 @@ function QuotePage() {
   const [cornerInstall, setCornerInstall] = useState(false);
   const [address, setAddress] = useState("");
   const [message, setMessage] = useState("");
+  const [extrasForAccount, setExtrasForAccount] = useState("");
 
   const [submitted, setSubmitted] = useState(false);
   const [lookup, setLookup] = useState<LookupResult | null>(null);
