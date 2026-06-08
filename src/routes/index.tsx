@@ -171,6 +171,8 @@ function QuotePage() {
   const [flooring, setFlooring] = useState("");
   const [cornerInstall, setCornerInstall] = useState(false);
   const [address, setAddress] = useState("");
+  const [preferredDate, setPreferredDate] = useState("");
+  const [preferredTime, setPreferredTime] = useState("");
   const [message, setMessage] = useState("");
 
   const [submitted, setSubmitted] = useState(false);
