@@ -113,49 +113,6 @@ export function SiteSurvey() {
         </div>
       </div>
 
-      {/* Cavity dimensions */}
-      <fieldset className="mt-6">
-        <legend className="text-xs font-bold uppercase tracking-[0.24em] text-foreground">
-          Cavity (mm)
-        </legend>
-        <div className="mt-3 grid grid-cols-3 gap-3">
-          <NumField
-            label="Width"
-            value={cavity.width}
-            onChange={(v) => setCavity((p) => ({ ...p, width: v }))}
-          />
-          <NumField
-            label="Height"
-            value={cavity.height}
-            onChange={(v) => setCavity((p) => ({ ...p, height: v }))}
-          />
-          <NumField
-            label="Depth"
-            value={cavity.depth}
-            onChange={(v) => setCavity((p) => ({ ...p, depth: v }))}
-          />
-        </div>
-      </fieldset>
-
-      {/* Chimney */}
-      <fieldset className="mt-5">
-        <legend className="text-xs font-bold uppercase tracking-[0.24em] text-foreground">
-          Chimney (mm) — optional
-        </legend>
-        <div className="mt-3 grid grid-cols-2 gap-3">
-          <NumField
-            label="Flue diameter"
-            value={chimney.diameter}
-            onChange={(v) => setChimney((p) => ({ ...p, diameter: v }))}
-          />
-          <NumField
-            label="Chimney height"
-            value={chimney.height}
-            onChange={(v) => setChimney((p) => ({ ...p, height: v }))}
-          />
-        </div>
-      </fieldset>
-
       {/* Photos */}
       <div className="mt-6 grid gap-5 sm:grid-cols-2">
         <PhotoGroup
