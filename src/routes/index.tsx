@@ -96,6 +96,9 @@ type LookupResult =
       distanceKm: number | null;
       transportZone: string | null;
       transportPrice: number | null;
+      bookingLink?: string | null;
+      preferredDate?: string | null;
+      preferredTime?: string | null;
       submittedAt: string;
     }
   | { match: false };
