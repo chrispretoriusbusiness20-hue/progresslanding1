@@ -19,7 +19,7 @@ export type QuoteInput = {
   unitPrice: number | null;
   storyType: "single" | "double" | "";
   flooring?: string;
-  plateType?: "glass" | "granite" | "";
+  plateType?: "glass" | "granite" | "metal" | "";
   cornerInstall: boolean;
   transportPrice: number | null;
   transportZone?: string | null;
