@@ -555,26 +555,10 @@ function QuotePage() {
       {showQuote && (
         <section id="quote" className="border-t border-border bg-background">
           <div className="mx-auto max-w-6xl px-6 py-16 sm:py-20">
-            <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
-              <div>
-                <span className="inline-block bg-primary px-3 py-1 text-xs font-bold uppercase tracking-widest text-primary-foreground">
-                  Your Quote
-                </span>
-                <h2 className="mt-4 text-3xl sm:text-4xl">
-                  {firstName.toUpperCase()} {lastName.toUpperCase()} — PREFILLED QUOTE
-                </h2>
-                <p className="mt-2 text-sm text-muted-foreground">
-                  Live from fireplacequotes.co.za — synced with your name, email and phone.
-                </p>
-              </div>
-              <a
-                href={quoteUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="text-sm font-semibold uppercase tracking-wider text-foreground underline decoration-primary decoration-4 underline-offset-4"
-              >
-                Open in new tab ↗
-              </a>
+            <div className="mb-6">
+              <p className="text-lg text-muted-foreground">
+                Thank you for the enquiry find quote attached
+              </p>
             </div>
 
             <div className="overflow-hidden border-2 border-foreground bg-background shadow-[8px_8px_0_0_var(--foreground)]">
