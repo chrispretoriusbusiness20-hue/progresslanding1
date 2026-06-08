@@ -11,15 +11,16 @@ const QUOTE_NOTIFY_EMAIL = "louis@progressgroup.co.za";
 const ORIGIN_ADDRESS =
   "Progress Lighting & Fires, 189 Durban Rd, Bellville, Cape Town, 7530, South Africa";
 
-function encodeRawEmail(to: string, subject: string, htmlBody: string): string {
-  const message = [
+function encodeRawEmail(to: string, subject: string, htmlBody: string, cc?: string): string {
+  const headers = [
     `To: ${to}`,
+    ...(cc ? [`Cc: ${cc}`] : []),
     `Subject: ${subject}`,
     "MIME-Version: 1.0",
     'Content-Type: text/html; charset="UTF-8"',
     "",
-    htmlBody,
-  ].join("\r\n");
+  ];
+  const message = headers.join("\r\n") + htmlBody;
   // base64url encode (utf-8 safe)
   const b64 =
     typeof Buffer !== "undefined"
