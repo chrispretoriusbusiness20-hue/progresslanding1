@@ -186,8 +186,6 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
     const distanceKm = data.address ? await computeDistanceKm(data.address) : null;
     const transport = distanceKm !== null ? transportPriceForKm(distanceKm) : null;
 
-    const installEstimate = 5500;
-
     const totalPriceNum =
       productSubtotal !== null ||
       flueKitPrice !== null ||
@@ -197,7 +195,6 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
         ? (productSubtotal ?? 0) +
           (flueKitPrice ?? 0) +
           (plate?.price ?? 0) +
-          installEstimate +
           (cornerInstallPrice ?? 0) +
           (transport?.price ?? 0)
         : null;

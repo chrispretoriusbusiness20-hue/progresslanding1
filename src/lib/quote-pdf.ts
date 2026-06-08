@@ -81,7 +81,6 @@ export async function generateQuotePDF(input: QuoteInput): Promise<void> {
   if (input.flooring && /laminat|carpet/i.test(input.flooring)) {
     items.push({ quantity: 1, description: "Glass floor plate", unitPrice: 1500 });
   }
-  items.push({ quantity: 1, description: "Standard installation Estimate", unitPrice: 5500 });
   if (input.cornerInstall) {
     items.push({ quantity: 1, description: "Corner installation", unitPrice: 800 });
   }
@@ -314,107 +313,6 @@ export async function generateQuotePDF(input: QuoteInput): Promise<void> {
   doc.setFont("helvetica", "normal");
   doc.text("Signature: ____________________________", margin, y);
   doc.text("Date: ____________________________", pageW - margin, y, { align: "right" });
-
-  // ---------- Page 2: Installation estimate (if corner install) ----------
-  if (input.cornerInstall) {
-    doc.addPage();
-    let py = margin;
-    if (logoData) {
-      try {
-        doc.addImage(logoData, "JPEG", (pageW - 60) / 2, py, 60, 20);
-        py += 24;
-      } catch {
-        // ignore
-      }
-    }
-    doc.setFont("helvetica", "normal").setFontSize(8.5);
-    doc.text(
-      "LIGHTING  |  FIREPLACES  |  BRAAIS  |  AIRCONS  |  APPLIANCES  |  GAS PRODUCTS  |  CERTIFIED GAS INSTALLERS",
-      pageW / 2,
-      py,
-      { align: "center" },
-    );
-    py += 4;
-    doc.line(margin, py, pageW - margin, py);
-    py += 5;
-    doc.setFontSize(9).setFont("helvetica", "bold");
-    doc.text(
-      "Certified Installers of Gas, Wood and Pellet fire place.  Service and Installation of air conditioning and coredrilling services",
-      margin,
-      py,
-    );
-    py += 5;
-    doc.setFont("helvetica", "normal");
-    doc.text("Tel:  021 - 945 3636", margin, py);
-    doc.text("189 Durban Rd", pageW - margin, py, { align: "right" });
-    py += 4;
-    doc.text("E mail:  info@progressgroup.co.za", margin, py);
-    doc.text("Bellville", pageW - margin, py, { align: "right" });
-    py += 8;
-
-    doc.setFont("helvetica", "bold").setFontSize(20);
-    doc.text("Installation Estimate", margin, py);
-    py += 6;
-    doc.setFont("helvetica", "italic").setFontSize(10);
-    doc.text("Subject to site visit or site photographs", margin, py);
-    py += 6;
-
-    const installFee = 5500;
-    autoTable(doc, {
-      startY: py,
-      theme: "grid",
-      head: [["Estimated Installation Fee", "Amount"]],
-      body: [
-        ["Installation", ZAR(installFee)],
-        [{ content: "Total", styles: { fontStyle: "bold" } }, { content: ZAR(installFee), styles: { fontStyle: "bold" } }],
-      ],
-      styles: { fontSize: 10, cellPadding: 3, lineColor: [0, 0, 0], lineWidth: 0.2 },
-      headStyles: { fillColor: [245, 245, 245], textColor: 0 },
-      columnStyles: { 1: { halign: "right" } },
-      margin: { left: margin, right: margin },
-    });
-    // @ts-expect-error
-    py = doc.lastAutoTable.finalY + 8;
-
-    autoTable(doc, {
-      startY: py,
-      theme: "grid",
-      styles: { fontSize: 9, cellPadding: 2, lineColor: [0, 0, 0], lineWidth: 0.2 },
-      columnStyles: { 0: { cellWidth: 45, fontStyle: "bold" } },
-      body: [
-        [{ content: "BANKING DETAILS", colSpan: 2, styles: { fontStyle: "bold" } }],
-        ["Bank:", "FNB/RMB"],
-        ["Account Holder:", "Progress Installations (Pty) Ltd"],
-        ["Account Type:", "Gold Business Account"],
-        ["Account Number:", "63158448770"],
-        ["Branch Code:", "250655"],
-        ["Reference:", "Use quote number"],
-      ],
-      margin: { left: margin, right: margin },
-    });
-    // @ts-expect-error
-    py = doc.lastAutoTable.finalY + 8;
-
-    doc.setFont("helvetica", "bold").setFontSize(14);
-    doc.text("Terms & Conditions", margin, py);
-    py += 6;
-    const terms: [string, string][] = [
-      ["1. Scope of Quotation:", "The online quotation provided is an estimate for the installation of a product based on the details you've entered. Actual costs may vary depending on the specific requirements of your installation site."],
-      ["2. Exclusions:", "The following items are not included in the online quotation:\n• Additional flues and bends needed for the installation."],
-      ["3. Onsite Visit:", "To confirm the final costing and ensure all details are accurate, an onsite visit is necessary. Upon the visit, a detailed quote will be provided which may differ from the online estimate due to actual site conditions or requirements."],
-      ["4. Amendments:", "We reserve the right to amend or modify the terms herein without prior notice. It's your responsibility to review these terms and conditions each time you seek a quotation."],
-      ["5. No Binding Offer:", "The online quotation should be considered as an initial estimate and is not a binding offer. All final quotations will be provided after the onsite visit."],
-    ];
-    for (const [heading, body] of terms) {
-      doc.setFont("helvetica", "bold").setFontSize(10);
-      doc.text(heading, margin, py);
-      py += 4.5;
-      doc.setFont("helvetica", "normal").setFontSize(9);
-      const wrapped = doc.splitTextToSize(body, pageW - margin * 2);
-      doc.text(wrapped, margin, py);
-      py += wrapped.length * 4 + 3;
-    }
-  }
 
   doc.save(`Progress-Quote-${quoteNo.replace(/\s/g, "")}.pdf`);
 }

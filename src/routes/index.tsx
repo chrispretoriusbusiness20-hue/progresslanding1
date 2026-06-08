@@ -272,10 +272,9 @@ function QuotePage() {
   const platePrice = matched?.plate?.price ?? null;
   const cornerInstallPrice = matched?.cornerInstallPrice ?? null;
   const transportPrice = matched?.transportPrice ?? null;
-  const installEstimate = 5500;
   const totalPriceNum =
     productSubtotal !== null || flueKitPrice !== null || platePrice !== null || cornerInstallPrice !== null || transportPrice !== null
-      ? (productSubtotal ?? 0) + (flueKitPrice ?? 0) + (platePrice ?? 0) + installEstimate + (cornerInstallPrice ?? 0) + (transportPrice ?? 0)
+      ? (productSubtotal ?? 0) + (flueKitPrice ?? 0) + (platePrice ?? 0) + (cornerInstallPrice ?? 0) + (transportPrice ?? 0)
       : null;
   const unitPriceLabel = unitPriceNum !== null ? formatRand(unitPriceNum) : null;
   const subtotalLabel = productSubtotal !== null ? formatRand(productSubtotal) : null;
@@ -302,7 +301,6 @@ function QuotePage() {
         flooring: matched.flooringText || undefined,
         cornerInstall: cornerInstallLabel ?? undefined,
         cornerInstallPrice: cornerInstallLabel ?? undefined,
-        installEstimate: formatRand(installEstimate),
         transport: transportLabel ?? undefined,
         distanceKm: matched.distanceKm !== null ? `${matched.distanceKm} km` : undefined,
       })
@@ -653,10 +651,9 @@ function InstantQuote({
   const needsPlate = /laminat|carpet/i.test(flooring);
   const plate = needsPlate ? 1500 : null;
   const corner = cornerInstall ? 800 : null;
-  const installEstimate = 5500;
   const total =
     subtotal !== null || flueKit !== null || plate !== null || corner !== null
-      ? (subtotal ?? 0) + (flueKit ?? 0) + (plate ?? 0) + (corner ?? 0) + installEstimate
+      ? (subtotal ?? 0) + (flueKit ?? 0) + (plate ?? 0) + (corner ?? 0)
       : null;
 
   const rows: { label: string; value: number | null; hint?: string }[] = [
@@ -685,7 +682,6 @@ function InstantQuote({
         ]
       : []),
     { label: "Corner installation", value: corner, hint: cornerInstall ? "+R800" : "Standard wall" },
-    { label: "Standard installation Estimate", value: installEstimate, hint: "Standard installation" },
   ];
 
   return (
