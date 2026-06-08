@@ -9,6 +9,7 @@ import progressLogo from "@/assets/progress-logo.jpeg.asset.json";
 
 import { LazyIframe } from "@/components/lazy-iframe";
 import { SiteSurvey } from "@/components/site-survey";
+import { AddressAutocomplete } from "@/components/address-autocomplete";
 
 
 const QUOTE_APP_URL = "https://fireplacequotes.co.za/";
@@ -470,12 +471,11 @@ function QuotePage() {
             </div>
 
             <Field label="Installation / delivery address">
-              <input
+              <AddressAutocomplete
                 value={address}
-                onChange={(e) => setAddress(e.target.value)}
-                placeholder="Street, suburb, city — used to estimate transport"
+                onChange={setAddress}
+                placeholder="Start typing your address…"
                 className="form-input"
-                autoComplete="street-address"
               />
             </Field>
 
