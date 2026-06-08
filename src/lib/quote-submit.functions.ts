@@ -172,12 +172,12 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
     const productSubtotal = unitPriceNum !== null ? unitPriceNum * data.quantity : null;
 
     const flueKitPrice =
-      data.storyType === "double" ? 9500 : data.storyType === "single" ? 6785 : null;
+      data.storyType === "double" ? 9000 : data.storyType === "single" ? 7000 : null;
 
     const flooringLower = (data.flooring ?? "").toLowerCase();
     const needsPlate = /laminat|carpet/.test(flooringLower);
     const plate: { type: "glass"; price: number } | null = needsPlate
-      ? { type: "glass", price: 2450 }
+      ? { type: "glass", price: 1500 }
       : null;
 
     const cornerInstallPrice = data.cornerInstall ? 800 : null;
