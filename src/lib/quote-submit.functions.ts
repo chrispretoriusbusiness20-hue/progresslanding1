@@ -11,17 +11,42 @@ const QUOTE_NOTIFY_EMAIL = "louis@progressgroup.co.za";
 const ORIGIN_ADDRESS =
   "Progress Lighting & Fires, 189 Durban Rd, Bellville, Cape Town, 7530, South Africa";
 
-function encodeRawEmail(to: string, subject: string, htmlBody: string, cc?: string): string {
-  const headers = [
-    `To: ${to}`,
-    ...(cc ? [`Cc: ${cc}`] : []),
-    `Subject: ${subject}`,
+function encodeRawEmailWithAttachment(args: {
+  to: string;
+  cc?: string;
+  subject: string;
+  htmlBody: string;
+  attachment?: { filename: string; base64: string; mimeType: string };
+}): string {
+  const boundary = `bnd_${Math.random().toString(36).slice(2)}${Date.now().toString(36)}`;
+  const headers: string[] = [
+    `To: ${args.to}`,
+    ...(args.cc ? [`Cc: ${args.cc}`] : []),
+    `Subject: ${args.subject}`,
     "MIME-Version: 1.0",
-    'Content-Type: text/html; charset="UTF-8"',
-    "",
   ];
-  const message = headers.join("\r\n") + htmlBody;
-  // base64url encode (utf-8 safe)
+  let body: string;
+  if (args.attachment) {
+    headers.push(`Content-Type: multipart/mixed; boundary="${boundary}"`);
+    // Chunk the base64 into 76-char lines per RFC.
+    const chunked = args.attachment.base64.replace(/(.{76})/g, "$1\r\n");
+    body =
+      "\r\n" +
+      `--${boundary}\r\n` +
+      'Content-Type: text/html; charset="UTF-8"\r\n' +
+      "Content-Transfer-Encoding: 7bit\r\n\r\n" +
+      args.htmlBody +
+      `\r\n--${boundary}\r\n` +
+      `Content-Type: ${args.attachment.mimeType}; name="${args.attachment.filename}"\r\n` +
+      `Content-Disposition: attachment; filename="${args.attachment.filename}"\r\n` +
+      "Content-Transfer-Encoding: base64\r\n\r\n" +
+      chunked +
+      `\r\n--${boundary}--`;
+  } else {
+    headers.push('Content-Type: text/html; charset="UTF-8"');
+    body = "\r\n" + args.htmlBody;
+  }
+  const message = headers.join("\r\n") + body;
   const b64 =
     typeof Buffer !== "undefined"
       ? Buffer.from(message, "utf-8").toString("base64")
@@ -33,12 +58,19 @@ async function sendQuoteNotificationEmail(args: {
   subject: string;
   html: string;
   cc?: string;
+  attachment?: { filename: string; base64: string; mimeType: string };
 }): Promise<void> {
   const lovableKey = process.env.LOVABLE_API_KEY;
   const gmailKey = process.env.GOOGLE_MAIL_API_KEY;
   if (!lovableKey || !gmailKey) return;
   try {
-    const raw = encodeRawEmail(QUOTE_NOTIFY_EMAIL, args.subject, args.html, args.cc);
+    const raw = encodeRawEmailWithAttachment({
+      to: QUOTE_NOTIFY_EMAIL,
+      cc: args.cc,
+      subject: args.subject,
+      htmlBody: args.html,
+      attachment: args.attachment,
+    });
     const res = await fetch(`${GMAIL_GATEWAY}/users/me/messages/send`, {
       method: "POST",
       headers: {
@@ -55,6 +87,30 @@ async function sendQuoteNotificationEmail(args: {
     console.error("Gmail send error", err);
   }
 }
+
+export const emailQuotePdf = createServerFn({ method: "POST" })
+  .inputValidator(
+    z.object({
+      subject: z.string().trim().min(1).max(300),
+      html: z.string().min(1).max(200_000),
+      cc: z.string().trim().email().max(200).optional(),
+      filename: z.string().trim().min(1).max(200),
+      pdfBase64: z.string().min(1).max(15_000_000),
+    }),
+  )
+  .handler(async ({ data }) => {
+    await sendQuoteNotificationEmail({
+      subject: data.subject,
+      html: data.html,
+      cc: data.cc,
+      attachment: {
+        filename: data.filename,
+        base64: data.pdfBase64,
+        mimeType: "application/pdf",
+      },
+    });
+    return { ok: true as const };
+  });
 
 
 async function createCalendarBooking(args: {
@@ -363,11 +419,12 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
             .join("")}
         </table>
       </div>`;
-    await sendQuoteNotificationEmail({
-      subject: `New quote — ${data.firstName} ${data.lastName} (${matched?.name ?? data.product})`,
-      html,
-      cc: data.email,
-    });
+    const notificationSubject = `New quote — ${data.firstName} ${data.lastName} (${matched?.name ?? data.product})`;
+
+
+
+
+
 
 
 
@@ -403,5 +460,7 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
       preferredDate: data.preferredDate ?? null,
       preferredTime: data.preferredTime ?? null,
       submittedAt: new Date().toISOString(),
+      notificationSubject,
+      notificationHtml: html,
     };
   });

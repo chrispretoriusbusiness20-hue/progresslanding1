@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { CheckCircle2, FileDown, Loader2 } from "lucide-react";
-import { submitQuoteRequest } from "@/lib/quote-submit.functions";
+import { submitQuoteRequest, emailQuotePdf } from "@/lib/quote-submit.functions";
 import { generateQuotePDF } from "@/lib/quote-pdf";
 import productsData from "@/data/products.json";
 import progressLogo from "@/assets/progress-logo.jpeg.asset.json";
@@ -102,6 +102,8 @@ type LookupResult =
       transportPrice: number | null;
       bookingLink?: string | null;
       submittedAt: string;
+      notificationSubject: string;
+      notificationHtml: string;
     }
   | { match: false };
 
@@ -195,6 +197,7 @@ function QuotePage() {
   }, []);
 
   const submitFn = useServerFn(submitQuoteRequest);
+  const emailQuoteFn = useServerFn(emailQuotePdf);
   const canContinue = useMemo(
     () =>
       firstName.trim().length > 0 &&
@@ -233,7 +236,7 @@ function QuotePage() {
       try {
         const priceStr = PRODUCT_PRICE_MAP.get(product) ?? null;
         const unitPrice = priceStr ? parseRand(priceStr) : null;
-        await generateQuotePDF({
+        const pdf = await generateQuotePDF({
           firstName: firstName.trim() || "Customer",
           lastName: lastName.trim(),
           email: email.trim(),
@@ -252,6 +255,21 @@ function QuotePage() {
           notes: message.trim() || undefined,
           extrasForAccount: extrasForAccount.trim() || undefined,
         });
+        if (result.match && pdf) {
+          try {
+            await emailQuoteFn({
+              data: {
+                subject: result.notificationSubject,
+                html: result.notificationHtml,
+                cc: result.email,
+                filename: pdf.filename,
+                pdfBase64: pdf.base64,
+              },
+            });
+          } catch (emailErr) {
+            console.error("Quote email failed", emailErr);
+          }
+        }
       } catch (pdfErr) {
         console.error("PDF generation failed", pdfErr);
       }
