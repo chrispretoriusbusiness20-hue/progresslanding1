@@ -419,11 +419,12 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
             .join("")}
         </table>
       </div>`;
-    await sendQuoteNotificationEmail({
-      subject: `New quote — ${data.firstName} ${data.lastName} (${matched?.name ?? data.product})`,
-      html,
-      cc: data.email,
-    });
+    const notificationSubject = `New quote — ${data.firstName} ${data.lastName} (${matched?.name ?? data.product})`;
+
+
+
+
+
 
 
 
