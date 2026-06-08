@@ -4,9 +4,56 @@ import productsData from "@/data/products.json";
 
 const MAPS_GATEWAY = "https://connector-gateway.lovable.dev/google_maps";
 const SHEETS_GATEWAY = "https://connector-gateway.lovable.dev/google_sheets/v4";
+const CALENDAR_GATEWAY = "https://connector-gateway.lovable.dev/google_calendar/calendar/v3";
 const QUOTE_SHEET_ID = "1AVvNPoavrAf0ptWt4dUXdA2zmGqNjA70ebPXn-gJgW8";
 const ORIGIN_ADDRESS =
   "Progress Lighting & Fires, 189 Durban Rd, Bellville, Cape Town, 7530, South Africa";
+
+async function createCalendarBooking(args: {
+  summary: string;
+  description: string;
+  location?: string;
+  startISO: string;
+  endISO: string;
+  attendeeEmail: string;
+  attendeeName: string;
+}): Promise<{ htmlLink: string | null } | null> {
+  const lovableKey = process.env.LOVABLE_API_KEY;
+  const calKey = process.env.GOOGLE_CALENDAR_API_KEY;
+  if (!lovableKey || !calKey) return null;
+  try {
+    const res = await fetch(
+      `${CALENDAR_GATEWAY}/calendars/primary/events?sendUpdates=all`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${lovableKey}`,
+          "X-Connection-Api-Key": calKey,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          summary: args.summary,
+          description: args.description,
+          location: args.location,
+          start: { dateTime: args.startISO, timeZone: "Africa/Johannesburg" },
+          end: { dateTime: args.endISO, timeZone: "Africa/Johannesburg" },
+          attendees: [
+            { email: args.attendeeEmail, displayName: args.attendeeName },
+          ],
+        }),
+      },
+    );
+    if (!res.ok) {
+      console.error("Calendar create failed", res.status, await res.text());
+      return null;
+    }
+    const data = (await res.json()) as { htmlLink?: string };
+    return { htmlLink: data.htmlLink ?? null };
+  } catch (err) {
+    console.error("Calendar create error", err);
+    return null;
+  }
+}
 
 async function appendToQuoteSheet(row: (string | number | null)[]): Promise<void> {
   const lovableKey = process.env.LOVABLE_API_KEY;
