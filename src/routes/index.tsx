@@ -9,6 +9,7 @@ import progressLogo from "@/assets/progress-logo.jpeg.asset.json";
 
 import { LazyIframe } from "@/components/lazy-iframe";
 import { SiteSurvey } from "@/components/site-survey";
+import { AddressAutocomplete } from "@/components/address-autocomplete";
 
 
 const QUOTE_APP_URL = "https://fireplacequotes.co.za/";
