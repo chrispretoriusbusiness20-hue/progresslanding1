@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { CheckCircle2, Loader2, Download } from "lucide-react";
+import { CheckCircle2, Loader2 } from "lucide-react";
 import { submitQuoteRequest } from "@/lib/quote-submit.functions";
 import { generateQuotePDF } from "@/lib/quote-pdf";
 import productsData from "@/data/products.json";
@@ -179,34 +179,6 @@ function QuotePage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [headerHidden, setHeaderHidden] = useState(false);
-  const [pdfLoading, setPdfLoading] = useState(false);
-
-  const handleDownloadPDF = async () => {
-    if (pdfLoading) return;
-    setPdfLoading(true);
-    try {
-      const priceStr = PRODUCT_PRICE_MAP.get(product) ?? null;
-      const unitPrice = priceStr ? parseRand(priceStr) : null;
-      await generateQuotePDF({
-        firstName: firstName.trim() || "Customer",
-        lastName: lastName.trim(),
-        email: email.trim(),
-        phone: phone.trim(),
-        address: address.trim() || undefined,
-        productName: product,
-        quantity,
-        unitPrice,
-        storyType,
-        flooring,
-        cornerInstall,
-        transportPrice: lookup?.match ? lookup.transportPrice : null,
-        transportZone: lookup?.match ? lookup.transportZone : null,
-        notes: message.trim() || undefined,
-      });
-    } finally {
-      setPdfLoading(false);
-    }
-  };
 
   useEffect(() => {
     let lastScrollY = window.scrollY;
@@ -253,6 +225,29 @@ function QuotePage() {
       })) as LookupResult;
       setLookup(result);
       setSubmitted(true);
+      // Auto-download the PDF quote with finalized transport info
+      try {
+        const priceStr = PRODUCT_PRICE_MAP.get(product) ?? null;
+        const unitPrice = priceStr ? parseRand(priceStr) : null;
+        await generateQuotePDF({
+          firstName: firstName.trim() || "Customer",
+          lastName: lastName.trim(),
+          email: email.trim(),
+          phone: phone.trim(),
+          address: address.trim() || undefined,
+          productName: product,
+          quantity,
+          unitPrice,
+          storyType,
+          flooring,
+          cornerInstall,
+          transportPrice: result.match ? result.transportPrice : null,
+          transportZone: result.match ? result.transportZone : null,
+          notes: message.trim() || undefined,
+        });
+      } catch (pdfErr) {
+        console.error("PDF generation failed", pdfErr);
+      }
       if (typeof window !== "undefined") {
         setTimeout(() => {
           document.getElementById("quote")?.scrollIntoView({ behavior: "smooth" });
@@ -512,19 +507,6 @@ function QuotePage() {
               cornerInstall={cornerInstall}
             />
 
-            <button
-              type="button"
-              onClick={handleDownloadPDF}
-              disabled={pdfLoading}
-              className="inline-flex w-full items-center justify-center gap-2 border-2 border-foreground bg-background px-6 py-3 text-sm font-bold uppercase tracking-wider text-foreground shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              {pdfLoading ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <Download className="h-4 w-4" />
-              )}
-              {pdfLoading ? "Building PDF…" : "Download PDF quote"}
-            </button>
 
             {error && (
               <p className="border-2 border-destructive bg-destructive/10 px-3 py-2 text-sm text-destructive">
