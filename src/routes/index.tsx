@@ -210,6 +210,8 @@ function QuotePage() {
           cornerInstall,
           address: address.trim() || undefined,
           message: message.trim() || undefined,
+          preferredDate: preferredDate || undefined,
+          preferredTime: preferredTime || undefined,
         },
       })) as LookupResult;
       setLookup(result);
