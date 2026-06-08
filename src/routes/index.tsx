@@ -643,9 +643,10 @@ function InstantQuote({
   const needsPlate = /laminat|carpet/i.test(flooring);
   const plate = needsPlate ? 1500 : null;
   const corner = cornerInstall ? 800 : null;
+  const installEstimate = 5500;
   const total =
     subtotal !== null || flueKit !== null || plate !== null || corner !== null
-      ? (subtotal ?? 0) + (flueKit ?? 0) + (plate ?? 0) + (corner ?? 0)
+      ? (subtotal ?? 0) + (flueKit ?? 0) + (plate ?? 0) + (corner ?? 0) + installEstimate
       : null;
 
   const rows: { label: string; value: number | null; hint?: string }[] = [
@@ -670,6 +671,7 @@ function InstantQuote({
       hint: needsPlate ? "Required for laminate / carpet" : "Not required",
     },
     { label: "Corner installation", value: corner, hint: cornerInstall ? "+R800" : "Standard wall" },
+    { label: "Installation estimate", value: installEstimate, hint: "Standard installation" },
   ];
 
   return (
