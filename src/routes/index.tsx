@@ -282,7 +282,6 @@ function QuotePage() {
             </span>
             <span className="font-display text-base leading-none tracking-tight">
               PROGRESS
-              <span className="ml-1 italic text-gradient-ember">Progress</span>
               <span className="mt-1 block font-body text-[10px] uppercase tracking-[0.32em] text-muted-foreground">
                 Lighting · Fires · Aircon
               </span>
