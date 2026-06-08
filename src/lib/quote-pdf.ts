@@ -23,6 +23,7 @@ export type QuoteInput = {
   transportPrice: number | null;
   transportZone?: string | null;
   notes?: string;
+  extrasForAccount?: string;
 };
 
 const ZAR = (n: number) =>
