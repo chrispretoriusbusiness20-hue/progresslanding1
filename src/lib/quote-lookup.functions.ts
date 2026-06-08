@@ -9,7 +9,9 @@ const MAPS_GATEWAY = "https://connector-gateway.lovable.dev/google_maps";
 const ORIGIN_ADDRESS = "Progress Lighting & Fires, 189 Durban Rd, Bellville, Cape Town, 7530, South Africa";
 
 // Transport zones (km thresholds → price ZAR incl VAT).
-function transportPriceForKm(km: number): { zone: string; price: number } {
+function transportPriceForKm(km: number, destination: string): { zone: string; price: number } {
+  const destLower = destination.toLowerCase();
+  if (/cape town|capetown/.test(destLower)) return { zone: "Cape Town", price: 650 };
   if (km <= 25) return { zone: "0–25 km", price: 0 };
   if (km <= 50) return { zone: "25–50 km", price: 450 };
   if (km <= 100) return { zone: "50–100 km", price: 900 };
@@ -164,7 +166,7 @@ export const lookupQuoteSubmission = createServerFn({ method: "POST" })
 
       const destinationText = idx.distance >= 0 ? (row[idx.distance] ?? "").trim() : "";
       const distanceKm = destinationText ? await computeDistanceKm(destinationText) : null;
-      const transport = distanceKm !== null ? transportPriceForKm(distanceKm) : null;
+      const transport = distanceKm !== null ? transportPriceForKm(distanceKm, destinationText) : null;
 
       return {
         match: true as const,
