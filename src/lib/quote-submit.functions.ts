@@ -366,6 +366,7 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
     await sendQuoteNotificationEmail({
       subject: `New quote — ${data.firstName} ${data.lastName} (${matched?.name ?? data.product})`,
       html,
+      cc: data.email,
     });
 
 
