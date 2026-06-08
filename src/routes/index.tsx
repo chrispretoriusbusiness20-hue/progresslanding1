@@ -253,6 +253,29 @@ function QuotePage() {
       })) as LookupResult;
       setLookup(result);
       setSubmitted(true);
+      // Auto-download the PDF quote with finalized transport info
+      try {
+        const priceStr = PRODUCT_PRICE_MAP.get(product) ?? null;
+        const unitPrice = priceStr ? parseRand(priceStr) : null;
+        await generateQuotePDF({
+          firstName: firstName.trim() || "Customer",
+          lastName: lastName.trim(),
+          email: email.trim(),
+          phone: phone.trim(),
+          address: address.trim() || undefined,
+          productName: product,
+          quantity,
+          unitPrice,
+          storyType,
+          flooring,
+          cornerInstall,
+          transportPrice: result.match ? result.transportPrice : null,
+          transportZone: result.match ? result.transportZone : null,
+          notes: message.trim() || undefined,
+        });
+      } catch (pdfErr) {
+        console.error("PDF generation failed", pdfErr);
+      }
       if (typeof window !== "undefined") {
         setTimeout(() => {
           document.getElementById("quote")?.scrollIntoView({ behavior: "smooth" });
