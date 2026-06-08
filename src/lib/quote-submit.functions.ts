@@ -5,9 +5,55 @@ import productsData from "@/data/products.json";
 const MAPS_GATEWAY = "https://connector-gateway.lovable.dev/google_maps";
 const SHEETS_GATEWAY = "https://connector-gateway.lovable.dev/google_sheets/v4";
 const CALENDAR_GATEWAY = "https://connector-gateway.lovable.dev/google_calendar/calendar/v3";
+const GMAIL_GATEWAY = "https://connector-gateway.lovable.dev/google_mail/gmail/v1";
 const QUOTE_SHEET_ID = "1AVvNPoavrAf0ptWt4dUXdA2zmGqNjA70ebPXn-gJgW8";
+const QUOTE_NOTIFY_EMAIL = "louis@progressgroup.co.za";
 const ORIGIN_ADDRESS =
   "Progress Lighting & Fires, 189 Durban Rd, Bellville, Cape Town, 7530, South Africa";
+
+function encodeRawEmail(to: string, subject: string, htmlBody: string): string {
+  const message = [
+    `To: ${to}`,
+    `Subject: ${subject}`,
+    "MIME-Version: 1.0",
+    'Content-Type: text/html; charset="UTF-8"',
+    "",
+    htmlBody,
+  ].join("\r\n");
+  // base64url encode (utf-8 safe)
+  const b64 =
+    typeof Buffer !== "undefined"
+      ? Buffer.from(message, "utf-8").toString("base64")
+      : btoa(unescape(encodeURIComponent(message)));
+  return b64.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+
+async function sendQuoteNotificationEmail(args: {
+  subject: string;
+  html: string;
+}): Promise<void> {
+  const lovableKey = process.env.LOVABLE_API_KEY;
+  const gmailKey = process.env.GOOGLE_MAIL_API_KEY;
+  if (!lovableKey || !gmailKey) return;
+  try {
+    const raw = encodeRawEmail(QUOTE_NOTIFY_EMAIL, args.subject, args.html);
+    const res = await fetch(`${GMAIL_GATEWAY}/users/me/messages/send`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${lovableKey}`,
+        "X-Connection-Api-Key": gmailKey,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ raw }),
+    });
+    if (!res.ok) {
+      console.error("Gmail send failed", res.status, await res.text());
+    }
+  } catch (err) {
+    console.error("Gmail send error", err);
+  }
+}
+
 
 async function createCalendarBooking(args: {
   summary: string;
