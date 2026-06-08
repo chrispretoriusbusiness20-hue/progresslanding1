@@ -263,7 +263,18 @@ function QuotePage() {
         transport: transportLabel ?? undefined,
         distanceKm: matched.distanceKm !== null ? `${matched.distanceKm} km` : undefined,
       })
-    : buildQuoteUrl({ firstName: firstName.trim(), lastName: lastName.trim() });
+    : buildQuoteUrl({
+        firstName: firstName.trim(),
+        lastName: lastName.trim(),
+        email: email.trim() || undefined,
+        phone: phone.trim() || undefined,
+        product: product.trim() || undefined,
+        quantity: quantity || undefined,
+        storyType: storyType || undefined,
+        flooring: flooring || undefined,
+      });
+
+  const showQuote = (submitted && lookup?.match) || canContinue;
 
   return (
     <div className="min-h-screen text-foreground">
