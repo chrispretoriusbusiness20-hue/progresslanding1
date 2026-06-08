@@ -710,21 +710,23 @@ function InstantQuote({
   quantity,
   storyType,
   flooring,
+  plateType,
   cornerInstall,
 }: {
   productName: string;
   quantity: number;
   storyType: "single" | "double" | "";
   flooring: string;
+  plateType: "glass" | "granite";
   cornerInstall: boolean;
 }) {
   const priceStr = PRODUCT_PRICE_MAP.get(productName) ?? null;
   const unitPrice = priceStr ? parseRand(priceStr) : null;
   const subtotal = unitPrice !== null ? unitPrice * quantity : null;
   const flueKit =
-    storyType === "double" ? 9000 : storyType === "single" ? 7000 : null;
-  const needsPlate = /laminat|carpet/i.test(flooring);
-  const plate = needsPlate ? 1500 : null;
+    storyType === "double" ? 9650 : storyType === "single" ? 7650 : null;
+  const needsPlate = flooring.length > 0 && !/tile/i.test(flooring);
+  const plate = needsPlate ? (plateType === "granite" ? 2895 : 2495) : null;
   const corner = cornerInstall ? 800 : null;
   const total =
     subtotal !== null || flueKit !== null || plate !== null || corner !== null
@@ -750,13 +752,13 @@ function InstantQuote({
     ...(needsPlate
       ? [
           {
-            label: "Glass floor plate" as string,
+            label: `${plateType === "granite" ? "Granite" : "Glass"} floor plate` as string,
             value: plate as number | null,
-            hint: "Required for laminate / carpet" as string,
+            hint: "Required for non-tile floors" as string,
           },
         ]
       : []),
-    { label: "Corner installation", value: corner, hint: cornerInstall ? "+R800" : "Standard wall" },
+    { label: "Corner installation", value: corner, hint: cornerInstall ? "+R800 (+R650 if ≤50 km)" : "Standard wall" },
   ];
 
   return (
