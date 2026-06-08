@@ -341,7 +341,7 @@ function QuotePage() {
             <img
               src={progressLogo.url}
               alt="Progress — Lighting, Fireplaces, Braais, Aircons"
-              className="w-full h-auto transition-transform group-hover:-translate-y-0.5"
+              className="w-1/2 h-auto mx-auto transition-transform group-hover:-translate-y-0.5"
             />
           </a>
           <div className="mt-3 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs font-semibold tracking-wide text-foreground/80">
