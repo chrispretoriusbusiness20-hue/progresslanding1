@@ -512,6 +512,20 @@ function QuotePage() {
               cornerInstall={cornerInstall}
             />
 
+            <button
+              type="button"
+              onClick={handleDownloadPDF}
+              disabled={pdfLoading}
+              className="inline-flex w-full items-center justify-center gap-2 border-2 border-foreground bg-background px-6 py-3 text-sm font-bold uppercase tracking-wider text-foreground shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {pdfLoading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Download className="h-4 w-4" />
+              )}
+              {pdfLoading ? "Building PDF…" : "Download PDF quote"}
+            </button>
+
             {error && (
               <p className="border-2 border-destructive bg-destructive/10 px-3 py-2 text-sm text-destructive">
                 {error}
