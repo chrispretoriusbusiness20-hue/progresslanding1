@@ -19,7 +19,7 @@ export type QuoteInput = {
   unitPrice: number | null;
   storyType: "single" | "double" | "";
   flooring?: string;
-  plateType?: "glass" | "granite" | "";
+  plateType?: "glass" | "granite" | "metal" | "";
   cornerInstall: boolean;
   transportPrice: number | null;
   transportZone?: string | null;
@@ -97,11 +97,11 @@ export async function generateQuotePDF(input: QuoteInput): Promise<void> {
     const flooringLower = (input.flooring ?? "").toLowerCase();
     const needsPlate = flooringLower.length > 0 && !/tile/.test(flooringLower);
     if (needsPlate) {
-      const plateType = input.plateType === "granite" ? "granite" : "glass";
-      const platePrice = plateType === "granite" ? 2895 : 2495;
+      const plateType = input.plateType === "granite" ? "granite" : input.plateType === "metal" ? "metal" : "glass";
+      const platePrice = plateType === "granite" ? 2895 : plateType === "metal" ? 1490 : 2495;
       items.push({
         quantity: 1,
-        description: `${plateType === "granite" ? "Granite" : "Glass"} floor plate`,
+        description: `${plateType === "granite" ? "Granite" : plateType === "metal" ? "Metal" : "Glass"} floor plate`,
         unitPrice: platePrice,
       });
     }

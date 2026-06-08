@@ -155,7 +155,7 @@ export const lookupQuoteSubmission = createServerFn({ method: "POST" })
       const flooringText = idx.flooring >= 0 ? (row[idx.flooring] ?? "").trim() : "";
       const flooringLower = flooringText.toLowerCase();
       const needsPlate = flooringLower.length > 0 && !/tile/.test(flooringLower);
-      const plate: { type: "glass"; price: number } | null = needsPlate
+      const plate: { type: "glass" | "granite" | "metal"; price: number } | null = needsPlate
         ? { type: "glass", price: 2495 }
         : null;
 

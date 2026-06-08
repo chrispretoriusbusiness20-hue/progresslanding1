@@ -157,7 +157,7 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
       quantity: z.number().int().min(1).max(50).default(1),
       storyType: z.enum(["single", "double"]).nullable(),
       flooring: z.string().trim().max(80).optional(),
-      plateType: z.enum(["glass", "granite"]).optional(),
+      plateType: z.enum(["glass", "granite", "metal"]).optional(),
       cornerInstall: z.boolean().default(false),
       address: z.string().trim().max(300).optional(),
       message: z.string().trim().max(2000).optional(),
@@ -178,9 +178,9 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
 
     const flooringLower = (data.flooring ?? "").toLowerCase();
     const needsPlate = flooringLower.length > 0 && !/tile/.test(flooringLower);
-    const plateType: "glass" | "granite" = data.plateType === "granite" ? "granite" : "glass";
-    const plate: { type: "glass" | "granite"; price: number } | null = needsPlate
-      ? { type: plateType, price: plateType === "granite" ? 2895 : 2495 }
+    const plateType: "glass" | "granite" | "metal" = data.plateType === "granite" ? "granite" : data.plateType === "metal" ? "metal" : "glass";
+    const plate: { type: "glass" | "granite" | "metal"; price: number } | null = needsPlate
+      ? { type: plateType, price: plateType === "granite" ? 2895 : plateType === "metal" ? 1490 : 2495 }
       : null;
 
     const distanceKm = data.address ? await computeDistanceKm(data.address) : null;

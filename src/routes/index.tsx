@@ -171,7 +171,7 @@ function QuotePage() {
   const [quantity, setQuantity] = useState(1);
   const [storyType, setStoryType] = useState<"single" | "double" | "">("");
   const [flooring, setFlooring] = useState("");
-  const [plateType, setPlateType] = useState<"glass" | "granite">("glass");
+  const [plateType, setPlateType] = useState<"glass" | "granite" | "metal">("glass");
   const [cornerInstall, setCornerInstall] = useState(false);
   const [address, setAddress] = useState("");
   const [message, setMessage] = useState("");
@@ -478,11 +478,12 @@ function QuotePage() {
               <Field label="Floor plate (required for non-tile floors)">
                 <select
                   value={plateType}
-                  onChange={(e) => setPlateType(e.target.value as "glass" | "granite")}
+                  onChange={(e) => setPlateType(e.target.value as "glass" | "granite" | "metal")}
                   className="form-input"
                 >
                   <option value="glass">Glass plate · R2 495</option>
                   <option value="granite">Granite plate · R2 895</option>
+                  <option value="metal">Metal plate · R1 490</option>
                 </select>
               </Field>
             )}
@@ -717,7 +718,7 @@ function InstantQuote({
   quantity: number;
   storyType: "single" | "double" | "";
   flooring: string;
-  plateType: "glass" | "granite";
+  plateType: "glass" | "granite" | "metal";
   cornerInstall: boolean;
 }) {
   const priceStr = PRODUCT_PRICE_MAP.get(productName) ?? null;
@@ -726,7 +727,7 @@ function InstantQuote({
   const flueKit =
     storyType === "double" ? 9650 : storyType === "single" ? 7650 : null;
   const needsPlate = flooring.length > 0 && !/tile/i.test(flooring);
-  const plate = needsPlate ? (plateType === "granite" ? 2895 : 2495) : null;
+  const plate = needsPlate ? (plateType === "granite" ? 2895 : plateType === "metal" ? 1490 : 2495) : null;
   const corner = cornerInstall ? 800 : null;
   const total =
     subtotal !== null || flueKit !== null || plate !== null || corner !== null
