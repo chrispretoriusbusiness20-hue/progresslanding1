@@ -1,0 +1,415 @@
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
+import progressLogo from "@/assets/progress-logo.jpeg.asset.json";
+
+export type QuoteLineItem = {
+  quantity: number;
+  description: string;
+  unitPrice: number;
+};
+
+export type QuoteInput = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  address?: string;
+  productName: string;
+  quantity: number;
+  unitPrice: number | null;
+  storyType: "single" | "double" | "";
+  flooring?: string;
+  cornerInstall: boolean;
+  transportPrice: number | null;
+  transportZone?: string | null;
+  notes?: string;
+};
+
+const ZAR = (n: number) =>
+  `R ${n.toLocaleString("en-ZA", { minimumFractionDigits: 2, maximumFractionDigits: 2 }).replace(/,/g, " ").replace(/\.(\d{2})$/, ",$1")}`;
+
+function generateQuoteNumber(): string {
+  const d = new Date();
+  const dd = String(d.getDate()).padStart(2, "0");
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  const rand = Math.floor(Math.random() * 900 + 100);
+  return `Q${rand} - ${dd}${mm}`;
+}
+
+function formatDate(): string {
+  const d = new Date();
+  return `${d.getFullYear()}/${String(d.getMonth() + 1).padStart(2, "0")}/${String(d.getDate()).padStart(2, "0")}`;
+}
+
+async function fetchAsDataURL(url: string): Promise<string | null> {
+  try {
+    const res = await fetch(url);
+    const blob = await res.blob();
+    return await new Promise((resolve, reject) => {
+      const r = new FileReader();
+      r.onloadend = () => resolve(r.result as string);
+      r.onerror = reject;
+      r.readAsDataURL(blob);
+    });
+  } catch {
+    return null;
+  }
+}
+
+export async function generateQuotePDF(input: QuoteInput): Promise<void> {
+  const doc = new jsPDF({ unit: "mm", format: "a4" });
+  const pageW = doc.internal.pageSize.getWidth();
+  const margin = 14;
+
+  const items: QuoteLineItem[] = [];
+  if (input.unitPrice !== null && input.unitPrice > 0) {
+    items.push({
+      quantity: input.quantity,
+      description: input.productName,
+      unitPrice: input.unitPrice,
+    });
+  }
+  if (input.storyType) {
+    const flueUnit = input.storyType === "double" ? 9500 : 6785;
+    items.push({
+      quantity: 1,
+      description: `Flue Kit (${input.storyType} story)`,
+      unitPrice: flueUnit,
+    });
+  }
+  if (input.flooring && /laminat|carpet/i.test(input.flooring)) {
+    items.push({ quantity: 1, description: "Glass floor plate", unitPrice: 2450 });
+  }
+  if (input.cornerInstall) {
+    items.push({ quantity: 1, description: "Corner installation", unitPrice: 800 });
+  }
+  if (input.transportPrice !== null && input.transportPrice > 0) {
+    items.push({
+      quantity: 1,
+      description: `Delivery${input.transportZone ? ` (${input.transportZone})` : ""}`,
+      unitPrice: input.transportPrice,
+    });
+  }
+
+  const logoData = await fetchAsDataURL(progressLogo.url);
+
+  // ---------- Header ----------
+  let y = margin;
+  if (logoData) {
+    try {
+      const imgW = 70;
+      const imgH = 22;
+      doc.addImage(logoData, "JPEG", (pageW - imgW) / 2, y, imgW, imgH);
+      y += imgH + 4;
+    } catch {
+      // ignore image errors
+    }
+  }
+  doc.setFont("helvetica", "normal").setFontSize(8.5);
+  doc.text(
+    "LIGHTING  |  FIREPLACES  |  BRAAIS  |  AIRCONS  |  APPLIANCES  |  GAS PRODUCTS  |  CERTIFIED GAS INSTALLERS",
+    pageW / 2,
+    y,
+    { align: "center" },
+  );
+  y += 4;
+  doc.setDrawColor(0).setLineWidth(0.3);
+  doc.line(margin, y, pageW - margin, y);
+  y += 5;
+  doc.setFontSize(9);
+  doc.text("Tel:  021 - 945 3636", margin, y);
+  doc.text("189 Durban Rd", pageW - margin, y, { align: "right" });
+  y += 4;
+  doc.text("E mail:  info@progressgroup.co.za", margin, y);
+  doc.text("Bellville", pageW - margin, y, { align: "right" });
+  y += 4;
+  doc.setTextColor(0, 0, 200);
+  doc.text("www.progressgroup.co.za", pageW - margin, y, { align: "right" });
+  doc.setTextColor(0);
+  y += 8;
+
+  // ---------- Quotation header table ----------
+  const quoteNo = generateQuoteNumber();
+  autoTable(doc, {
+    startY: y,
+    theme: "grid",
+    styles: { fontSize: 9, cellPadding: 2, lineColor: [0, 0, 0], lineWidth: 0.2 },
+    body: [
+      [
+        { content: `Quotation No: ${quoteNo}`, styles: { fontStyle: "bold" } },
+        { content: `Date: ${formatDate()}`, styles: { fontStyle: "bold" } },
+      ],
+    ],
+    margin: { left: margin, right: margin },
+  });
+  // @ts-expect-error lastAutoTable is attached by plugin
+  y = doc.lastAutoTable.finalY;
+
+  // Client + contact details table
+  const clientLines = [
+    `${input.firstName} ${input.lastName}`.trim(),
+    input.address ?? "",
+    "",
+  ];
+  autoTable(doc, {
+    startY: y,
+    theme: "grid",
+    styles: { fontSize: 9, cellPadding: 2, lineColor: [0, 0, 0], lineWidth: 0.2 },
+    columnStyles: {
+      0: { cellWidth: (pageW - margin * 2) / 2 },
+      1: { cellWidth: 28, fontStyle: "bold" },
+      2: { cellWidth: "auto" },
+    },
+    body: [
+      [
+        { content: "Client Details", styles: { fontStyle: "bold", fillColor: [245, 245, 245] } },
+        { content: "Client Contact Details", colSpan: 2, styles: { fontStyle: "bold", fillColor: [245, 245, 245] } },
+      ],
+      [clientLines[0], "Tel:", input.phone],
+      [clientLines[1], "Cell:", input.phone],
+      [clientLines[2], "E Mail:", input.email],
+    ],
+    margin: { left: margin, right: margin },
+  });
+  // @ts-expect-error
+  y = doc.lastAutoTable.finalY + 4;
+
+  // ---------- Line items ----------
+  const subtotal = items.reduce((s, it) => s + it.quantity * it.unitPrice, 0);
+  const vat = subtotal * 0.15;
+  const total = subtotal + vat;
+
+  autoTable(doc, {
+    startY: y,
+    theme: "grid",
+    head: [["Quantity", "Description", "Image", "Unit price", "Total"]],
+    body: items.length
+      ? items.map((it) => [
+          String(it.quantity),
+          it.description,
+          "",
+          ZAR(it.unitPrice),
+          ZAR(it.quantity * it.unitPrice),
+        ])
+      : [["", "Awaiting product selection", "", "", ""]],
+    styles: { fontSize: 9, cellPadding: 2.5, lineColor: [0, 0, 0], lineWidth: 0.2 },
+    headStyles: { fillColor: [245, 245, 245], textColor: 0, fontStyle: "bold" },
+    columnStyles: {
+      0: { cellWidth: 20, halign: "center" },
+      1: { cellWidth: "auto" },
+      2: { cellWidth: 30 },
+      3: { cellWidth: 30, halign: "right" },
+      4: { cellWidth: 30, halign: "right" },
+    },
+    margin: { left: margin, right: margin },
+  });
+  // @ts-expect-error
+  y = doc.lastAutoTable.finalY + 4;
+
+  // ---------- Notes ----------
+  doc.setFont("helvetica", "bold").setFontSize(10);
+  doc.text("NOTES", margin, y);
+  y += 4;
+  doc.setFont("helvetica", "normal").setFontSize(9);
+  const notesLines: string[] = ["Project details:"];
+  if (input.address) notesLines.push(`Location: ${input.address}`);
+  notesLines.push("Customer to supply the lintel base and isolator prior to installation.");
+  if (input.cornerInstall) notesLines.push("Installation: Corner installation");
+  if (input.transportPrice !== null) notesLines.push("Delivery included.");
+  if (input.notes) notesLines.push(input.notes);
+  for (const line of notesLines) {
+    const wrapped = doc.splitTextToSize(line, pageW - margin * 2);
+    doc.text(wrapped, margin, y);
+    y += wrapped.length * 4;
+  }
+  y += 3;
+
+  // ---------- Please note box ----------
+  autoTable(doc, {
+    startY: y,
+    theme: "grid",
+    styles: { fontSize: 9, cellPadding: 2.5, lineColor: [0, 0, 0], lineWidth: 0.2 },
+    body: [
+      [
+        {
+          content: "PLEASE NOTE   IF ANY EXTRA FLUES OR BEND NEEDED IT IS FOR CUSTOMERS ACCOUNT",
+          styles: { fontStyle: "bold" },
+        },
+      ],
+    ],
+    margin: { left: margin, right: margin },
+  });
+  // @ts-expect-error
+  y = doc.lastAutoTable.finalY + 4;
+
+  // ---------- Banking details (left) + totals (right) ----------
+  const colW = (pageW - margin * 2 - 6) / 2;
+  const totalsX = margin + colW + 6;
+
+  autoTable(doc, {
+    startY: y,
+    theme: "grid",
+    styles: { fontSize: 9, cellPadding: 2, lineColor: [0, 0, 0], lineWidth: 0.2 },
+    columnStyles: {
+      0: { cellWidth: 35, fontStyle: "bold" },
+      1: { cellWidth: colW - 35 },
+    },
+    body: [
+      [
+        { content: "BANKING DETAILS", colSpan: 2, styles: { fontStyle: "bold", fillColor: [60, 60, 60], textColor: 255 } },
+      ],
+      ["Account Name:", "Lava Fires"],
+      ["Bank:", "Nedbank"],
+      ["Branch Name:", "Tygerberg Winelands"],
+      ["Branch Code:", "118602"],
+      ["Account Number:", "1033186821"],
+      ["Reference:", "Use invoice number"],
+    ],
+    margin: { left: margin },
+    tableWidth: colW,
+  });
+  // @ts-expect-error
+  const bankEnd = doc.lastAutoTable.finalY;
+
+  // Totals
+  let ty = y + 2;
+  doc.setFont("helvetica", "normal").setFontSize(10);
+  doc.text("Subtotal (excl. VAT)", totalsX, ty);
+  doc.text(ZAR(subtotal), pageW - margin, ty, { align: "right" });
+  ty += 6;
+  doc.text("VAT (15%)", totalsX, ty);
+  doc.text(ZAR(vat), pageW - margin, ty, { align: "right" });
+  ty += 7;
+  doc.setLineWidth(0.4);
+  doc.line(totalsX, ty - 4, pageW - margin, ty - 4);
+  doc.setFont("helvetica", "bold").setFontSize(12);
+  doc.text("TOTAL (incl. VAT)", totalsX, ty);
+  doc.text(ZAR(total), pageW - margin, ty, { align: "right" });
+
+  y = Math.max(bankEnd, ty) + 6;
+
+  // ---------- Footer terms ----------
+  doc.setFont("helvetica", "bold").setFontSize(9);
+  doc.text("75% DEPOSIT ON ACCEPTANCE OF QUOTATION     BALANCE ON COMPLETION", margin, y);
+  y += 5;
+  doc.setFont("helvetica", "normal");
+  const footer = [
+    "All goods remain the property of Progress until full and final payment is received.",
+    "Yearly services of pellet and gas fireplaces and Air cons important.  Contact us to arrange.",
+    "To accept this quote, please sign here and send to info@progressinstallations.co.za",
+  ];
+  for (const line of footer) {
+    doc.text(line, margin, y);
+    y += 4;
+  }
+  y += 2;
+  doc.setFont("helvetica", "bold");
+  doc.text("I accept the above terms and conditions.", margin, y);
+  y += 8;
+  doc.setFont("helvetica", "normal");
+  doc.text("Signature: ____________________________", margin, y);
+  doc.text("Date: ____________________________", pageW - margin, y, { align: "right" });
+
+  // ---------- Page 2: Installation estimate (if corner install) ----------
+  if (input.cornerInstall) {
+    doc.addPage();
+    let py = margin;
+    if (logoData) {
+      try {
+        doc.addImage(logoData, "JPEG", (pageW - 60) / 2, py, 60, 20);
+        py += 24;
+      } catch {
+        // ignore
+      }
+    }
+    doc.setFont("helvetica", "normal").setFontSize(8.5);
+    doc.text(
+      "LIGHTING  |  FIREPLACES  |  BRAAIS  |  AIRCONS  |  APPLIANCES  |  GAS PRODUCTS  |  CERTIFIED GAS INSTALLERS",
+      pageW / 2,
+      py,
+      { align: "center" },
+    );
+    py += 4;
+    doc.line(margin, py, pageW - margin, py);
+    py += 5;
+    doc.setFontSize(9).setFont("helvetica", "bold");
+    doc.text(
+      "Certified Installers of Gas, Wood and Pellet fire place.  Service and Installation of air conditioning and coredrilling services",
+      margin,
+      py,
+    );
+    py += 5;
+    doc.setFont("helvetica", "normal");
+    doc.text("Tel:  021 - 945 3636", margin, py);
+    doc.text("189 Durban Rd", pageW - margin, py, { align: "right" });
+    py += 4;
+    doc.text("E mail:  info@progressgroup.co.za", margin, py);
+    doc.text("Bellville", pageW - margin, py, { align: "right" });
+    py += 8;
+
+    doc.setFont("helvetica", "bold").setFontSize(20);
+    doc.text("Installation Estimate", margin, py);
+    py += 6;
+    doc.setFont("helvetica", "italic").setFontSize(10);
+    doc.text("Subject to site visit or site photographs", margin, py);
+    py += 6;
+
+    const installFee = 5500;
+    autoTable(doc, {
+      startY: py,
+      theme: "grid",
+      head: [["Estimated Installation Fee", "Amount"]],
+      body: [
+        ["Installation", ZAR(installFee)],
+        [{ content: "Total", styles: { fontStyle: "bold" } }, { content: ZAR(installFee), styles: { fontStyle: "bold" } }],
+      ],
+      styles: { fontSize: 10, cellPadding: 3, lineColor: [0, 0, 0], lineWidth: 0.2 },
+      headStyles: { fillColor: [245, 245, 245], textColor: 0 },
+      columnStyles: { 1: { halign: "right" } },
+      margin: { left: margin, right: margin },
+    });
+    // @ts-expect-error
+    py = doc.lastAutoTable.finalY + 8;
+
+    autoTable(doc, {
+      startY: py,
+      theme: "grid",
+      styles: { fontSize: 9, cellPadding: 2, lineColor: [0, 0, 0], lineWidth: 0.2 },
+      columnStyles: { 0: { cellWidth: 45, fontStyle: "bold" } },
+      body: [
+        [{ content: "BANKING DETAILS", colSpan: 2, styles: { fontStyle: "bold" } }],
+        ["Bank:", "FNB/RMB"],
+        ["Account Holder:", "Progress Installations (Pty) Ltd"],
+        ["Account Type:", "Gold Business Account"],
+        ["Account Number:", "63158448770"],
+        ["Branch Code:", "250655"],
+        ["Reference:", "Use quote number"],
+      ],
+      margin: { left: margin, right: margin },
+    });
+    // @ts-expect-error
+    py = doc.lastAutoTable.finalY + 8;
+
+    doc.setFont("helvetica", "bold").setFontSize(14);
+    doc.text("Terms & Conditions", margin, py);
+    py += 6;
+    const terms: [string, string][] = [
+      ["1. Scope of Quotation:", "The online quotation provided is an estimate for the installation of a product based on the details you've entered. Actual costs may vary depending on the specific requirements of your installation site."],
+      ["2. Exclusions:", "The following items are not included in the online quotation:\n• Additional flues and bends needed for the installation."],
+      ["3. Onsite Visit:", "To confirm the final costing and ensure all details are accurate, an onsite visit is necessary. Upon the visit, a detailed quote will be provided which may differ from the online estimate due to actual site conditions or requirements."],
+      ["4. Amendments:", "We reserve the right to amend or modify the terms herein without prior notice. It's your responsibility to review these terms and conditions each time you seek a quotation."],
+      ["5. No Binding Offer:", "The online quotation should be considered as an initial estimate and is not a binding offer. All final quotations will be provided after the onsite visit."],
+    ];
+    for (const [heading, body] of terms) {
+      doc.setFont("helvetica", "bold").setFontSize(10);
+      doc.text(heading, margin, py);
+      py += 4.5;
+      doc.setFont("helvetica", "normal").setFontSize(9);
+      const wrapped = doc.splitTextToSize(body, pageW - margin * 2);
+      doc.text(wrapped, margin, py);
+      py += wrapped.length * 4 + 3;
+    }
+  }
+
+  doc.save(`Progress-Quote-${quoteNo.replace(/\s/g, "")}.pdf`);
+}
