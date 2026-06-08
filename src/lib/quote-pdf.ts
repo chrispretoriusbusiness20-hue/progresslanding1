@@ -19,9 +19,11 @@ export type QuoteInput = {
   unitPrice: number | null;
   storyType: "single" | "double" | "";
   flooring?: string;
+  plateType?: "glass" | "granite" | "";
   cornerInstall: boolean;
   transportPrice: number | null;
   transportZone?: string | null;
+  distanceKm?: number | null;
   notes?: string;
   extrasForAccount?: string;
   asInvoice?: boolean;
