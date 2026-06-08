@@ -305,6 +305,9 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
       distanceKm: distanceKm !== null ? Math.round(distanceKm * 10) / 10 : null,
       transportZone: transport?.zone ?? null,
       transportPrice: transport?.price ?? null,
+      bookingLink,
+      preferredDate: data.preferredDate ?? null,
+      preferredTime: data.preferredTime ?? null,
       submittedAt: new Date().toISOString(),
     };
   });
