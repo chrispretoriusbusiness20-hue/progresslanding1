@@ -11,7 +11,9 @@ import { SiteSurvey } from "@/components/site-survey";
 
 
 const QUOTE_APP_URL = "https://fireplacequotes.co.za/";
-const PRODUCT_NAMES = (productsData as { name: string }[]).map((p) => p.name);
+const PRODUCT_LIST = productsData as { name: string; price: string }[];
+const PRODUCT_NAMES = PRODUCT_LIST.map((p) => p.name);
+const PRODUCT_PRICE_MAP = new Map(PRODUCT_LIST.map((p) => [p.name, p.price]));
 
 export const Route = createFileRoute("/")({
   head: () => ({
