@@ -197,6 +197,7 @@ function QuotePage() {
   }, []);
 
   const submitFn = useServerFn(submitQuoteRequest);
+  const emailQuoteFn = useServerFn(emailQuotePdf);
   const canContinue = useMemo(
     () =>
       firstName.trim().length > 0 &&
