@@ -189,7 +189,6 @@ export const lookupQuoteSubmission = createServerFn({ method: "POST" })
         flueKitPrice,
         flooringText,
         plate,
-        installEstimate: 5500,
         cornerInstallPrice,
         cornerInstallText,
         destinationText,
