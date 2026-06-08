@@ -247,6 +247,7 @@ function QuotePage() {
           transportPrice: result.match ? result.transportPrice : null,
           transportZone: result.match ? result.transportZone : null,
           notes: message.trim() || undefined,
+          extrasForAccount: extrasForAccount.trim() || undefined,
         });
       } catch (pdfErr) {
         console.error("PDF generation failed", pdfErr);
