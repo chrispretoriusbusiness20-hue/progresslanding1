@@ -603,10 +603,6 @@ function QuotePage() {
                 className="h-12 w-auto sm:h-14 transition-transform group-hover:-translate-y-0.5"
               />
             </a>
-            <p className="mt-6 max-w-sm text-sm leading-relaxed text-muted-foreground">
-              Progress composing fireplaces for South Africa's most considered
-              homes since 1992.
-            </p>
           </div>
           <div>
             <p className="font-display text-[10px] uppercase tracking-[0.36em] text-primary">Contact</p>
