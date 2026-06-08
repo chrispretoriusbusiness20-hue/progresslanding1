@@ -100,9 +100,6 @@ export function SiteSurvey() {
   return (
     <div className="mb-8 border-2 border-foreground bg-background p-5 shadow-brutal-sm sm:p-7">
       <div className="flex items-start gap-3">
-        <span className="flex h-9 w-9 shrink-0 items-center justify-center border-2 border-foreground bg-primary text-primary-foreground">
-          <Ruler className="h-4 w-4" />
-        </span>
         <div>
           <p className="font-display text-[10px] uppercase tracking-[0.32em] text-primary">
             Site survey
