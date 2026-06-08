@@ -3,8 +3,30 @@ import { z } from "zod";
 import productsData from "@/data/products.json";
 
 const MAPS_GATEWAY = "https://connector-gateway.lovable.dev/google_maps";
+const SHEETS_GATEWAY = "https://connector-gateway.lovable.dev/google_sheets/v4";
+const QUOTE_SHEET_ID = "1AVvNPoavrAf0ptWt4dUXdA2zmGqNjA70ebPXn-gJgW8";
 const ORIGIN_ADDRESS =
   "Progress Lighting & Fires, 189 Durban Rd, Bellville, Cape Town, 7530, South Africa";
+
+async function appendToQuoteSheet(row: (string | number | null)[]): Promise<void> {
+  const lovableKey = process.env.LOVABLE_API_KEY;
+  const sheetsKey = process.env.GOOGLE_SHEETS_API_KEY;
+  if (!lovableKey || !sheetsKey) return;
+  try {
+    const url = `${SHEETS_GATEWAY}/spreadsheets/${QUOTE_SHEET_ID}/values/Sheet1!A:Z:append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS`;
+    await fetch(url, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${lovableKey}`,
+        "X-Connection-Api-Key": sheetsKey,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ values: [row.map((v) => (v === null ? "" : v))] }),
+    });
+  } catch (err) {
+    console.error("Failed to append quote to Google Sheet", err);
+  }
+}
 
 type Product = { name: string; price: string; url: string; category: string };
 const PRODUCTS = productsData as Product[];
