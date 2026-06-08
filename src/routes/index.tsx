@@ -299,7 +299,11 @@ function QuotePage() {
       </div>
 
       {/* Header */}
-      <header className="sticky top-0 z-50 border-b border-foreground/15 bg-background/85 backdrop-blur-md">
+      <header
+        className={`sticky top-0 z-50 border-b border-foreground/15 bg-background/85 backdrop-blur-md transition-transform duration-300 ${
+          headerHidden ? "-translate-y-full" : "translate-y-0"
+        }`}
+      >
         <div className="mx-auto max-w-6xl px-6 py-5">
           <a href="https://progressgroup.co.za/" className="block group">
             <img
