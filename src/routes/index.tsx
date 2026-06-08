@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { Flame, CheckCircle2, Loader2 } from "lucide-react";
+import { CheckCircle2, Loader2 } from "lucide-react";
 import { submitQuoteRequest } from "@/lib/quote-submit.functions";
 import productsData from "@/data/products.json";
 import progressLogo from "@/assets/progress-logo.jpeg.asset.json";
