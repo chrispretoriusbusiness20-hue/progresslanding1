@@ -244,9 +244,11 @@ function QuotePage() {
           unitPrice,
           storyType,
           flooring,
+          plateType,
           cornerInstall,
           transportPrice: result.match ? result.transportPrice : null,
           transportZone: result.match ? result.transportZone : null,
+          distanceKm: result.match ? result.distanceKm : null,
           notes: message.trim() || undefined,
           extrasForAccount: extrasForAccount.trim() || undefined,
         });
