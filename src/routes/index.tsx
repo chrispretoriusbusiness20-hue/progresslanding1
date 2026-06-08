@@ -365,19 +365,21 @@ function QuotePage() {
 
             <div className="grid gap-4 sm:grid-cols-[2fr_1fr]">
               <Field label="Product of interest *">
-                <input
-                  list="product-options"
-                  value={product}
+                <select
+                  value={PRODUCT_NAMES.includes(product) ? product : ""}
                   onChange={(e) => setProduct(e.target.value)}
                   required
-                  placeholder="e.g. Magma 001"
                   className="form-input"
-                />
-                <datalist id="product-options">
+                >
+                  <option value="" disabled>
+                    Select a product…
+                  </option>
                   {PRODUCT_NAMES.map((n) => (
-                    <option key={n} value={n} />
+                    <option key={n} value={n}>
+                      {n}
+                    </option>
                   ))}
-                </datalist>
+                </select>
               </Field>
               <Field label="Quantity">
                 <input
