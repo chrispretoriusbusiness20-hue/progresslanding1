@@ -675,7 +675,7 @@ function InstantQuote({
       hint: needsPlate ? "Required for laminate / carpet" : "Not required",
     },
     { label: "Corner installation", value: corner, hint: cornerInstall ? "+R800" : "Standard wall" },
-    { label: "Installation estimate", value: installEstimate, hint: "Standard installation" },
+    { label: "Standard installation Estimate", value: installEstimate, hint: "Standard installation" },
   ];
 
   return (
