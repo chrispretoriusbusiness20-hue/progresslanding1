@@ -474,11 +474,21 @@ function QuotePage() {
               />
             </Field>
 
+            {/* Instant quote breakdown — live, no submission required */}
+            <InstantQuote
+              productName={product}
+              quantity={quantity}
+              storyType={storyType}
+              flooring={flooring}
+              cornerInstall={cornerInstall}
+            />
+
             {error && (
               <p className="border-2 border-destructive bg-destructive/10 px-3 py-2 text-sm text-destructive">
                 {error}
               </p>
             )}
+
 
             <div className="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
               <p className="text-xs text-muted-foreground">
