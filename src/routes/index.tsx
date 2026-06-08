@@ -369,8 +369,6 @@ function QuotePage() {
             </p>
           </div>
 
-          <SiteSurvey />
-
           <form
             onSubmit={handleSubmit}
             className="space-y-5 border-2 border-foreground bg-card p-6 shadow-brutal-sm sm:p-8"
@@ -505,6 +503,8 @@ function QuotePage() {
                 className="form-input"
               />
             </Field>
+
+            <SiteSurvey />
 
             <Field label="Any flues or extras for client account">
               <textarea
