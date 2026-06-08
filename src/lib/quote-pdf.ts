@@ -332,5 +332,80 @@ export async function generateQuotePDF(input: QuoteInput): Promise<void> {
   doc.text("Signature: ____________________________", margin, y);
   doc.text("Date: ____________________________", pageW - margin, y, { align: "right" });
 
+  // ---------- Page 2: Installation estimate ----------
+  // Excluded when the site is further than 100 km from Cape Town
+  // (transport zones "100–200 km" or "200 km+").
+  const farFromCT = /100\s*[–-]\s*200|200\s*km\s*\+/i.test(input.transportZone ?? "");
+  if (!farFromCT) {
+    doc.addPage();
+    let py = margin;
+    doc.setFont("helvetica", "bold").setFontSize(14);
+    doc.text("STANDARD INSTALLATION ESTIMATE", pageW / 2, py, { align: "center" });
+    py += 8;
+    doc.setFont("helvetica", "normal").setFontSize(10);
+    const intro = doc.splitTextToSize(
+      "The following is an estimate for a standard installation. Final pricing is confirmed after an on-site survey. Extra flues, bends, scaffolding or non-standard work are for the customer's account.",
+      pageW - margin * 2,
+    );
+    doc.text(intro, margin, py);
+    py += intro.length * 5 + 4;
+
+    autoTable(doc, {
+      startY: py,
+      theme: "grid",
+      head: [["Description", "Amount"]],
+      body: [["Standard installation (estimate)", ZAR(5500)]],
+      styles: { fontSize: 10, cellPadding: 3, lineColor: [0, 0, 0], lineWidth: 0.2 },
+      headStyles: { fillColor: [245, 245, 245], textColor: 0, fontStyle: "bold" },
+      columnStyles: {
+        0: { cellWidth: "auto" },
+        1: { cellWidth: 40, halign: "right" },
+      },
+      margin: { left: margin, right: margin, bottom: bottomMargin },
+    });
+    // @ts-expect-error lastAutoTable is attached by plugin
+    py = doc.lastAutoTable.finalY + 6;
+
+    doc.setFont("helvetica", "bold").setFontSize(10);
+    doc.text("Includes (standard scope):", margin, py);
+    py += 5;
+    doc.setFont("helvetica", "normal").setFontSize(9);
+    const includes = [
+      "Mounting of the fireplace on a prepared lintel base.",
+      "Connection to a customer-supplied isolator.",
+      "Standard flue kit installation up to roof line (single or double story per quote).",
+      "Commissioning and basic operating handover.",
+    ];
+    for (const line of includes) {
+      const wrapped = doc.splitTextToSize(`• ${line}`, pageW - margin * 2);
+      doc.text(wrapped, margin, py);
+      py += wrapped.length * 4;
+    }
+    py += 3;
+    doc.setFont("helvetica", "bold").setFontSize(10);
+    doc.text("Excludes (for customer's account):", margin, py);
+    py += 5;
+    doc.setFont("helvetica", "normal").setFontSize(9);
+    const excludes = [
+      "Additional flues, bends or roof flashings beyond the standard kit.",
+      "Scaffolding, cranes or specialised access equipment.",
+      "Building, electrical or gas certification work outside the installation scope.",
+      "Travel/accommodation for sites requiring overnight stays.",
+    ];
+    for (const line of excludes) {
+      const wrapped = doc.splitTextToSize(`• ${line}`, pageW - margin * 2);
+      doc.text(wrapped, margin, py);
+      py += wrapped.length * 4;
+    }
+    py += 4;
+    doc.setFont("helvetica", "italic").setFontSize(9);
+    const note = doc.splitTextToSize(
+      "Note: This installation estimate is in addition to the product quotation on page 1. The estimate is confirmed after a site survey.",
+      pageW - margin * 2,
+    );
+    doc.text(note, margin, py);
+  }
+
   doc.save(`Progress-Quote-${quoteNo.replace(/\s/g, "")}.pdf`);
 }
+
