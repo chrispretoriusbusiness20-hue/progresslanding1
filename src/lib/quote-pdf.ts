@@ -339,72 +339,146 @@ export async function generateQuotePDF(input: QuoteInput): Promise<void> {
   if (!farFromCT) {
     doc.addPage();
     let py = margin;
-    doc.setFont("helvetica", "bold").setFontSize(14);
-    doc.text("STANDARD INSTALLATION ESTIMATE", pageW / 2, py, { align: "center" });
-    py += 8;
-    doc.setFont("helvetica", "normal").setFontSize(10);
-    const intro = doc.splitTextToSize(
-      "The following is an estimate for a standard installation. Final pricing is confirmed after an on-site survey. Extra flues, bends, scaffolding or non-standard work are for the customer's account.",
-      pageW - margin * 2,
-    );
-    doc.text(intro, margin, py);
-    py += intro.length * 5 + 4;
 
+    // --- Page 2 header (matches page 1) ---
+    if (logoData) {
+      try {
+        const imgW = 70;
+        const imgH = 22;
+        doc.addImage(logoData, "JPEG", (pageW - imgW) / 2, py, imgW, imgH);
+        py += imgH + 4;
+      } catch {
+        // ignore
+      }
+    }
+    doc.setFont("helvetica", "normal").setFontSize(8.5);
+    doc.text(
+      "Certified Installers of Gas, Wood and Pellet fire place. Service and Installation of air conditioning and coredilling services",
+      pageW / 2,
+      py,
+      { align: "center" },
+    );
+    py += 4;
+    doc.setDrawColor(0).setLineWidth(0.3);
+    doc.line(margin, py, pageW - margin, py);
+    py += 5;
+    doc.setFontSize(9);
+    doc.text("Tel:  021 - 945 3636", margin, py);
+    doc.text("189 Durban Rd", pageW - margin, py, { align: "right" });
+    py += 4;
+    doc.text("E mail:  info@progressgroup.co.za", margin, py);
+    doc.text("Bellville", pageW - margin, py, { align: "right" });
+    py += 4;
+    doc.setTextColor(0, 0, 200);
+    doc.text("www.progressgroup.co.za", pageW - margin, py, { align: "right" });
+    doc.setTextColor(0);
+    py += 10;
+
+    // --- Title ---
+    doc.setFont("helvetica", "bold").setFontSize(18);
+    doc.text("Installation Estimate", pageW / 2, py, { align: "center" });
+    py += 6;
+    doc.setFont("helvetica", "italic").setFontSize(10);
+    doc.text("Subject to site visit or site photographs", pageW / 2, py, { align: "center" });
+    py += 8;
+
+    // --- Fee table ---
     autoTable(doc, {
       startY: py,
       theme: "grid",
-      head: [["Description", "Amount"]],
-      body: [["Standard installation (estimate)", ZAR(5500)]],
+      head: [["Estimated Installation Fee", "Amount"]],
+      body: [
+        ["Within Cape Town", ZAR(5500)],
+        ["Core Drilling Fee", ZAR(0)],
+        ["Travel Fee", ZAR(0)],
+      ],
+      foot: [[{ content: "Total", styles: { fontStyle: "bold" } }, { content: ZAR(5500), styles: { fontStyle: "bold", halign: "right" } }]],
       styles: { fontSize: 10, cellPadding: 3, lineColor: [0, 0, 0], lineWidth: 0.2 },
-      headStyles: { fillColor: [245, 245, 245], textColor: 0, fontStyle: "bold" },
+      headStyles: { fillColor: [60, 60, 60], textColor: 255, fontStyle: "bold" },
+      footStyles: { fillColor: [245, 245, 245], textColor: 0 },
       columnStyles: {
         0: { cellWidth: "auto" },
-        1: { cellWidth: 40, halign: "right" },
+        1: { cellWidth: 45, halign: "right" },
       },
       margin: { left: margin, right: margin, bottom: bottomMargin },
     });
-    // @ts-expect-error lastAutoTable is attached by plugin
-    py = doc.lastAutoTable.finalY + 6;
+    // @ts-expect-error
+    py = doc.lastAutoTable.finalY + 8;
 
-    doc.setFont("helvetica", "bold").setFontSize(10);
-    doc.text("Includes (standard scope):", margin, py);
-    py += 5;
-    doc.setFont("helvetica", "normal").setFontSize(9);
-    const includes = [
-      "Mounting of the fireplace on a prepared lintel base.",
-      "Connection to a customer-supplied isolator.",
-      "Standard flue kit installation up to roof line (single or double story per quote).",
-      "Commissioning and basic operating handover.",
+    // --- Banking details box ---
+    autoTable(doc, {
+      startY: py,
+      theme: "grid",
+      styles: { fontSize: 9, cellPadding: 2, lineColor: [0, 0, 0], lineWidth: 0.2 },
+      columnStyles: {
+        0: { cellWidth: 40, fontStyle: "bold" },
+        1: { cellWidth: "auto" },
+      },
+      body: [
+        [{ content: "BANKING DETAILS", colSpan: 2, styles: { fontStyle: "bold", fillColor: [60, 60, 60], textColor: 255 } }],
+        ["Bank:", "FNB/RMB"],
+        ["Account Holder:", "Progress Installations (Pty) Ltd"],
+        ["Account Type:", "Gold Business Account"],
+        ["Account Number:", "63158448770"],
+        ["Branch Code:", "250655"],
+        ["Reference:", "Use quote number"],
+      ],
+      margin: { left: margin, right: margin, bottom: bottomMargin },
+    });
+    // @ts-expect-error
+    py = doc.lastAutoTable.finalY + 8;
+
+    // --- Terms & Conditions ---
+    ensureSpacePage2(8);
+    doc.setFont("helvetica", "bold").setFontSize(11);
+    doc.text("Terms & Conditions", margin, py);
+    py += 6;
+
+    const terms: { title: string; body: string }[] = [
+      {
+        title: "1. Scope of Quotation:",
+        body: "The online quotation provided is an estimate for the installation of a product based on the details you've entered. Actual costs may vary depending on the specific requirements of your installation site.",
+      },
+      {
+        title: "2. Exclusions:",
+        body: "The following items are not included in the online quotation:\n• Additional flues and bends needed for the installation.",
+      },
+      {
+        title: "3. Onsite Visit:",
+        body: "To confirm the final costing and ensure all details are accurate, an onsite visit is necessary. Upon the visit, a detailed quote will be provided which may differ from the online estimate due to actual site conditions or requirements.",
+      },
+      {
+        title: "4. Amendments:",
+        body: "We reserve the right to amend or modify the terms herein without prior notice. It's your responsibility to review these terms and conditions each time you seek a quotation.",
+      },
+      {
+        title: "5. No Binding Offer:",
+        body: "The online quotation should be considered as an initial estimate and is not a binding offer. All final quotations will be provided after the onsite visit.",
+      },
     ];
-    for (const line of includes) {
-      const wrapped = doc.splitTextToSize(`• ${line}`, pageW - margin * 2);
-      doc.text(wrapped, margin, py);
-      py += wrapped.length * 4;
+    for (const t of terms) {
+      ensureSpacePage2(10);
+      doc.setFont("helvetica", "bold").setFontSize(9.5);
+      doc.text(t.title, margin, py);
+      py += 4;
+      doc.setFont("helvetica", "normal").setFontSize(9);
+      for (const part of t.body.split("\n")) {
+        const wrapped = doc.splitTextToSize(part, pageW - margin * 2);
+        ensureSpacePage2(wrapped.length * 4);
+        doc.text(wrapped, margin, py);
+        py += wrapped.length * 4;
+      }
+      py += 3;
     }
-    py += 3;
-    doc.setFont("helvetica", "bold").setFontSize(10);
-    doc.text("Excludes (for customer's account):", margin, py);
-    py += 5;
-    doc.setFont("helvetica", "normal").setFontSize(9);
-    const excludes = [
-      "Additional flues, bends or roof flashings beyond the standard kit.",
-      "Scaffolding, cranes or specialised access equipment.",
-      "Building, electrical or gas certification work outside the installation scope.",
-      "Travel/accommodation for sites requiring overnight stays.",
-    ];
-    for (const line of excludes) {
-      const wrapped = doc.splitTextToSize(`• ${line}`, pageW - margin * 2);
-      doc.text(wrapped, margin, py);
-      py += wrapped.length * 4;
+
+    function ensureSpacePage2(needed: number) {
+      if (py + needed > pageH - bottomMargin) {
+        doc.addPage();
+        py = margin;
+      }
     }
-    py += 4;
-    doc.setFont("helvetica", "italic").setFontSize(9);
-    const note = doc.splitTextToSize(
-      "Note: This installation estimate is in addition to the product quotation on page 1. The estimate is confirmed after a site survey.",
-      pageW - margin * 2,
-    );
-    doc.text(note, margin, py);
   }
+
 
   doc.save(`Progress-Quote-${quoteNo.replace(/\s/g, "")}.pdf`);
 }
