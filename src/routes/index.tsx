@@ -657,9 +657,9 @@ function InstantQuote({
   const unitPrice = priceStr ? parseRand(priceStr) : null;
   const subtotal = unitPrice !== null ? unitPrice * quantity : null;
   const flueKit =
-    storyType === "double" ? 9500 : storyType === "single" ? 6785 : null;
+    storyType === "double" ? 9000 : storyType === "single" ? 7000 : null;
   const needsPlate = /laminat|carpet/i.test(flooring);
-  const plate = needsPlate ? 2450 : null;
+  const plate = needsPlate ? 1500 : null;
   const corner = cornerInstall ? 800 : null;
   const total =
     subtotal !== null || flueKit !== null || plate !== null || corner !== null
