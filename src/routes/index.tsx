@@ -681,11 +681,15 @@ function InstantQuote({
             ? "Double story"
             : "Single story",
     },
-    {
-      label: "Glass floor plate",
-      value: plate,
-      hint: needsPlate ? "Required for laminate / carpet" : "Not required",
-    },
+    ...(needsPlate
+      ? [
+          {
+            label: "Glass floor plate" as string,
+            value: plate as number | null,
+            hint: "Required for laminate / carpet" as string,
+          },
+        ]
+      : []),
     { label: "Corner installation", value: corner, hint: cornerInstall ? "+R800" : "Standard wall" },
     { label: "Standard installation Estimate", value: installEstimate, hint: "Standard installation" },
   ];
