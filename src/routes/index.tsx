@@ -474,6 +474,20 @@ function QuotePage() {
               </Field>
             </div>
 
+            {flooring && !/tile/i.test(flooring) && (
+              <Field label="Floor plate (required for non-tile floors)">
+                <select
+                  value={plateType}
+                  onChange={(e) => setPlateType(e.target.value as "glass" | "granite")}
+                  className="form-input"
+                >
+                  <option value="glass">Glass plate · R2 495</option>
+                  <option value="granite">Granite plate · R2 895</option>
+                </select>
+              </Field>
+            )}
+
+
             <Field label="Installation / delivery address">
               <AddressAutocomplete
                 value={address}
