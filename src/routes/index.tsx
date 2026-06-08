@@ -302,6 +302,7 @@ function QuotePage() {
         flooring: matched.flooringText || undefined,
         cornerInstall: cornerInstallLabel ?? undefined,
         cornerInstallPrice: cornerInstallLabel ?? undefined,
+        installEstimate: formatRand(installEstimate),
         transport: transportLabel ?? undefined,
         distanceKm: matched.distanceKm !== null ? `${matched.distanceKm} km` : undefined,
       })
