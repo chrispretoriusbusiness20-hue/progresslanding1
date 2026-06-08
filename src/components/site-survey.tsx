@@ -105,7 +105,7 @@ export function SiteSurvey() {
             Site survey
           </p>
           <h3 className="mt-1 font-display text-xl leading-tight sm:text-2xl">
-            Add cavity dimensions &amp; site photos
+            Site photos
           </h3>
           <p className="mt-1 text-sm text-muted-foreground">
             Optional but recommended — speeds up sizing and quoting. Photos upload securely; paste the summary into the form below.
