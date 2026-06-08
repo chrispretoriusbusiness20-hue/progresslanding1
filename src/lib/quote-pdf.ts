@@ -70,7 +70,7 @@ export async function generateQuotePDF(input: QuoteInput): Promise<void> {
     });
   }
   if (input.storyType) {
-    const flueUnit = input.storyType === "double" ? 9500 : 6785;
+    const flueUnit = input.storyType === "double" ? 9000 : 7000;
     items.push({
       quantity: 1,
       description: `Flue Kit (${input.storyType} story)`,
@@ -78,7 +78,7 @@ export async function generateQuotePDF(input: QuoteInput): Promise<void> {
     });
   }
   if (input.flooring && /laminat|carpet/i.test(input.flooring)) {
-    items.push({ quantity: 1, description: "Glass floor plate", unitPrice: 2450 });
+    items.push({ quantity: 1, description: "Glass floor plate", unitPrice: 1500 });
   }
   if (input.cornerInstall) {
     items.push({ quantity: 1, description: "Corner installation", unitPrice: 800 });

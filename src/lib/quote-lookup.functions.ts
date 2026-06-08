@@ -148,14 +148,13 @@ export const lookupQuoteSubmission = createServerFn({ method: "POST" })
           ? "single"
           : null;
       const flueKitPrice =
-        storyType === "double" ? 9500 : storyType === "single" ? 6785 : null;
+        storyType === "double" ? 9000 : storyType === "single" ? 7000 : null;
 
       const flooringText = idx.flooring >= 0 ? (row[idx.flooring] ?? "").trim() : "";
       const flooringLower = flooringText.toLowerCase();
       const needsPlate = /laminat|carpet/.test(flooringLower);
-      // Default to glass plate (most common). Steel R1450 / Glass R2450 / Granite R2850 — all incl VAT.
       const plate: { type: "glass"; price: number } | null = needsPlate
-        ? { type: "glass", price: 2450 }
+        ? { type: "glass", price: 1500 }
         : null;
 
       const cornerInstallText = idx.cornerInstall >= 0 ? (row[idx.cornerInstall] ?? "").trim() : "";

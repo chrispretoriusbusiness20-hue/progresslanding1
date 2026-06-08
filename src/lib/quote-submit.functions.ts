@@ -101,12 +101,8 @@ function matchProduct(query: string): Product | null {
   return best?.product ?? null;
 }
 
-function transportPriceForKm(km: number): { zone: string; price: number } {
-  if (km <= 25) return { zone: "0–25 km", price: 0 };
-  if (km <= 50) return { zone: "25–50 km", price: 450 };
-  if (km <= 100) return { zone: "50–100 km", price: 900 };
-  if (km <= 200) return { zone: "100–200 km", price: 1500 };
-  return { zone: "200 km+", price: 1800 };
+function transportPriceForKm(_km: number): { zone: string; price: number } {
+  return { zone: "Standard delivery", price: 800 };
 }
 
 async function computeDistanceKm(destination: string): Promise<number | null> {
@@ -176,12 +172,12 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
     const productSubtotal = unitPriceNum !== null ? unitPriceNum * data.quantity : null;
 
     const flueKitPrice =
-      data.storyType === "double" ? 9500 : data.storyType === "single" ? 6785 : null;
+      data.storyType === "double" ? 9000 : data.storyType === "single" ? 7000 : null;
 
     const flooringLower = (data.flooring ?? "").toLowerCase();
     const needsPlate = /laminat|carpet/.test(flooringLower);
     const plate: { type: "glass"; price: number } | null = needsPlate
-      ? { type: "glass", price: 2450 }
+      ? { type: "glass", price: 1500 }
       : null;
 
     const cornerInstallPrice = data.cornerInstall ? 800 : null;
