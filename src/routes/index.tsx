@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { CheckCircle2, Loader2 } from "lucide-react";
 import { submitQuoteRequest } from "@/lib/quote-submit.functions";
@@ -175,6 +175,18 @@ function QuotePage() {
   const [lookup, setLookup] = useState<LookupResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [headerHidden, setHeaderHidden] = useState(false);
+
+  useEffect(() => {
+    let lastScrollY = window.scrollY;
+    const onScroll = () => {
+      const currentY = window.scrollY;
+      setHeaderHidden(currentY > lastScrollY && currentY > 80);
+      lastScrollY = currentY;
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   const submitFn = useServerFn(submitQuoteRequest);
   const canContinue = useMemo(
@@ -287,7 +299,11 @@ function QuotePage() {
       </div>
 
       {/* Header */}
-      <header className="sticky top-0 z-50 border-b border-foreground/15 bg-background/85 backdrop-blur-md">
+      <header
+        className={`sticky top-0 z-50 border-b border-foreground/15 bg-background/85 backdrop-blur-md transition-transform duration-300 ${
+          headerHidden ? "-translate-y-full" : "translate-y-0"
+        }`}
+      >
         <div className="mx-auto max-w-6xl px-6 py-5">
           <a href="https://progressgroup.co.za/" className="block group">
             <img
