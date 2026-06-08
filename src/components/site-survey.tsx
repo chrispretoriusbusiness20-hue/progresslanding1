@@ -1,17 +1,11 @@
 import { useState } from "react";
-import { Loader2, Upload, X, Image as ImageIcon, Ruler, ClipboardCopy, Check } from "lucide-react";
+import { Loader2, Upload, X, Image as ImageIcon, ClipboardCopy, Check } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 type UploadedPhoto = {
   id: string;
   url: string;
   name: string;
-};
-
-type Dimensions = {
-  width: string;
-  height: string;
-  depth: string;
 };
 
 const SUPABASE_BUCKET = "site-photos";
@@ -26,11 +20,6 @@ function makeObjectKey(file: File, kind: string) {
 }
 
 export function SiteSurvey() {
-  const [cavity, setCavity] = useState<Dimensions>({ width: "", height: "", depth: "" });
-  const [chimney, setChimney] = useState<{ diameter: string; height: string }>({
-    diameter: "",
-    height: "",
-  });
   const [internal, setInternal] = useState<UploadedPhoto[]>([]);
   const [external, setExternal] = useState<UploadedPhoto[]>([]);
   const [uploading, setUploading] = useState<"internal" | "external" | null>(null);
@@ -81,13 +70,7 @@ export function SiteSurvey() {
 
   const buildSummary = () => {
     const lines: string[] = [];
-    const c = `${cavity.width || "?"} × ${cavity.height || "?"} × ${cavity.depth || "?"} mm`;
-    lines.push(`Cavity (W × H × D): ${c}`);
-    if (chimney.diameter || chimney.height) {
-      lines.push(`Chimney — Ø${chimney.diameter || "?"} mm, height ${chimney.height || "?"} mm`);
-    }
     if (internal.length) {
-      lines.push("");
       lines.push("Internal photos:");
       internal.forEach((p) => lines.push(`- ${p.url}`));
     }
@@ -101,11 +84,6 @@ export function SiteSurvey() {
 
   const summary = buildSummary();
   const hasAny =
-    cavity.width ||
-    cavity.height ||
-    cavity.depth ||
-    chimney.diameter ||
-    chimney.height ||
     internal.length > 0 ||
     external.length > 0;
 
@@ -122,9 +100,6 @@ export function SiteSurvey() {
   return (
     <div className="mb-8 border-2 border-foreground bg-background p-5 shadow-brutal-sm sm:p-7">
       <div className="flex items-start gap-3">
-        <span className="flex h-9 w-9 shrink-0 items-center justify-center border-2 border-foreground bg-primary text-primary-foreground">
-          <Ruler className="h-4 w-4" />
-        </span>
         <div>
           <p className="font-display text-[10px] uppercase tracking-[0.32em] text-primary">
             Site survey
@@ -137,49 +112,6 @@ export function SiteSurvey() {
           </p>
         </div>
       </div>
-
-      {/* Cavity dimensions */}
-      <fieldset className="mt-6">
-        <legend className="text-xs font-bold uppercase tracking-[0.24em] text-foreground">
-          Cavity (mm)
-        </legend>
-        <div className="mt-3 grid grid-cols-3 gap-3">
-          <NumField
-            label="Width"
-            value={cavity.width}
-            onChange={(v) => setCavity((p) => ({ ...p, width: v }))}
-          />
-          <NumField
-            label="Height"
-            value={cavity.height}
-            onChange={(v) => setCavity((p) => ({ ...p, height: v }))}
-          />
-          <NumField
-            label="Depth"
-            value={cavity.depth}
-            onChange={(v) => setCavity((p) => ({ ...p, depth: v }))}
-          />
-        </div>
-      </fieldset>
-
-      {/* Chimney */}
-      <fieldset className="mt-5">
-        <legend className="text-xs font-bold uppercase tracking-[0.24em] text-foreground">
-          Chimney (mm) — optional
-        </legend>
-        <div className="mt-3 grid grid-cols-2 gap-3">
-          <NumField
-            label="Flue diameter"
-            value={chimney.diameter}
-            onChange={(v) => setChimney((p) => ({ ...p, diameter: v }))}
-          />
-          <NumField
-            label="Chimney height"
-            value={chimney.height}
-            onChange={(v) => setChimney((p) => ({ ...p, height: v }))}
-          />
-        </div>
-      </fieldset>
 
       {/* Photos */}
       <div className="mt-6 grid gap-5 sm:grid-cols-2">
