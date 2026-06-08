@@ -503,6 +503,10 @@ export async function generateQuotePDF(input: QuoteInput): Promise<{ filename: s
   }
 
 
-  doc.save(`Progress-${isInvoice ? "Invoice" : "Quote"}-${quoteNo.replace(/\s/g, "")}.pdf`);
+  const filename = `Progress-${isInvoice ? "Invoice" : "Quote"}-${quoteNo.replace(/\s/g, "")}.pdf`;
+  doc.save(filename);
+  const dataUri = doc.output("datauristring");
+  const base64 = dataUri.includes(",") ? dataUri.split(",")[1] : dataUri;
+  return { filename, base64 };
 }
 
