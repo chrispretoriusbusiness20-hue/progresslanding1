@@ -70,13 +70,7 @@ export function SiteSurvey() {
 
   const buildSummary = () => {
     const lines: string[] = [];
-    const c = `${cavity.width || "?"} × ${cavity.height || "?"} × ${cavity.depth || "?"} mm`;
-    lines.push(`Cavity (W × H × D): ${c}`);
-    if (chimney.diameter || chimney.height) {
-      lines.push(`Chimney — Ø${chimney.diameter || "?"} mm, height ${chimney.height || "?"} mm`);
-    }
     if (internal.length) {
-      lines.push("");
       lines.push("Internal photos:");
       internal.forEach((p) => lines.push(`- ${p.url}`));
     }
@@ -90,11 +84,6 @@ export function SiteSurvey() {
 
   const summary = buildSummary();
   const hasAny =
-    cavity.width ||
-    cavity.height ||
-    cavity.depth ||
-    chimney.diameter ||
-    chimney.height ||
     internal.length > 0 ||
     external.length > 0;
 
