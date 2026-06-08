@@ -11,15 +11,16 @@ const QUOTE_NOTIFY_EMAIL = "louis@progressgroup.co.za";
 const ORIGIN_ADDRESS =
   "Progress Lighting & Fires, 189 Durban Rd, Bellville, Cape Town, 7530, South Africa";
 
-function encodeRawEmail(to: string, subject: string, htmlBody: string): string {
-  const message = [
+function encodeRawEmail(to: string, subject: string, htmlBody: string, cc?: string): string {
+  const headers = [
     `To: ${to}`,
+    ...(cc ? [`Cc: ${cc}`] : []),
     `Subject: ${subject}`,
     "MIME-Version: 1.0",
     'Content-Type: text/html; charset="UTF-8"',
     "",
-    htmlBody,
-  ].join("\r\n");
+  ];
+  const message = headers.join("\r\n") + htmlBody;
   // base64url encode (utf-8 safe)
   const b64 =
     typeof Buffer !== "undefined"
@@ -31,12 +32,13 @@ function encodeRawEmail(to: string, subject: string, htmlBody: string): string {
 async function sendQuoteNotificationEmail(args: {
   subject: string;
   html: string;
+  cc?: string;
 }): Promise<void> {
   const lovableKey = process.env.LOVABLE_API_KEY;
   const gmailKey = process.env.GOOGLE_MAIL_API_KEY;
   if (!lovableKey || !gmailKey) return;
   try {
-    const raw = encodeRawEmail(QUOTE_NOTIFY_EMAIL, args.subject, args.html);
+    const raw = encodeRawEmail(QUOTE_NOTIFY_EMAIL, args.subject, args.html, args.cc);
     const res = await fetch(`${GMAIL_GATEWAY}/users/me/messages/send`, {
       method: "POST",
       headers: {
@@ -364,6 +366,7 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
     await sendQuoteNotificationEmail({
       subject: `New quote — ${data.firstName} ${data.lastName} (${matched?.name ?? data.product})`,
       html,
+      cc: data.email,
     });
 
 
