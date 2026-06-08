@@ -175,6 +175,7 @@ function QuotePage() {
   const [cornerInstall, setCornerInstall] = useState(false);
   const [address, setAddress] = useState("");
   const [message, setMessage] = useState("");
+  const [extrasForAccount, setExtrasForAccount] = useState("");
 
   const [submitted, setSubmitted] = useState(false);
   const [lookup, setLookup] = useState<LookupResult | null>(null);
@@ -246,6 +247,7 @@ function QuotePage() {
           transportPrice: result.match ? result.transportPrice : null,
           transportZone: result.match ? result.transportZone : null,
           notes: message.trim() || undefined,
+          extrasForAccount: extrasForAccount.trim() || undefined,
         });
       } catch (pdfErr) {
         console.error("PDF generation failed", pdfErr);
@@ -500,6 +502,16 @@ function QuotePage() {
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 rows={3}
+                className="form-input"
+              />
+            </Field>
+
+            <Field label="Any flues or extras for client account">
+              <textarea
+                value={extrasForAccount}
+                onChange={(e) => setExtrasForAccount(e.target.value)}
+                rows={3}
+                placeholder="e.g. extra flue lengths, bends, adaptors — to be added to the client's account"
                 className="form-input"
               />
             </Field>
