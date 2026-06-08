@@ -244,6 +244,40 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
       data.message ?? "",
     ]);
 
+    let bookingLink: string | null = null;
+    if (data.preferredDate && data.preferredTime) {
+      // Build a SAST (+02:00) datetime; Africa/Johannesburg has no DST.
+      const startISO = `${data.preferredDate}T${data.preferredTime}:00+02:00`;
+      const startMs = Date.parse(startISO);
+      if (Number.isFinite(startMs)) {
+        const endISO = new Date(startMs + 60 * 60 * 1000).toISOString();
+        const lines = [
+          `Customer: ${data.firstName} ${data.lastName}`,
+          `Email: ${data.email}`,
+          `Phone: ${data.phone}`,
+          `Product: ${matched?.name ?? data.product} (x${data.quantity})`,
+          data.storyType ? `Story: ${data.storyType}` : "",
+          data.flooring ? `Flooring: ${data.flooring}` : "",
+          data.cornerInstall ? "Corner installation: yes" : "",
+          data.address ? `Address: ${data.address}` : "",
+          distanceKm !== null ? `Distance: ${Math.round(distanceKm * 10) / 10} km` : "",
+          totalPriceNum !== null ? `Estimated total: R${totalPriceNum}` : "",
+          data.message ? `Notes: ${data.message}` : "",
+        ].filter(Boolean);
+        const booking = await createCalendarBooking({
+          summary: `Site visit — ${data.firstName} ${data.lastName} (${matched?.name ?? data.product})`,
+          description: lines.join("\n"),
+          location: data.address,
+          startISO,
+          endISO,
+          attendeeEmail: data.email,
+          attendeeName: `${data.firstName} ${data.lastName}`.trim(),
+        });
+        bookingLink = booking?.htmlLink ?? null;
+      }
+    }
+
+
     return {
       match: true as const,
       firstName: data.firstName,
