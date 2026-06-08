@@ -150,13 +150,13 @@ export const lookupQuoteSubmission = createServerFn({ method: "POST" })
           ? "single"
           : null;
       const flueKitPrice =
-        storyType === "double" ? 9000 : storyType === "single" ? 7000 : null;
+        storyType === "double" ? 9650 : storyType === "single" ? 7650 : null;
 
       const flooringText = idx.flooring >= 0 ? (row[idx.flooring] ?? "").trim() : "";
       const flooringLower = flooringText.toLowerCase();
-      const needsPlate = /laminat|carpet/.test(flooringLower);
+      const needsPlate = flooringLower.length > 0 && !/tile/.test(flooringLower);
       const plate: { type: "glass"; price: number } | null = needsPlate
-        ? { type: "glass", price: 1500 }
+        ? { type: "glass", price: 2495 }
         : null;
 
       const cornerInstallText = idx.cornerInstall >= 0 ? (row[idx.cornerInstall] ?? "").trim() : "";
