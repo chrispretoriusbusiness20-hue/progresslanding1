@@ -179,6 +179,34 @@ function QuotePage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [headerHidden, setHeaderHidden] = useState(false);
+  const [pdfLoading, setPdfLoading] = useState(false);
+
+  const handleDownloadPDF = async () => {
+    if (pdfLoading) return;
+    setPdfLoading(true);
+    try {
+      const priceStr = PRODUCT_PRICE_MAP.get(product) ?? null;
+      const unitPrice = priceStr ? parseRand(priceStr) : null;
+      await generateQuotePDF({
+        firstName: firstName.trim() || "Customer",
+        lastName: lastName.trim(),
+        email: email.trim(),
+        phone: phone.trim(),
+        address: address.trim() || undefined,
+        productName: product,
+        quantity,
+        unitPrice,
+        storyType,
+        flooring,
+        cornerInstall,
+        transportPrice: lookup?.match ? lookup.transportPrice : null,
+        transportZone: lookup?.match ? lookup.transportZone : null,
+        notes: message.trim() || undefined,
+      });
+    } finally {
+      setPdfLoading(false);
+    }
+  };
 
   useEffect(() => {
     let lastScrollY = window.scrollY;
