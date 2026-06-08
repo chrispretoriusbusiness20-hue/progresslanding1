@@ -289,8 +289,6 @@ function QuotePage() {
             </span>
           </a>
           <nav className="hidden items-center gap-8 text-[11px] font-semibold uppercase tracking-[0.32em] text-foreground/70 md:flex">
-            <a href="https://progressgroup.co.za/" className="hover:text-primary">Home</a>
-            <a href="https://progressgroup.co.za/about" className="hover:text-primary">About</a>
             <a href="https://progressgroup.co.za/contact" className="hover:text-primary">Contact</a>
             <a
               href="#form"
