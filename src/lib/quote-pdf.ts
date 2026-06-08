@@ -218,6 +218,7 @@ export async function generateQuotePDF(input: QuoteInput): Promise<void> {
   y = doc.lastAutoTable.finalY + 4;
 
   // ---------- Notes ----------
+  ensureSpace(8);
   doc.setFont("helvetica", "bold").setFontSize(10);
   doc.text("NOTES", margin, y);
   y += 4;
@@ -233,6 +234,7 @@ export async function generateQuotePDF(input: QuoteInput): Promise<void> {
   }
   for (const line of notesLines) {
     const wrapped = doc.splitTextToSize(line, pageW - margin * 2);
+    ensureSpace(wrapped.length * 4);
     doc.text(wrapped, margin, y);
     y += wrapped.length * 4;
   }
@@ -251,17 +253,20 @@ export async function generateQuotePDF(input: QuoteInput): Promise<void> {
         },
       ],
     ],
-    margin: { left: margin, right: margin },
+    margin: { left: margin, right: margin, bottom: bottomMargin },
   });
   // @ts-expect-error
   y = doc.lastAutoTable.finalY + 4;
 
   // ---------- Banking details (left) + totals (right) ----------
+  // Keep both columns together on the same page.
+  ensureSpace(58);
   const colW = (pageW - margin * 2 - 6) / 2;
   const totalsX = margin + colW + 6;
+  const bankStartY = y;
 
   autoTable(doc, {
-    startY: y,
+    startY: bankStartY,
     theme: "grid",
     styles: { fontSize: 9, cellPadding: 2, lineColor: [0, 0, 0], lineWidth: 0.2 },
     columnStyles: {
@@ -279,14 +284,14 @@ export async function generateQuotePDF(input: QuoteInput): Promise<void> {
       ["Account Number:", "1033186821"],
       ["Reference:", "Use invoice number"],
     ],
-    margin: { left: margin },
+    margin: { left: margin, bottom: bottomMargin },
     tableWidth: colW,
   });
   // @ts-expect-error
   const bankEnd = doc.lastAutoTable.finalY;
 
   // Totals
-  let ty = y + 2;
+  let ty = bankStartY + 2;
   doc.setFont("helvetica", "normal").setFontSize(10);
   doc.text("Subtotal (excl. VAT)", totalsX, ty);
   doc.text(ZAR(subtotal), pageW - margin, ty, { align: "right" });
@@ -303,6 +308,7 @@ export async function generateQuotePDF(input: QuoteInput): Promise<void> {
   y = Math.max(bankEnd, ty) + 6;
 
   // ---------- Footer terms ----------
+  ensureSpace(6);
   doc.setFont("helvetica", "bold").setFontSize(9);
   doc.text("75% DEPOSIT ON ACCEPTANCE OF QUOTATION     BALANCE ON COMPLETION", margin, y);
   y += 5;
@@ -313,10 +319,12 @@ export async function generateQuotePDF(input: QuoteInput): Promise<void> {
     "To accept this quote, please sign here and send to info@progressinstallations.co.za",
   ];
   for (const line of footer) {
+    ensureSpace(4);
     doc.text(line, margin, y);
     y += 4;
   }
   y += 2;
+  ensureSpace(12);
   doc.setFont("helvetica", "bold");
   doc.text("I accept the above terms and conditions.", margin, y);
   y += 8;
