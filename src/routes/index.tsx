@@ -162,7 +162,7 @@ function QuotePage() {
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
-  const [product, setProduct] = useState("");
+  const [product, setProduct] = useState("Magma 001 Freestanding Fireplace 10kW");
   const [quantity, setQuantity] = useState(1);
   const [storyType, setStoryType] = useState<"single" | "double" | "">("");
   const [flooring, setFlooring] = useState("");
