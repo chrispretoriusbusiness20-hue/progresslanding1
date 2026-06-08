@@ -302,6 +302,15 @@ function QuotePage() {
               className="h-12 w-auto sm:h-14 transition-transform group-hover:-translate-y-0.5"
             />
           </a>
+          <div className="hidden sm:flex items-center gap-4 text-xs font-semibold tracking-wide text-foreground/80">
+            <a href="tel:+27875500413" className="hover:text-primary transition-colors">
+              Installations: 087 550 0413
+            </a>
+            <span className="text-foreground/20">|</span>
+            <a href="tel:+27219453636" className="hover:text-primary transition-colors">
+              Shopping: 021 945 3636
+            </a>
+          </div>
         </div>
       </header>
 
@@ -559,6 +568,8 @@ function QuotePage() {
           <div>
             <p className="font-display text-[10px] uppercase tracking-[0.36em] text-primary">Contact</p>
             <ul className="mt-4 space-y-2 text-sm text-foreground/80">
+              <li>Installations · <a href="tel:+27875500413" className="hover:text-primary">087 550 0413</a></li>
+              <li>Shopping · <a href="tel:+27219453636" className="hover:text-primary">021 945 3636</a></li>
               <li>WhatsApp · <a href="tel:+27689560320" className="hover:text-primary">068 956 0320</a></li>
               <li><a href="mailto:Info@progressgroup.co.za" className="hover:text-primary">Info@progressgroup.co.za</a></li>
               <li>Bellville · Cape Town · South Africa</li>
