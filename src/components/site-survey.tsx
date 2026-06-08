@@ -20,11 +20,6 @@ function makeObjectKey(file: File, kind: string) {
 }
 
 export function SiteSurvey() {
-  const [cavity, setCavity] = useState<Dimensions>({ width: "", height: "", depth: "" });
-  const [chimney, setChimney] = useState<{ diameter: string; height: string }>({
-    diameter: "",
-    height: "",
-  });
   const [internal, setInternal] = useState<UploadedPhoto[]>([]);
   const [external, setExternal] = useState<UploadedPhoto[]>([]);
   const [uploading, setUploading] = useState<"internal" | "external" | null>(null);
