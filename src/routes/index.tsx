@@ -539,8 +539,6 @@ function QuotePage() {
               </button>
             </div>
           </form>
-
-          <SiteSurvey />
         </div>
       </section>
 
