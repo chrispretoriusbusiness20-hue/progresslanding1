@@ -522,18 +522,13 @@ function QuotePage() {
       <footer className="border-t border-foreground/15 bg-background">
         <div className="mx-auto grid max-w-6xl gap-12 px-6 py-16 md:grid-cols-[1.4fr_1fr_1fr]">
           <div>
-            <div className="flex items-center gap-3">
-              <span className="flex h-10 w-10 items-center justify-center border border-primary/60 bg-foreground text-primary">
-                <Flame className="h-5 w-5" />
-              </span>
-              <span className="font-display text-base leading-none">
-                PROGRESS
-                <span className="ml-1 italic text-gradient-ember">Progress</span>
-                <span className="mt-1 block font-body text-[10px] uppercase tracking-[0.32em] text-muted-foreground">
-                  Lighting · Fires · Aircon
-                </span>
-              </span>
-            </div>
+            <a href="https://progressgroup.co.za/" className="flex items-center group">
+              <img
+                src={progressLogo.url}
+                alt="Progress — Lighting, Fireplaces, Braais, Aircons"
+                className="h-12 w-auto sm:h-14 transition-transform group-hover:-translate-y-0.5"
+              />
+            </a>
             <p className="mt-6 max-w-sm text-sm leading-relaxed text-muted-foreground">
               An atelier composing fireplaces for South Africa's most considered
               homes since 1992.
