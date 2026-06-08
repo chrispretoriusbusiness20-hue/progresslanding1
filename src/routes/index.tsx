@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { CheckCircle2, Loader2 } from "lucide-react";
 import { submitQuoteRequest } from "@/lib/quote-submit.functions";
