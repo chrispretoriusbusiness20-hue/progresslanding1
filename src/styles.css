@@ -1,6 +1,6 @@
 @import "tailwindcss" source(none);
-@source "../src";
 @import "tw-animate-css";
+@source "../src";
 
 /* Fonts loaded via <link> in src/routes/__root.tsx */
 
