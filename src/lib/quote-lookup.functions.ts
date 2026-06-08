@@ -162,11 +162,14 @@ export const lookupQuoteSubmission = createServerFn({ method: "POST" })
       const cornerInstallText = idx.cornerInstall >= 0 ? (row[idx.cornerInstall] ?? "").trim() : "";
       const cornerInstallLower = cornerInstallText.toLowerCase();
       const isCornerInstall = /corner/.test(cornerInstallLower);
-      const cornerInstallPrice = isCornerInstall ? 800 : null;
 
       const destinationText = idx.distance >= 0 ? (row[idx.distance] ?? "").trim() : "";
       const distanceKm = destinationText ? await computeDistanceKm(destinationText) : null;
       const transport = distanceKm !== null ? transportPriceForKm(distanceKm, destinationText) : null;
+
+      const cornerInstallPrice = isCornerInstall
+        ? 800 + (distanceKm !== null && distanceKm <= 50 ? 650 : 0)
+        : null;
 
       return {
         match: true as const,
