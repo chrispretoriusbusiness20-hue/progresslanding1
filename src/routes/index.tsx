@@ -555,10 +555,43 @@ function QuotePage() {
       {showQuote && (
         <section id="quote" className="border-t border-border bg-background">
           <div className="mx-auto max-w-6xl px-6 py-16 sm:py-20">
-            <div className="mb-6">
+            <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <p className="text-lg text-muted-foreground">
                 Thank you for the enquiry find quote attached
               </p>
+              <button
+                type="button"
+                onClick={async () => {
+                  try {
+                    const priceStr = PRODUCT_PRICE_MAP.get(product) ?? null;
+                    const unitPrice = priceStr ? parseRand(priceStr) : null;
+                    await generateQuotePDF({
+                      firstName: firstName.trim() || "Customer",
+                      lastName: lastName.trim(),
+                      email: email.trim(),
+                      phone: phone.trim(),
+                      address: address.trim() || undefined,
+                      productName: product,
+                      quantity,
+                      unitPrice,
+                      storyType,
+                      flooring,
+                      cornerInstall,
+                      transportPrice: matched ? matched.transportPrice : null,
+                      transportZone: matched ? matched.transportZone : null,
+                      notes: message.trim() || undefined,
+                      extrasForAccount: extrasForAccount.trim() || undefined,
+                      asInvoice: true,
+                    });
+                  } catch (err) {
+                    console.error("Invoice generation failed", err);
+                  }
+                }}
+                className="inline-flex items-center justify-center gap-2 border-2 border-foreground bg-primary px-6 py-3 text-sm font-bold uppercase tracking-wider text-primary-foreground shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
+              >
+                <CheckCircle2 className="h-4 w-4" />
+                Order Now — Get Invoice
+              </button>
             </div>
 
             <div className="overflow-hidden border-2 border-foreground bg-background shadow-[8px_8px_0_0_var(--foreground)]">
@@ -571,6 +604,7 @@ function QuotePage() {
           </div>
         </section>
       )}
+
 
       {/* Footer */}
       <footer className="border-t border-foreground/15 bg-background">
