@@ -294,19 +294,19 @@ function QuotePage() {
 
       {/* Header */}
       <header className="sticky top-0 z-50 border-b border-foreground/15 bg-background/85 backdrop-blur-md">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
-          <a href="https://progressgroup.co.za/" className="flex items-center group">
+        <div className="mx-auto max-w-6xl px-6 py-5">
+          <a href="https://progressgroup.co.za/" className="block group">
             <img
               src={progressLogo.url}
               alt="Progress — Lighting, Fireplaces, Braais, Aircons"
-              className="h-12 w-auto sm:h-14 transition-transform group-hover:-translate-y-0.5"
+              className="w-full h-auto transition-transform group-hover:-translate-y-0.5"
             />
           </a>
-          <div className="hidden sm:flex items-center gap-4 text-xs font-semibold tracking-wide text-foreground/80">
+          <div className="mt-3 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs font-semibold tracking-wide text-foreground/80">
             <a href="tel:+27875500413" className="hover:text-primary transition-colors">
               Installations: 087 550 0413
             </a>
-            <span className="text-foreground/20">|</span>
+            <span className="text-foreground/20 hidden sm:inline">|</span>
             <a href="tel:+27219453636" className="hover:text-primary transition-colors">
               Shopping: 021 945 3636
             </a>
