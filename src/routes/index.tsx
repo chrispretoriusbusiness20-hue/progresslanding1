@@ -4,6 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { Flame, CheckCircle2, Loader2 } from "lucide-react";
 import { submitQuoteRequest } from "@/lib/quote-submit.functions";
 import productsData from "@/data/products.json";
+import progressLogo from "@/assets/progress-logo.jpeg.asset.json";
 
 import { LazyIframe } from "@/components/lazy-iframe";
 import { SiteSurvey } from "@/components/site-survey";
@@ -276,16 +277,12 @@ function QuotePage() {
       {/* Header */}
       <header className="sticky top-0 z-50 border-b border-foreground/15 bg-background/85 backdrop-blur-md">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
-          <a href="https://progressgroup.co.za/" className="flex items-center gap-3 group">
-            <span className="relative flex h-10 w-10 items-center justify-center border border-primary/60 bg-foreground text-primary transition-transform group-hover:-translate-y-0.5">
-              <Flame className="h-5 w-5" strokeWidth={2} />
-            </span>
-            <span className="font-display text-base leading-none tracking-tight">
-              PROGRESS
-              <span className="mt-1 block font-body text-[10px] uppercase tracking-[0.32em] text-muted-foreground">
-                Lighting · Fires · Aircon
-              </span>
-            </span>
+          <a href="https://progressgroup.co.za/" className="flex items-center group">
+            <img
+              src={progressLogo.url}
+              alt="Progress — Lighting, Fireplaces, Braais, Aircons"
+              className="h-12 w-auto sm:h-14 transition-transform group-hover:-translate-y-0.5"
+            />
           </a>
           <nav className="hidden items-center gap-8 text-[11px] font-semibold uppercase tracking-[0.32em] text-foreground/70 md:flex">
             <a href="https://progressgroup.co.za/contact" className="hover:text-primary">Contact</a>
