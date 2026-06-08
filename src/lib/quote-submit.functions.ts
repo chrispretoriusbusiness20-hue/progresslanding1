@@ -164,6 +164,8 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
       cornerInstall: z.boolean().default(false),
       address: z.string().trim().max(300).optional(),
       message: z.string().trim().max(2000).optional(),
+      preferredDate: z.string().trim().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+      preferredTime: z.string().trim().regex(/^\d{2}:\d{2}$/).optional(),
     }),
   )
   .handler(async ({ data }) => {
