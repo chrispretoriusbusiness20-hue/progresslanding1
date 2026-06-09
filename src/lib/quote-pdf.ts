@@ -372,10 +372,10 @@ export async function generateQuotePDF(input: QuoteInput): Promise<{ filename: s
     // --- Page 2 header (matches page 1) ---
     if (logoData) {
       try {
-        const imgW = 70;
-        const imgH = 22;
-        doc.addImage(logoData, "JPEG", (pageW - imgW) / 2, py, imgW, imgH);
-        py += imgH + 4;
+        const imgW = 150;
+        const imgH = imgW / 4.46;
+        doc.addImage(logoData, "PNG", (pageW - imgW) / 2, py, imgW, imgH);
+        py += imgH + 3;
       } catch {
         // ignore
       }
