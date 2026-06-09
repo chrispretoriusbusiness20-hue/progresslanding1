@@ -274,7 +274,7 @@ function QuotePage() {
             await emailQuoteFn({
               data: {
                 to: result.email,
-                subject: `Quote ${pdf.quoteNo} — ${fullName}`,
+                subject: `Your Progress Group Quote – ${pdf.quoteNo}`,
                 html: thankYouHtml,
                 filename: pdf.filename,
                 pdfBase64: pdf.base64,
