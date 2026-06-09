@@ -490,6 +490,7 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
       ["Address", data.address ?? "—"],
       ["Distance", distanceKm !== null ? `${Math.round(distanceKm * 10) / 10} km` : "—"],
       ["Transport", transport ? `${transport.zone} (${fmtR(transport.price)})` : "—"],
+      ["Travel fee", travelFee > 0 ? fmtR(travelFee) : "—"],
       ["Unit price", unitPriceNum !== null ? fmtR(unitPriceNum) : "—"],
       ["Flue kit", flueKitPrice !== null ? fmtR(flueKitPrice) : "—"],
       ["Estimated total", totalPriceNum !== null ? fmtR(totalPriceNum) : "—"],
