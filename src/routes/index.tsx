@@ -703,7 +703,7 @@ function QuotePage() {
           <div>
             <p className="font-display text-[10px] uppercase tracking-[0.36em] text-primary">Progress</p>
             <ul className="mt-4 space-y-2 text-sm text-foreground/80">
-              <li><a href="https://progressgroup.co.za/" className="hover:text-primary">progressgroup.co.za</a></li>
+              <li>progressgroup.co.za</li>
               <li><Link to="/catalog" className="hover:text-primary">The Catalogue</Link></li>
               <li><a href="#form" className="hover:text-primary">Private Consultation</a></li>
             </ul>
