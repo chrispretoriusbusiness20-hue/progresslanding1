@@ -258,7 +258,6 @@ function QuotePage() {
         if (result.match && pdf) {
           try {
             const firstName = (result.firstName || "").replace(/[<>&]/g, "");
-            const productName = (result.catalog?.name || result.productRequested || "your selection").replace(/[<>&]/g, "");
             const thankYouHtml = `
               <div style="font-family:Arial,sans-serif;color:#111;max-width:640px;line-height:1.6">
                 <p style="margin:0 0 12px">Good day${firstName ? ` ${firstName}` : ""},</p>
@@ -267,7 +266,6 @@ function QuotePage() {
                 <p style="margin:24px 0 4px">Kind regards,</p>
                 <p style="margin:0;font-weight:600">The Progress Group</p>
               </div>`;
-            void productName;
             await emailQuoteFn({
               data: {
                 subject: `Quote ${pdf.quoteNo}`,
