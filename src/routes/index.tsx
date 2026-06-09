@@ -7,7 +7,7 @@ import { generateQuotePDF } from "@/lib/quote-pdf";
 import productsData from "@/data/products.json";
 import progressLogo from "@/assets/progress-logo.jpeg.asset.json";
 
-import { LazyIframe } from "@/components/lazy-iframe";
+
 import { SiteSurvey } from "@/components/site-survey";
 import { AddressAutocomplete } from "@/components/address-autocomplete";
 
@@ -258,16 +258,13 @@ function QuotePage() {
         if (result.match && pdf) {
           try {
             const firstName = (result.firstName || "").replace(/[<>&]/g, "");
-            const productName = (result.catalog?.name || result.productRequested || "your selection").replace(/[<>&]/g, "");
             const thankYouHtml = `
               <div style="font-family:Arial,sans-serif;color:#111;max-width:640px;line-height:1.6">
-                <h2 style="margin:0 0 16px;color:#111">Thank you for your enquiry${firstName ? `, ${firstName}` : ""}!</h2>
-                <p style="margin:0 0 12px">We've received your quote request for <strong>${productName}</strong> and truly appreciate your interest in The Progress Group.</p>
-                <p style="margin:0 0 12px">Please find your detailed quote attached as a PDF for your records. One of our team members will be in touch shortly to confirm the next steps${result.bookingLink ? " and your site visit booking" : ""}.</p>
-                <p style="margin:0 0 12px">In the meantime, if you have any questions, simply reply to this email or call us on <strong>021 949 1132</strong>.</p>
+                <p style="margin:0 0 12px">Good day${firstName ? ` ${firstName}` : ""},</p>
+                <p style="margin:0 0 12px">Thank you for your enquiry.</p>
+                <p style="margin:0 0 12px">Find attached the quote.</p>
                 <p style="margin:24px 0 4px">Kind regards,</p>
-                <p style="margin:0;font-weight:600">The Progress Group Team</p>
-                <p style="margin:4px 0 0;color:#666;font-size:13px">189 Durban Rd, Bellville, Cape Town · progressgroup.co.za</p>
+                <p style="margin:0;font-weight:600">The Progress Group</p>
               </div>`;
             await emailQuoteFn({
               data: {
@@ -349,6 +346,7 @@ function QuotePage() {
         storyType: storyType || undefined,
         flooring: flooring || undefined,
       });
+  void quoteUrl;
 
   const showQuote = (submitted && lookup?.match) || canContinue;
 
@@ -682,13 +680,6 @@ function QuotePage() {
               </div>
             </div>
 
-            <div className="overflow-hidden border-2 border-foreground bg-background shadow-[8px_8px_0_0_var(--foreground)]">
-              <LazyIframe
-                src={quoteUrl}
-                title="Prefilled fireplace quote"
-                className="h-[1600px] w-full"
-              />
-            </div>
           </div>
         </section>
       )}
