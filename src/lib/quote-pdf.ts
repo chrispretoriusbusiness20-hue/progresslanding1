@@ -24,6 +24,7 @@ export type QuoteInput = {
   transportPrice: number | null;
   transportZone?: string | null;
   distanceKm?: number | null;
+  travelFee?: number | null;
   notes?: string;
   extrasForAccount?: string;
   asInvoice?: boolean;
