@@ -846,7 +846,7 @@ function InstantQuote({
           <div>
             <p className="font-semibold text-foreground">Transport</p>
             <p className="text-xs text-muted-foreground">
-              Calculated from your address on submit
+              {installationRequired ? "R250 travel fee if within 50 km (calculated on submit)" : "Calculated from your address on submit"}
             </p>
           </div>
           <span className="shrink-0 font-mono text-xs text-muted-foreground">on submit</span>
