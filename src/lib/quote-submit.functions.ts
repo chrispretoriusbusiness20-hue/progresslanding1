@@ -25,6 +25,7 @@ function encodeRawEmailWithAttachment(args: {
 }): string {
   const boundary = `bnd_${Math.random().toString(36).slice(2)}${Date.now().toString(36)}`;
   const headers: string[] = [
+    ...(args.from ? [`From: ${args.from}`] : []),
     `To: ${args.to}`,
     ...(args.cc ? [`Cc: ${args.cc}`] : []),
     `Subject: ${args.subject}`,
