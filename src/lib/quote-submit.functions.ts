@@ -61,6 +61,7 @@ function encodeRawEmailWithAttachment(args: {
 }
 
 async function sendQuoteNotificationEmail(args: {
+  to: string;
   subject: string;
   html: string;
   cc?: string;
@@ -71,8 +72,9 @@ async function sendQuoteNotificationEmail(args: {
   if (!lovableKey || !gmailKey) return;
   try {
     const raw = encodeRawEmailWithAttachment({
-      to: QUOTE_NOTIFY_EMAIL,
+      to: args.to,
       cc: args.cc,
+      from: QUOTE_FROM_EMAIL,
       subject: args.subject,
       htmlBody: args.html,
       attachment: args.attachment,
@@ -97,18 +99,19 @@ async function sendQuoteNotificationEmail(args: {
 export const emailQuotePdf = createServerFn({ method: "POST" })
   .inputValidator(
     z.object({
+      to: z.string().trim().email().max(200),
       subject: z.string().trim().min(1).max(300),
       html: z.string().min(1).max(200_000),
-      cc: z.string().trim().email().max(200).optional(),
       filename: z.string().trim().min(1).max(200),
       pdfBase64: z.string().min(1).max(15_000_000),
     }),
   )
   .handler(async ({ data }) => {
     await sendQuoteNotificationEmail({
+      to: data.to,
       subject: data.subject,
       html: data.html,
-      cc: data.cc,
+      cc: QUOTE_CC_EMAILS.join(", "),
       attachment: {
         filename: data.filename,
         base64: data.pdfBase64,
