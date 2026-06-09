@@ -1,6 +1,7 @@
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import progressLogo from "@/assets/progress-header-new.png.asset.json";
+import progressLogoEstimate from "@/assets/progress-logo.jpeg.asset.json";
 
 export type QuoteLineItem = {
   quantity: number;
@@ -138,6 +139,7 @@ export async function generateQuotePDF(input: QuoteInput): Promise<{ filename: s
   }
 
   const logoData = await fetchAsDataURL(progressLogo.url);
+  const estimateLogoData = await fetchAsDataURL(progressLogoEstimate.url);
 
   // ---------- Header ----------
   if (logoData) {
@@ -369,13 +371,13 @@ export async function generateQuotePDF(input: QuoteInput): Promise<{ filename: s
     doc.addPage();
     let py = margin;
 
-    // --- Page 2 header (matches page 1) ---
-    if (logoData) {
+    // --- Page 2 header (original installation-estimate logo) ---
+    if (estimateLogoData) {
       try {
-        const imgW = 150;
-        const imgH = imgW / 4.46;
-        doc.addImage(logoData, "PNG", (pageW - imgW) / 2, py, imgW, imgH);
-        py += imgH + 3;
+        const imgW = 70;
+        const imgH = 22;
+        doc.addImage(estimateLogoData, "JPEG", (pageW - imgW) / 2, py, imgW, imgH);
+        py += imgH + 4;
       } catch {
         // ignore
       }
