@@ -139,6 +139,7 @@ function buildQuoteUrl(params: {
   cornerInstall?: string;
   cornerInstallPrice?: string;
   transport?: string;
+  travelFee?: string;
   distanceKm?: string;
 }) {
   const url = new URL(QUOTE_APP_URL);
@@ -162,6 +163,7 @@ function buildQuoteUrl(params: {
   set(["cornerInstall", "corner_install"], params.cornerInstall);
   set(["cornerInstallPrice", "corner_install_price"], params.cornerInstallPrice);
   set(["transport", "transport_cost", "delivery"], params.transport);
+  set(["travelFee", "travel_fee"], params.travelFee);
   set(["distance", "distanceKm", "distance_km"], params.distanceKm);
   return url.toString();
 }
