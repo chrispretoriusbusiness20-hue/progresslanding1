@@ -307,9 +307,10 @@ function QuotePage() {
   const platePrice = matched?.plate?.price ?? null;
   const cornerInstallPrice = matched?.cornerInstallPrice ?? null;
   const transportPrice = matched?.transportPrice ?? null;
+  const travelFee = matched?.travelFee ?? null;
   const totalPriceNum =
-    productSubtotal !== null || flueKitPrice !== null || platePrice !== null || cornerInstallPrice !== null || transportPrice !== null
-      ? (productSubtotal ?? 0) + (flueKitPrice ?? 0) + (platePrice ?? 0) + (cornerInstallPrice ?? 0) + (transportPrice ?? 0)
+    productSubtotal !== null || flueKitPrice !== null || platePrice !== null || cornerInstallPrice !== null || transportPrice !== null || travelFee !== null
+      ? (productSubtotal ?? 0) + (flueKitPrice ?? 0) + (platePrice ?? 0) + (cornerInstallPrice ?? 0) + (transportPrice ?? 0) + (travelFee ?? 0)
       : null;
   const unitPriceLabel = unitPriceNum !== null ? formatRand(unitPriceNum) : null;
   const subtotalLabel = productSubtotal !== null ? formatRand(productSubtotal) : null;
@@ -317,6 +318,7 @@ function QuotePage() {
   const plateLabel = platePrice !== null ? formatRand(platePrice) : null;
   const cornerInstallLabel = cornerInstallPrice !== null ? formatRand(cornerInstallPrice) : null;
   const transportLabel = transportPrice !== null ? formatRand(transportPrice) : null;
+  const travelFeeLabel = travelFee !== null ? formatRand(travelFee) : null;
   const totalPriceLabel = totalPriceNum !== null ? formatRand(totalPriceNum) : null;
 
   const quoteUrl = matched
@@ -337,6 +339,7 @@ function QuotePage() {
         cornerInstall: cornerInstallLabel ?? undefined,
         cornerInstallPrice: cornerInstallLabel ?? undefined,
         transport: transportLabel ?? undefined,
+        travelFee: travelFeeLabel ?? undefined,
         distanceKm: matched.distanceKm !== null ? `${matched.distanceKm} km` : undefined,
       })
     : buildQuoteUrl({
