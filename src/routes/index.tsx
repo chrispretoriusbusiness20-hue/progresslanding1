@@ -364,13 +364,11 @@ function QuotePage() {
         }`}
       >
         <div className="mx-auto max-w-6xl px-6 py-5">
-          <a href="https://progressgroup.co.za/" className="block group">
-            <img
-              src={progressLogo.url}
-              alt="Progress — Lighting, Fireplaces, Braais, Aircons"
-              className="w-1/2 h-auto mx-auto transition-transform group-hover:-translate-y-0.5"
-            />
-          </a>
+          <img
+            src={progressLogo.url}
+            alt="Progress — Lighting, Fireplaces, Braais, Aircons"
+            className="w-1/2 h-auto mx-auto"
+          />
           <div className="mt-3 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs font-semibold tracking-wide text-foreground/80">
             <a href="tel:+27875500413" className="hover:text-primary transition-colors">
               Installations: 087 550 0413
@@ -686,13 +684,11 @@ function QuotePage() {
       <footer className="border-t border-foreground/15 bg-background">
         <div className="mx-auto grid max-w-6xl gap-12 px-6 py-16 md:grid-cols-[1.4fr_1fr_1fr]">
           <div>
-            <a href="https://progressgroup.co.za/" className="flex items-center group">
-              <img
-                src={progressLogo.url}
-                alt="Progress — Lighting, Fireplaces, Braais, Aircons"
-                className="h-12 w-auto sm:h-14 transition-transform group-hover:-translate-y-0.5"
-              />
-            </a>
+            <img
+              src={progressLogo.url}
+              alt="Progress — Lighting, Fireplaces, Braais, Aircons"
+              className="h-12 w-auto sm:h-14"
+            />
           </div>
           <div>
             <p className="font-display text-[10px] uppercase tracking-[0.36em] text-primary">Contact</p>
@@ -707,7 +703,7 @@ function QuotePage() {
           <div>
             <p className="font-display text-[10px] uppercase tracking-[0.36em] text-primary">Progress</p>
             <ul className="mt-4 space-y-2 text-sm text-foreground/80">
-              <li><a href="https://progressgroup.co.za/" className="hover:text-primary">progressgroup.co.za</a></li>
+              <li>progressgroup.co.za</li>
               <li><Link to="/catalog" className="hover:text-primary">The Catalogue</Link></li>
               <li><a href="#form" className="hover:text-primary">Private Consultation</a></li>
             </ul>
