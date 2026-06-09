@@ -376,6 +376,7 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
 
     const distanceKm = data.address ? await computeDistanceKm(data.address) : null;
     const transport = distanceKm !== null ? transportPriceForKm(distanceKm) : null;
+    const travelFee = data.installationRequired && distanceKm !== null && distanceKm <= 50 ? 250 : 0;
 
     const cornerInstallPrice = data.cornerInstall
       ? 800 + (distanceKm !== null && distanceKm <= 50 ? 650 : 0)
@@ -386,12 +387,14 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
       flueKitPrice !== null ||
       plate !== null ||
       cornerInstallPrice !== null ||
-      transport !== null
+      transport !== null ||
+      travelFee > 0
         ? (productSubtotal ?? 0) +
           (flueKitPrice ?? 0) +
           (plate?.price ?? 0) +
           (cornerInstallPrice ?? 0) +
-          (transport?.price ?? 0)
+          (transport?.price ?? 0) +
+          travelFee
         : null;
 
     await supabaseAdmin.from("quote_requests").insert({
