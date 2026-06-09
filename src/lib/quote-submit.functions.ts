@@ -349,6 +349,7 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
       flooring: z.string().trim().max(80).optional(),
       plateType: z.enum(["glass", "granite", "metal"]).optional(),
       cornerInstall: z.boolean().default(false),
+      installationRequired: z.boolean().default(true),
       address: z.string().trim().max(300).optional(),
       message: z.string().trim().max(2000).optional(),
       extrasForAccount: z.string().trim().max(2000).optional(),
