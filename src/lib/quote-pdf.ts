@@ -1,6 +1,6 @@
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
-import progressLogo from "@/assets/progress-logo.jpeg.asset.json";
+import progressLogo from "@/assets/progress-header-new.png.asset.json";
 
 export type QuoteLineItem = {
   quantity: number;
@@ -140,25 +140,16 @@ export async function generateQuotePDF(input: QuoteInput): Promise<{ filename: s
   const logoData = await fetchAsDataURL(progressLogo.url);
 
   // ---------- Header ----------
-  // header start
   if (logoData) {
     try {
-      const imgW = 70;
-      const imgH = 22;
-      doc.addImage(logoData, "JPEG", (pageW - imgW) / 2, y, imgW, imgH);
-      y += imgH + 4;
+      const imgW = 150;
+      const imgH = imgW / 4.46;
+      doc.addImage(logoData, "PNG", (pageW - imgW) / 2, y, imgW, imgH);
+      y += imgH + 3;
     } catch {
       // ignore image errors
     }
   }
-  doc.setFont("helvetica", "normal").setFontSize(8.5);
-  doc.text(
-    "LIGHTING  |  FIREPLACES  |  BRAAIS  |  AIRCONS  |  APPLIANCES  |  GAS PRODUCTS  |  CERTIFIED GAS INSTALLERS",
-    pageW / 2,
-    y,
-    { align: "center" },
-  );
-  y += 4;
   doc.setDrawColor(0).setLineWidth(0.3);
   doc.line(margin, y, pageW - margin, y);
   y += 5;
@@ -381,10 +372,10 @@ export async function generateQuotePDF(input: QuoteInput): Promise<{ filename: s
     // --- Page 2 header (matches page 1) ---
     if (logoData) {
       try {
-        const imgW = 70;
-        const imgH = 22;
-        doc.addImage(logoData, "JPEG", (pageW - imgW) / 2, py, imgW, imgH);
-        py += imgH + 4;
+        const imgW = 150;
+        const imgH = imgW / 4.46;
+        doc.addImage(logoData, "PNG", (pageW - imgW) / 2, py, imgW, imgH);
+        py += imgH + 3;
       } catch {
         // ignore
       }
