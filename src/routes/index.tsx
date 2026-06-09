@@ -346,6 +346,7 @@ function QuotePage() {
         storyType: storyType || undefined,
         flooring: flooring || undefined,
       });
+  void quoteUrl;
 
   const showQuote = (submitted && lookup?.match) || canContinue;
 
