@@ -155,14 +155,12 @@ function CatalogPage() {
       {/* Header */}
       <header className="sticky top-0 z-50 border-b-2 border-foreground bg-background/85 backdrop-blur-md">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-          <Link to="/" className="flex items-center gap-3 group">
-            <span className="relative flex h-10 w-10 items-center justify-center bg-foreground text-primary shadow-brutal-sm transition-transform group-hover:-translate-y-0.5">
-              <Flame className="h-5 w-5" strokeWidth={2.5} />
-            </span>
-            <span className="font-display text-base leading-none tracking-tight">
-              THE PROGRESS<br />
-              <span className="text-gradient-ember">GROUP</span>
-            </span>
+          <Link to="/" className="block group">
+            <img
+              src={progressLogo.url}
+              alt="Progress — Lighting, Fireplaces, Braais, Aircons"
+              className="h-10 w-auto transition-transform group-hover:-translate-y-0.5"
+            />
           </Link>
           <Link
             to="/"
