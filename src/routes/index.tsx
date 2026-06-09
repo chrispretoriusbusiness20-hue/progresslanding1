@@ -769,6 +769,7 @@ function InstantQuote({
   flooring,
   plateType,
   cornerInstall,
+  installationRequired,
 }: {
   productName: string;
   quantity: number;
@@ -776,6 +777,7 @@ function InstantQuote({
   flooring: string;
   plateType: "glass" | "granite" | "metal";
   cornerInstall: boolean;
+  installationRequired: boolean;
 }) {
   const priceStr = PRODUCT_PRICE_MAP.get(productName) ?? null;
   const unitPrice = priceStr ? parseRand(priceStr) : null;
