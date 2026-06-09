@@ -684,13 +684,11 @@ function QuotePage() {
       <footer className="border-t border-foreground/15 bg-background">
         <div className="mx-auto grid max-w-6xl gap-12 px-6 py-16 md:grid-cols-[1.4fr_1fr_1fr]">
           <div>
-            <a href="https://progressgroup.co.za/" className="flex items-center group">
-              <img
-                src={progressLogo.url}
-                alt="Progress — Lighting, Fireplaces, Braais, Aircons"
-                className="h-12 w-auto sm:h-14 transition-transform group-hover:-translate-y-0.5"
-              />
-            </a>
+            <img
+              src={progressLogo.url}
+              alt="Progress — Lighting, Fireplaces, Braais, Aircons"
+              className="h-12 w-auto sm:h-14"
+            />
           </div>
           <div>
             <p className="font-display text-[10px] uppercase tracking-[0.36em] text-primary">Contact</p>
