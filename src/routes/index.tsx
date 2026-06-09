@@ -231,6 +231,7 @@ function QuotePage() {
           flooring: flooring || undefined,
           plateType: flooring && !/tile/i.test(flooring) ? plateType : undefined,
           cornerInstall,
+          installationRequired,
           address: address.trim() || undefined,
           message: message.trim() || undefined,
         },
