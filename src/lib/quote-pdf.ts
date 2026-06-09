@@ -129,6 +129,13 @@ export async function generateQuotePDF(input: QuoteInput): Promise<{ filename: s
       unitPrice: input.transportPrice,
     });
   }
+  if (input.travelFee !== null && input.travelFee !== undefined && input.travelFee > 0) {
+    items.push({
+      quantity: 1,
+      description: "Travel fee (within 50 km)",
+      unitPrice: input.travelFee,
+    });
+  }
 
   const logoData = await fetchAsDataURL(progressLogo.url);
 
