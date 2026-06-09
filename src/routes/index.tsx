@@ -6,7 +6,7 @@ import { submitQuoteRequest, emailQuotePdf } from "@/lib/quote-submit.functions"
 import { generateQuotePDF } from "@/lib/quote-pdf";
 import { buildQuoteEmailHtml } from "@/lib/quote-email-template";
 import productsData from "@/data/products.json";
-import progressLogo from "@/assets/progress-header-new.png.asset.json";
+import progressLogo from "@/assets/progress-header-transparent.png.asset.json";
 
 
 import { SiteSurvey } from "@/components/site-survey";
