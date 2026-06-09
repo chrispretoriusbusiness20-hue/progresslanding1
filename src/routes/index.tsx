@@ -268,9 +268,9 @@ function QuotePage() {
               </div>`;
             await emailQuoteFn({
               data: {
+                to: result.email,
                 subject: `Quote ${pdf.quoteNo}`,
                 html: thankYouHtml,
-                cc: result.email,
                 filename: pdf.filename,
                 pdfBase64: pdf.base64,
               },

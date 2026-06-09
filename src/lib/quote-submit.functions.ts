@@ -7,19 +7,25 @@ const SHEETS_GATEWAY = "https://connector-gateway.lovable.dev/google_sheets/v4";
 const CALENDAR_GATEWAY = "https://connector-gateway.lovable.dev/google_calendar/calendar/v3";
 const GMAIL_GATEWAY = "https://connector-gateway.lovable.dev/google_mail/gmail/v1";
 const QUOTE_SHEET_ID = "1AVvNPoavrAf0ptWt4dUXdA2zmGqNjA70ebPXn-gJgW8";
-const QUOTE_NOTIFY_EMAIL = "louis@progressgroup.co.za";
+const QUOTE_FROM_EMAIL = "sales@progressgroup.co.za";
+const QUOTE_CC_EMAILS = [
+  "louis@progressinstallations.co.za",
+  "christiaan@progressinstallations.co.za",
+];
 const ORIGIN_ADDRESS =
   "Progress Lighting & Fires, 189 Durban Rd, Bellville, Cape Town, 7530, South Africa";
 
 function encodeRawEmailWithAttachment(args: {
   to: string;
   cc?: string;
+  from?: string;
   subject: string;
   htmlBody: string;
   attachment?: { filename: string; base64: string; mimeType: string };
 }): string {
   const boundary = `bnd_${Math.random().toString(36).slice(2)}${Date.now().toString(36)}`;
   const headers: string[] = [
+    ...(args.from ? [`From: ${args.from}`] : []),
     `To: ${args.to}`,
     ...(args.cc ? [`Cc: ${args.cc}`] : []),
     `Subject: ${args.subject}`,
@@ -55,6 +61,7 @@ function encodeRawEmailWithAttachment(args: {
 }
 
 async function sendQuoteNotificationEmail(args: {
+  to: string;
   subject: string;
   html: string;
   cc?: string;
@@ -65,8 +72,9 @@ async function sendQuoteNotificationEmail(args: {
   if (!lovableKey || !gmailKey) return;
   try {
     const raw = encodeRawEmailWithAttachment({
-      to: QUOTE_NOTIFY_EMAIL,
+      to: args.to,
       cc: args.cc,
+      from: QUOTE_FROM_EMAIL,
       subject: args.subject,
       htmlBody: args.html,
       attachment: args.attachment,
@@ -91,18 +99,19 @@ async function sendQuoteNotificationEmail(args: {
 export const emailQuotePdf = createServerFn({ method: "POST" })
   .inputValidator(
     z.object({
+      to: z.string().trim().email().max(200),
       subject: z.string().trim().min(1).max(300),
       html: z.string().min(1).max(200_000),
-      cc: z.string().trim().email().max(200).optional(),
       filename: z.string().trim().min(1).max(200),
       pdfBase64: z.string().min(1).max(15_000_000),
     }),
   )
   .handler(async ({ data }) => {
     await sendQuoteNotificationEmail({
+      to: data.to,
       subject: data.subject,
       html: data.html,
-      cc: data.cc,
+      cc: QUOTE_CC_EMAILS.join(", "),
       attachment: {
         filename: data.filename,
         base64: data.pdfBase64,
