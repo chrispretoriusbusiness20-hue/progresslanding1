@@ -33,7 +33,34 @@ function encodeRawEmailWithAttachment(args: {
     `Subject: ${args.subject}`,
     "MIME-Version: 1.0",
   ];
-...
+  let body: string;
+  if (args.attachment) {
+    headers.push(`Content-Type: multipart/mixed; boundary="${boundary}"`);
+    const chunked = args.attachment.base64.replace(/(.{76})/g, "$1\r\n");
+    body =
+      "\r\n" +
+      `--${boundary}\r\n` +
+      'Content-Type: text/html; charset="UTF-8"\r\n' +
+      "Content-Transfer-Encoding: 7bit\r\n\r\n" +
+      args.htmlBody +
+      `\r\n--${boundary}\r\n` +
+      `Content-Type: ${args.attachment.mimeType}; name="${args.attachment.filename}"\r\n` +
+      `Content-Disposition: attachment; filename="${args.attachment.filename}"\r\n` +
+      "Content-Transfer-Encoding: base64\r\n\r\n" +
+      chunked +
+      `\r\n--${boundary}--`;
+  } else {
+    headers.push('Content-Type: text/html; charset="UTF-8"');
+    body = "\r\n" + args.htmlBody;
+  }
+  const message = headers.join("\r\n") + body;
+  const b64 =
+    typeof Buffer !== "undefined"
+      ? Buffer.from(message, "utf-8").toString("base64")
+      : btoa(unescape(encodeURIComponent(message)));
+  return b64.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+
 // Cache the send-as alias verification result for the lifetime of the worker
 // so we don't hit Gmail's settings API on every send.
 let cachedSendAsVerified: boolean | null = null;
