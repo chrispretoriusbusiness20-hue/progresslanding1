@@ -62,7 +62,7 @@ async function fetchAsDataURL(url: string): Promise<string | null> {
   }
 }
 
-export async function generateQuotePDF(input: QuoteInput): Promise<{ filename: string; base64: string }> {
+export async function generateQuotePDF(input: QuoteInput): Promise<{ filename: string; base64: string; quoteNo: string }> {
   const doc = new jsPDF({ unit: "mm", format: "a4" });
   const pageW = doc.internal.pageSize.getWidth();
   const pageH = doc.internal.pageSize.getHeight();
@@ -507,6 +507,6 @@ export async function generateQuotePDF(input: QuoteInput): Promise<{ filename: s
   doc.save(filename);
   const dataUri = doc.output("datauristring");
   const base64 = dataUri.includes(",") ? dataUri.split(",")[1] : dataUri;
-  return { filename, base64 };
+  return { filename, base64, quoteNo };
 }
 
