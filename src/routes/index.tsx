@@ -7,7 +7,7 @@ import { generateQuotePDF } from "@/lib/quote-pdf";
 import productsData from "@/data/products.json";
 import progressLogo from "@/assets/progress-logo.jpeg.asset.json";
 
-import { LazyIframe } from "@/components/lazy-iframe";
+
 import { SiteSurvey } from "@/components/site-survey";
 import { AddressAutocomplete } from "@/components/address-autocomplete";
 
