@@ -681,13 +681,6 @@ function QuotePage() {
               </div>
             </div>
 
-            <div className="overflow-hidden border-2 border-foreground bg-background shadow-[8px_8px_0_0_var(--foreground)]">
-              <LazyIframe
-                src={quoteUrl}
-                title="Prefilled fireplace quote"
-                className="h-[1600px] w-full"
-              />
-            </div>
           </div>
         </section>
       )}
