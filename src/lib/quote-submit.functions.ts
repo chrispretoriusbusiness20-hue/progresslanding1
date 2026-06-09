@@ -349,6 +349,7 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
       flooring: z.string().trim().max(80).optional(),
       plateType: z.enum(["glass", "granite", "metal"]).optional(),
       cornerInstall: z.boolean().default(false),
+      installationRequired: z.boolean().default(true),
       address: z.string().trim().max(300).optional(),
       message: z.string().trim().max(2000).optional(),
       extrasForAccount: z.string().trim().max(2000).optional(),
@@ -375,6 +376,7 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
 
     const distanceKm = data.address ? await computeDistanceKm(data.address) : null;
     const transport = distanceKm !== null ? transportPriceForKm(distanceKm) : null;
+    const travelFee = data.installationRequired && distanceKm !== null && distanceKm <= 50 ? 250 : 0;
 
     const cornerInstallPrice = data.cornerInstall
       ? 800 + (distanceKm !== null && distanceKm <= 50 ? 650 : 0)
@@ -385,12 +387,14 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
       flueKitPrice !== null ||
       plate !== null ||
       cornerInstallPrice !== null ||
-      transport !== null
+      transport !== null ||
+      travelFee > 0
         ? (productSubtotal ?? 0) +
           (flueKitPrice ?? 0) +
           (plate?.price ?? 0) +
           (cornerInstallPrice ?? 0) +
-          (transport?.price ?? 0)
+          (transport?.price ?? 0) +
+          travelFee
         : null;
 
     await supabaseAdmin.from("quote_requests").insert({
@@ -427,6 +431,7 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
       distanceKm !== null ? Math.round(distanceKm * 10) / 10 : "",
       transport?.zone ?? "",
       transport?.price ?? "",
+      travelFee > 0 ? travelFee : "",
       unitPriceNum ?? "",
       flueKitPrice ?? "",
       plate?.price ?? "",
@@ -485,6 +490,7 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
       ["Address", data.address ?? "—"],
       ["Distance", distanceKm !== null ? `${Math.round(distanceKm * 10) / 10} km` : "—"],
       ["Transport", transport ? `${transport.zone} (${fmtR(transport.price)})` : "—"],
+      ["Travel fee", travelFee > 0 ? fmtR(travelFee) : "—"],
       ["Unit price", unitPriceNum !== null ? fmtR(unitPriceNum) : "—"],
       ["Flue kit", flueKitPrice !== null ? fmtR(flueKitPrice) : "—"],
       ["Estimated total", totalPriceNum !== null ? fmtR(totalPriceNum) : "—"],
@@ -542,6 +548,7 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
       distanceKm: distanceKm !== null ? Math.round(distanceKm * 10) / 10 : null,
       transportZone: transport?.zone ?? null,
       transportPrice: transport?.price ?? null,
+      travelFee: travelFee > 0 ? travelFee : null,
       bookingLink,
       preferredDate: data.preferredDate ?? null,
       preferredTime: data.preferredTime ?? null,

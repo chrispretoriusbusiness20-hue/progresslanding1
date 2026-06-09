@@ -101,6 +101,7 @@ type LookupResult =
       distanceKm: number | null;
       transportZone: string | null;
       transportPrice: number | null;
+      travelFee: number | null;
       bookingLink?: string | null;
       submittedAt: string;
       notificationSubject: string;
@@ -138,6 +139,7 @@ function buildQuoteUrl(params: {
   cornerInstall?: string;
   cornerInstallPrice?: string;
   transport?: string;
+  travelFee?: string;
   distanceKm?: string;
 }) {
   const url = new URL(QUOTE_APP_URL);
@@ -161,6 +163,7 @@ function buildQuoteUrl(params: {
   set(["cornerInstall", "corner_install"], params.cornerInstall);
   set(["cornerInstallPrice", "corner_install_price"], params.cornerInstallPrice);
   set(["transport", "transport_cost", "delivery"], params.transport);
+  set(["travelFee", "travel_fee"], params.travelFee);
   set(["distance", "distanceKm", "distance_km"], params.distanceKm);
   return url.toString();
 }
@@ -228,6 +231,7 @@ function QuotePage() {
           flooring: flooring || undefined,
           plateType: flooring && !/tile/i.test(flooring) ? plateType : undefined,
           cornerInstall,
+          installationRequired,
           address: address.trim() || undefined,
           message: message.trim() || undefined,
         },
@@ -303,9 +307,10 @@ function QuotePage() {
   const platePrice = matched?.plate?.price ?? null;
   const cornerInstallPrice = matched?.cornerInstallPrice ?? null;
   const transportPrice = matched?.transportPrice ?? null;
+  const travelFee = matched?.travelFee ?? null;
   const totalPriceNum =
-    productSubtotal !== null || flueKitPrice !== null || platePrice !== null || cornerInstallPrice !== null || transportPrice !== null
-      ? (productSubtotal ?? 0) + (flueKitPrice ?? 0) + (platePrice ?? 0) + (cornerInstallPrice ?? 0) + (transportPrice ?? 0)
+    productSubtotal !== null || flueKitPrice !== null || platePrice !== null || cornerInstallPrice !== null || transportPrice !== null || travelFee !== null
+      ? (productSubtotal ?? 0) + (flueKitPrice ?? 0) + (platePrice ?? 0) + (cornerInstallPrice ?? 0) + (transportPrice ?? 0) + (travelFee ?? 0)
       : null;
   const unitPriceLabel = unitPriceNum !== null ? formatRand(unitPriceNum) : null;
   const subtotalLabel = productSubtotal !== null ? formatRand(productSubtotal) : null;
@@ -313,6 +318,7 @@ function QuotePage() {
   const plateLabel = platePrice !== null ? formatRand(platePrice) : null;
   const cornerInstallLabel = cornerInstallPrice !== null ? formatRand(cornerInstallPrice) : null;
   const transportLabel = transportPrice !== null ? formatRand(transportPrice) : null;
+  const travelFeeLabel = travelFee !== null ? formatRand(travelFee) : null;
   const totalPriceLabel = totalPriceNum !== null ? formatRand(totalPriceNum) : null;
 
   const quoteUrl = matched
@@ -333,6 +339,7 @@ function QuotePage() {
         cornerInstall: cornerInstallLabel ?? undefined,
         cornerInstallPrice: cornerInstallLabel ?? undefined,
         transport: transportLabel ?? undefined,
+        travelFee: travelFeeLabel ?? undefined,
         distanceKm: matched.distanceKm !== null ? `${matched.distanceKm} km` : undefined,
       })
     : buildQuoteUrl({
@@ -596,6 +603,7 @@ function QuotePage() {
               flooring={flooring}
               plateType={plateType}
               cornerInstall={cornerInstall}
+              installationRequired={installationRequired}
             />
 
 
@@ -659,6 +667,7 @@ function QuotePage() {
                         transportPrice: matched ? matched.transportPrice : null,
                         transportZone: matched ? matched.transportZone : null,
                         distanceKm: matched ? matched.distanceKm : null,
+                        travelFee: matched ? matched.travelFee : null,
                         notes: message.trim() || undefined,
                         extrasForAccount: extrasForAccount.trim() || undefined,
                       });
@@ -693,6 +702,7 @@ function QuotePage() {
                         transportPrice: matched ? matched.transportPrice : null,
                         transportZone: matched ? matched.transportZone : null,
                         distanceKm: matched ? matched.distanceKm : null,
+                        travelFee: matched ? matched.travelFee : null,
                         notes: message.trim() || undefined,
                         extrasForAccount: extrasForAccount.trim() || undefined,
                         asInvoice: true,
@@ -761,6 +771,7 @@ function InstantQuote({
   flooring,
   plateType,
   cornerInstall,
+  installationRequired,
 }: {
   productName: string;
   quantity: number;
@@ -768,6 +779,7 @@ function InstantQuote({
   flooring: string;
   plateType: "glass" | "granite" | "metal";
   cornerInstall: boolean;
+  installationRequired: boolean;
 }) {
   const priceStr = PRODUCT_PRICE_MAP.get(productName) ?? null;
   const unitPrice = priceStr ? parseRand(priceStr) : null;
@@ -836,7 +848,7 @@ function InstantQuote({
           <div>
             <p className="font-semibold text-foreground">Transport</p>
             <p className="text-xs text-muted-foreground">
-              Calculated from your address on submit
+              {installationRequired ? "R250 travel fee if within 50 km (calculated on submit)" : "Calculated from your address on submit"}
             </p>
           </div>
           <span className="shrink-0 font-mono text-xs text-muted-foreground">on submit</span>
