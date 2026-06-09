@@ -101,6 +101,7 @@ type LookupResult =
       distanceKm: number | null;
       transportZone: string | null;
       transportPrice: number | null;
+      travelFee: number | null;
       bookingLink?: string | null;
       submittedAt: string;
       notificationSubject: string;
