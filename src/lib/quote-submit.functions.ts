@@ -19,6 +19,7 @@ function encodeRawEmailWithAttachment(args: {
   to: string;
   cc?: string;
   from?: string;
+  replyTo?: string;
   subject: string;
   htmlBody: string;
   attachment?: { filename: string; base64: string; mimeType: string };
@@ -28,13 +29,13 @@ function encodeRawEmailWithAttachment(args: {
     ...(args.from ? [`From: ${args.from}`] : []),
     `To: ${args.to}`,
     ...(args.cc ? [`Cc: ${args.cc}`] : []),
+    ...(args.replyTo ? [`Reply-To: ${args.replyTo}`] : []),
     `Subject: ${args.subject}`,
     "MIME-Version: 1.0",
   ];
   let body: string;
   if (args.attachment) {
     headers.push(`Content-Type: multipart/mixed; boundary="${boundary}"`);
-    // Chunk the base64 into 76-char lines per RFC.
     const chunked = args.attachment.base64.replace(/(.{76})/g, "$1\r\n");
     body =
       "\r\n" +
@@ -60,6 +61,63 @@ function encodeRawEmailWithAttachment(args: {
   return b64.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 }
 
+// Cache the send-as alias verification result for the lifetime of the worker
+// so we don't hit Gmail's settings API on every send.
+let cachedSendAsVerified: boolean | null = null;
+
+async function verifySendAsAlias(
+  lovableKey: string,
+  gmailKey: string,
+): Promise<boolean> {
+  if (cachedSendAsVerified !== null) return cachedSendAsVerified;
+  try {
+    const res = await fetch(`${GMAIL_GATEWAY}/users/me/settings/sendAs`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${lovableKey}`,
+        "X-Connection-Api-Key": gmailKey,
+      },
+    });
+    if (!res.ok) {
+      console.error(
+        "Gmail sendAs lookup failed",
+        res.status,
+        await res.text(),
+      );
+      // Don't cache failure — allow retries later.
+      return false;
+    }
+    const data = (await res.json()) as {
+      sendAs?: { sendAsEmail?: string; verificationStatus?: string; isPrimary?: boolean }[];
+    };
+    const target = QUOTE_FROM_EMAIL.toLowerCase();
+    const alias = (data.sendAs ?? []).find(
+      (a) => (a.sendAsEmail ?? "").toLowerCase() === target,
+    );
+    if (!alias) {
+      console.error(
+        `Gmail send-as alias ${QUOTE_FROM_EMAIL} not found on connected account. ` +
+          `Add it under Gmail Settings → Accounts → "Send mail as".`,
+      );
+      cachedSendAsVerified = false;
+      return false;
+    }
+    if (!alias.isPrimary && alias.verificationStatus !== "accepted") {
+      console.error(
+        `Gmail send-as alias ${QUOTE_FROM_EMAIL} is not verified ` +
+          `(status: ${alias.verificationStatus ?? "unknown"}).`,
+      );
+      cachedSendAsVerified = false;
+      return false;
+    }
+    cachedSendAsVerified = true;
+    return true;
+  } catch (err) {
+    console.error("Gmail sendAs verification error", err);
+    return false;
+  }
+}
+
 async function sendQuoteNotificationEmail(args: {
   to: string;
   subject: string;
@@ -69,12 +127,25 @@ async function sendQuoteNotificationEmail(args: {
 }): Promise<void> {
   const lovableKey = process.env.LOVABLE_API_KEY;
   const gmailKey = process.env.GOOGLE_MAIL_API_KEY;
-  if (!lovableKey || !gmailKey) return;
+  if (!lovableKey || !gmailKey) {
+    console.error("Gmail send skipped: missing LOVABLE_API_KEY or GOOGLE_MAIL_API_KEY");
+    return;
+  }
+  const aliasOk = await verifySendAsAlias(lovableKey, gmailKey);
+  if (!aliasOk) {
+    console.error(
+      `Gmail send aborted: ${QUOTE_FROM_EMAIL} is not configured as a verified ` +
+        `send-as alias on the connected Gmail account. The email will not be sent ` +
+        `to avoid a misleading From address.`,
+    );
+    return;
+  }
   try {
     const raw = encodeRawEmailWithAttachment({
       to: args.to,
       cc: args.cc,
       from: QUOTE_FROM_EMAIL,
+      replyTo: QUOTE_FROM_EMAIL,
       subject: args.subject,
       htmlBody: args.html,
       attachment: args.attachment,
@@ -89,7 +160,13 @@ async function sendQuoteNotificationEmail(args: {
       body: JSON.stringify({ raw }),
     });
     if (!res.ok) {
-      console.error("Gmail send failed", res.status, await res.text());
+      const body = await res.text();
+      console.error("Gmail send failed", res.status, body);
+      // If Gmail rejects because the alias isn't allowed, invalidate the cache
+      // so the next send re-checks.
+      if (res.status === 400 || res.status === 403) {
+        cachedSendAsVerified = null;
+      }
     }
   } catch (err) {
     console.error("Gmail send error", err);
