@@ -257,19 +257,24 @@ function QuotePage() {
         });
         if (result.match && pdf) {
           try {
-            const firstName = (result.firstName || "").replace(/[<>&]/g, "");
+            const esc = (s: string) =>
+              s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+            const fullName = esc(
+              `${result.firstName ?? ""} ${result.lastName ?? ""}`.trim() || "Customer",
+            );
+            const quoteNo = esc(pdf.quoteNo);
             const thankYouHtml = `
               <div style="font-family:Arial,sans-serif;color:#111;max-width:640px;line-height:1.6">
-                <p style="margin:0 0 12px">Good day${firstName ? ` ${firstName}` : ""},</p>
+                <p style="margin:0 0 12px">Good day ${fullName},</p>
                 <p style="margin:0 0 12px">Thank you for your enquiry.</p>
-                <p style="margin:0 0 12px">Find attached the quote.</p>
+                <p style="margin:0 0 12px">Please find attached your quote <strong>${quoteNo}</strong>.</p>
                 <p style="margin:24px 0 4px">Kind regards,</p>
                 <p style="margin:0;font-weight:600">The Progress Group</p>
               </div>`;
             await emailQuoteFn({
               data: {
                 to: result.email,
-                subject: `Quote ${pdf.quoteNo}`,
+                subject: `Quote ${pdf.quoteNo} — ${fullName}`,
                 html: thankYouHtml,
                 filename: pdf.filename,
                 pdfBase64: pdf.base64,
