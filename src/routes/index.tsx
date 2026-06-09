@@ -364,13 +364,11 @@ function QuotePage() {
         }`}
       >
         <div className="mx-auto max-w-6xl px-6 py-5">
-          <a href="https://progressgroup.co.za/" className="block group">
-            <img
-              src={progressLogo.url}
-              alt="Progress — Lighting, Fireplaces, Braais, Aircons"
-              className="w-1/2 h-auto mx-auto transition-transform group-hover:-translate-y-0.5"
-            />
-          </a>
+          <img
+            src={progressLogo.url}
+            alt="Progress — Lighting, Fireplaces, Braais, Aircons"
+            className="w-1/2 h-auto mx-auto"
+          />
           <div className="mt-3 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs font-semibold tracking-wide text-foreground/80">
             <a href="tel:+27875500413" className="hover:text-primary transition-colors">
               Installations: 087 550 0413
