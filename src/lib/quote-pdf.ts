@@ -383,7 +383,7 @@ export async function generateQuotePDF(input: QuoteInput): Promise<{ filename: s
     }
     doc.setFont("helvetica", "normal").setFontSize(8.5);
     doc.text(
-      "Certified Installers of Gas, Wood and Pellet fire place. Service and Installation of air conditioning and coredilling services",
+      "Certified Installers of Gas, Wood and Pellet fire place. Service and Installation of air conditioning and coredrilling services",
       pageW / 2,
       py,
       { align: "center" },
@@ -393,10 +393,10 @@ export async function generateQuotePDF(input: QuoteInput): Promise<{ filename: s
     doc.line(margin, py, pageW - margin, py);
     py += 5;
     doc.setFontSize(9);
-    doc.text("Tel:  021 - 945 3636", margin, py);
+    doc.text("Tel:  087 550 0413", margin, py);
     doc.text("189 Durban Rd", pageW - margin, py, { align: "right" });
     py += 4;
-    doc.text("E mail:  info@progressgroup.co.za", margin, py);
+    doc.text("E mail:  info@progressinstallations.co.za", margin, py);
     doc.text("Bellville", pageW - margin, py, { align: "right" });
     py += 4;
     doc.setTextColor(0, 0, 200);
