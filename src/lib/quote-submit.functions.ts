@@ -431,6 +431,7 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
       distanceKm !== null ? Math.round(distanceKm * 10) / 10 : "",
       transport?.zone ?? "",
       transport?.price ?? "",
+      travelFee > 0 ? travelFee : "",
       unitPriceNum ?? "",
       flueKitPrice ?? "",
       plate?.price ?? "",
