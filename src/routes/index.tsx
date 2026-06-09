@@ -176,6 +176,7 @@ function QuotePage() {
   const [flooring, setFlooring] = useState("");
   const [plateType, setPlateType] = useState<"glass" | "granite" | "metal">("glass");
   const [cornerInstall, setCornerInstall] = useState(false);
+  const [installationRequired, setInstallationRequired] = useState(true);
   const [address, setAddress] = useState("");
   const [message, setMessage] = useState("");
   const [extrasForAccount, setExtrasForAccount] = useState("");
@@ -469,48 +470,81 @@ function QuotePage() {
               </Field>
             </div>
 
-            <div className="grid gap-4 sm:grid-cols-2">
-              <Field label="Single or double story?">
-                <select
-                  value={storyType}
-                  onChange={(e) => setStoryType(e.target.value as "single" | "double" | "")}
-                  className="form-input"
-                >
-                  <option value="single">Single story</option>
-                  <option value="double">Double story</option>
-                </select>
-              </Field>
-              <Field label="Flooring type">
-                <select
-                  value={flooring}
-                  onChange={(e) => setFlooring(e.target.value)}
-                  className="form-input"
-                >
-                  <option value="">Select…</option>
-                  <option value="Tile">Tile</option>
-                  <option value="Laminate">Laminate</option>
-                  <option value="Carpet">Carpet</option>
-                  <option value="Wood">Wood</option>
-                  <option value="Concrete">Concrete</option>
-                  <option value="Other">Other</option>
-                </select>
-              </Field>
-            </div>
+            <Field label="Does the client need installation?">
+              <div className="flex gap-4 text-sm text-foreground">
+                <label className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    name="installationRequired"
+                    checked={installationRequired}
+                    onChange={() => setInstallationRequired(true)}
+                    className="h-4 w-4 accent-primary"
+                  />
+                  Supply &amp; install
+                </label>
+                <label className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    name="installationRequired"
+                    checked={!installationRequired}
+                    onChange={() => {
+                      setInstallationRequired(false);
+                      setCornerInstall(false);
+                      setStoryType("");
+                      setFlooring("");
+                    }}
+                    className="h-4 w-4 accent-primary"
+                  />
+                  Product only (no installation)
+                </label>
+              </div>
+            </Field>
 
-            {flooring && !/tile/i.test(flooring) && (
-              <Field label="Floor plate (required for non-tile floors)">
-                <select
-                  value={plateType}
-                  onChange={(e) => setPlateType(e.target.value as "glass" | "granite" | "metal")}
-                  className="form-input"
-                >
-                  <option value="glass">Glass plate · R2 495</option>
-                  <option value="granite">Granite plate · R2 895</option>
-                  <option value="metal">Metal plate · R1 490</option>
-                </select>
-              </Field>
+            {installationRequired && (
+              <>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <Field label="Single or double story?">
+                    <select
+                      value={storyType}
+                      onChange={(e) => setStoryType(e.target.value as "single" | "double" | "")}
+                      className="form-input"
+                    >
+                      <option value="single">Single story</option>
+                      <option value="double">Double story</option>
+                    </select>
+                  </Field>
+                  <Field label="Flooring type">
+                    <select
+                      value={flooring}
+                      onChange={(e) => setFlooring(e.target.value)}
+                      className="form-input"
+                    >
+                      <option value="">Select…</option>
+                      <option value="Tile">Tile</option>
+                      <option value="Laminate">Laminate</option>
+                      <option value="Carpet">Carpet</option>
+                      <option value="Wood">Wood</option>
+                      <option value="Concrete">Concrete</option>
+                      <option value="Other">Other</option>
+                    </select>
+                  </Field>
+                </div>
+
+                {flooring && !/tile/i.test(flooring) && (
+                  <Field label="Floor plate (required for non-tile floors)">
+                    <select
+                      value={plateType}
+                      onChange={(e) => setPlateType(e.target.value as "glass" | "granite" | "metal")}
+                      className="form-input"
+                    >
+                      <option value="glass">Glass plate · R2 495</option>
+                      <option value="granite">Granite plate · R2 895</option>
+                      <option value="metal">Metal plate · R1 490</option>
+                    </select>
+                  </Field>
+                )}
+              </>
             )}
-
 
             <Field label="Installation / delivery address">
               <AddressAutocomplete
@@ -521,17 +555,17 @@ function QuotePage() {
               />
             </Field>
 
-
-
-            <label className="flex items-center gap-2 text-sm text-foreground">
-              <input
-                type="checkbox"
-                checked={cornerInstall}
-                onChange={(e) => setCornerInstall(e.target.checked)}
-                className="h-4 w-4 accent-primary"
-              />
-              Corner installation position (+R800)
-            </label>
+            {installationRequired && (
+              <label className="flex items-center gap-2 text-sm text-foreground">
+                <input
+                  type="checkbox"
+                  checked={cornerInstall}
+                  onChange={(e) => setCornerInstall(e.target.checked)}
+                  className="h-4 w-4 accent-primary"
+                />
+                Corner installation position (+R800)
+              </label>
+            )}
 
             <Field label="Anything else we should know?">
               <textarea
