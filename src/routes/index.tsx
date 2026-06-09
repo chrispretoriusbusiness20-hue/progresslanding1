@@ -478,7 +478,6 @@ function QuotePage() {
                   onChange={(e) => setStoryType(e.target.value as "single" | "double" | "")}
                   className="form-input"
                 >
-                  
                   <option value="single">Single story</option>
                   <option value="double">Double story</option>
                 </select>
