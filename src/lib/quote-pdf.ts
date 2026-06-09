@@ -1,7 +1,7 @@
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import progressLogo from "@/assets/progress-header-transparent.png.asset.json";
-import progressLogoEstimate from "@/assets/progress-logo.jpeg.asset.json";
+
 
 export type QuoteLineItem = {
   quantity: number;
@@ -139,7 +139,7 @@ export async function generateQuotePDF(input: QuoteInput): Promise<{ filename: s
   }
 
   const logoData = await fetchAsDataURL(progressLogo.url);
-  const estimateLogoData = await fetchAsDataURL(progressLogoEstimate.url);
+  // estimate page uses text header, no logo
 
   // ---------- Header ----------
   if (logoData) {
@@ -371,17 +371,13 @@ export async function generateQuotePDF(input: QuoteInput): Promise<{ filename: s
     doc.addPage();
     let py = margin;
 
-    // --- Page 2 header (original installation-estimate logo) ---
-    if (estimateLogoData) {
-      try {
-        const imgW = 70;
-        const imgH = 22;
-        doc.addImage(estimateLogoData, "JPEG", (pageW - imgW) / 2, py, imgW, imgH);
-        py += imgH + 4;
-      } catch {
-        // ignore
-      }
-    }
+    // --- Page 2 header (Progress Installations text) ---
+    doc.setFont("helvetica", "bold").setFontSize(20);
+    doc.text("PROGRESS INSTALLATIONS", pageW / 2, py, { align: "center" });
+    py += 6;
+    doc.setFont("helvetica", "normal").setFontSize(9);
+    doc.text("(Pty) Ltd", pageW / 2, py, { align: "center" });
+    py += 4;
     doc.setFont("helvetica", "normal").setFontSize(8.5);
     doc.text(
       "Certified Installers of Gas, Wood and Pellet fire place. Service and Installation of air conditioning and coredrilling services",
