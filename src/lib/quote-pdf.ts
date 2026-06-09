@@ -139,7 +139,7 @@ export async function generateQuotePDF(input: QuoteInput): Promise<{ filename: s
   }
 
   const logoData = await fetchAsDataURL(progressLogo.url);
-  const estimateLogoData = await fetchAsDataURL(progressLogoEstimate.url);
+  // estimate page uses text header, no logo
 
   // ---------- Header ----------
   if (logoData) {
