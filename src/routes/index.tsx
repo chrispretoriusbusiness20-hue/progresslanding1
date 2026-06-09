@@ -4,6 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { CheckCircle2, FileDown, Loader2 } from "lucide-react";
 import { submitQuoteRequest, emailQuotePdf } from "@/lib/quote-submit.functions";
 import { generateQuotePDF } from "@/lib/quote-pdf";
+import { buildQuoteEmailHtml } from "@/lib/quote-email-template";
 import productsData from "@/data/products.json";
 import progressLogo from "@/assets/progress-logo.jpeg.asset.json";
 
@@ -257,20 +258,12 @@ function QuotePage() {
         });
         if (result.match && pdf) {
           try {
-            const esc = (s: string) =>
-              s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-            const fullName = esc(
-              `${result.firstName ?? ""} ${result.lastName ?? ""}`.trim() || "Customer",
-            );
-            const quoteNo = esc(pdf.quoteNo);
-            const thankYouHtml = `
-              <div style="font-family:Arial,sans-serif;color:#111;max-width:640px;line-height:1.6">
-                <p style="margin:0 0 12px">Hi ${fullName},</p>
-                <p style="margin:0 0 12px">Thank you for your enquiry. Below is your quotation for the supply and installation of your fireplace system.</p>
-                <p style="margin:0 0 12px">Please find attached your quote <strong>${quoteNo}</strong>.</p>
-                <p style="margin:24px 0 4px">Kind regards</p>
-                <p style="margin:0;font-weight:600">The Progress Group</p>
-              </div>`;
+            const fullName = `${result.firstName ?? ""} ${result.lastName ?? ""}`.trim() || "Customer";
+            const thankYouHtml = buildQuoteEmailHtml({
+              clientName: fullName,
+              quoteNo: pdf.quoteNo,
+              productName: result.catalog?.name ?? result.productRequested,
+            });
             await emailQuoteFn({
               data: {
                 to: result.email,
