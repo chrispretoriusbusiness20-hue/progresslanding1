@@ -7,13 +7,18 @@ const SHEETS_GATEWAY = "https://connector-gateway.lovable.dev/google_sheets/v4";
 const CALENDAR_GATEWAY = "https://connector-gateway.lovable.dev/google_calendar/calendar/v3";
 const GMAIL_GATEWAY = "https://connector-gateway.lovable.dev/google_mail/gmail/v1";
 const QUOTE_SHEET_ID = "1AVvNPoavrAf0ptWt4dUXdA2zmGqNjA70ebPXn-gJgW8";
-const QUOTE_NOTIFY_EMAIL = "louis@progressgroup.co.za";
+const QUOTE_FROM_EMAIL = "sales@progressgroup.co.za";
+const QUOTE_CC_EMAILS = [
+  "louis@progressinstallations.co.za",
+  "christiaan@progressinstallations.co.za",
+];
 const ORIGIN_ADDRESS =
   "Progress Lighting & Fires, 189 Durban Rd, Bellville, Cape Town, 7530, South Africa";
 
 function encodeRawEmailWithAttachment(args: {
   to: string;
   cc?: string;
+  from?: string;
   subject: string;
   htmlBody: string;
   attachment?: { filename: string; base64: string; mimeType: string };
