@@ -92,6 +92,13 @@ export async function generateQuotePDF(input: QuoteInput): Promise<{ filename: s
       description: `Flue Kit (${input.storyType} story)`,
       unitPrice: flueUnit,
     });
+    if (input.storyType === "double") {
+      items.push({
+        quantity: 1,
+        description: "Core Drilling Fee",
+        unitPrice: 1650,
+      });
+    }
   }
   {
     const flooringLower = (input.flooring ?? "").toLowerCase();
