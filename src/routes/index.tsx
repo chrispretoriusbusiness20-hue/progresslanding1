@@ -603,6 +603,7 @@ function QuotePage() {
               flooring={flooring}
               plateType={plateType}
               cornerInstall={cornerInstall}
+              installationRequired={installationRequired}
             />
 
 
