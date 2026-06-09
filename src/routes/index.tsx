@@ -175,7 +175,7 @@ function QuotePage() {
   const [phone, setPhone] = useState("");
   const [product, setProduct] = useState("Magma 001 Freestanding Fireplace 10kW");
   const [quantity, setQuantity] = useState(1);
-  const [storyType, setStoryType] = useState<"single" | "double" | "">("");
+  const [storyType, setStoryType] = useState<"single" | "double" | "">("single");
   const [flooring, setFlooring] = useState("");
   const [plateType, setPlateType] = useState<"glass" | "granite" | "metal">("glass");
   const [cornerInstall, setCornerInstall] = useState(false);
