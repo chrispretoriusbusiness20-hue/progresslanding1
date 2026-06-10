@@ -21,8 +21,8 @@ export function buildQuoteEmailHtml(data: QuoteEmailData): string {
         <table role="presentation" width="640" cellpadding="0" cellspacing="0" border="0" style="max-width:640px;width:100%;background-color:#ffffff;border-radius:4px;overflow:hidden;">
           <!-- Header -->
           <tr>
-            <td style="background-color:#1a1a1a;padding:24px 32px;text-align:center;">
-              <span style="color:#ffffff;font-size:20px;font-weight:700;letter-spacing:1px;text-transform:uppercase;">The Progress Group</span>
+            <td style="background-color:#ffffff;padding:24px 32px;text-align:center;border-bottom:1px solid #e5e5e5;">
+              <img src="https://www.progressgrp.co.za/__l5e/assets-v1/c4d3d4d8-a395-4c98-93f3-3a4a8c0d2c8e/progress-header-transparent.png" alt="The Progress Group" width="280" style="display:inline-block;max-width:80%;height:auto;" />
             </td>
           </tr>
           <!-- Body -->
