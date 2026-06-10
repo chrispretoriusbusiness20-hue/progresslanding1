@@ -41,7 +41,7 @@ export function buildQuoteEmailHtml(data: QuoteEmailData): string {
             <td style="background-color:#fafafa;padding:20px 32px;text-align:center;border-top:1px solid #e5e5e5;">
               <p style="margin:0 0 4px;color:#666666;font-size:12px;line-height:1.5;">189 Durban Road, Bellville, Cape Town, 7530</p>
               <p style="margin:0 0 4px;color:#666666;font-size:12px;line-height:1.5;">Tel: 021 945 3636 | Installations: 087 550 0413</p>
-              <p style="margin:0;color:#666666;font-size:12px;line-height:1.5;">Email: <a href="mailto:info@progressgroup.co.za" style="color:#666666;text-decoration:underline;">info@progressgroup.co.za</a></p>
+              <p style="margin:0;color:#666666;font-size:12px;line-height:1.5;">Email: <a href="mailto:info@progressinstallations.co.za" style="color:#666666;text-decoration:underline;">info@progressinstallations.co.za</a></p>
             </td>
           </tr>
         </table>
