@@ -93,15 +93,33 @@ function EmailDiagnosticPage() {
             className="mt-1 w-full rounded border border-input bg-background px-3 py-2 text-sm font-mono"
           />
         </label>
-        <button
-          type="submit"
-          disabled={loading}
-          className="inline-flex items-center gap-2 rounded bg-primary px-4 py-2 text-sm font-medium text-primary-foreground disabled:opacity-50"
-        >
-          {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-          Run diagnostic
-        </button>
+        <div className="flex flex-wrap gap-2">
+          <button
+            type="submit"
+            disabled={loading}
+            className="inline-flex items-center gap-2 rounded bg-primary px-4 py-2 text-sm font-medium text-primary-foreground disabled:opacity-50"
+          >
+            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+            Run diagnostic
+          </button>
+          <button
+            type="button"
+            onClick={onSendTest}
+            disabled={testLoading}
+            className="inline-flex items-center gap-2 rounded border border-input bg-background px-4 py-2 text-sm font-medium disabled:opacity-50"
+          >
+            {testLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+            Send test email to this address
+          </button>
+        </div>
       </form>
+
+      {testError ? (
+        <div className="rounded border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive mb-4">
+          {testError}
+        </div>
+      ) : null}
+      {testResult ? <TestReport t={testResult} /> : null}
 
       {error ? (
         <div className="rounded border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive">{error}</div>
