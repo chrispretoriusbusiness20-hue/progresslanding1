@@ -22,7 +22,7 @@ export function buildQuoteEmailHtml(data: QuoteEmailData): string {
           <!-- Header -->
           <tr>
             <td style="background-color:#ffffff;padding:24px 32px;text-align:center;border-bottom:1px solid #e5e5e5;">
-              <img src="https://www.progressgrp.co.za/__l5e/assets-v1/c4d3d4d8-a395-4c98-93f3-3a4a8c0d2c8e/progress-header-transparent.png" alt="The Progress Group" width="280" style="display:inline-block;max-width:80%;height:auto;" />
+              <img src="https://www.progressgrp.co.za/__l5e/assets-v1/97a6fd48-6b37-4177-9026-44e00e1aa5eb/progress-header-transparent.png" alt="The Progress Group" width="280" style="display:inline-block;max-width:80%;height:auto;" />
             </td>
           </tr>
           <!-- Body -->
