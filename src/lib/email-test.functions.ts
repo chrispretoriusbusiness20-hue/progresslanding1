@@ -2,7 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
 const RESEND_GATEWAY = "https://connector-gateway.lovable.dev/resend";
-const FROM_EMAIL = "sales@progressgroup.co.za";
+const FROM_EMAIL = "sales@progressgrp.co.za";
 const FROM_NAME = "Progress Installations";
 
 export const sendTestEmail = createServerFn({ method: "POST" })
