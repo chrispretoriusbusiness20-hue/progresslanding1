@@ -215,3 +215,28 @@ function Report({ r }: { r: Result }) {
     </div>
   );
 }
+
+function TestReport({ t }: { t: TestResult }) {
+  const ok = t.ok;
+  return (
+    <Section title={ok ? "Test email sent" : `Test failed (${t.stage})`} ok={ok ? true : false}>
+      <p>{t.message}</p>
+      {"connectedAccount" in t && t.connectedAccount ? (
+        <p className="text-xs text-muted-foreground">Connected Gmail account: {t.connectedAccount}</p>
+      ) : null}
+      {"aliasStatus" in t && t.aliasStatus ? (
+        <p className="text-xs text-muted-foreground">Alias verification status: {t.aliasStatus}</p>
+      ) : null}
+      {ok ? (
+        <div className="text-xs text-muted-foreground mt-1 space-y-0.5">
+          <p>From: <span className="font-mono">{t.from}</span></p>
+          <p>To: <span className="font-mono">{t.to}</span></p>
+          <p>Subject: <span className="font-mono">{t.subject}</span></p>
+          {t.messageId ? <p>Gmail message id: <span className="font-mono">{t.messageId}</span></p> : null}
+          <p>Sent at: {new Date(t.sentAt).toLocaleString()}</p>
+        </div>
+      ) : null}
+    </Section>
+  );
+}
+
