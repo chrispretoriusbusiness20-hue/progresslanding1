@@ -553,14 +553,17 @@ function QuotePage() {
               </>
             )}
 
-            <Field label="Installation / delivery address">
+            <div className="block">
+              <span className="mb-1 block text-[11px] font-semibold uppercase tracking-[0.24em] text-foreground/70">
+                Installation / delivery address
+              </span>
               <AddressAutocomplete
                 value={address}
                 onChange={setAddress}
                 placeholder="Start typing your address…"
                 className="form-input"
               />
-            </Field>
+            </div>
 
             {installationRequired && (
               <label className="flex items-center gap-2 text-sm text-foreground">
