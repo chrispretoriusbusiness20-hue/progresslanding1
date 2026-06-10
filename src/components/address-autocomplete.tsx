@@ -116,8 +116,14 @@ export function AddressAutocomplete({ value, onChange, placeholder, className }:
               key={s.placeId}
               role="option"
               aria-selected={i === activeIndex}
-              onMouseDown={(e) => {
+              onPointerDown={(e) => {
                 e.preventDefault();
+                e.stopPropagation();
+                select(s);
+              }}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
                 select(s);
               }}
               onMouseEnter={() => setActiveIndex(i)}
