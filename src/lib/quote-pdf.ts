@@ -145,8 +145,9 @@ export async function generateQuotePDF(input: QuoteInput): Promise<{ filename: s
   // ---------- Header ----------
   if (logoData) {
     try {
-      const imgW = 150;
-      const imgH = imgW / 4.46;
+      const imgW = 130;
+      // Actual asset aspect ratio: 872 x 240
+      const imgH = imgW * (240 / 872);
       doc.addImage(logoData, "PNG", (pageW - imgW) / 2, y, imgW, imgH);
       y += imgH + 3;
     } catch {
