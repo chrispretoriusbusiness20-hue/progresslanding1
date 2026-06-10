@@ -23,7 +23,7 @@ type TestResult = Awaited<ReturnType<typeof sendTestEmail>>;
 function EmailDiagnosticPage() {
   const run = useServerFn(diagnoseEmailDomain);
   const sendTest = useServerFn(sendTestEmail);
-  const [email, setEmail] = useState("sales@progressinstallations.co.za");
+  const [email, setEmail] = useState("sales@progressgroup.co.za");
   const [selectors, setSelectors] = useState("google,default,selector1,selector2,k1,mail,dkim");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
