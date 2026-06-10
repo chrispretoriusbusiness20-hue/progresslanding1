@@ -1,6 +1,7 @@
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import progressLogo from "@/assets/progress-header-transparent.png.asset.json";
+import progressInstallationsLogo from "@/assets/progress-installations-logo.png.asset.json";
 
 
 export type QuoteLineItem = {
@@ -371,16 +372,28 @@ export async function generateQuotePDF(input: QuoteInput): Promise<{ filename: s
     doc.addPage();
     let py = margin;
 
-    // --- Page 2 header (Progress Installations text) ---
-    doc.setFont("helvetica", "bold").setFontSize(20);
-    doc.text("PROGRESS INSTALLATIONS", pageW / 2, py, { align: "center" });
-    py += 6;
-    doc.setFont("helvetica", "normal").setFontSize(9);
-    doc.text("(Pty) Ltd", pageW / 2, py, { align: "center" });
-    py += 4;
+    // --- Page 2 header (Progress Installations logo) ---
+    const piLogoData = await fetchAsDataURL(progressInstallationsLogo.url);
+    if (piLogoData) {
+      try {
+        const imgW = 70;
+        const imgH = imgW * (271 / 1160);
+        doc.addImage(piLogoData, "PNG", (pageW - imgW) / 2, py, imgW, imgH);
+        py += imgH + 3;
+      } catch {
+        // fall back to text header
+        doc.setFont("helvetica", "bold").setFontSize(20);
+        doc.text("PROGRESS INSTALLATIONS", pageW / 2, py, { align: "center" });
+        py += 6;
+      }
+    } else {
+      doc.setFont("helvetica", "bold").setFontSize(20);
+      doc.text("PROGRESS INSTALLATIONS", pageW / 2, py, { align: "center" });
+      py += 6;
+    }
     doc.setFont("helvetica", "normal").setFontSize(8.5);
     doc.text(
-      "Certified Installers of Gas, Wood and Pellet fire place. Service and Installation of air conditioning and coredrilling services",
+      "Certified Installers of Gas, Wood and Pellet fireplaces. Service and Installation of air conditioning and core-drilling services",
       pageW / 2,
       py,
       { align: "center" },
