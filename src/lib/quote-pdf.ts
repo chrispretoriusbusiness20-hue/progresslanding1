@@ -1,6 +1,7 @@
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import progressLogo from "@/assets/progress-header-transparent.png.asset.json";
+import progressInstallationsLogo from "@/assets/progress-installations-logo.png.asset.json";
 
 
 
@@ -373,22 +374,19 @@ export async function generateQuotePDF(input: QuoteInput): Promise<{ filename: s
     doc.addPage();
     let py = margin;
 
-    // --- Page 2 header (Progress logo + Installations subtitle) ---
-    const piLogoData = await fetchAsDataURL(progressLogo.url);
+    // --- Page 2 header (Progress Installations logo) ---
+    const piLogoData = await fetchAsDataURL(progressInstallationsLogo.url);
     if (piLogoData) {
       try {
-        const imgW = 110;
-        // Same aspect ratio as the main Progress header (872 x 240)
-        const imgH = imgW * (240 / 872);
+        const imgW = 90;
+        // Actual asset aspect ratio: 360 x 75
+        const imgH = imgW * (75 / 360);
         doc.addImage(piLogoData, "PNG", (pageW - imgW) / 2, py, imgW, imgH);
         py += imgH + 4;
       } catch {
         py += 2;
       }
     }
-    doc.setFont("helvetica", "bold").setFontSize(16);
-    doc.text("PROGRESS INSTALLATIONS (Pty) Ltd", pageW / 2, py, { align: "center" });
-    py += 5;
     doc.setFont("helvetica", "normal").setFontSize(8.5);
     doc.text(
       "Certified Installers of Gas, Wood and Pellet fireplaces. Service and Installation of air conditioning and core-drilling services",
