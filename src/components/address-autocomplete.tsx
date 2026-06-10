@@ -11,6 +11,21 @@ type Props = {
   className?: string;
 };
 
+const PRESET_LOCATIONS: Suggestion[] = [
+  { placeId: "preset-cape-town", text: "Cape Town, South Africa" },
+  { placeId: "preset-bellville", text: "Bellville, Cape Town" },
+  { placeId: "preset-stellenbosch", text: "Stellenbosch, Western Cape" },
+  { placeId: "preset-paarl", text: "Paarl, Western Cape" },
+  { placeId: "preset-somerset-west", text: "Somerset West, Cape Town" },
+  { placeId: "preset-durbanville", text: "Durbanville, Cape Town" },
+  { placeId: "preset-constantia", text: "Constantia, Cape Town" },
+  { placeId: "preset-camps-bay", text: "Camps Bay, Cape Town" },
+  { placeId: "preset-johannesburg", text: "Johannesburg, Gauteng" },
+  { placeId: "preset-pretoria", text: "Pretoria, Gauteng" },
+  { placeId: "preset-durban", text: "Durban, KwaZulu-Natal" },
+  { placeId: "preset-george", text: "George, Western Cape" },
+];
+
 export function AddressAutocomplete({ value, onChange, placeholder, className }: Props) {
   const fetchSuggestions = useServerFn(autocompleteAddress);
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
@@ -28,7 +43,6 @@ export function AddressAutocomplete({ value, onChange, placeholder, className }:
     const q = value.trim();
     if (q.length < 3) {
       setSuggestions([]);
-      setOpen(false);
       return;
     }
     const t = setTimeout(async () => {
@@ -45,6 +59,9 @@ export function AddressAutocomplete({ value, onChange, placeholder, className }:
     return () => clearTimeout(t);
   }, [value, fetchSuggestions, sessionToken]);
 
+  const displayed: Suggestion[] =
+    suggestions.length > 0 ? suggestions : value.trim().length < 3 ? PRESET_LOCATIONS : [];
+
   const select = (s: Suggestion) => {
     justSelectedRef.current = true;
     onChange(s.text);
@@ -58,18 +75,19 @@ export function AddressAutocomplete({ value, onChange, placeholder, className }:
         value={value}
         onChange={(e) => onChange(e.target.value)}
         onBlur={() => setTimeout(() => setOpen(false), 150)}
-        onFocus={() => suggestions.length > 0 && setOpen(true)}
+        onFocus={() => setOpen(true)}
+
         onKeyDown={(e) => {
-          if (!open || suggestions.length === 0) return;
+          if (!open || displayed.length === 0) return;
           if (e.key === "ArrowDown") {
             e.preventDefault();
-            setActiveIndex((i) => (i + 1) % suggestions.length);
+            setActiveIndex((i) => (i + 1) % displayed.length);
           } else if (e.key === "ArrowUp") {
             e.preventDefault();
-            setActiveIndex((i) => (i <= 0 ? suggestions.length - 1 : i - 1));
+            setActiveIndex((i) => (i <= 0 ? displayed.length - 1 : i - 1));
           } else if (e.key === "Enter" && activeIndex >= 0) {
             e.preventDefault();
-            select(suggestions[activeIndex]);
+            select(displayed[activeIndex]);
           } else if (e.key === "Escape") {
             setOpen(false);
           }
@@ -82,13 +100,18 @@ export function AddressAutocomplete({ value, onChange, placeholder, className }:
         aria-controls={listId}
         aria-autocomplete="list"
       />
-      {open && suggestions.length > 0 && (
+      {open && displayed.length > 0 && (
         <ul
           id={listId}
           role="listbox"
           className="absolute z-50 mt-1 w-full overflow-hidden rounded-md border border-border bg-popover text-popover-foreground shadow-lg"
         >
-          {suggestions.map((s, i) => (
+          {suggestions.length === 0 && value.trim().length < 3 && (
+            <li className="px-3 py-1.5 text-xs uppercase tracking-wide text-muted-foreground">
+              Popular locations
+            </li>
+          )}
+          {displayed.map((s, i) => (
             <li
               key={s.placeId}
               role="option"
@@ -110,3 +133,4 @@ export function AddressAutocomplete({ value, onChange, placeholder, className }:
     </div>
   );
 }
+
