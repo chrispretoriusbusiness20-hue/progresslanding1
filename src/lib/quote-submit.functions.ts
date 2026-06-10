@@ -5,118 +5,16 @@ import productsData from "@/data/products.json";
 const MAPS_GATEWAY = "https://connector-gateway.lovable.dev/google_maps";
 const SHEETS_GATEWAY = "https://connector-gateway.lovable.dev/google_sheets/v4";
 const CALENDAR_GATEWAY = "https://connector-gateway.lovable.dev/google_calendar/calendar/v3";
-const GMAIL_GATEWAY = "https://connector-gateway.lovable.dev/google_mail/gmail/v1";
+const RESEND_GATEWAY = "https://connector-gateway.lovable.dev/resend";
 const QUOTE_SHEET_ID = "1AVvNPoavrAf0ptWt4dUXdA2zmGqNjA70ebPXn-gJgW8";
 const QUOTE_FROM_EMAIL = "sales@progressinstallations.co.za";
+const QUOTE_FROM_NAME = "Progress Installations";
 const QUOTE_CC_EMAILS = [
   "louis@progressinstallations.co.za",
   "christiaan@progressinstallations.co.za",
 ];
 const ORIGIN_ADDRESS =
   "Progress Lighting & Fires, 189 Durban Rd, Bellville, Cape Town, 7530, South Africa";
-
-function encodeRawEmailWithAttachment(args: {
-  to: string;
-  cc?: string;
-  from?: string;
-  replyTo?: string;
-  subject: string;
-  htmlBody: string;
-  attachment?: { filename: string; base64: string; mimeType: string };
-}): string {
-  const boundary = `bnd_${Math.random().toString(36).slice(2)}${Date.now().toString(36)}`;
-  const headers: string[] = [
-    ...(args.from ? [`From: ${args.from}`] : []),
-    `To: ${args.to}`,
-    ...(args.cc ? [`Cc: ${args.cc}`] : []),
-    ...(args.replyTo ? [`Reply-To: ${args.replyTo}`] : []),
-    `Subject: ${args.subject}`,
-    "MIME-Version: 1.0",
-  ];
-  let body: string;
-  if (args.attachment) {
-    headers.push(`Content-Type: multipart/mixed; boundary="${boundary}"`);
-    const chunked = args.attachment.base64.replace(/(.{76})/g, "$1\r\n");
-    body =
-      "\r\n" +
-      `--${boundary}\r\n` +
-      'Content-Type: text/html; charset="UTF-8"\r\n' +
-      "Content-Transfer-Encoding: 7bit\r\n\r\n" +
-      args.htmlBody +
-      `\r\n--${boundary}\r\n` +
-      `Content-Type: ${args.attachment.mimeType}; name="${args.attachment.filename}"\r\n` +
-      `Content-Disposition: attachment; filename="${args.attachment.filename}"\r\n` +
-      "Content-Transfer-Encoding: base64\r\n\r\n" +
-      chunked +
-      `\r\n--${boundary}--`;
-  } else {
-    headers.push('Content-Type: text/html; charset="UTF-8"');
-    body = "\r\n" + args.htmlBody;
-  }
-  const message = headers.join("\r\n") + body;
-  const b64 =
-    typeof Buffer !== "undefined"
-      ? Buffer.from(message, "utf-8").toString("base64")
-      : btoa(unescape(encodeURIComponent(message)));
-  return b64.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
-}
-
-// Cache the send-as alias verification result for the lifetime of the worker
-// so we don't hit Gmail's settings API on every send.
-let cachedSendAsVerified: boolean | null = null;
-
-async function verifySendAsAlias(
-  lovableKey: string,
-  gmailKey: string,
-): Promise<boolean> {
-  if (cachedSendAsVerified !== null) return cachedSendAsVerified;
-  try {
-    const res = await fetch(`${GMAIL_GATEWAY}/users/me/settings/sendAs`, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${lovableKey}`,
-        "X-Connection-Api-Key": gmailKey,
-      },
-    });
-    if (!res.ok) {
-      console.error(
-        "Gmail sendAs lookup failed",
-        res.status,
-        await res.text(),
-      );
-      // Don't cache failure — allow retries later.
-      return false;
-    }
-    const data = (await res.json()) as {
-      sendAs?: { sendAsEmail?: string; verificationStatus?: string; isPrimary?: boolean }[];
-    };
-    const target = QUOTE_FROM_EMAIL.toLowerCase();
-    const alias = (data.sendAs ?? []).find(
-      (a) => (a.sendAsEmail ?? "").toLowerCase() === target,
-    );
-    if (!alias) {
-      console.error(
-        `Gmail send-as alias ${QUOTE_FROM_EMAIL} not found on connected account. ` +
-          `Add it under Gmail Settings → Accounts → "Send mail as".`,
-      );
-      cachedSendAsVerified = false;
-      return false;
-    }
-    if (!alias.isPrimary && alias.verificationStatus !== "accepted") {
-      console.error(
-        `Gmail send-as alias ${QUOTE_FROM_EMAIL} is not verified ` +
-          `(status: ${alias.verificationStatus ?? "unknown"}).`,
-      );
-      cachedSendAsVerified = false;
-      return false;
-    }
-    cachedSendAsVerified = true;
-    return true;
-  } catch (err) {
-    console.error("Gmail sendAs verification error", err);
-    return false;
-  }
-}
 
 async function sendQuoteNotificationEmail(args: {
   to: string;
@@ -126,50 +24,47 @@ async function sendQuoteNotificationEmail(args: {
   attachment?: { filename: string; base64: string; mimeType: string };
 }): Promise<void> {
   const lovableKey = process.env.LOVABLE_API_KEY;
-  const gmailKey = process.env.GOOGLE_MAIL_API_KEY;
-  if (!lovableKey || !gmailKey) {
-    console.error("Gmail send skipped: missing LOVABLE_API_KEY or GOOGLE_MAIL_API_KEY");
-    return;
-  }
-  const aliasOk = await verifySendAsAlias(lovableKey, gmailKey);
-  if (!aliasOk) {
-    console.error(
-      `Gmail send aborted: ${QUOTE_FROM_EMAIL} is not configured as a verified ` +
-        `send-as alias on the connected Gmail account. The email will not be sent ` +
-        `to avoid a misleading From address.`,
-    );
+  const resendKey = process.env.RESEND_API_KEY;
+  if (!lovableKey || !resendKey) {
+    console.error("Resend send skipped: missing LOVABLE_API_KEY or RESEND_API_KEY");
     return;
   }
   try {
-    const raw = encodeRawEmailWithAttachment({
-      to: args.to,
-      cc: args.cc,
-      from: QUOTE_FROM_EMAIL,
-      replyTo: QUOTE_FROM_EMAIL,
+    const ccList = args.cc
+      ? args.cc.split(",").map((s) => s.trim()).filter(Boolean)
+      : undefined;
+    const payload: Record<string, unknown> = {
+      from: `${QUOTE_FROM_NAME} <${QUOTE_FROM_EMAIL}>`,
+      to: [args.to],
       subject: args.subject,
-      htmlBody: args.html,
-      attachment: args.attachment,
-    });
-    const res = await fetch(`${GMAIL_GATEWAY}/users/me/messages/send`, {
+      html: args.html,
+      reply_to: QUOTE_FROM_EMAIL,
+    };
+    if (ccList && ccList.length > 0) payload.cc = ccList;
+    if (args.attachment) {
+      payload.attachments = [
+        {
+          filename: args.attachment.filename,
+          content: args.attachment.base64,
+          content_type: args.attachment.mimeType,
+        },
+      ];
+    }
+    const res = await fetch(`${RESEND_GATEWAY}/emails`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${lovableKey}`,
-        "X-Connection-Api-Key": gmailKey,
+        "X-Connection-Api-Key": resendKey,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ raw }),
+      body: JSON.stringify(payload),
     });
     if (!res.ok) {
       const body = await res.text();
-      console.error("Gmail send failed", res.status, body);
-      // If Gmail rejects because the alias isn't allowed, invalidate the cache
-      // so the next send re-checks.
-      if (res.status === 400 || res.status === 403) {
-        cachedSendAsVerified = null;
-      }
+      console.error("Resend send failed", res.status, body);
     }
   } catch (err) {
-    console.error("Gmail send error", err);
+    console.error("Resend send error", err);
   }
 }
 
