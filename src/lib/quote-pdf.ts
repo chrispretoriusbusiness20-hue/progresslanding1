@@ -373,25 +373,22 @@ export async function generateQuotePDF(input: QuoteInput): Promise<{ filename: s
     doc.addPage();
     let py = margin;
 
-    // --- Page 2 header (Progress Installations logo) ---
-    const piLogoData = await fetchAsDataURL(progressInstallationsLogo.url);
+    // --- Page 2 header (Progress logo + Installations subtitle) ---
+    const piLogoData = await fetchAsDataURL(progressLogo.url);
     if (piLogoData) {
       try {
-        const imgW = 70;
-        const imgH = imgW * (271 / 1160);
+        const imgW = 110;
+        // Same aspect ratio as the main Progress header (872 x 240)
+        const imgH = imgW * (240 / 872);
         doc.addImage(piLogoData, "PNG", (pageW - imgW) / 2, py, imgW, imgH);
-        py += imgH + 3;
+        py += imgH + 4;
       } catch {
-        // fall back to text header
-        doc.setFont("helvetica", "bold").setFontSize(20);
-        doc.text("PROGRESS INSTALLATIONS", pageW / 2, py, { align: "center" });
-        py += 6;
+        py += 2;
       }
-    } else {
-      doc.setFont("helvetica", "bold").setFontSize(20);
-      doc.text("PROGRESS INSTALLATIONS", pageW / 2, py, { align: "center" });
-      py += 6;
     }
+    doc.setFont("helvetica", "bold").setFontSize(16);
+    doc.text("PROGRESS INSTALLATIONS (Pty) Ltd", pageW / 2, py, { align: "center" });
+    py += 5;
     doc.setFont("helvetica", "normal").setFontSize(8.5);
     doc.text(
       "Certified Installers of Gas, Wood and Pellet fireplaces. Service and Installation of air conditioning and core-drilling services",
