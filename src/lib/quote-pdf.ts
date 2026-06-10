@@ -1,6 +1,7 @@
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import progressLogo from "@/assets/progress-header-transparent.png.asset.json";
+import progressInstallationsLogo from "@/assets/progress-installations-logo.png.asset.json";
 
 
 export type QuoteLineItem = {
