@@ -3,6 +3,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { Loader2, AlertTriangle, CheckCircle2, XCircle } from "lucide-react";
 import { diagnoseEmailDomain } from "@/lib/email-diagnostic.functions";
+import { sendTestEmail } from "@/lib/email-test.functions";
 
 export const Route = createFileRoute("/email-diagnostic")({
   head: () => ({
@@ -17,13 +18,33 @@ export const Route = createFileRoute("/email-diagnostic")({
 
 type Result = Awaited<ReturnType<typeof diagnoseEmailDomain>>;
 
+type TestResult = Awaited<ReturnType<typeof sendTestEmail>>;
+
 function EmailDiagnosticPage() {
   const run = useServerFn(diagnoseEmailDomain);
+  const sendTest = useServerFn(sendTestEmail);
   const [email, setEmail] = useState("sales@progressinstallations.co.za");
   const [selectors, setSelectors] = useState("google,default,selector1,selector2,k1,mail,dkim");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<Result | null>(null);
+  const [testLoading, setTestLoading] = useState(false);
+  const [testResult, setTestResult] = useState<TestResult | null>(null);
+  const [testError, setTestError] = useState<string | null>(null);
+
+  async function onSendTest() {
+    setTestLoading(true);
+    setTestError(null);
+    setTestResult(null);
+    try {
+      const r = await sendTest({ data: { to: email } });
+      setTestResult(r);
+    } catch (err) {
+      setTestError(err instanceof Error ? err.message : "Test send failed.");
+    } finally {
+      setTestLoading(false);
+    }
+  }
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -72,15 +93,33 @@ function EmailDiagnosticPage() {
             className="mt-1 w-full rounded border border-input bg-background px-3 py-2 text-sm font-mono"
           />
         </label>
-        <button
-          type="submit"
-          disabled={loading}
-          className="inline-flex items-center gap-2 rounded bg-primary px-4 py-2 text-sm font-medium text-primary-foreground disabled:opacity-50"
-        >
-          {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-          Run diagnostic
-        </button>
+        <div className="flex flex-wrap gap-2">
+          <button
+            type="submit"
+            disabled={loading}
+            className="inline-flex items-center gap-2 rounded bg-primary px-4 py-2 text-sm font-medium text-primary-foreground disabled:opacity-50"
+          >
+            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+            Run diagnostic
+          </button>
+          <button
+            type="button"
+            onClick={onSendTest}
+            disabled={testLoading}
+            className="inline-flex items-center gap-2 rounded border border-input bg-background px-4 py-2 text-sm font-medium disabled:opacity-50"
+          >
+            {testLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+            Send test email to this address
+          </button>
+        </div>
       </form>
+
+      {testError ? (
+        <div className="rounded border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive mb-4">
+          {testError}
+        </div>
+      ) : null}
+      {testResult ? <TestReport t={testResult} /> : null}
 
       {error ? (
         <div className="rounded border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive">{error}</div>
@@ -176,3 +215,28 @@ function Report({ r }: { r: Result }) {
     </div>
   );
 }
+
+function TestReport({ t }: { t: TestResult }) {
+  const ok = t.ok;
+  return (
+    <Section title={ok ? "Test email sent" : `Test failed (${t.stage})`} ok={ok ? true : false}>
+      <p>{t.message}</p>
+      {"connectedAccount" in t && t.connectedAccount ? (
+        <p className="text-xs text-muted-foreground">Connected Gmail account: {t.connectedAccount}</p>
+      ) : null}
+      {"aliasStatus" in t && t.aliasStatus ? (
+        <p className="text-xs text-muted-foreground">Alias verification status: {t.aliasStatus}</p>
+      ) : null}
+      {ok ? (
+        <div className="text-xs text-muted-foreground mt-1 space-y-0.5">
+          <p>From: <span className="font-mono">{t.from}</span></p>
+          <p>To: <span className="font-mono">{t.to}</span></p>
+          <p>Subject: <span className="font-mono">{t.subject}</span></p>
+          {t.messageId ? <p>Gmail message id: <span className="font-mono">{t.messageId}</span></p> : null}
+          <p>Sent at: {new Date(t.sentAt).toLocaleString()}</p>
+        </div>
+      ) : null}
+    </Section>
+  );
+}
+
