@@ -3,6 +3,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { Loader2, AlertTriangle, CheckCircle2, XCircle } from "lucide-react";
 import { diagnoseEmailDomain } from "@/lib/email-diagnostic.functions";
+import { sendTestEmail } from "@/lib/email-test.functions";
 
 export const Route = createFileRoute("/email-diagnostic")({
   head: () => ({
@@ -17,13 +18,33 @@ export const Route = createFileRoute("/email-diagnostic")({
 
 type Result = Awaited<ReturnType<typeof diagnoseEmailDomain>>;
 
+type TestResult = Awaited<ReturnType<typeof sendTestEmail>>;
+
 function EmailDiagnosticPage() {
   const run = useServerFn(diagnoseEmailDomain);
+  const sendTest = useServerFn(sendTestEmail);
   const [email, setEmail] = useState("sales@progressinstallations.co.za");
   const [selectors, setSelectors] = useState("google,default,selector1,selector2,k1,mail,dkim");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<Result | null>(null);
+  const [testLoading, setTestLoading] = useState(false);
+  const [testResult, setTestResult] = useState<TestResult | null>(null);
+  const [testError, setTestError] = useState<string | null>(null);
+
+  async function onSendTest() {
+    setTestLoading(true);
+    setTestError(null);
+    setTestResult(null);
+    try {
+      const r = await sendTest({ data: { to: email } });
+      setTestResult(r);
+    } catch (err) {
+      setTestError(err instanceof Error ? err.message : "Test send failed.");
+    } finally {
+      setTestLoading(false);
+    }
+  }
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
