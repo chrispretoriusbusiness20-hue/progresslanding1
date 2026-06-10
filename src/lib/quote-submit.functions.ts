@@ -7,7 +7,7 @@ const SHEETS_GATEWAY = "https://connector-gateway.lovable.dev/google_sheets/v4";
 const CALENDAR_GATEWAY = "https://connector-gateway.lovable.dev/google_calendar/calendar/v3";
 const RESEND_GATEWAY = "https://connector-gateway.lovable.dev/resend";
 const QUOTE_SHEET_ID = "1AVvNPoavrAf0ptWt4dUXdA2zmGqNjA70ebPXn-gJgW8";
-const QUOTE_FROM_EMAIL = "sales@progressgroup.co.za";
+const QUOTE_FROM_EMAIL = "sales@progressgrp.co.za";
 const QUOTE_FROM_NAME = "Progress Installations";
 const QUOTE_CC_EMAILS = [
   "louis@progressinstallations.co.za",
