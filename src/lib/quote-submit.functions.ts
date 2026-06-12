@@ -409,7 +409,6 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
             .join("")}
         </table>
       </div>`;
-    const notificationSubject = `New quote — ${data.firstName} ${data.lastName} (${matched?.name ?? data.product})`;
     const customerName = `${data.firstName} ${data.lastName}`.trim();
     const productLabel = matched?.name ?? data.product;
     const submittedAtLabel = `${new Date().toLocaleString("en-ZA", { timeZone: "Africa/Johannesburg" })} (SAST)`;
@@ -497,8 +496,6 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
       preferredDate: data.preferredDate ?? null,
       preferredTime: data.preferredTime ?? null,
       submittedAt: new Date().toISOString(),
-      notificationSubject,
-      notificationHtml: html,
       teamNotificationOk: teamSend.ok,
       teamNotificationError: teamSend.error ?? null,
     };
