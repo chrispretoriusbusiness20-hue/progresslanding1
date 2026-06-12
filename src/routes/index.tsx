@@ -106,6 +106,8 @@ type LookupResult =
       submittedAt: string;
       notificationSubject: string;
       notificationHtml: string;
+      teamNotificationOk?: boolean;
+      teamNotificationError?: string | null;
     }
   | { match: false };
 
@@ -188,6 +190,7 @@ function QuotePage() {
   const [lookup, setLookup] = useState<LookupResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [emailWarning, setEmailWarning] = useState<string | null>(null);
   const [headerHidden, setHeaderHidden] = useState(false);
 
   useEffect(() => {
@@ -218,6 +221,8 @@ function QuotePage() {
     if (!canContinue || loading) return;
     setLoading(true);
     setError(null);
+    setEmailWarning(null);
+    const warnings: string[] = [];
     try {
       const result = (await submitFn({
         data: {
@@ -238,6 +243,11 @@ function QuotePage() {
       })) as LookupResult;
       setLookup(result);
       setSubmitted(true);
+      if (result.match && result.teamNotificationOk === false) {
+        warnings.push(
+          `Team notification email failed${result.teamNotificationError ? `: ${result.teamNotificationError}` : ""}`,
+        );
+      }
       // Auto-download the PDF quote with finalized transport info
       try {
         const priceStr = PRODUCT_PRICE_MAP.get(product) ?? null;
@@ -269,7 +279,7 @@ function QuotePage() {
               quoteNo: pdf.quoteNo,
               productName: result.catalog?.name ?? result.productRequested,
             });
-            await emailQuoteFn({
+            const emailRes = (await emailQuoteFn({
               data: {
                 to: result.email,
                 subject: `Your Progress Group Quote – ${pdf.quoteNo}`,
@@ -277,14 +287,24 @@ function QuotePage() {
                 filename: pdf.filename,
                 pdfBase64: pdf.base64,
               },
-            });
+            })) as { ok: boolean; error: string | null };
+            if (!emailRes?.ok) {
+              warnings.push(
+                `Customer quote email failed${emailRes?.error ? `: ${emailRes.error}` : ""}`,
+              );
+            }
           } catch (emailErr) {
             console.error("Quote email failed", emailErr);
+            warnings.push(
+              `Customer quote email failed: ${emailErr instanceof Error ? emailErr.message : "unknown error"}`,
+            );
           }
         }
       } catch (pdfErr) {
         console.error("PDF generation failed", pdfErr);
       }
+      if (warnings.length > 0) setEmailWarning(warnings.join(" • "));
+
       if (typeof window !== "undefined") {
         setTimeout(() => {
           document.getElementById("quote")?.scrollIntoView({ behavior: "smooth" });
@@ -643,6 +663,11 @@ function QuotePage() {
       {showQuote && (
         <section id="quote" className="border-t border-border bg-background">
           <div className="mx-auto max-w-6xl px-6 py-16 sm:py-20">
+            {emailWarning && (
+              <div className="mb-6 border-2 border-amber-500 bg-amber-500/10 px-3 py-2 text-sm text-amber-900 dark:text-amber-200">
+                Your quote was saved, but: {emailWarning}. Please contact us if you do not receive the email.
+              </div>
+            )}
             <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <p className="text-lg text-muted-foreground">
                 Thank you for the enquiry find quote attached
