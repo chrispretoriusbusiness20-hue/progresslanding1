@@ -105,8 +105,6 @@ type LookupResult =
       travelFee: number | null;
       bookingLink?: string | null;
       submittedAt: string;
-      notificationSubject: string;
-      notificationHtml: string;
       teamNotificationOk?: boolean;
       teamNotificationError?: string | null;
     }
