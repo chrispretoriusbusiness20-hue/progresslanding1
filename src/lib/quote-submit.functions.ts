@@ -463,5 +463,7 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
       submittedAt: new Date().toISOString(),
       notificationSubject,
       notificationHtml: html,
+      teamNotificationOk: teamSend.ok,
+      teamNotificationError: teamSend.error ?? null,
     };
   });
