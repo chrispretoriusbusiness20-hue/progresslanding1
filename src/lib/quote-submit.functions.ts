@@ -22,12 +22,13 @@ async function sendQuoteNotificationEmail(args: {
   html: string;
   cc?: string;
   attachment?: { filename: string; base64: string; mimeType: string };
-}): Promise<void> {
+}): Promise<{ ok: boolean; error?: string }> {
   const lovableKey = process.env.LOVABLE_API_KEY;
   const resendKey = process.env.RESEND_API_KEY;
   if (!lovableKey || !resendKey) {
-    console.error("Resend send skipped: missing LOVABLE_API_KEY or RESEND_API_KEY");
-    return;
+    const msg = "Email service not configured (missing API keys)";
+    console.error("Resend send skipped:", msg);
+    return { ok: false, error: msg };
   }
   try {
     const ccList = args.cc
@@ -62,9 +63,12 @@ async function sendQuoteNotificationEmail(args: {
     if (!res.ok) {
       const body = await res.text();
       console.error("Resend send failed", res.status, body);
+      return { ok: false, error: `Resend ${res.status}: ${body.slice(0, 300)}` };
     }
+    return { ok: true };
   } catch (err) {
     console.error("Resend send error", err);
+    return { ok: false, error: err instanceof Error ? err.message : "Unknown email error" };
   }
 }
 
