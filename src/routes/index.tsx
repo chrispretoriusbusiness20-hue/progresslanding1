@@ -275,18 +275,15 @@ function QuotePage() {
         if (result.match && pdf) {
           try {
             const fullName = `${result.firstName ?? ""} ${result.lastName ?? ""}`.trim() || "Customer";
-            const thankYouHtml = buildQuoteEmailHtml({
-              clientName: fullName,
-              quoteNo: pdf.quoteNo,
-              productName: result.catalog?.name ?? result.productRequested,
-            });
+            const productName = result.catalog?.name ?? result.productRequested;
             const emailRes = (await emailQuoteFn({
               data: {
                 to: result.email,
-                subject: `Your Progress Group Quote – ${pdf.quoteNo}`,
-                html: thankYouHtml,
                 filename: pdf.filename,
                 pdfBase64: pdf.base64,
+                clientName: fullName,
+                quoteNo: pdf.quoteNo,
+                productName,
               },
             })) as { ok: boolean; error: string | null };
             if (!emailRes?.ok) {
