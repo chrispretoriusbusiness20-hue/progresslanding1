@@ -83,7 +83,7 @@ export const emailQuotePdf = createServerFn({ method: "POST" })
     }),
   )
   .handler(async ({ data }) => {
-    await sendQuoteNotificationEmail({
+    const result = await sendQuoteNotificationEmail({
       to: data.to,
       subject: data.subject,
       html: data.html,
@@ -94,7 +94,7 @@ export const emailQuotePdf = createServerFn({ method: "POST" })
         mimeType: "application/pdf",
       },
     });
-    return { ok: true as const };
+    return { ok: result.ok, error: result.error ?? null };
   });
 
 
