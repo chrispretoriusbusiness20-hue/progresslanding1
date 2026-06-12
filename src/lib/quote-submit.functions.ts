@@ -5,70 +5,56 @@ import productsData from "@/data/products.json";
 const MAPS_GATEWAY = "https://connector-gateway.lovable.dev/google_maps";
 const SHEETS_GATEWAY = "https://connector-gateway.lovable.dev/google_sheets/v4";
 const CALENDAR_GATEWAY = "https://connector-gateway.lovable.dev/google_calendar/calendar/v3";
-const RESEND_GATEWAY = "https://connector-gateway.lovable.dev/resend";
 const QUOTE_SHEET_ID = "1AVvNPoavrAf0ptWt4dUXdA2zmGqNjA70ebPXn-gJgW8";
-const QUOTE_FROM_EMAIL = "sales@progressgrp.co.za";
-const QUOTE_FROM_NAME = "Progress Installations";
+const QUOTE_TEAM_EMAIL = "sales@progressgrp.co.za";
 const QUOTE_CC_EMAILS = [
   "louis@progressinstallations.co.za",
   "christiaan@progressinstallations.co.za",
 ];
 const ORIGIN_ADDRESS =
   "Progress Lighting & Fires, 189 Durban Rd, Bellville, Cape Town, 7530, South Africa";
+const QUOTE_BUCKET = "quotes";
+const QUOTE_SIGNED_URL_EXPIRES_S = 60 * 60 * 24 * 30; // 30 days
 
-async function sendQuoteNotificationEmail(args: {
-  to: string;
-  subject: string;
-  html: string;
-  cc?: string;
-  attachment?: { filename: string; base64: string; mimeType: string };
-}): Promise<{ ok: boolean; error?: string }> {
-  const lovableKey = process.env.LOVABLE_API_KEY;
-  const resendKey = process.env.RESEND_API_KEY;
-  if (!lovableKey || !resendKey) {
-    const msg = "Email service not configured (missing API keys)";
-    console.error("Resend send skipped:", msg);
-    return { ok: false, error: msg };
-  }
+function base64ToBytes(b64: string): Uint8Array {
+  const clean = b64.includes(",") ? b64.split(",")[1] : b64;
+  const binary = atob(clean);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+  return bytes;
+}
+
+async function uploadQuotePdf(
+  filename: string,
+  pdfBase64: string,
+): Promise<{ url: string | null; path: string | null; error?: string }> {
   try {
-    const ccList = args.cc
-      ? args.cc.split(",").map((s) => s.trim()).filter(Boolean)
-      : undefined;
-    const payload: Record<string, unknown> = {
-      from: `${QUOTE_FROM_NAME} <${QUOTE_FROM_EMAIL}>`,
-      to: [args.to],
-      subject: args.subject,
-      html: args.html,
-      reply_to: QUOTE_FROM_EMAIL,
-    };
-    if (ccList && ccList.length > 0) payload.cc = ccList;
-    if (args.attachment) {
-      payload.attachments = [
-        {
-          filename: args.attachment.filename,
-          content: args.attachment.base64,
-          content_type: args.attachment.mimeType,
-        },
-      ];
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const safeName = filename.replace(/[^A-Za-z0-9._-]/g, "_");
+    const path = `${new Date().toISOString().slice(0, 10)}/${crypto.randomUUID()}-${safeName}`;
+    const bytes = base64ToBytes(pdfBase64);
+    const { error: uploadError } = await supabaseAdmin.storage
+      .from(QUOTE_BUCKET)
+      .upload(path, bytes, { contentType: "application/pdf", upsert: false });
+    if (uploadError) {
+      console.error("Quote PDF upload failed", uploadError);
+      return { url: null, path: null, error: uploadError.message };
     }
-    const res = await fetch(`${RESEND_GATEWAY}/emails`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${lovableKey}`,
-        "X-Connection-Api-Key": resendKey,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(payload),
-    });
-    if (!res.ok) {
-      const body = await res.text();
-      console.error("Resend send failed", res.status, body);
-      return { ok: false, error: `Resend ${res.status}: ${body.slice(0, 300)}` };
+    const { data: signed, error: signError } = await supabaseAdmin.storage
+      .from(QUOTE_BUCKET)
+      .createSignedUrl(path, QUOTE_SIGNED_URL_EXPIRES_S);
+    if (signError || !signed?.signedUrl) {
+      console.error("Quote signed URL failed", signError);
+      return { url: null, path, error: signError?.message ?? "Failed to sign URL" };
     }
-    return { ok: true };
+    return { url: signed.signedUrl, path };
   } catch (err) {
-    console.error("Resend send error", err);
-    return { ok: false, error: err instanceof Error ? err.message : "Unknown email error" };
+    console.error("uploadQuotePdf threw", err);
+    return {
+      url: null,
+      path: null,
+      error: err instanceof Error ? err.message : "Unknown upload error",
+    };
   }
 }
 
@@ -76,26 +62,39 @@ export const emailQuotePdf = createServerFn({ method: "POST" })
   .inputValidator(
     z.object({
       to: z.string().trim().email().max(200),
-      subject: z.string().trim().min(1).max(300),
-      html: z.string().min(1).max(200_000),
       filename: z.string().trim().min(1).max(200),
       pdfBase64: z.string().min(1).max(15_000_000),
+      clientName: z.string().trim().min(1).max(200).optional(),
+      quoteNo: z.string().trim().min(1).max(80).optional(),
+      productName: z.string().trim().min(1).max(300).optional(),
     }),
   )
   .handler(async ({ data }) => {
-    const result = await sendQuoteNotificationEmail({
-      to: data.to,
-      subject: data.subject,
-      html: data.html,
-      cc: QUOTE_CC_EMAILS.join(", "),
-      attachment: {
-        filename: data.filename,
-        base64: data.pdfBase64,
-        mimeType: "application/pdf",
+    const upload = await uploadQuotePdf(data.filename, data.pdfBase64);
+    if (!upload.url) {
+      return { ok: false, error: upload.error ?? "Failed to store quote PDF" };
+    }
+    const { sendInternalEmail } = await import("@/lib/email/send-internal.server");
+    const send = await sendInternalEmail({
+      templateName: "quote-customer",
+      recipientEmail: data.to,
+      idempotencyKey: `quote-customer-${upload.path}`,
+      templateData: {
+        clientName: data.clientName ?? "there",
+        quoteNo: data.quoteNo ?? "",
+        productName: data.productName ?? "your selection",
+        downloadUrl: upload.url,
+        expiresInDays: Math.round(QUOTE_SIGNED_URL_EXPIRES_S / 86400),
       },
     });
-    return { ok: result.ok, error: result.error ?? null };
+    return {
+      ok: send.ok,
+      error: send.ok ? null : send.error ?? send.reason ?? "Email failed",
+      downloadUrl: upload.url,
+    };
   });
+
+
 
 
 async function createCalendarBooking(args: {
