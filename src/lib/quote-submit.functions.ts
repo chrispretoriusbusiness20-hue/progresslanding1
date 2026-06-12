@@ -410,17 +410,43 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
         </table>
       </div>`;
     const notificationSubject = `New quote — ${data.firstName} ${data.lastName} (${matched?.name ?? data.product})`;
+    const customerName = `${data.firstName} ${data.lastName}`.trim();
+    const productLabel = matched?.name ?? data.product;
+    const submittedAtLabel = `${new Date().toLocaleString("en-ZA", { timeZone: "Africa/Johannesburg" })} (SAST)`;
 
-    // Send internal team notification email (to sales, cc additional recipients).
-    // Wrapped in try/catch so any unexpected failure cannot break the quote submission.
+    // Send internal team notification email via Lovable Emails (no attachment — link omitted, PDF lives client-side).
     let teamSend: { ok: boolean; error?: string } = { ok: false, error: undefined };
     try {
-      teamSend = await sendQuoteNotificationEmail({
-        to: QUOTE_FROM_EMAIL,
-        subject: notificationSubject,
-        html,
-        cc: QUOTE_CC_EMAILS.join(", "),
+      const { sendInternalEmail } = await import("@/lib/email/send-internal.server");
+      const sendPrimary = await sendInternalEmail({
+        templateName: "quote-team",
+        recipientEmail: QUOTE_TEAM_EMAIL,
+        idempotencyKey: `quote-team-${data.email}-${Date.now()}`,
+        templateData: {
+          customerName,
+          productName: productLabel,
+          submittedAt: submittedAtLabel,
+          rows: rows.map(([k, v]) => ({ k, v })),
+        },
       });
+      // Send to CC list as separate sends (Lovable Emails is one-recipient-per-send).
+      for (const cc of QUOTE_CC_EMAILS) {
+        await sendInternalEmail({
+          templateName: "quote-team",
+          recipientEmail: cc,
+          idempotencyKey: `quote-team-${cc}-${data.email}-${Date.now()}`,
+          templateData: {
+            customerName,
+            productName: productLabel,
+            submittedAt: submittedAtLabel,
+            rows: rows.map(([k, v]) => ({ k, v })),
+          },
+        });
+      }
+      teamSend = {
+        ok: sendPrimary.ok,
+        error: sendPrimary.ok ? undefined : sendPrimary.error ?? sendPrimary.reason,
+      };
     } catch (err) {
       console.error("Team notification send threw", err);
       teamSend = {
@@ -428,6 +454,7 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
         error: err instanceof Error ? err.message : "Unknown team notification error",
       };
     }
+
 
 
 
