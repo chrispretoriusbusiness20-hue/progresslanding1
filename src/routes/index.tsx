@@ -304,7 +304,15 @@ function QuotePage() {
       } catch (pdfErr) {
         console.error("PDF generation failed", pdfErr);
       }
-      if (warnings.length > 0) setEmailWarning(warnings.join(" • "));
+      if (warnings.length > 0) {
+        setEmailWarning(warnings.join(" • "));
+        toast.error("Email could not be sent", {
+          description: `Your quote was saved, but we couldn't send the email. ${warnings.join(" • ")}`,
+          duration: 8000,
+        });
+      } else if (result.match) {
+        toast.success("Quote saved and email sent");
+      }
 
       if (typeof window !== "undefined") {
         setTimeout(() => {
