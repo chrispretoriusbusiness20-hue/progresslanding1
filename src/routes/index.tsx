@@ -106,6 +106,8 @@ type LookupResult =
       submittedAt: string;
       notificationSubject: string;
       notificationHtml: string;
+      teamNotificationOk?: boolean;
+      teamNotificationError?: string | null;
     }
   | { match: false };
 
