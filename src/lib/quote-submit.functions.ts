@@ -412,13 +412,23 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
       </div>`;
     const notificationSubject = `New quote — ${data.firstName} ${data.lastName} (${matched?.name ?? data.product})`;
 
-    // Send internal team notification email (to sales, cc additional recipients)
-    const teamSend = await sendQuoteNotificationEmail({
-      to: QUOTE_FROM_EMAIL,
-      subject: notificationSubject,
-      html,
-      cc: QUOTE_CC_EMAILS.join(", "),
-    });
+    // Send internal team notification email (to sales, cc additional recipients).
+    // Wrapped in try/catch so any unexpected failure cannot break the quote submission.
+    let teamSend: { ok: boolean; error?: string } = { ok: false, error: undefined };
+    try {
+      teamSend = await sendQuoteNotificationEmail({
+        to: QUOTE_FROM_EMAIL,
+        subject: notificationSubject,
+        html,
+        cc: QUOTE_CC_EMAILS.join(", "),
+      });
+    } catch (err) {
+      console.error("Team notification send threw", err);
+      teamSend = {
+        ok: false,
+        error: err instanceof Error ? err.message : "Unknown team notification error",
+      };
+    }
 
 
 

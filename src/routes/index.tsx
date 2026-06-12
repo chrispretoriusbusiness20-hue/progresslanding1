@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { CheckCircle2, FileDown, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 import { submitQuoteRequest, emailQuotePdf } from "@/lib/quote-submit.functions";
 import { generateQuotePDF } from "@/lib/quote-pdf";
 import { buildQuoteEmailHtml } from "@/lib/quote-email-template";
@@ -303,7 +304,15 @@ function QuotePage() {
       } catch (pdfErr) {
         console.error("PDF generation failed", pdfErr);
       }
-      if (warnings.length > 0) setEmailWarning(warnings.join(" • "));
+      if (warnings.length > 0) {
+        setEmailWarning(warnings.join(" • "));
+        toast.error("Email could not be sent", {
+          description: `Your quote was saved, but we couldn't send the email. ${warnings.join(" • ")}`,
+          duration: 8000,
+        });
+      } else if (result.match) {
+        toast.success("Quote saved and email sent");
+      }
 
       if (typeof window !== "undefined") {
         setTimeout(() => {
