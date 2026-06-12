@@ -243,6 +243,11 @@ function QuotePage() {
       })) as LookupResult;
       setLookup(result);
       setSubmitted(true);
+      if (result.match && result.teamNotificationOk === false) {
+        warnings.push(
+          `Team notification email failed${result.teamNotificationError ? `: ${result.teamNotificationError}` : ""}`,
+        );
+      }
       // Auto-download the PDF quote with finalized transport info
       try {
         const priceStr = PRODUCT_PRICE_MAP.get(product) ?? null;
@@ -274,7 +279,7 @@ function QuotePage() {
               quoteNo: pdf.quoteNo,
               productName: result.catalog?.name ?? result.productRequested,
             });
-            await emailQuoteFn({
+            const emailRes = (await emailQuoteFn({
               data: {
                 to: result.email,
                 subject: `Your Progress Group Quote – ${pdf.quoteNo}`,
@@ -282,14 +287,24 @@ function QuotePage() {
                 filename: pdf.filename,
                 pdfBase64: pdf.base64,
               },
-            });
+            })) as { ok: boolean; error: string | null };
+            if (!emailRes?.ok) {
+              warnings.push(
+                `Customer quote email failed${emailRes?.error ? `: ${emailRes.error}` : ""}`,
+              );
+            }
           } catch (emailErr) {
             console.error("Quote email failed", emailErr);
+            warnings.push(
+              `Customer quote email failed: ${emailErr instanceof Error ? emailErr.message : "unknown error"}`,
+            );
           }
         }
       } catch (pdfErr) {
         console.error("PDF generation failed", pdfErr);
       }
+      if (warnings.length > 0) setEmailWarning(warnings.join(" • "));
+
       if (typeof window !== "undefined") {
         setTimeout(() => {
           document.getElementById("quote")?.scrollIntoView({ behavior: "smooth" });
