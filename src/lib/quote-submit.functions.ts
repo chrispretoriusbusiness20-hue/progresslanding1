@@ -496,8 +496,6 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
       preferredDate: data.preferredDate ?? null,
       preferredTime: data.preferredTime ?? null,
       submittedAt: new Date().toISOString(),
-      notificationSubject,
-      notificationHtml: html,
       teamNotificationOk: teamSend.ok,
       teamNotificationError: teamSend.error ?? null,
     };
