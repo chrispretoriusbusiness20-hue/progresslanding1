@@ -412,6 +412,15 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
       </div>`;
     const notificationSubject = `New quote — ${data.firstName} ${data.lastName} (${matched?.name ?? data.product})`;
 
+    // Send internal team notification email (to sales, cc additional recipients)
+    const teamSend = await sendQuoteNotificationEmail({
+      to: QUOTE_FROM_EMAIL,
+      subject: notificationSubject,
+      html,
+      cc: QUOTE_CC_EMAILS.join(", "),
+    });
+
+
 
 
 
