@@ -10,7 +10,6 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
-import { Route as EmailDiagnosticRouteImport } from './routes/email-diagnostic'
 import { Route as CatalogRouteImport } from './routes/catalog'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as EmailUnsubscribeRouteImport } from './routes/email/unsubscribe'
@@ -24,11 +23,6 @@ import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/em
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const EmailDiagnosticRoute = EmailDiagnosticRouteImport.update({
-  id: '/email-diagnostic',
-  path: '/email-diagnostic',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CatalogRoute = CatalogRouteImport.update({
@@ -83,7 +77,6 @@ const LovableEmailAuthPreviewRoute = LovableEmailAuthPreviewRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/catalog': typeof CatalogRoute
-  '/email-diagnostic': typeof EmailDiagnosticRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
@@ -96,7 +89,6 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/catalog': typeof CatalogRoute
-  '/email-diagnostic': typeof EmailDiagnosticRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
@@ -110,7 +102,6 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/catalog': typeof CatalogRoute
-  '/email-diagnostic': typeof EmailDiagnosticRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
@@ -125,7 +116,6 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/catalog'
-    | '/email-diagnostic'
     | '/sitemap.xml'
     | '/email/unsubscribe'
     | '/lovable/email/suppression'
@@ -138,7 +128,6 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/catalog'
-    | '/email-diagnostic'
     | '/sitemap.xml'
     | '/email/unsubscribe'
     | '/lovable/email/suppression'
@@ -151,7 +140,6 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/catalog'
-    | '/email-diagnostic'
     | '/sitemap.xml'
     | '/email/unsubscribe'
     | '/lovable/email/suppression'
@@ -165,7 +153,6 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CatalogRoute: typeof CatalogRoute
-  EmailDiagnosticRoute: typeof EmailDiagnosticRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   EmailUnsubscribeRoute: typeof EmailUnsubscribeRoute
   LovableEmailSuppressionRoute: typeof LovableEmailSuppressionRoute
@@ -183,13 +170,6 @@ declare module '@tanstack/react-router' {
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/email-diagnostic': {
-      id: '/email-diagnostic'
-      path: '/email-diagnostic'
-      fullPath: '/email-diagnostic'
-      preLoaderRoute: typeof EmailDiagnosticRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/catalog': {
@@ -261,7 +241,6 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CatalogRoute: CatalogRoute,
-  EmailDiagnosticRoute: EmailDiagnosticRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   EmailUnsubscribeRoute: EmailUnsubscribeRoute,
   LovableEmailSuppressionRoute: LovableEmailSuppressionRoute,

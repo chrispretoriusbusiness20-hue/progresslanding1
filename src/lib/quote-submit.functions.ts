@@ -16,83 +16,8 @@ const ORIGIN_ADDRESS =
 const QUOTE_BUCKET = "quotes";
 const QUOTE_SIGNED_URL_EXPIRES_S = 60 * 60 * 24 * 30; // 30 days
 
-function base64ToBytes(b64: string): Uint8Array {
-  const clean = b64.includes(",") ? b64.split(",")[1] : b64;
-  const binary = atob(clean);
-  const bytes = new Uint8Array(binary.length);
-  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
-  return bytes;
-}
-
-async function uploadQuotePdf(
-  filename: string,
-  pdfBase64: string,
-): Promise<{ url: string | null; path: string | null; error?: string }> {
-  try {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const safeName = filename.replace(/[^A-Za-z0-9._-]/g, "_");
-    const path = `${new Date().toISOString().slice(0, 10)}/${crypto.randomUUID()}-${safeName}`;
-    const bytes = base64ToBytes(pdfBase64);
-    const { error: uploadError } = await supabaseAdmin.storage
-      .from(QUOTE_BUCKET)
-      .upload(path, bytes, { contentType: "application/pdf", upsert: false });
-    if (uploadError) {
-      console.error("Quote PDF upload failed", uploadError);
-      return { url: null, path: null, error: uploadError.message };
-    }
-    const { data: signed, error: signError } = await supabaseAdmin.storage
-      .from(QUOTE_BUCKET)
-      .createSignedUrl(path, QUOTE_SIGNED_URL_EXPIRES_S);
-    if (signError || !signed?.signedUrl) {
-      console.error("Quote signed URL failed", signError);
-      return { url: null, path, error: signError?.message ?? "Failed to sign URL" };
-    }
-    return { url: signed.signedUrl, path };
-  } catch (err) {
-    console.error("uploadQuotePdf threw", err);
-    return {
-      url: null,
-      path: null,
-      error: err instanceof Error ? err.message : "Unknown upload error",
-    };
-  }
-}
-
-export const emailQuotePdf = createServerFn({ method: "POST" })
-  .inputValidator(
-    z.object({
-      to: z.string().trim().email().max(200),
-      filename: z.string().trim().min(1).max(200),
-      pdfBase64: z.string().min(1).max(15_000_000),
-      clientName: z.string().trim().min(1).max(200).optional(),
-      quoteNo: z.string().trim().min(1).max(80).optional(),
-      productName: z.string().trim().min(1).max(300).optional(),
-    }),
-  )
-  .handler(async ({ data }) => {
-    const upload = await uploadQuotePdf(data.filename, data.pdfBase64);
-    if (!upload.url) {
-      return { ok: false, error: upload.error ?? "Failed to store quote PDF" };
-    }
-    const { sendInternalEmail } = await import("@/lib/email/send-internal.server");
-    const send = await sendInternalEmail({
-      templateName: "quote-customer",
-      recipientEmail: data.to,
-      idempotencyKey: `quote-customer-${upload.path}`,
-      templateData: {
-        clientName: data.clientName ?? "there",
-        quoteNo: data.quoteNo ?? "",
-        productName: data.productName ?? "your selection",
-        downloadUrl: upload.url,
-        expiresInDays: Math.round(QUOTE_SIGNED_URL_EXPIRES_S / 86400),
-      },
-    });
-    return {
-      ok: send.ok,
-      error: send.ok ? null : send.error ?? send.reason ?? "Email failed",
-      downloadUrl: upload.url,
-    };
-  });
+const QUOTE_PATH_RE = /^\d{4}-\d{2}-\d{2}\/[0-9a-f-]{36}-[A-Za-z0-9._-]+\.pdf$/;
+const RECENT_UPLOAD_WINDOW_MS = 10 * 60 * 1000; // emails only allowed within 10 min of upload
 
 /**
  * Direct-upload flow: avoid pushing 1MB+ of base64 through the RPC channel
@@ -101,7 +26,14 @@ export const emailQuotePdf = createServerFn({ method: "POST" })
  */
 export const createQuoteUploadUrl = createServerFn({ method: "POST" })
   .inputValidator(
-    z.object({ filename: z.string().trim().min(1).max(200) }),
+    z.object({
+      filename: z
+        .string()
+        .trim()
+        .min(1)
+        .max(200)
+        .regex(/\.pdf$/i, "filename must end with .pdf"),
+    }),
   )
   .handler(async ({ data }) => {
     try {
@@ -127,7 +59,12 @@ export const emailQuoteFromPath = createServerFn({ method: "POST" })
   .inputValidator(
     z.object({
       to: z.string().trim().email().max(200),
-      path: z.string().trim().min(1).max(500),
+      path: z
+        .string()
+        .trim()
+        .min(1)
+        .max(500)
+        .regex(QUOTE_PATH_RE, "invalid quote path"),
       clientName: z.string().trim().min(1).max(200).optional(),
       quoteNo: z.string().trim().min(1).max(80).optional(),
       productName: z.string().trim().min(1).max(300).optional(),
@@ -136,6 +73,21 @@ export const emailQuoteFromPath = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     try {
       const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+      // Verify the object exists AND was uploaded recently — prevents the
+      // endpoint from being used to email arbitrary or stale stored files.
+      const [folder, name] = data.path.split("/", 2);
+      const { data: listed, error: listError } = await supabaseAdmin.storage
+        .from(QUOTE_BUCKET)
+        .list(folder, { limit: 1, search: name });
+      if (listError || !listed?.length) {
+        return { ok: false, error: "Quote PDF not found", downloadUrl: null };
+      }
+      const created = listed[0].created_at ? Date.parse(listed[0].created_at) : 0;
+      if (!created || Date.now() - created > RECENT_UPLOAD_WINDOW_MS) {
+        return { ok: false, error: "Upload expired; please re-submit", downloadUrl: null };
+      }
+
       const { data: signed, error: signError } = await supabaseAdmin.storage
         .from(QUOTE_BUCKET)
         .createSignedUrl(data.path, QUOTE_SIGNED_URL_EXPIRES_S);
