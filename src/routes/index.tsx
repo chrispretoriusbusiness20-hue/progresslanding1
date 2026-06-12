@@ -221,6 +221,8 @@ function QuotePage() {
     if (!canContinue || loading) return;
     setLoading(true);
     setError(null);
+    setEmailWarning(null);
+    const warnings: string[] = [];
     try {
       const result = (await submitFn({
         data: {
