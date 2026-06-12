@@ -663,6 +663,11 @@ function QuotePage() {
       {showQuote && (
         <section id="quote" className="border-t border-border bg-background">
           <div className="mx-auto max-w-6xl px-6 py-16 sm:py-20">
+            {emailWarning && (
+              <div className="mb-6 border-2 border-amber-500 bg-amber-500/10 px-3 py-2 text-sm text-amber-900 dark:text-amber-200">
+                Your quote was saved, but: {emailWarning}. Please contact us if you do not receive the email.
+              </div>
+            )}
             <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <p className="text-lg text-muted-foreground">
                 Thank you for the enquiry find quote attached
