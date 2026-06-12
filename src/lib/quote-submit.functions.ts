@@ -94,6 +94,81 @@ export const emailQuotePdf = createServerFn({ method: "POST" })
     };
   });
 
+/**
+ * Direct-upload flow: avoid pushing 1MB+ of base64 through the RPC channel
+ * (Safari mobile aborts with "Load failed"). The browser uploads the PDF
+ * blob straight to storage via a signed upload URL, then we email by path.
+ */
+export const createQuoteUploadUrl = createServerFn({ method: "POST" })
+  .inputValidator(
+    z.object({ filename: z.string().trim().min(1).max(200) }),
+  )
+  .handler(async ({ data }) => {
+    try {
+      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+      const safeName = data.filename.replace(/[^A-Za-z0-9._-]/g, "_");
+      const path = `${new Date().toISOString().slice(0, 10)}/${crypto.randomUUID()}-${safeName}`;
+      const { data: signed, error } = await supabaseAdmin.storage
+        .from(QUOTE_BUCKET)
+        .createSignedUploadUrl(path);
+      if (error || !signed) {
+        return { ok: false as const, error: error?.message ?? "Failed to create upload URL" };
+      }
+      return { ok: true as const, path, token: signed.token, signedUrl: signed.signedUrl };
+    } catch (err) {
+      return {
+        ok: false as const,
+        error: err instanceof Error ? err.message : "Unknown error",
+      };
+    }
+  });
+
+export const emailQuoteFromPath = createServerFn({ method: "POST" })
+  .inputValidator(
+    z.object({
+      to: z.string().trim().email().max(200),
+      path: z.string().trim().min(1).max(500),
+      clientName: z.string().trim().min(1).max(200).optional(),
+      quoteNo: z.string().trim().min(1).max(80).optional(),
+      productName: z.string().trim().min(1).max(300).optional(),
+    }),
+  )
+  .handler(async ({ data }) => {
+    try {
+      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+      const { data: signed, error: signError } = await supabaseAdmin.storage
+        .from(QUOTE_BUCKET)
+        .createSignedUrl(data.path, QUOTE_SIGNED_URL_EXPIRES_S);
+      if (signError || !signed?.signedUrl) {
+        return { ok: false, error: signError?.message ?? "Failed to sign URL", downloadUrl: null };
+      }
+      const { sendInternalEmail } = await import("@/lib/email/send-internal.server");
+      const send = await sendInternalEmail({
+        templateName: "quote-customer",
+        recipientEmail: data.to,
+        idempotencyKey: `quote-customer-${data.path}`,
+        templateData: {
+          clientName: data.clientName ?? "there",
+          quoteNo: data.quoteNo ?? "",
+          productName: data.productName ?? "your selection",
+          downloadUrl: signed.signedUrl,
+          expiresInDays: Math.round(QUOTE_SIGNED_URL_EXPIRES_S / 86400),
+        },
+      });
+      return {
+        ok: send.ok,
+        error: send.ok ? null : send.error ?? send.reason ?? "Email failed",
+        downloadUrl: signed.signedUrl,
+      };
+    } catch (err) {
+      return {
+        ok: false,
+        error: err instanceof Error ? err.message : "Unknown error",
+        downloadUrl: null,
+      };
+    }
+  });
+
 
 
 

@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { CheckCircle2, FileDown, Loader2 } from "lucide-react";
 import { toast } from "sonner";
-import { submitQuoteRequest, emailQuotePdf } from "@/lib/quote-submit.functions";
+import { submitQuoteRequest, createQuoteUploadUrl, emailQuoteFromPath } from "@/lib/quote-submit.functions";
 import { generateQuotePDF } from "@/lib/quote-pdf";
 
 import productsData from "@/data/products.json";
@@ -204,7 +204,8 @@ function QuotePage() {
   }, []);
 
   const submitFn = useServerFn(submitQuoteRequest);
-  const emailQuoteFn = useServerFn(emailQuotePdf);
+  const createUploadFn = useServerFn(createQuoteUploadUrl);
+  const emailQuoteFn = useServerFn(emailQuoteFromPath);
   const canContinue = useMemo(
     () =>
       firstName.trim().length > 0 &&
@@ -274,11 +275,33 @@ function QuotePage() {
           try {
             const fullName = `${result.firstName ?? ""} ${result.lastName ?? ""}`.trim() || "Customer";
             const productName = result.catalog?.name ?? result.productRequested;
+            // 1) Get a signed upload URL
+            const uploadInfo = (await createUploadFn({
+              data: { filename: pdf.filename },
+            })) as
+              | { ok: true; path: string; token: string; signedUrl: string }
+              | { ok: false; error: string };
+            if (!uploadInfo.ok) {
+              throw new Error(uploadInfo.error || "Failed to create upload URL");
+            }
+            // 2) Convert base64 → Blob and PUT directly to storage
+            const bin = atob(pdf.base64);
+            const bytes = new Uint8Array(bin.length);
+            for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+            const blob = new Blob([bytes], { type: "application/pdf" });
+            const putRes = await fetch(uploadInfo.signedUrl, {
+              method: "PUT",
+              headers: { "Content-Type": "application/pdf" },
+              body: blob,
+            });
+            if (!putRes.ok) {
+              throw new Error(`Upload failed (${putRes.status})`);
+            }
+            // 3) Trigger email with just the storage path
             const emailRes = (await emailQuoteFn({
               data: {
                 to: result.email,
-                filename: pdf.filename,
-                pdfBase64: pdf.base64,
+                path: uploadInfo.path,
                 clientName: fullName,
                 quoteNo: pdf.quoteNo,
                 productName,
