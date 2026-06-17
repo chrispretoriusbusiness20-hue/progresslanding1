@@ -520,9 +520,10 @@ export async function generateQuotePDF(
 
 
   const filename = `Progress-${isInvoice ? "Invoice" : "Quote"}-${quoteNo.replace(/\s/g, "")}.pdf`;
-  doc.save(filename);
+  const triggerDownload = () => doc.save(filename);
+  if (options.download !== false) triggerDownload();
   const dataUri = doc.output("datauristring");
   const base64 = dataUri.includes(",") ? dataUri.split(",")[1] : dataUri;
-  return { filename, base64, quoteNo };
+  return { filename, base64, quoteNo, triggerDownload };
 }
 
