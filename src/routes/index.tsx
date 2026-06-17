@@ -223,6 +223,7 @@ function QuotePage() {
     setLoading(true);
     setError(null);
     setEmailWarning(null);
+    setEmailConfirmed(null);
     const warnings: string[] = [];
     try {
       const result = (await submitFn({
