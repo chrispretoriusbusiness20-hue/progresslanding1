@@ -730,6 +730,11 @@ function QuotePage() {
                 Your quote was saved, but: {emailWarning}. Please contact us if you do not receive the email.
               </div>
             )}
+            {emailConfirmed && !emailWarning && (
+              <div className="mb-6 border-2 border-emerald-500 bg-emerald-500/10 px-3 py-2 text-sm text-emerald-900 dark:text-emerald-200">
+                ✓ Quote email sent successfully to <strong>{emailConfirmed}</strong>. Please check your inbox (and spam folder).
+              </div>
+            )}
             <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <p className="text-lg text-muted-foreground">
                 Thank you for the enquiry find quote attached
