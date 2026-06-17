@@ -190,6 +190,7 @@ function QuotePage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [emailWarning, setEmailWarning] = useState<string | null>(null);
+  const [emailConfirmed, setEmailConfirmed] = useState<string | null>(null);
   const [headerHidden, setHeaderHidden] = useState(false);
 
   useEffect(() => {
