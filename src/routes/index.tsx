@@ -248,29 +248,35 @@ function QuotePage() {
           `Team notification email failed${result.teamNotificationError ? `: ${result.teamNotificationError}` : ""}`,
         );
       }
-      // Auto-download the PDF quote with finalized transport info
+      // Generate the PDF but DO NOT auto-download yet — on iOS Safari the
+      // browser download sheet aborts in-flight fetches (upload + email),
+      // surfacing as "TypeError: Load failed". We trigger the download
+      // only after the upload + email round-trip completes.
       try {
         const priceStr = PRODUCT_PRICE_MAP.get(product) ?? null;
         const unitPrice = priceStr ? parseRand(priceStr) : null;
-        const pdf = await generateQuotePDF({
-          firstName: firstName.trim() || "Customer",
-          lastName: lastName.trim(),
-          email: email.trim(),
-          phone: phone.trim(),
-          address: address.trim() || undefined,
-          productName: product,
-          quantity,
-          unitPrice,
-          storyType,
-          flooring,
-          plateType,
-          cornerInstall,
-          transportPrice: result.match ? result.transportPrice : null,
-          transportZone: result.match ? result.transportZone : null,
-          distanceKm: result.match ? result.distanceKm : null,
-          notes: message.trim() || undefined,
-          extrasForAccount: extrasForAccount.trim() || undefined,
-        });
+        const pdf = await generateQuotePDF(
+          {
+            firstName: firstName.trim() || "Customer",
+            lastName: lastName.trim(),
+            email: email.trim(),
+            phone: phone.trim(),
+            address: address.trim() || undefined,
+            productName: product,
+            quantity,
+            unitPrice,
+            storyType,
+            flooring,
+            plateType,
+            cornerInstall,
+            transportPrice: result.match ? result.transportPrice : null,
+            transportZone: result.match ? result.transportZone : null,
+            distanceKm: result.match ? result.distanceKm : null,
+            notes: message.trim() || undefined,
+            extrasForAccount: extrasForAccount.trim() || undefined,
+          },
+          { download: false },
+        );
         if (result.match && pdf) {
           try {
             const fullName = `${result.firstName ?? ""} ${result.lastName ?? ""}`.trim() || "Customer";
@@ -320,9 +326,17 @@ function QuotePage() {
             );
           }
         }
+        // Now that upload + email are done (or have failed gracefully),
+        // trigger the local PDF download for the customer.
+        try {
+          pdf.triggerDownload();
+        } catch (dlErr) {
+          console.error("PDF download failed", dlErr);
+        }
       } catch (pdfErr) {
         console.error("PDF generation failed", pdfErr);
       }
+
       if (warnings.length > 0) {
         setEmailWarning(warnings.join(" • "));
         toast.error("Email could not be sent", {
