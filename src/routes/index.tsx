@@ -278,42 +278,57 @@ function QuotePage() {
           { download: false },
         );
         if (result.match && pdf) {
+          // Small helper: retry a flaky network step once after a short delay.
+          const withRetry = async <T,>(fn: () => Promise<T>, label: string): Promise<T> => {
+            try {
+              return await fn();
+            } catch (err) {
+              console.warn(`${label} failed, retrying once...`, err);
+              await new Promise((r) => setTimeout(r, 800));
+              return await fn();
+            }
+          };
           try {
             const fullName = `${result.firstName ?? ""} ${result.lastName ?? ""}`.trim() || "Customer";
             const productName = result.catalog?.name ?? result.productRequested;
-            // 1) Get a signed upload URL
-            const uploadInfo = (await createUploadFn({
-              data: { filename: pdf.filename },
-            })) as
+            // 1) Get a signed upload URL (with one retry)
+            const uploadInfo = (await withRetry(
+              () => createUploadFn({ data: { filename: pdf.filename } }),
+              "Create upload URL",
+            )) as
               | { ok: true; path: string; token: string; signedUrl: string }
               | { ok: false; error: string };
             if (!uploadInfo.ok) {
               throw new Error(uploadInfo.error || "Failed to create upload URL");
             }
-            // 2) Convert base64 → Blob and upload via supabase client (handles auth + format)
+            // 2) Convert base64 → Blob and upload (with one retry)
             const bin = atob(pdf.base64);
             const bytes = new Uint8Array(bin.length);
             for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
             const blob = new Blob([bytes], { type: "application/pdf" });
             const { supabase } = await import("@/integrations/supabase/client");
-            const { error: uploadErr } = await supabase.storage
-              .from("quotes")
-              .uploadToSignedUrl(uploadInfo.path, uploadInfo.token, blob, {
-                contentType: "application/pdf",
-              });
-            if (uploadErr) {
-              throw new Error(`Upload failed: ${uploadErr.message}`);
-            }
-            // 3) Trigger email with just the storage path
-            const emailRes = (await emailQuoteFn({
-              data: {
-                to: result.email,
-                path: uploadInfo.path,
-                clientName: fullName,
-                quoteNo: pdf.quoteNo,
-                productName,
-              },
-            })) as { ok: boolean; error: string | null };
+            await withRetry(async () => {
+              const { error: uploadErr } = await supabase.storage
+                .from("quotes")
+                .uploadToSignedUrl(uploadInfo.path, uploadInfo.token, blob, {
+                  contentType: "application/pdf",
+                });
+              if (uploadErr) throw new Error(`Upload failed: ${uploadErr.message}`);
+            }, "PDF upload");
+            // 3) Trigger email with just the storage path (with one retry)
+            const emailRes = (await withRetry(
+              () =>
+                emailQuoteFn({
+                  data: {
+                    to: result.email,
+                    path: uploadInfo.path,
+                    clientName: fullName,
+                    quoteNo: pdf.quoteNo,
+                    productName,
+                  },
+                }),
+              "Send customer email",
+            )) as { ok: boolean; error: string | null };
             if (!emailRes?.ok) {
               warnings.push(
                 `Customer quote email failed${emailRes?.error ? `: ${emailRes.error}` : ""}`,
@@ -326,6 +341,7 @@ function QuotePage() {
             );
           }
         }
+
         // Now that upload + email are done (or have failed gracefully),
         // trigger the local PDF download for the customer.
         try {
