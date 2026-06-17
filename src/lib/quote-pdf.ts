@@ -66,7 +66,10 @@ async function fetchAsDataURL(url: string): Promise<string | null> {
   }
 }
 
-export async function generateQuotePDF(input: QuoteInput): Promise<{ filename: string; base64: string; quoteNo: string }> {
+export async function generateQuotePDF(
+  input: QuoteInput,
+  options: { download?: boolean } = {},
+): Promise<{ filename: string; base64: string; quoteNo: string; triggerDownload: () => void }> {
   const doc = new jsPDF({ unit: "mm", format: "a4" });
   const pageW = doc.internal.pageSize.getWidth();
   const pageH = doc.internal.pageSize.getHeight();
