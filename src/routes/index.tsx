@@ -335,6 +335,8 @@ function QuotePage() {
               warnings.push(
                 `Customer quote email failed${emailRes?.error ? `: ${emailRes.error}` : ""}`,
               );
+            } else {
+              setEmailConfirmed(result.email);
             }
           } catch (emailErr) {
             console.error("Quote email failed", emailErr);
