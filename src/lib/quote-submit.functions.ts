@@ -94,7 +94,7 @@ export const emailQuoteFromPath = createServerFn({ method: "POST" })
       if (signError || !signed?.signedUrl) {
         return { ok: false, error: signError?.message ?? "Failed to sign URL", downloadUrl: null };
       }
-      const { sendSmtpEmail } = await import("@/lib/email/send-smtp.functions");
+      const { sendSmtpEmailDirect } = await import("@/lib/email/send-smtp.server");
       const clientName = data.clientName ?? "there";
       const productName = data.productName ?? "your selection";
       const quoteNo = data.quoteNo ?? "";
@@ -114,13 +114,11 @@ export const emailQuoteFromPath = createServerFn({ method: "POST" })
           <p style="color:#555;font-size:13px">Questions? Reply to this email or call us — we're happy to help.</p>
           <p style="margin-top:24px">— Progress Installations</p>
         </div>`;
-      const send = await sendSmtpEmail({
-        data: {
-          to: data.to,
-          cc: QUOTE_CC_EMAILS,
-          subject: quoteNo ? quoteNo : `Your quote — Progress Group`,
-          html,
-        },
+      const send = await sendSmtpEmailDirect({
+        to: data.to,
+        cc: QUOTE_CC_EMAILS,
+        subject: quoteNo ? quoteNo : `Your quote — Progress Group`,
+        html,
       });
       return {
         ok: send.success,
@@ -458,15 +456,13 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
     // Send internal team notification email via SMTP.
     let teamSend: { ok: boolean; error?: string } = { ok: false, error: undefined };
     try {
-      const { sendSmtpEmail } = await import("@/lib/email/send-smtp.functions");
+      const { sendSmtpEmailDirect } = await import("@/lib/email/send-smtp.server");
       const subject = `New quote request — ${customerName} (${productLabel})`;
       const recipients = [QUOTE_TEAM_EMAIL, ...QUOTE_CC_EMAILS];
       let firstError: string | undefined;
       let anyOk = false;
       for (const recipient of recipients) {
-        const r = await sendSmtpEmail({
-          data: { to: recipient, subject, html, replyTo: data.email },
-        });
+        const r = await sendSmtpEmailDirect({ to: recipient, subject, html, replyTo: data.email });
         if (r.success) anyOk = true;
         else if (!firstError) firstError = r.error;
       }
