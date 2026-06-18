@@ -453,39 +453,22 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
     const productLabel = matched?.name ?? data.product;
     const submittedAtLabel = `${new Date().toLocaleString("en-ZA", { timeZone: "Africa/Johannesburg" })} (SAST)`;
 
-    // Send internal team notification email via Lovable Emails (no attachment — link omitted, PDF lives client-side).
+    // Send internal team notification email via SMTP.
     let teamSend: { ok: boolean; error?: string } = { ok: false, error: undefined };
     try {
-      const { sendInternalEmail } = await import("@/lib/email/send-internal.server");
-      const sendPrimary = await sendInternalEmail({
-        templateName: "quote-team",
-        recipientEmail: QUOTE_TEAM_EMAIL,
-        idempotencyKey: `quote-team-${data.email}-${Date.now()}`,
-        templateData: {
-          customerName,
-          productName: productLabel,
-          submittedAt: submittedAtLabel,
-          rows: rows.map(([k, v]) => ({ k, v })),
-        },
-      });
-      // Send to CC list as separate sends (Lovable Emails is one-recipient-per-send).
-      for (const cc of QUOTE_CC_EMAILS) {
-        await sendInternalEmail({
-          templateName: "quote-team",
-          recipientEmail: cc,
-          idempotencyKey: `quote-team-${cc}-${data.email}-${Date.now()}`,
-          templateData: {
-            customerName,
-            productName: productLabel,
-            submittedAt: submittedAtLabel,
-            rows: rows.map(([k, v]) => ({ k, v })),
-          },
+      const { sendSmtpEmail } = await import("@/lib/email/send-smtp.functions");
+      const subject = `New quote request — ${customerName} (${productLabel})`;
+      const recipients = [QUOTE_TEAM_EMAIL, ...QUOTE_CC_EMAILS];
+      let firstError: string | undefined;
+      let anyOk = false;
+      for (const recipient of recipients) {
+        const r = await sendSmtpEmail({
+          data: { to: recipient, subject, html, replyTo: data.email },
         });
+        if (r.success) anyOk = true;
+        else if (!firstError) firstError = r.error;
       }
-      teamSend = {
-        ok: sendPrimary.ok,
-        error: sendPrimary.ok ? undefined : sendPrimary.error ?? sendPrimary.reason,
-      };
+      teamSend = { ok: anyOk, error: anyOk ? undefined : firstError };
     } catch (err) {
       console.error("Team notification send threw", err);
       teamSend = {
