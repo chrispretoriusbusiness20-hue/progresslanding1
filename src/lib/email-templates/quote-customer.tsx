@@ -30,10 +30,10 @@ const Email = ({
 }: Props) => (
   <Html lang="en" dir="ltr">
     <Head />
-    <Preview>{quoteNo ? `${quoteNo} — Your quote is ready` : 'Your quote is ready'}</Preview>
+    <Preview>{quoteNo ? quoteNo : 'Your quote'}</Preview>
     <Body style={main}>
       <Container style={container}>
-        <Heading style={h1}>{quoteNo ? `${quoteNo} ` : ''}Your quote is ready</Heading>
+        <Heading style={h1}>{quoteNo ? quoteNo : 'Your quote'}</Heading>
         <Text style={text}>Hi {clientName},</Text>
         <Text style={text}>
           Thanks for your interest in <strong>{productName}</strong>. Herewith your quote as requested.
@@ -61,7 +61,7 @@ const Email = ({
 export const template = {
   component: Email,
   subject: (data: Record<string, unknown>) =>
-    data.quoteNo ? `${data.quoteNo} — Your quote is ready` : `Your quote is ready`,
+    data.quoteNo ? `${data.quoteNo}` : `Your quote`,
   displayName: 'Customer quote (with PDF link)',
   previewData: {
     clientName: 'Jane Smith',
