@@ -279,7 +279,10 @@ function QuotePage() {
           },
           { download: false },
         );
-        if (result.match && pdf) {
+        // Always attempt to send the customer email, regardless of whether
+        // transport zone matched or whether the customer ends up downloading
+        // the PDF. The download is triggered separately afterwards.
+        if (pdf && result.email) {
           // Small helper: retry a flaky network step once after a short delay.
           const withRetry = async <T,>(fn: () => Promise<T>, label: string): Promise<T> => {
             try {
