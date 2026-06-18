@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { CheckCircle2, FileDown, Loader2 } from "lucide-react";
+import { CheckCircle2, FileDown, Loader2, MessageCircle } from "lucide-react";
 import { toast } from "sonner";
 import { submitQuoteRequest, createQuoteUploadUrl, emailQuoteFromPath } from "@/lib/quote-submit.functions";
 import { generateQuotePDF } from "@/lib/quote-pdf";
@@ -816,6 +816,32 @@ function QuotePage() {
                 >
                   <CheckCircle2 className="h-4 w-4" />
                   Accept My Quote / Get Invoice & Book Installation
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const fullName = `${firstName.trim()} ${lastName.trim()}`.trim() || "there";
+                    const lines = [
+                      `Hi Progress Group, this is ${fullName}.`,
+                      `I'd like to confirm my quote:`,
+                      `• Product: ${product}${quantity > 1 ? ` × ${quantity}` : ""}`,
+                      storyType ? `• Storey: ${storyType}` : null,
+                      flooring ? `• Flooring: ${flooring}` : null,
+                      plateType ? `• Plate: ${plateType}` : null,
+                      cornerInstall ? `• Corner install: yes` : null,
+                      matched?.transportZone ? `• Transport zone: ${matched.transportZone}` : null,
+                      address.trim() ? `• Address: ${address.trim()}` : null,
+                      email.trim() ? `• Email: ${email.trim()}` : null,
+                      phone.trim() ? `• Phone: ${phone.trim()}` : null,
+                      message.trim() ? `• Notes: ${message.trim()}` : null,
+                    ].filter(Boolean);
+                    const text = encodeURIComponent(lines.join("\n"));
+                    window.open(`https://wa.me/27689560320?text=${text}`, "_blank", "noopener,noreferrer");
+                  }}
+                  className="inline-flex items-center justify-center gap-2 border-2 border-foreground bg-[#25D366] px-5 py-3 text-sm font-bold uppercase tracking-wider text-white shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
+                >
+                  <MessageCircle className="h-4 w-4" />
+                  Send via WhatsApp
                 </button>
               </div>
             </div>
