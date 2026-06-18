@@ -37,12 +37,30 @@ export type QuoteInput = {
 const ZAR = (n: number) =>
   `R ${n.toLocaleString("en-ZA", { minimumFractionDigits: 2, maximumFractionDigits: 2 }).replace(/,/g, " ").replace(/\.(\d{2})$/, ",$1")}`;
 
-function generateQuoteNumber(prefix: string = "Q"): string {
+function generateQuoteNumber(
+  prefix: string = "Q",
+  firstName: string = "",
+  lastName: string = "",
+): string {
   const d = new Date();
   const dd = String(d.getDate()).padStart(2, "0");
   const mm = String(d.getMonth() + 1).padStart(2, "0");
-  const rand = Math.floor(Math.random() * 900 + 100);
-  return `${prefix}${rand} - ${dd}${mm}`;
+  const initials = `${(firstName.trim()[0] ?? "X")}${(lastName.trim()[0] ?? "X")}`.toUpperCase();
+  // Per-client sequence stored in localStorage so each client name starts at 001 and increments.
+  let seq = 1;
+  try {
+    if (typeof window !== "undefined" && window.localStorage) {
+      const key = `quoteSeq:${initials}:${firstName.trim().toLowerCase()} ${lastName.trim().toLowerCase()}`;
+      const prev = Number.parseInt(window.localStorage.getItem(key) ?? "0", 10);
+      seq = (Number.isFinite(prev) ? prev : 0) + 1;
+      window.localStorage.setItem(key, String(seq));
+    }
+  } catch {
+    /* ignore storage errors */
+  }
+  const seqStr = String(seq).padStart(3, "0");
+  const base = `${initials}${dd}${mm} - ${seqStr}`;
+  return prefix === "INV" ? `INV-${base}` : base;
 }
 
 
