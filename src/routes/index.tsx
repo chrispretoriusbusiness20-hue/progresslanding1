@@ -169,6 +169,38 @@ function buildQuoteUrl(params: {
   return url.toString();
 }
 
+function buildWhatsAppMessage(params: {
+  fullName: string;
+  quoteNo?: string | null;
+  productName: string;
+  totalPrice?: string | null;
+  isEstimate?: boolean;
+  validityDays?: number;
+  cta?: string;
+}): string {
+  const validity = params.validityDays ?? 10;
+  const cta =
+    params.cta ??
+    "I'd like to proceed. Please send me the invoice and booking details.";
+
+  const lines = [
+    `Hi Progress Group,`,
+    ``,
+    params.quoteNo ? `*Quote:* ${params.quoteNo}` : null,
+    `*Product:* ${params.productName}`,
+    params.totalPrice
+      ? `*${params.isEstimate ? "Estimated price" : "Price"}:* ${params.totalPrice}${params.isEstimate ? " (excl. transport)" : ""}`
+      : null,
+    params.quoteNo ? `*Valid for:* ${validity} days` : null,
+    ``,
+    cta,
+    ``,
+    `— ${params.fullName}`,
+  ].filter(Boolean) as string[];
+
+  return lines.join("\n");
+}
+
 function QuotePage() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -192,6 +224,7 @@ function QuotePage() {
   const [emailWarning, setEmailWarning] = useState<string | null>(null);
   const [emailConfirmed, setEmailConfirmed] = useState<string | null>(null);
   const [headerHidden, setHeaderHidden] = useState(false);
+  const [quoteNo, setQuoteNo] = useState<string | null>(null);
 
   useEffect(() => {
     let lastScrollY = window.scrollY;
@@ -279,6 +312,7 @@ function QuotePage() {
           },
           { download: false },
         );
+        setQuoteNo(pdf.quoteNo);
         // Always attempt to send the customer email, regardless of whether
         // transport zone matched or whether the customer ends up downloading
         // the PDF. The download is triggered separately afterwards.
@@ -441,6 +475,36 @@ function QuotePage() {
         flooring: flooring || undefined,
       });
   void quoteUrl;
+
+  const estimatedTotal = useMemo(() => {
+    if (!installationRequired) {
+      const priceStr = PRODUCT_PRICE_MAP.get(product);
+      const unitPrice = priceStr ? parseRand(priceStr) : null;
+      return unitPrice !== null ? unitPrice * quantity : null;
+    }
+    const priceStr = PRODUCT_PRICE_MAP.get(product);
+    const unitPrice = priceStr ? parseRand(priceStr) : null;
+    const subtotal = unitPrice !== null ? unitPrice * quantity : null;
+    const flueKit = storyType === "double" ? 9650 : storyType === "single" ? 7650 : null;
+    const needsPlate = flooring.length > 0 && !/tile/i.test(flooring);
+    const plate = needsPlate ? (plateType === "granite" ? 2895 : plateType === "metal" ? 1490 : 2495) : null;
+    const corner = cornerInstall ? 800 : null;
+    if (subtotal === null && flueKit === null && plate === null && corner === null) return null;
+    return (subtotal ?? 0) + (flueKit ?? 0) + (plate ?? 0) + (corner ?? 0);
+  }, [product, quantity, storyType, flooring, plateType, cornerInstall, installationRequired]);
+
+  const whatsappHref = useMemo(() => {
+    const fullName = `${firstName.trim()} ${lastName.trim()}`.trim() || "Customer";
+    const price = totalPriceNum !== null ? totalPriceLabel : estimatedTotal !== null ? formatRand(estimatedTotal) : null;
+    const text = buildWhatsAppMessage({
+      fullName,
+      quoteNo,
+      productName: product,
+      totalPrice: price,
+      isEstimate: !submitted,
+    });
+    return `https://wa.me/27689560320?text=${encodeURIComponent(text)}`;
+  }, [firstName, lastName, quoteNo, product, totalPriceNum, totalPriceLabel, estimatedTotal, submitted]);
 
   const showQuote = (submitted && lookup?.match) || canContinue;
 
@@ -817,32 +881,15 @@ function QuotePage() {
                   <CheckCircle2 className="h-4 w-4" />
                   Accept My Quote / Get Invoice & Book Installation
                 </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    const fullName = `${firstName.trim()} ${lastName.trim()}`.trim() || "there";
-                    const lines = [
-                      `Hi Progress Group, this is ${fullName}.`,
-                      `I'd like to confirm my quote:`,
-                      `• Product: ${product}${quantity > 1 ? ` × ${quantity}` : ""}`,
-                      storyType ? `• Storey: ${storyType}` : null,
-                      flooring ? `• Flooring: ${flooring}` : null,
-                      plateType ? `• Plate: ${plateType}` : null,
-                      cornerInstall ? `• Corner install: yes` : null,
-                      matched?.transportZone ? `• Transport zone: ${matched.transportZone}` : null,
-                      address.trim() ? `• Address: ${address.trim()}` : null,
-                      email.trim() ? `• Email: ${email.trim()}` : null,
-                      phone.trim() ? `• Phone: ${phone.trim()}` : null,
-                      message.trim() ? `• Notes: ${message.trim()}` : null,
-                    ].filter(Boolean);
-                    const text = encodeURIComponent(lines.join("\n"));
-                    window.open(`https://wa.me/27689560320?text=${text}`, "_blank", "noopener,noreferrer");
-                  }}
+                <a
+                  href={whatsappHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="inline-flex items-center justify-center gap-2 border-2 border-foreground bg-[#25D366] px-5 py-3 text-sm font-bold uppercase tracking-wider text-white shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
                 >
                   <MessageCircle className="h-4 w-4" />
                   Send via WhatsApp
-                </button>
+                </a>
               </div>
             </div>
 

@@ -37,7 +37,7 @@ export type QuoteInput = {
 const ZAR = (n: number) =>
   `R ${n.toLocaleString("en-ZA", { minimumFractionDigits: 2, maximumFractionDigits: 2 }).replace(/,/g, " ").replace(/\.(\d{2})$/, ",$1")}`;
 
-function generateQuoteNumber(
+export function generateQuoteNumber(
   prefix: string = "Q",
   firstName: string = "",
   lastName: string = "",
