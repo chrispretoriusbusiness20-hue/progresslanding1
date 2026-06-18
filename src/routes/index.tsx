@@ -881,32 +881,15 @@ function QuotePage() {
                   <CheckCircle2 className="h-4 w-4" />
                   Accept My Quote / Get Invoice & Book Installation
                 </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    const fullName = `${firstName.trim()} ${lastName.trim()}`.trim() || "there";
-                    const lines = [
-                      `Hi Progress Group, this is ${fullName}.`,
-                      `I'd like to confirm my quote:`,
-                      `• Product: ${product}${quantity > 1 ? ` × ${quantity}` : ""}`,
-                      storyType ? `• Storey: ${storyType}` : null,
-                      flooring ? `• Flooring: ${flooring}` : null,
-                      plateType ? `• Plate: ${plateType}` : null,
-                      cornerInstall ? `• Corner install: yes` : null,
-                      matched?.transportZone ? `• Transport zone: ${matched.transportZone}` : null,
-                      address.trim() ? `• Address: ${address.trim()}` : null,
-                      email.trim() ? `• Email: ${email.trim()}` : null,
-                      phone.trim() ? `• Phone: ${phone.trim()}` : null,
-                      message.trim() ? `• Notes: ${message.trim()}` : null,
-                    ].filter(Boolean);
-                    const text = encodeURIComponent(lines.join("\n"));
-                    window.open(`https://wa.me/27689560320?text=${text}`, "_blank", "noopener,noreferrer");
-                  }}
+                <a
+                  href={whatsappHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="inline-flex items-center justify-center gap-2 border-2 border-foreground bg-[#25D366] px-5 py-3 text-sm font-bold uppercase tracking-wider text-white shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
                 >
                   <MessageCircle className="h-4 w-4" />
                   Send via WhatsApp
-                </button>
+                </a>
               </div>
             </div>
 
