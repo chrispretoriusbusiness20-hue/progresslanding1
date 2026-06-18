@@ -224,6 +224,7 @@ function QuotePage() {
   const [emailWarning, setEmailWarning] = useState<string | null>(null);
   const [emailConfirmed, setEmailConfirmed] = useState<string | null>(null);
   const [headerHidden, setHeaderHidden] = useState(false);
+  const [quoteNo, setQuoteNo] = useState<string | null>(null);
 
   useEffect(() => {
     let lastScrollY = window.scrollY;
