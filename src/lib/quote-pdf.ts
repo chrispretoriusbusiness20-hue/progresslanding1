@@ -382,21 +382,12 @@ export async function generateQuotePDF(
   const footer = [
     "All goods remain the property of Progress until full and final payment is received.",
     "Yearly services of pellet and gas fireplaces and Air cons important.  Contact us to arrange.",
-    "To accept this quote, please sign here and send to info@progressinstallations.co.za",
   ];
   for (const line of footer) {
     ensureSpace(4);
     doc.text(line, margin, y);
     y += 4;
   }
-  y += 2;
-  ensureSpace(12);
-  doc.setFont("helvetica", "bold");
-  doc.text("I accept the above terms and conditions.", margin, y);
-  y += 8;
-  doc.setFont("helvetica", "normal");
-  doc.text("Signature: ____________________________", margin, y);
-  doc.text("Date: ____________________________", pageW - margin, y, { align: "right" });
 
   // ---------- Page 2: Installation estimate ----------
   // Excluded when the site is further than 100 km from Cape Town
