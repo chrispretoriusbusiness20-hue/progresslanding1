@@ -36,6 +36,7 @@ export const sendSmtpEmail = createServerFn({ method: "POST" })
       const info = await transporter.sendMail({
         from,
         to: data.to,
+        cc: data.cc,
         subject: data.subject,
         html: data.html,
         replyTo: data.replyTo,
