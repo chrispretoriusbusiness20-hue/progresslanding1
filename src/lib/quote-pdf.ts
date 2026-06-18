@@ -194,7 +194,7 @@ export async function generateQuotePDF(
   // ---------- Quotation header table ----------
   const isInvoice = !!input.asInvoice;
   const docLabel = isInvoice ? "Invoice" : "Quotation";
-  const quoteNo = generateQuoteNumber(isInvoice ? "INV" : "Q");
+  const quoteNo = generateQuoteNumber(isInvoice ? "INV" : "Q", input.firstName, input.lastName);
   autoTable(doc, {
     startY: y,
     theme: "grid",
