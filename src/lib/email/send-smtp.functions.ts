@@ -6,6 +6,7 @@ const sendInput = z.object({
   subject: z.string().trim().min(1).max(200),
   html: z.string().min(1).max(50_000),
   replyTo: z.string().trim().email().max(255).optional(),
+  cc: z.array(z.string().trim().email().max(255)).optional(),
 });
 
 export type SendEmailInput = z.infer<typeof sendInput>;
