@@ -282,7 +282,8 @@ function QuotePage() {
         // Always attempt to send the customer email, regardless of whether
         // transport zone matched or whether the customer ends up downloading
         // the PDF. The download is triggered separately afterwards.
-        if (pdf && result.email) {
+        const customerEmail = email.trim();
+        if (pdf && customerEmail) {
           // Small helper: retry a flaky network step once after a short delay.
           const withRetry = async <T,>(fn: () => Promise<T>, label: string): Promise<T> => {
             try {
@@ -294,8 +295,10 @@ function QuotePage() {
             }
           };
           try {
-            const fullName = `${result.firstName ?? ""} ${result.lastName ?? ""}`.trim() || "Customer";
-            const productName = result.catalog?.name ?? result.productRequested;
+            const fullName = `${firstName.trim()} ${lastName.trim()}`.trim() || "Customer";
+            const productName = result.match
+              ? (result.catalog?.name ?? result.productRequested)
+              : product;
             // 1) Get a signed upload URL (with one retry)
             const uploadInfo = (await withRetry(
               () => createUploadFn({ data: { filename: pdf.filename } }),
@@ -325,7 +328,7 @@ function QuotePage() {
               () =>
                 emailQuoteFn({
                   data: {
-                    to: result.email,
+                    to: customerEmail,
                     path: uploadInfo.path,
                     clientName: fullName,
                     quoteNo: pdf.quoteNo,
@@ -339,7 +342,7 @@ function QuotePage() {
                 `Customer quote email failed${emailRes?.error ? `: ${emailRes.error}` : ""}`,
               );
             } else {
-              setEmailConfirmed(result.email);
+              setEmailConfirmed(customerEmail);
             }
           } catch (emailErr) {
             console.error("Quote email failed", emailErr);
