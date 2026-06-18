@@ -103,7 +103,7 @@ export const emailQuoteFromPath = createServerFn({ method: "POST" })
         s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
       const html = `
         <div style="font-family:Arial,sans-serif;color:#111;max-width:600px">
-          <h2 style="margin:0 0 12px">${quoteNo ? `${esc(quoteNo)} ` : ""}Your quote is ready</h2>
+          <h2 style="margin:0 0 12px">${quoteNo ? esc(quoteNo) : "Your quote"}</h2>
           <p>Hi ${esc(clientName)},</p>
           <p>Thanks for your interest in <strong>${esc(productName)}</strong>. Herewith your quote as requested.</p>
           <p style="margin:24px 0">
@@ -117,7 +117,7 @@ export const emailQuoteFromPath = createServerFn({ method: "POST" })
       const send = await sendSmtpEmail({
         data: {
           to: data.to,
-          subject: quoteNo ? `Your quote ${quoteNo} — Progress Group` : `Your quote — Progress Group`,
+          subject: quoteNo ? quoteNo : `Your quote — Progress Group`,
           html,
         },
       });
