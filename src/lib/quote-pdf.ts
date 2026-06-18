@@ -191,6 +191,17 @@ export async function generateQuotePDF(
   doc.setTextColor(0);
   y += 8;
 
+  // ---------- CTA Banner ----------
+  const ctaText = "ACCEPT MY QUOTE / GET INVOICE & BOOK INSTALLATION";
+  const ctaH = 8;
+  const ctaW = pageW - margin * 2;
+  doc.setFillColor(249, 115, 22);
+  doc.rect(margin, y, ctaW, ctaH, "F");
+  doc.setFont("helvetica", "bold").setFontSize(11).setTextColor(255, 255, 255);
+  doc.text(ctaText, pageW / 2, y + ctaH / 2 + 2, { align: "center" });
+  doc.setTextColor(0);
+  y += ctaH + 5;
+
   // ---------- Quotation header table ----------
   const isInvoice = !!input.asInvoice;
   const docLabel = isInvoice ? "Invoice" : "Quotation";
