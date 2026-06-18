@@ -169,6 +169,38 @@ function buildQuoteUrl(params: {
   return url.toString();
 }
 
+function buildWhatsAppMessage(params: {
+  fullName: string;
+  quoteNo?: string | null;
+  productName: string;
+  totalPrice?: string | null;
+  isEstimate?: boolean;
+  validityDays?: number;
+  cta?: string;
+}): string {
+  const validity = params.validityDays ?? 10;
+  const cta =
+    params.cta ??
+    "I'd like to proceed. Please send me the invoice and booking details.";
+
+  const lines = [
+    `Hi Progress Group,`,
+    ``,
+    params.quoteNo ? `*Quote:* ${params.quoteNo}` : null,
+    `*Product:* ${params.productName}`,
+    params.totalPrice
+      ? `*${params.isEstimate ? "Estimated price" : "Price"}:* ${params.totalPrice}${params.isEstimate ? " (excl. transport)" : ""}`
+      : null,
+    params.quoteNo ? `*Valid for:* ${validity} days` : null,
+    ``,
+    cta,
+    ``,
+    `— ${params.fullName}`,
+  ].filter(Boolean) as string[];
+
+  return lines.join("\n");
+}
+
 function QuotePage() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
