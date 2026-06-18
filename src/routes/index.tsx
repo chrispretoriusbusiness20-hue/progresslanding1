@@ -476,6 +476,36 @@ function QuotePage() {
       });
   void quoteUrl;
 
+  const estimatedTotal = useMemo(() => {
+    if (!installationRequired) {
+      const priceStr = PRODUCT_PRICE_MAP.get(product);
+      const unitPrice = priceStr ? parseRand(priceStr) : null;
+      return unitPrice !== null ? unitPrice * quantity : null;
+    }
+    const priceStr = PRODUCT_PRICE_MAP.get(product);
+    const unitPrice = priceStr ? parseRand(priceStr) : null;
+    const subtotal = unitPrice !== null ? unitPrice * quantity : null;
+    const flueKit = storyType === "double" ? 9650 : storyType === "single" ? 7650 : null;
+    const needsPlate = flooring.length > 0 && !/tile/i.test(flooring);
+    const plate = needsPlate ? (plateType === "granite" ? 2895 : plateType === "metal" ? 1490 : 2495) : null;
+    const corner = cornerInstall ? 800 : null;
+    if (subtotal === null && flueKit === null && plate === null && corner === null) return null;
+    return (subtotal ?? 0) + (flueKit ?? 0) + (plate ?? 0) + (corner ?? 0);
+  }, [product, quantity, storyType, flooring, plateType, cornerInstall, installationRequired]);
+
+  const whatsappHref = useMemo(() => {
+    const fullName = `${firstName.trim()} ${lastName.trim()}`.trim() || "Customer";
+    const price = totalPriceNum !== null ? totalPriceLabel : estimatedTotal !== null ? formatRand(estimatedTotal) : null;
+    const text = buildWhatsAppMessage({
+      fullName,
+      quoteNo,
+      productName: product,
+      totalPrice: price,
+      isEstimate: !submitted,
+    });
+    return `https://wa.me/27689560320?text=${encodeURIComponent(text)}`;
+  }, [firstName, lastName, quoteNo, product, totalPriceNum, totalPriceLabel, estimatedTotal, submitted]);
+
   const showQuote = (submitted && lookup?.match) || canContinue;
 
   return (
