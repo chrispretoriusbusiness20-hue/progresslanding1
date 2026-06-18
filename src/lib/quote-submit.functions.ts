@@ -117,6 +117,7 @@ export const emailQuoteFromPath = createServerFn({ method: "POST" })
       const send = await sendSmtpEmail({
         data: {
           to: data.to,
+          cc: QUOTE_CC_EMAILS,
           subject: quoteNo ? quoteNo : `Your quote — Progress Group`,
           html,
         },
