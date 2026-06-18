@@ -125,7 +125,7 @@ export async function sendInternalEmail(
     payload: {
       message_id: messageId,
       to: recipient,
-      from: `${SITE_NAME} <noreply@${FROM_DOMAIN}>`,
+      from: `${SITE_NAME} <${FROM_LOCAL_PART}@${FROM_DOMAIN}>`,
       sender_domain: SENDER_DOMAIN,
       subject: resolvedSubject,
       html,
