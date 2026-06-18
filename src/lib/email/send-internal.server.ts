@@ -3,9 +3,10 @@ import { render } from '@react-email/components'
 import { supabaseAdmin } from '@/integrations/supabase/client.server'
 import { TEMPLATES } from '@/lib/email-templates/registry'
 
-const SITE_NAME = 'progresslanding1'
-const SENDER_DOMAIN = 'notify.www.progressgrp.co.za'
-const FROM_DOMAIN = 'www.progressgrp.co.za'
+const SITE_NAME = 'Progress Group'
+const SENDER_DOMAIN = 'notify.progressgrp.co.za'
+const FROM_DOMAIN = 'progressgrp.co.za'
+const FROM_LOCAL_PART = 'sales'
 
 function generateToken(): string {
   const bytes = new Uint8Array(32)
@@ -124,7 +125,7 @@ export async function sendInternalEmail(
     payload: {
       message_id: messageId,
       to: recipient,
-      from: `${SITE_NAME} <noreply@${FROM_DOMAIN}>`,
+      from: `${SITE_NAME} <${FROM_LOCAL_PART}@${FROM_DOMAIN}>`,
       sender_domain: SENDER_DOMAIN,
       subject: resolvedSubject,
       html,

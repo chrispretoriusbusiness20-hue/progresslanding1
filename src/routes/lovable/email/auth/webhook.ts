@@ -31,10 +31,11 @@ const EMAIL_TEMPLATES: Record<string, React.ComponentType<any>> = {
 }
 
 // Configuration
-const SITE_NAME = "progresslanding1"
+const SITE_NAME = "Progress Group"
 const SENDER_DOMAIN = "notify.progressgrp.co.za"
-const ROOT_DOMAIN = "www.progressgrp.co.za"
-const FROM_DOMAIN = "www.progressgrp.co.za"
+const ROOT_DOMAIN = "progressgrp.co.za"
+const FROM_DOMAIN = "progressgrp.co.za"
+const FROM_LOCAL_PART = "sales"
 
 function redactEmail(email: string | null | undefined): string {
   if (!email) return '***'
@@ -179,7 +180,7 @@ export const Route = createFileRoute("/lovable/email/auth/webhook")({
             run_id,
             message_id: messageId,
             to: payload.data.email,
-            from: `${SITE_NAME} <sales@progressgrp.co.za>`,
+            from: `${SITE_NAME} <${FROM_LOCAL_PART}@${FROM_DOMAIN}>`,
             sender_domain: SENDER_DOMAIN,
             subject: EMAIL_SUBJECTS[emailType] || 'Notification',
             html,
