@@ -98,20 +98,21 @@ export const emailQuoteFromPath = createServerFn({ method: "POST" })
       const clientName = data.clientName ?? "there";
       const productName = data.productName ?? "your selection";
       const quoteNo = data.quoteNo ?? "";
-      const expiresInDays = Math.round(QUOTE_SIGNED_URL_EXPIRES_S / 86400);
+      const expiresInDays = 10;
       const esc = (s: string) =>
         s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
       const html = `
         <div style="font-family:Arial,sans-serif;color:#111;max-width:600px">
-          <h2 style="margin:0 0 12px">Your quote from Progress Group</h2>
+          <h2 style="margin:0 0 12px">${quoteNo ? `${esc(quoteNo)} ` : ""}Your quote is ready</h2>
           <p>Hi ${esc(clientName)},</p>
-          <p>Thanks for your interest in <strong>${esc(productName)}</strong>${quoteNo ? ` (quote ${esc(quoteNo)})` : ""}. Your quote PDF is ready.</p>
+          <p>Thanks for your interest in <strong>${esc(productName)}</strong>. Herewith your quote as requested.</p>
           <p style="margin:24px 0">
-            <a href="${signed.signedUrl}" style="display:inline-block;background:#111;color:#fff;padding:12px 20px;border-radius:6px;text-decoration:none;font-weight:600">Download your quote (PDF)</a>
+            <a href="${signed.signedUrl}" style="display:inline-block;background:#dd7400;color:#fff;padding:12px 22px;border-radius:4px;text-decoration:none;font-weight:600">Download your quote (PDF)</a>
           </p>
-          <p style="color:#555;font-size:13px">This link is valid for ${expiresInDays} days.</p>
-          <p style="color:#555;font-size:13px">If you have any questions, simply reply to this email.</p>
-          <p style="margin-top:24px">— Progress Group</p>
+          <p style="color:#555;font-size:13px">This link is valid for ${expiresInDays} days. If the button doesn't work, copy and paste this URL into your browser:</p>
+          <p style="color:#0a58ca;font-size:12px;word-break:break-all">${esc(signed.signedUrl)}</p>
+          <p style="color:#555;font-size:13px">Questions? Reply to this email or call us — we're happy to help.</p>
+          <p style="margin-top:24px">— Progress Installations</p>
         </div>`;
       const send = await sendSmtpEmail({
         data: {
