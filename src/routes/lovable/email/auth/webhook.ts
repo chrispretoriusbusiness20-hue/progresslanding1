@@ -32,7 +32,7 @@ const EMAIL_TEMPLATES: Record<string, React.ComponentType<any>> = {
 
 // Configuration
 const SITE_NAME = "progresslanding1"
-const SENDER_DOMAIN = "notify.www.progressgrp.co.za"
+const SENDER_DOMAIN = "notify.progressgrp.co.za"
 const ROOT_DOMAIN = "www.progressgrp.co.za"
 const FROM_DOMAIN = "www.progressgrp.co.za"
 
