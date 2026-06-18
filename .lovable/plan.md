@@ -1,55 +1,49 @@
-# Resend Email Configuration — Verification Report
+# Email Infrastructure — Current State
 
-No code changes. Findings only.
+> Last updated: 2026-06-18
+> All sends now route through **Lovable's email queue**. Resend path removed.
 
-## 1. RESEND_API_KEY secret
+## 1. Sender domain
 
-- **Present:** Yes. Managed by the Resend connector (visible in project secrets alongside `LOVABLE_API_KEY`).
-- **Read correctly:** Yes. Both send paths read it the same way and through the same connector gateway:
-  - `src/lib/quote-submit.functions.ts` → `sendQuoteNotificationEmail()` reads `process.env.LOVABLE_API_KEY` and `process.env.RESEND_API_KEY` inside the handler, sends `Authorization: Bearer ${LOVABLE_API_KEY}` + `X-Connection-Api-Key: ${RESEND_API_KEY}` to `https://connector-gateway.lovable.dev/resend/emails`.
-  - `src/lib/email-test.functions.ts` → identical pattern.
-- **Evidence the key is valid:** the gateway returned HTTP **403 with a Resend validation_error JSON body** (see §4). A missing/invalid API key would return 401 `unauthorized` from the gateway, not a Resend domain-validation error. So the credential chain (Lovable key → Resend connection key → Resend API) is working.
+- **Delegated subdomain:** `notify.progressgrp.co.za` (Lovable NS delegation)
+- **Status:** ⏳ Pending — waiting for DNS propagation
+- **Visible From:** `Progress Group <sales@progressgrp.co.za>`
+- **Action required:** Add NS records `ns3.lovable.cloud` and `ns4.lovable.cloud` for `notify.progressgrp.co.za` at your registrar, then click **Verify Domain** in Cloud → Emails.
 
-## 2. From / Reply-To addresses
+## 2. Send paths
 
-From `src/lib/quote-submit.functions.ts`:
+All three send paths now enqueue to Lovable's queue (`/lovable/email/transactional/send`):
 
-- `from`: `Progress Installations <sales@progressgrp.co.za>` (constants `QUOTE_FROM_NAME` + `QUOTE_FROM_EMAIL`)
-- `reply_to`: `sales@progressgrp.co.za`
-- `cc` (team notification + customer PDF): `louis@progressinstallations.co.za`, `christiaan@progressinstallations.co.za`
+| Path | File | From address | Trigger |
+|------|------|--------------|---------|
+| Quote form PDF to customer | `src/lib/quote-submit.functions.ts` → `sendInternalEmail` | `Progress Group <sales@progressgrp.co.za>` | Customer submits quote request |
+| Team notification | `src/lib/quote-submit.functions.ts` → `sendInternalEmail` | `Progress Group <sales@progressgrp.co.za>` | Customer submits quote request |
+| Auth emails (magic link, signup, etc.) | `src/routes/lovable/email/auth/webhook.ts` | `Progress Group <sales@progressgrp.co.za>` | Supabase Auth events |
 
-From `src/lib/email-test.functions.ts` (diagnostic tool): same `from` / `reply_to` (`sales@progressgrp.co.za`).
+Constants (all aligned):
+- `SENDER_DOMAIN` = `notify.progressgrp.co.za`
+- `FROM_DOMAIN` = `progressgrp.co.za`
+- `FROM_LOCAL_PART` = `sales`
 
-The sending domain is `progressgrp.co.za` in every path.
+## 3. Infrastructure
 
-## 3. Recipient / test address
+- ✅ `email_send_log`, `email_send_state`, `suppressed_emails`, `email_unsubscribe_tokens`
+- ✅ `enqueue_email`, `read_email_batch`, `delete_email`, `move_to_dlq` RPCs
+- ✅ `process-email-queue` cron (every 5s)
+- ✅ Auth webhook (`/lovable/email/auth/webhook`)
+- ✅ Transactional send route (`/lovable/email/transactional/send`)
+- ✅ 6 auth email templates + 2 app templates (quote-customer, quote-team) with registry
 
-- **Customer quote PDF** (`emailQuotePdf`): `to` is the email the customer typed into the quote form (validated as an email, max 200 chars). CC'd to the two `progressinstallations.co.za` addresses.
-- **Team notification** (`submitQuoteRequest` → `sendQuoteNotificationEmail`): `to: sales@progressgrp.co.za`, CC the two `progressinstallations.co.za` addresses.
-- **Diagnostic test** (`sendTestEmail`): `to` is whatever address you enter on `/email-diagnostic`.
+## 4. What was removed
 
-Recipient addresses are well-formed and chosen by the user/form — they are not the cause of the failure (Resend rejects before even looking at recipients).
+- Resend connector gateway calls (`sendQuoteNotificationEmail` via Resend)
+- `email-test.functions.ts` (stale diagnostic tool referencing Resend)
+- All `RESEND_API_KEY` usage from quote flow
 
-## 4. Latest function logs
+## 5. Remaining to go live
 
-Worker logs in the last hour show exactly one email-related error, and it is the domain-verification 403:
+1. DNS: add NS records for `notify.progressgrp.co.za`
+2. Wait for status = **Verified** in Cloud → Emails
+3. Emails will begin flowing automatically (queue processes every 5s)
 
-```
-[2026-06-12T08:29:58Z] [error] Resend send failed 403
-{"statusCode":403,
- "message":"The progressgrp.co.za domain is not verified. Please, add and verify your domain on https://resend.com/domains",
- "name":"validation_error"}
-```
-
-No other errors observed:
-- No `401 unauthorized` from the connector gateway → LOVABLE_API_KEY + RESEND_API_KEY are accepted.
-- No `lovable_api_key_not_registered` / decryption errors.
-- No network/timeout errors (`fetch failed`, `ECONNRESET`, etc.).
-- No Zod validation errors on the send payload.
-- The 401s in logs are unrelated — they're on `/lovable/email/auth/preview` / `/webhook` (Lovable Emails auth-template scaffolding probes), not the Resend quote path.
-
-## Conclusion
-
-The ONLY thing blocking delivery is that **`progressgrp.co.za` is not verified in the connected Resend account**. The API key is present, valid, and being read correctly; the from/reply-to/recipient addresses are well-formed; no other errors are appearing in logs.
-
-Once `progressgrp.co.za` is added and verified in Resend (DKIM + SPF + Return-Path DNS at the registrar), both the team notification and the customer PDF send should succeed with no code changes.
+No further code changes needed.
