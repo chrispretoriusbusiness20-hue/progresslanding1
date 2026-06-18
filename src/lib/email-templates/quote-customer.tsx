@@ -26,18 +26,17 @@ const Email = ({
   quoteNo = '',
   productName = 'your selection',
   downloadUrl = '#',
-  expiresInDays = 30,
+  expiresInDays = 10,
 }: Props) => (
   <Html lang="en" dir="ltr">
     <Head />
-    <Preview>Your Progress Group quote {quoteNo} is ready</Preview>
+    <Preview>{quoteNo ? `${quoteNo} — Your quote is ready` : 'Your quote is ready'}</Preview>
     <Body style={main}>
       <Container style={container}>
-        <Heading style={h1}>Your quote is ready</Heading>
+        <Heading style={h1}>{quoteNo ? `${quoteNo} ` : ''}Your quote is ready</Heading>
         <Text style={text}>Hi {clientName},</Text>
         <Text style={text}>
-          Thanks for your interest in <strong>{productName}</strong>. Your quote
-          {quoteNo ? ` (${quoteNo})` : ''} is attached as a secure download link below.
+          Thanks for your interest in <strong>{productName}</strong>. Herewith your quote as requested.
         </Text>
         <Section style={{ textAlign: 'center', margin: '28px 0' }}>
           <Button href={downloadUrl} style={button}>
@@ -62,14 +61,14 @@ const Email = ({
 export const template = {
   component: Email,
   subject: (data: Record<string, unknown>) =>
-    `Your Progress Group Quote${data.quoteNo ? ` – ${data.quoteNo}` : ''}`,
+    data.quoteNo ? `${data.quoteNo} — Your quote is ready` : `Your quote is ready`,
   displayName: 'Customer quote (with PDF link)',
   previewData: {
     clientName: 'Jane Smith',
-    quoteNo: 'PG1234 - 0612',
+    quoteNo: 'JS1806 - 001',
     productName: 'Magma 001 Freestanding Fireplace 10kW',
     downloadUrl: 'https://example.com/download.pdf',
-    expiresInDays: 30,
+    expiresInDays: 10,
   },
 } satisfies TemplateEntry
 
