@@ -312,6 +312,7 @@ function QuotePage() {
           },
           { download: false },
         );
+        setQuoteNo(pdf.quoteNo);
         // Always attempt to send the customer email, regardless of whether
         // transport zone matched or whether the customer ends up downloading
         // the PDF. The download is triggered separately afterwards.
