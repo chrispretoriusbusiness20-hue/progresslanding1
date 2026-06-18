@@ -38,6 +38,9 @@ const Email = ({
         <Text style={text}>
           Thanks for your interest in <strong>{productName}</strong>. Herewith your quote as requested.
         </Text>
+        <Text style={notice}>
+          <strong>Payment terms:</strong> 75% deposit (100% of the 75% amount) is required on acceptance of quotation. Balance is payable on completion.
+        </Text>
         <Section style={{ textAlign: 'center', margin: '28px 0' }}>
           <Button href={downloadUrl} style={button}>
             Download your quote (PDF)
