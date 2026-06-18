@@ -180,7 +180,7 @@ export const Route = createFileRoute("/lovable/email/auth/webhook")({
             run_id,
             message_id: messageId,
             to: payload.data.email,
-            from: `${SITE_NAME} <sales@progressgrp.co.za>`,
+            from: `${SITE_NAME} <${FROM_LOCAL_PART}@${FROM_DOMAIN}>`,
             sender_domain: SENDER_DOMAIN,
             subject: EMAIL_SUBJECTS[emailType] || 'Notification',
             html,
