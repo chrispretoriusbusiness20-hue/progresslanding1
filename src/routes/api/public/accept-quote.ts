@@ -26,7 +26,7 @@ export const Route = createFileRoute("/api/public/accept-quote")({
         const client = url.searchParams.get("client") ?? "";
         const sig = url.searchParams.get("sig") ?? "";
         const payload = `${to}|${quoteNo}|${product}|${client}`;
-        if (!sig || !verify(payload, sig)) {
+        if (!sig || !verifyAcceptance(payload, sig)) {
           return htmlPage(
             "Invalid link",
             `<h2 style="color:#dd7400;margin:0 0 12px">Invalid acceptance link</h2><p style="color:#444">This link could not be verified. Please contact us if you need help.</p>`,
