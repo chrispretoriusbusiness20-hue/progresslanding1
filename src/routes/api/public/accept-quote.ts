@@ -46,7 +46,7 @@ export const Route = createFileRoute("/api/public/accept-quote")({
               <tr><td style="padding:6px 10px;border:1px solid #eee;background:#fafafa;font-weight:600">Product</td><td style="padding:6px 10px;border:1px solid #eee">${esc(product || "—")}</td></tr>
               <tr><td style="padding:6px 10px;border:1px solid #eee;background:#fafafa;font-weight:600">Accepted at</td><td style="padding:6px 10px;border:1px solid #eee">${new Date().toLocaleString("en-ZA", { timeZone: "Africa/Johannesburg" })} (SAST)</td></tr>
             </table>
-            <p style="margin-top:16px;color:#555">Please convert this quote to an invoice and follow up with the client.</p>
+            <p style="margin-top:16px;color:#555">Please approve this quote so it can be converted into an invoice and the client can be followed up with.</p>
           </div>`;
 
         try {
@@ -56,7 +56,7 @@ export const Route = createFileRoute("/api/public/accept-quote")({
             recipients.map((r) =>
               sendSmtpEmailDirect({
                 to: r,
-                subject: `Quote ACCEPTED — ${client || to}${quoteNo ? ` (${quoteNo})` : ""}`,
+                subject: `Quote APPROVAL REQUIRED — ${client || to}${quoteNo ? ` (${quoteNo})` : ""}`,
                 html,
                 replyTo: to,
               }),
