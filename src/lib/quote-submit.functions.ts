@@ -106,7 +106,7 @@ export const emailQuoteFromPath = createServerFn({ method: "POST" })
           <p>Hi ${esc(clientName)},</p>
           <p>Thanks for your interest in <strong>${esc(productName)}</strong>. Herewith your quote as requested.</p>
           <p style="margin:16px 0;padding:12px 16px;background:#fff7ed;border-left:4px solid #dd7400;color:#7c2d12;font-size:14px;line-height:1.6">
-            <strong>Payment terms:</strong> 75% deposit (100% of the 75% amount) is required for ACCEPTANCE OF QUOTATION. Balance is payable on completion.
+            <strong>Payment terms:</strong> 100% deposit is required for ACCEPTANCE OF QUOTATION. Balance is payable on completion.
           </p>
           <p style="margin:24px 0">
             <a href="${signed.signedUrl}" style="display:inline-block;background:#dd7400;color:#fff;padding:12px 22px;border-radius:4px;text-decoration:none;font-weight:600">Download your quote (PDF)</a>
