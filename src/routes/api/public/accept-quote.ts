@@ -90,7 +90,7 @@ export const Route = createFileRoute("/api/public/accept-quote")({
             recipients.map((r) =>
               sendSmtpEmailDirect({
                 to: r,
-                subject: `Quote APPROVAL REQUIRED — ${client || to}${quoteNo ? ` (${quoteNo})` : ""}`,
+                subject: `Quote AUTO-APPROVED — ${client || to}${quoteNo ? ` (${quoteNo})` : ""}`,
                 html: teamHtml,
                 replyTo: to,
               }),
