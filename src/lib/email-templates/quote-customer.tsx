@@ -46,11 +46,6 @@ const Email = ({
             Download your quote (PDF)
           </Button>
         </Section>
-        <Text style={muted}>
-          This link is valid for {expiresInDays} days. If the button doesn't work,
-          copy and paste this URL into your browser:
-        </Text>
-        <Text style={linkText}>{downloadUrl}</Text>
         <Hr style={hr} />
         <Text style={muted}>
           Questions? Reply to this email or call us — we're happy to help.
@@ -81,7 +76,6 @@ const h1 = { fontSize: '22px', fontWeight: 700, margin: '0 0 16px' }
 const text = { fontSize: '15px', lineHeight: '1.6', margin: '0 0 12px' }
 const notice = { fontSize: '14px', lineHeight: '1.6', margin: '0 0 16px', padding: '12px 16px', backgroundColor: '#fff7ed', borderLeft: '4px solid #dd7400', color: '#7c2d12' }
 const muted = { fontSize: '13px', lineHeight: '1.6', color: '#555', margin: '0 0 8px' }
-const linkText = { fontSize: '12px', wordBreak: 'break-all' as const, color: '#0a58ca', margin: '0 0 16px' }
 const button = {
   backgroundColor: '#dd7400',
   color: '#ffffff',
