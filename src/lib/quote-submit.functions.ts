@@ -111,8 +111,6 @@ export const emailQuoteFromPath = createServerFn({ method: "POST" })
           <p style="margin:24px 0">
             <a href="${signed.signedUrl}" style="display:inline-block;background:#dd7400;color:#fff;padding:12px 22px;border-radius:4px;text-decoration:none;font-weight:600">Download your quote (PDF)</a>
           </p>
-          <p style="color:#555;font-size:13px">This link is valid for ${expiresInDays} days. If the button doesn't work, copy and paste this URL into your browser:</p>
-          <p style="color:#0a58ca;font-size:12px;word-break:break-all">${esc(signed.signedUrl)}</p>
           <p style="color:#555;font-size:13px">Questions? Reply to this email or call us — we're happy to help.</p>
           <p style="margin-top:24px">— Progress Installations</p>
         </div>`;
