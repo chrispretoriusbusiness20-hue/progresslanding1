@@ -1,6 +1,12 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import productsData from "@/data/products.json";
+import productsFullData from "@/data/products-full.json";
+
+const PRODUCT_IMAGE_MAP = new Map(
+  (productsFullData as Array<{ name: string; image?: string }>).map((p) => [p.name, p.image ?? ""]),
+);
+
 
 const MAPS_GATEWAY = "https://connector-gateway.lovable.dev/google_maps";
 const SHEETS_GATEWAY = "https://connector-gateway.lovable.dev/google_sheets/v4";
