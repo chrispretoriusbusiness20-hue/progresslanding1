@@ -100,3 +100,7 @@ const button = {
   display: 'inline-block',
 }
 const hr = { borderColor: '#eee', margin: '24px 0' }
+const productCard = { margin: '16px 0', padding: '12px', border: '1px solid #eee', borderRadius: '6px' }
+const productImg = { display: 'block', border: '1px solid #eee', borderRadius: '6px', objectFit: 'cover' as const }
+const productLabel = { fontSize: '14px', lineHeight: '1.5', margin: 0, fontWeight: 600, color: '#111' }
+
