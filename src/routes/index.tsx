@@ -231,7 +231,7 @@ function QuotePage() {
   const [headerHidden, setHeaderHidden] = useState(false);
   const [quoteNo, setQuoteNo] = useState<string | null>(null);
 
-function QuotePage() {
+
   useEffect(() => {
     let lastScrollY = window.scrollY;
     const onScroll = () => {
@@ -1066,7 +1066,7 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
     </label>
   );
 }
-}
+
 
 
 
