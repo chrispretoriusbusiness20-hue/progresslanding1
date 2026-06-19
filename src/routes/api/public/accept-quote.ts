@@ -65,11 +65,11 @@ export const Route = createFileRoute("/api/public/accept-quote")({
           }
         }
 
-        // Notify the team that this quote was accepted and needs approval.
+        // Notify the team — quote is auto-approved, no manual action required.
         const teamHtml = `
           <div style="font-family:Arial,sans-serif;color:#111;max-width:600px">
-            <h2 style="margin:0 0 12px;color:#dd7400">Quote acceptance — approval required</h2>
-            <p>The client below has accepted their quote and is requesting approval to proceed. Please review and approve so we can issue the final invoice.</p>
+            <h2 style="margin:0 0 12px;color:#dd7400">Quote accepted — auto-approved</h2>
+            <p>The client below has accepted their quote. It has been <strong>automatically approved</strong> and converted to an invoice. No manual approval is needed — please proceed with fulfilment and follow-up.</p>
             <table style="border-collapse:collapse;width:100%;margin-top:12px">
               <tr><td style="padding:6px 10px;border:1px solid #eee;background:#fafafa;width:160px;font-weight:600">Client</td><td style="padding:6px 10px;border:1px solid #eee">${esc(client || "—")}</td></tr>
               <tr><td style="padding:6px 10px;border:1px solid #eee;background:#fafafa;font-weight:600">Email</td><td style="padding:6px 10px;border:1px solid #eee">${esc(to)}</td></tr>
@@ -77,8 +77,8 @@ export const Route = createFileRoute("/api/public/accept-quote")({
               <tr><td style="padding:6px 10px;border:1px solid #eee;background:#fafafa;font-weight:600">Invoice No</td><td style="padding:6px 10px;border:1px solid #eee">${esc(invoiceNo)}</td></tr>
               <tr><td style="padding:6px 10px;border:1px solid #eee;background:#fafafa;font-weight:600">Product</td><td style="padding:6px 10px;border:1px solid #eee">${esc(product || "—")}</td></tr>
               <tr><td style="padding:6px 10px;border:1px solid #eee;background:#fafafa;font-weight:600">Accepted at</td><td style="padding:6px 10px;border:1px solid #eee">${acceptedAt} (SAST)</td></tr>
+              <tr><td style="padding:6px 10px;border:1px solid #eee;background:#fafafa;font-weight:600">Status</td><td style="padding:6px 10px;border:1px solid #eee;color:#15803d;font-weight:600">AUTO-APPROVED</td></tr>
             </table>
-            <p style="margin-top:16px;color:#555">Please approve this quote so the final invoice can be issued and the client can be followed up with.</p>
           </div>`;
 
         try {
@@ -90,7 +90,7 @@ export const Route = createFileRoute("/api/public/accept-quote")({
             recipients.map((r) =>
               sendSmtpEmailDirect({
                 to: r,
-                subject: `Quote APPROVAL REQUIRED — ${client || to}${quoteNo ? ` (${quoteNo})` : ""}`,
+                subject: `Quote AUTO-APPROVED — ${client || to}${quoteNo ? ` (${quoteNo})` : ""}`,
                 html: teamHtml,
                 replyTo: to,
               }),
