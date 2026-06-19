@@ -20,6 +20,7 @@ interface Props {
   clientName?: string
   quoteNo?: string
   productName?: string
+  productImage?: string
   downloadUrl?: string
   expiresInDays?: number
 }
@@ -28,6 +29,7 @@ const Email = ({
   clientName = 'there',
   quoteNo = '',
   productName = 'your selection',
+  productImage = '',
   downloadUrl = '#',
   expiresInDays = 10,
 }: Props) => (
@@ -41,6 +43,18 @@ const Email = ({
         <Text style={text}>
           Thanks for your interest in <strong>{productName}</strong>. Herewith your quote as requested.
         </Text>
+        {productImage ? (
+          <Section style={productCard}>
+            <Row>
+              <Column style={{ width: '136px', verticalAlign: 'middle' }}>
+                <Img src={productImage} alt={productName} width="120" height="120" style={productImg} />
+              </Column>
+              <Column style={{ verticalAlign: 'middle' }}>
+                <Text style={productLabel}>{productName}</Text>
+              </Column>
+            </Row>
+          </Section>
+        ) : null}
         <Text style={notice}>
           <strong>Payment terms:</strong> 100% deposit is required for ACCEPTANCE OF QUOTATION. Balance is payable on completion.
         </Text>
