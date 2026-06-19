@@ -1,6 +1,12 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import productsData from "@/data/products.json";
+import productsFullData from "@/data/products-full.json";
+
+const PRODUCT_IMAGE_MAP = new Map(
+  (productsFullData as Array<{ name: string; image?: string }>).map((p) => [p.name, p.image ?? ""]),
+);
+
 
 const MAPS_GATEWAY = "https://connector-gateway.lovable.dev/google_maps";
 const SHEETS_GATEWAY = "https://connector-gateway.lovable.dev/google_sheets/v4";
@@ -100,18 +106,31 @@ export const emailQuoteFromPath = createServerFn({ method: "POST" })
       const expiresInDays = 10;
       const esc = (s: string) =>
         s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+      const productImage = PRODUCT_IMAGE_MAP.get(productName) ?? "";
+      const productBlock = productImage
+        ? `<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:16px 0">
+            <tr>
+              <td style="padding-right:14px;vertical-align:middle">
+                <img src="${esc(productImage)}" alt="${esc(productName)}" width="120" height="120" style="display:block;border:1px solid #eee;border-radius:6px;object-fit:cover" />
+              </td>
+              <td style="vertical-align:middle;font-family:Arial,sans-serif;color:#111;font-size:14px;line-height:1.5">
+                <strong>${esc(productName)}</strong>
+              </td>
+            </tr>
+          </table>`
+        : "";
       const html = `
         <div style="font-family:Arial,sans-serif;color:#111;max-width:600px">
           <h2 style="margin:0 0 12px">${quoteNo ? esc(quoteNo) : "Your quote"}</h2>
           <p>Hi ${esc(clientName)},</p>
           <p>Thanks for your interest in <strong>${esc(productName)}</strong>. Herewith your quote as requested.</p>
+          ${productBlock}
           <p style="margin:16px 0;padding:12px 16px;background:#fff7ed;border-left:4px solid #dd7400;color:#7c2d12;font-size:14px;line-height:1.6">
             <strong>Payment terms:</strong> 100% deposit is required for ACCEPTANCE OF QUOTATION. Balance is payable on completion.
           </p>
           <p style="margin:24px 0">
             <a href="${signed.signedUrl}" style="display:inline-block;background:#dd7400;color:#fff;padding:12px 22px;border-radius:4px;text-decoration:none;font-weight:600">Download your quote (PDF)</a>
           </p>
-          <p style="margin-top:24px">— Progress Installations</p>
           <p style="margin-top:24px">— Progress Installations</p>
         </div>`;
       const send = await sendSmtpEmailDirect({

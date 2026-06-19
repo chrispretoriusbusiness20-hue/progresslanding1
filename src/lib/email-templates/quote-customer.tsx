@@ -2,12 +2,15 @@ import React from 'react'
 import {
   Body,
   Button,
+  Column,
   Container,
   Head,
   Heading,
   Hr,
   Html,
+  Img,
   Preview,
+  Row,
   Section,
   Text,
 } from '@react-email/components'
@@ -17,6 +20,7 @@ interface Props {
   clientName?: string
   quoteNo?: string
   productName?: string
+  productImage?: string
   downloadUrl?: string
   expiresInDays?: number
 }
@@ -25,6 +29,7 @@ const Email = ({
   clientName = 'there',
   quoteNo = '',
   productName = 'your selection',
+  productImage = '',
   downloadUrl = '#',
   expiresInDays = 10,
 }: Props) => (
@@ -38,6 +43,18 @@ const Email = ({
         <Text style={text}>
           Thanks for your interest in <strong>{productName}</strong>. Herewith your quote as requested.
         </Text>
+        {productImage ? (
+          <Section style={productCard}>
+            <Row>
+              <Column style={{ width: '136px', verticalAlign: 'middle' }}>
+                <Img src={productImage} alt={productName} width="120" height="120" style={productImg} />
+              </Column>
+              <Column style={{ verticalAlign: 'middle' }}>
+                <Text style={productLabel}>{productName}</Text>
+              </Column>
+            </Row>
+          </Section>
+        ) : null}
         <Text style={notice}>
           <strong>Payment terms:</strong> 100% deposit is required for ACCEPTANCE OF QUOTATION. Balance is payable on completion.
         </Text>
@@ -62,6 +79,7 @@ export const template = {
     clientName: 'Jane Smith',
     quoteNo: 'JS1806 - 001',
     productName: 'Magma 001 Freestanding Fireplace 10kW',
+    productImage: 'https://progressgroup.co.za/wp-content/uploads/2023/06/Single-Wall-Flue-Pipe-300x300.jpg',
     downloadUrl: 'https://example.com/download.pdf',
     expiresInDays: 10,
   },
@@ -83,3 +101,7 @@ const button = {
   display: 'inline-block',
 }
 const hr = { borderColor: '#eee', margin: '24px 0' }
+const productCard = { margin: '16px 0', padding: '12px', border: '1px solid #eee', borderRadius: '6px' }
+const productImg = { display: 'block', border: '1px solid #eee', borderRadius: '6px', objectFit: 'cover' as const }
+const productLabel = { fontSize: '14px', lineHeight: '1.5', margin: 0, fontWeight: 600, color: '#111' }
+
