@@ -1049,7 +1049,7 @@ function InstantQuote({
         Excludes transport. Final quote confirmed after we calculate distance from Bellville to your address.
       </p>
       <p className="mt-2 border-l-4 border-primary bg-primary/10 px-3 py-2 text-xs font-semibold text-foreground">
-        100% deposit required for ACCEPTANCE OF QUOTATION. Balance on completion.
+        100% deposit required for ACCEPTANCE OF QUOTATION.
       </p>
     </div>
   );
