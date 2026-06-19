@@ -37,8 +37,8 @@ export const Route = createFileRoute("/api/public/accept-quote")({
           s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
         const html = `
           <div style="font-family:Arial,sans-serif;color:#111;max-width:600px">
-            <h2 style="margin:0 0 12px;color:#dd7400">Quote accepted</h2>
-            <p>The client below has accepted their quote and would like to proceed.</p>
+            <h2 style="margin:0 0 12px;color:#dd7400">Quote acceptance — approval required</h2>
+            <p>The client below has accepted their quote and is requesting approval to proceed. Please review and approve so we can convert this quote to an invoice.</p>
             <table style="border-collapse:collapse;width:100%;margin-top:12px">
               <tr><td style="padding:6px 10px;border:1px solid #eee;background:#fafafa;width:160px;font-weight:600">Client</td><td style="padding:6px 10px;border:1px solid #eee">${esc(client || "—")}</td></tr>
               <tr><td style="padding:6px 10px;border:1px solid #eee;background:#fafafa;font-weight:600">Email</td><td style="padding:6px 10px;border:1px solid #eee">${esc(to)}</td></tr>
