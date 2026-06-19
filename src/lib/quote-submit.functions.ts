@@ -150,11 +150,11 @@ export const emailQuoteFromPath = createServerFn({ method: "POST" })
           </table>`
         : "";
       const { signAcceptance } = await import("@/lib/accept-quote-sign.server");
-      const acceptPayload = `${data.to}|${quoteNo}|${productName}|${clientName}`;
+      const acceptPayload = `${data.to}|${quoteNo}|${productName}|${clientName}|${data.path}`;
       const acceptSig = signAcceptance(acceptPayload);
       const origin =
         process.env.PUBLIC_SITE_URL ?? "https://progressgrp.co.za";
-      const acceptUrl = `${origin}/api/public/accept-quote?to=${encodeURIComponent(data.to)}&quoteNo=${encodeURIComponent(quoteNo)}&product=${encodeURIComponent(productName)}&client=${encodeURIComponent(clientName)}&sig=${acceptSig}`;
+      const acceptUrl = `${origin}/api/public/accept-quote?to=${encodeURIComponent(data.to)}&quoteNo=${encodeURIComponent(quoteNo)}&product=${encodeURIComponent(productName)}&client=${encodeURIComponent(clientName)}&pdfPath=${encodeURIComponent(data.path)}&sig=${acceptSig}`;
 
       const html = `
         <div style="font-family:Arial,sans-serif;color:#111;max-width:600px">
