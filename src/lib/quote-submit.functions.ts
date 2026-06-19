@@ -7,6 +7,36 @@ const PRODUCT_IMAGE_MAP = new Map(
   (productsFullData as Array<{ name: string; image?: string }>).map((p) => [p.name, p.image ?? ""]),
 );
 
+function resolveProductImage(productName: string): string {
+  const direct = PRODUCT_IMAGE_MAP.get(productName);
+  if (direct) return direct;
+  // Fuzzy fallback: pick the catalog entry with the most token overlap.
+  const qTokens = productName
+    .toLowerCase()
+    .replace(/[^a-z0-9 ]/g, " ")
+    .split(/\s+/)
+    .filter((t) => t.length >= 2);
+  if (qTokens.length === 0) return "";
+  const qSet = new Set(qTokens);
+  let best: { image: string; score: number } | null = null;
+  for (const p of productsFullData as Array<{ name: string; image?: string }>) {
+    if (!p.image) continue;
+    const pTokens = p.name
+      .toLowerCase()
+      .replace(/[^a-z0-9 ]/g, " ")
+      .split(/\s+/)
+      .filter((t) => t.length >= 2);
+    let overlap = 0;
+    for (const t of pTokens) if (qSet.has(t)) overlap++;
+    if (overlap >= 2) {
+      const score = overlap + overlap / Math.max(pTokens.length, 1);
+      if (!best || score > best.score) best = { image: p.image, score };
+    }
+  }
+  return best?.image ?? "";
+}
+
+
 
 const MAPS_GATEWAY = "https://connector-gateway.lovable.dev/google_maps";
 const SHEETS_GATEWAY = "https://connector-gateway.lovable.dev/google_sheets/v4";
