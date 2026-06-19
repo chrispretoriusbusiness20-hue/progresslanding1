@@ -149,7 +149,7 @@ export const emailQuoteFromPath = createServerFn({ method: "POST" })
             </tr>
           </table>`
         : "";
-      const { signAcceptance } = await import("@/routes/api/public/accept-quote");
+      const { signAcceptance } = await import("@/lib/accept-quote-sign.server");
       const acceptPayload = `${data.to}|${quoteNo}|${productName}|${clientName}`;
       const acceptSig = signAcceptance(acceptPayload);
       const origin =

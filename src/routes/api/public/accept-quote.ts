@@ -1,28 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { createHmac, timingSafeEqual } from "crypto";
+import { verifyAcceptance } from "@/lib/accept-quote-sign.server";
 
 const QUOTE_TEAM_EMAIL = "sales@progressgrp.co.za";
 const QUOTE_CC_EMAILS = ["chris@progressinstallations.co.za"];
-
-function getSecret(): string {
-  return process.env.LOVABLE_API_KEY ?? process.env.SMTP_PASS ?? "fallback-secret";
-}
-
-export function signAcceptance(payload: string): string {
-  return createHmac("sha256", getSecret()).update(payload).digest("hex");
-}
-
-function verify(payload: string, sig: string): boolean {
-  try {
-    const expected = signAcceptance(payload);
-    const a = Buffer.from(expected, "hex");
-    const b = Buffer.from(sig, "hex");
-    if (a.length !== b.length) return false;
-    return timingSafeEqual(a, b);
-  } catch {
-    return false;
-  }
-}
 
 function htmlPage(title: string, body: string): Response {
   return new Response(
