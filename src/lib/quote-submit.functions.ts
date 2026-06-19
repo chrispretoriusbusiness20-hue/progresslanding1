@@ -136,7 +136,7 @@ export const emailQuoteFromPath = createServerFn({ method: "POST" })
       const expiresInDays = 10;
       const esc = (s: string) =>
         s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-      const productImage = PRODUCT_IMAGE_MAP.get(productName) ?? "";
+      const productImage = resolveProductImage(productName);
       const productBlock = productImage
         ? `<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:16px 0">
             <tr>
