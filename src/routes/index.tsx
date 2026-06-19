@@ -494,6 +494,18 @@ function QuotePage() {
     return (subtotal ?? 0) + (flueKit ?? 0) + (plate ?? 0) + (corner ?? 0);
   }, [product, quantity, storyType, flooring, plateType, cornerInstall, installationRequired]);
 
+  const whatsappHref = useMemo(() => {
+    const fullName = `${firstName.trim()} ${lastName.trim()}`.trim() || "Customer";
+    const price = totalPriceNum !== null ? totalPriceLabel : estimatedTotal !== null ? formatRand(estimatedTotal) : null;
+    const text = buildWhatsAppMessage({
+      fullName,
+      quoteNo,
+      productName: product,
+      totalPrice: price,
+      isEstimate: !submitted,
+    });
+    return `https://wa.me/27689560320?text=${encodeURIComponent(text)}`;
+  }, [firstName, lastName, quoteNo, product, totalPriceNum, totalPriceLabel, estimatedTotal, submitted]);
 
   const showQuote = (submitted && lookup?.match) || canContinue;
 
@@ -873,6 +885,15 @@ function QuotePage() {
                   <CheckCircle2 className="h-4 w-4" />
                   Accept My Quote / Get Invoice & Book Installation
                 </button>
+                <a
+                  href={whatsappHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center gap-2 border-2 border-foreground bg-[#25D366] px-5 py-3 text-sm font-bold uppercase tracking-wider text-white shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
+                >
+                  <MessageCircle className="h-4 w-4" />
+                  ACCEPT MY QUOTE & CONTINUE ON WHATSAPP
+                </a>
               </div>
             </div>
 
