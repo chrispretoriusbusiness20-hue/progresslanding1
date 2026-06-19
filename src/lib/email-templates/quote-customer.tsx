@@ -2,12 +2,15 @@ import React from 'react'
 import {
   Body,
   Button,
+  Column,
   Container,
   Head,
   Heading,
   Hr,
   Html,
+  Img,
   Preview,
+  Row,
   Section,
   Text,
 } from '@react-email/components'
