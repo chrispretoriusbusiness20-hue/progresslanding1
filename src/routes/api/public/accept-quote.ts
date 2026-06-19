@@ -37,8 +37,8 @@ export const Route = createFileRoute("/api/public/accept-quote")({
           s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
         const html = `
           <div style="font-family:Arial,sans-serif;color:#111;max-width:600px">
-            <h2 style="margin:0 0 12px;color:#dd7400">Quote accepted</h2>
-            <p>The client below has accepted their quote and would like to proceed.</p>
+            <h2 style="margin:0 0 12px;color:#dd7400">Quote acceptance — approval required</h2>
+            <p>The client below has accepted their quote and is requesting approval to proceed. Please review and approve so we can convert this quote to an invoice.</p>
             <table style="border-collapse:collapse;width:100%;margin-top:12px">
               <tr><td style="padding:6px 10px;border:1px solid #eee;background:#fafafa;width:160px;font-weight:600">Client</td><td style="padding:6px 10px;border:1px solid #eee">${esc(client || "—")}</td></tr>
               <tr><td style="padding:6px 10px;border:1px solid #eee;background:#fafafa;font-weight:600">Email</td><td style="padding:6px 10px;border:1px solid #eee">${esc(to)}</td></tr>
@@ -46,7 +46,7 @@ export const Route = createFileRoute("/api/public/accept-quote")({
               <tr><td style="padding:6px 10px;border:1px solid #eee;background:#fafafa;font-weight:600">Product</td><td style="padding:6px 10px;border:1px solid #eee">${esc(product || "—")}</td></tr>
               <tr><td style="padding:6px 10px;border:1px solid #eee;background:#fafafa;font-weight:600">Accepted at</td><td style="padding:6px 10px;border:1px solid #eee">${new Date().toLocaleString("en-ZA", { timeZone: "Africa/Johannesburg" })} (SAST)</td></tr>
             </table>
-            <p style="margin-top:16px;color:#555">Please convert this quote to an invoice and follow up with the client.</p>
+            <p style="margin-top:16px;color:#555">Please approve this quote so it can be converted into an invoice and the client can be followed up with.</p>
           </div>`;
 
         try {
@@ -56,7 +56,7 @@ export const Route = createFileRoute("/api/public/accept-quote")({
             recipients.map((r) =>
               sendSmtpEmailDirect({
                 to: r,
-                subject: `Quote ACCEPTED — ${client || to}${quoteNo ? ` (${quoteNo})` : ""}`,
+                subject: `Quote APPROVAL REQUIRED — ${client || to}${quoteNo ? ` (${quoteNo})` : ""}`,
                 html,
                 replyTo: to,
               }),
