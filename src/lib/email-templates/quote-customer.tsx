@@ -79,6 +79,7 @@ export const template = {
     clientName: 'Jane Smith',
     quoteNo: 'JS1806 - 001',
     productName: 'Magma 001 Freestanding Fireplace 10kW',
+    productImage: 'https://progressgroup.co.za/wp-content/uploads/2023/06/Single-Wall-Flue-Pipe-300x300.jpg',
     downloadUrl: 'https://example.com/download.pdf',
     expiresInDays: 10,
   },
