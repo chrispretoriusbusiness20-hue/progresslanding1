@@ -4,7 +4,12 @@ import { useServerFn } from "@tanstack/react-start";
 import { CheckCircle2, FileDown, Loader2, MessageCircle } from "lucide-react";
 import { toast } from "sonner";
 import { submitQuoteRequest, createQuoteUploadUrl, emailQuoteFromPath } from "@/lib/quote-submit.functions";
-import { generateQuotePDF } from "@/lib/quote-pdf";
+const generateQuotePDF = async (
+  ...args: Parameters<typeof import("@/lib/quote-pdf").generateQuotePDF>
+) => {
+  const mod = await import("@/lib/quote-pdf");
+  return mod.generateQuotePDF(...args);
+};
 
 import productsData from "@/data/products.json";
 import progressLogo from "@/assets/progress-header-transparent.png.asset.json";
