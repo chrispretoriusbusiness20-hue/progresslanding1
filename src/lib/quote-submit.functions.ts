@@ -149,19 +149,34 @@ export const emailQuoteFromPath = createServerFn({ method: "POST" })
             </tr>
           </table>`
         : "";
+      const { signAcceptance } = await import("@/routes/api/public/accept-quote");
+      const acceptPayload = `${data.to}|${quoteNo}|${productName}|${clientName}`;
+      const acceptSig = signAcceptance(acceptPayload);
+      const origin =
+        process.env.PUBLIC_SITE_URL ?? "https://progressgrp.co.za";
+      const acceptUrl = `${origin}/api/public/accept-quote?to=${encodeURIComponent(data.to)}&quoteNo=${encodeURIComponent(quoteNo)}&product=${encodeURIComponent(productName)}&client=${encodeURIComponent(clientName)}&sig=${acceptSig}`;
+
       const html = `
         <div style="font-family:Arial,sans-serif;color:#111;max-width:600px">
           <h2 style="margin:0 0 12px">${quoteNo ? esc(quoteNo) : "Your quote"}</h2>
           <p>Hi ${esc(clientName)},</p>
-          <p>Thanks for your interest in <strong>${esc(productName)}</strong>. Herewith your quote as requested.</p>
+          <p>Thanks for your interest in <strong>${esc(productName)}</strong>.</p>
+          <p>Herewith your quote as requested. If you want to proceed click on the <strong>Accept Quote</strong> button below.</p>
           ${productBlock}
           <p style="margin:16px 0;padding:12px 16px;background:#fff7ed;border-left:4px solid #dd7400;color:#7c2d12;font-size:14px;line-height:1.6">
             <strong>Payment terms:</strong> 100% deposit is required for ACCEPTANCE OF QUOTATION. Balance is payable on completion.
           </p>
-          <p style="margin:24px 0">
-            <a href="${signed.signedUrl}" style="display:inline-block;background:#dd7400;color:#fff;padding:12px 22px;border-radius:4px;text-decoration:none;font-weight:600">Download your quote (PDF)</a>
-          </p>
-          <p style="margin-top:24px">— Progress Installations</p>
+          <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:24px 0">
+            <tr>
+              <td style="padding-right:12px">
+                <a href="${acceptUrl}" style="display:inline-block;background:#dd7400;color:#fff;padding:12px 22px;border-radius:4px;text-decoration:none;font-weight:600">Accept Quote</a>
+              </td>
+              <td>
+                <a href="${signed.signedUrl}" style="display:inline-block;background:#fff;color:#dd7400;padding:11px 21px;border:1px solid #dd7400;border-radius:4px;text-decoration:none;font-weight:600">Download your quote (PDF)</a>
+              </td>
+            </tr>
+          </table>
+          <p style="margin-top:24px">Kind regards<br/>The Progress Group Team</p>
         </div>`;
       const send = await sendSmtpEmailDirect({
         to: data.to,
