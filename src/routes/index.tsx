@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { CheckCircle2, FileDown, Loader2, MessageCircle } from "lucide-react";
+import { CheckCircle2, FileDown, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { submitQuoteRequest, createQuoteUploadUrl, emailQuoteFromPath } from "@/lib/quote-submit.functions";
 import { generateQuotePDF } from "@/lib/quote-pdf";
@@ -169,39 +169,6 @@ function buildQuoteUrl(params: {
   return url.toString();
 }
 
-function buildWhatsAppMessage(params: {
-  fullName: string;
-  quoteNo?: string | null;
-  productName: string;
-  totalPrice?: string | null;
-  isEstimate?: boolean;
-  validityDays?: number;
-  cta?: string;
-}): string {
-  const validity = params.validityDays ?? 10;
-  const cta =
-    params.cta ??
-    "I'd like to proceed. Please send me the invoice and booking details.";
-
-  const lines = [
-    `Hi Progress Group,`,
-    ``,
-    params.quoteNo ? `*Quote:* ${params.quoteNo}` : null,
-    `*Product:* ${params.productName}`,
-    params.totalPrice
-      ? `*${params.isEstimate ? "Estimated price" : "Price"}:* ${params.totalPrice}${params.isEstimate ? " (excl. transport)" : ""}`
-      : null,
-    params.quoteNo ? `*Valid for:* ${validity} days` : null,
-    ``,
-    cta,
-    ``,
-    `— ${params.fullName}`,
-  ].filter(Boolean) as string[];
-
-  return lines.join("\n");
-}
-
-function QuotePage() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -226,6 +193,7 @@ function QuotePage() {
   const [headerHidden, setHeaderHidden] = useState(false);
   const [quoteNo, setQuoteNo] = useState<string | null>(null);
 
+function QuotePage() {
   useEffect(() => {
     let lastScrollY = window.scrollY;
     const onScroll = () => {
@@ -493,18 +461,6 @@ function QuotePage() {
     return (subtotal ?? 0) + (flueKit ?? 0) + (plate ?? 0) + (corner ?? 0);
   }, [product, quantity, storyType, flooring, plateType, cornerInstall, installationRequired]);
 
-  const whatsappHref = useMemo(() => {
-    const fullName = `${firstName.trim()} ${lastName.trim()}`.trim() || "Customer";
-    const price = totalPriceNum !== null ? totalPriceLabel : estimatedTotal !== null ? formatRand(estimatedTotal) : null;
-    const text = buildWhatsAppMessage({
-      fullName,
-      quoteNo,
-      productName: product,
-      totalPrice: price,
-      isEstimate: !submitted,
-    });
-    return `https://wa.me/27689560320?text=${encodeURIComponent(text)}`;
-  }, [firstName, lastName, quoteNo, product, totalPriceNum, totalPriceLabel, estimatedTotal, submitted]);
 
   const showQuote = (submitted && lookup?.match) || canContinue;
 
@@ -884,15 +840,6 @@ function QuotePage() {
                   <CheckCircle2 className="h-4 w-4" />
                   Accept My Quote / Get Invoice & Book Installation
                 </button>
-                <a
-                  href={whatsappHref}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center gap-2 border-2 border-foreground bg-[#25D366] px-5 py-3 text-sm font-bold uppercase tracking-wider text-white shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
-                >
-                  <MessageCircle className="h-4 w-4" />
-                  ACCEPT MY QUOTE & CONTINUE ON WHATSAPP
-                </a>
               </div>
             </div>
 
