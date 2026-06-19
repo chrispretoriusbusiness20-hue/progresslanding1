@@ -111,7 +111,7 @@ export const emailQuoteFromPath = createServerFn({ method: "POST" })
           <p style="margin:24px 0">
             <a href="${signed.signedUrl}" style="display:inline-block;background:#dd7400;color:#fff;padding:12px 22px;border-radius:4px;text-decoration:none;font-weight:600">Download your quote (PDF)</a>
           </p>
-          <p style="color:#555;font-size:13px">Questions? Reply to this email or call us — we're happy to help.</p>
+          <p style="margin-top:24px">— Progress Installations</p>
           <p style="margin-top:24px">— Progress Installations</p>
         </div>`;
       const send = await sendSmtpEmailDirect({

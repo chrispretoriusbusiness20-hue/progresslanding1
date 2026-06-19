@@ -47,9 +47,6 @@ const Email = ({
           </Button>
         </Section>
         <Hr style={hr} />
-        <Text style={muted}>
-          Questions? Reply to this email or call us — we're happy to help.
-        </Text>
         <Text style={muted}>— Progress Installations</Text>
       </Container>
     </Body>
