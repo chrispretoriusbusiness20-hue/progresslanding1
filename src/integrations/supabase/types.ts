@@ -214,6 +214,7 @@ export type Database = {
           phone: string
           product_requested: string | null
           quantity: number
+          source: string | null
           story_type: string | null
           total_zar: number | null
           transport_zar: number | null
@@ -234,6 +235,7 @@ export type Database = {
           phone: string
           product_requested?: string | null
           quantity?: number
+          source?: string | null
           story_type?: string | null
           total_zar?: number | null
           transport_zar?: number | null
@@ -254,6 +256,7 @@ export type Database = {
           phone?: string
           product_requested?: string | null
           quantity?: number
+          source?: string | null
           story_type?: string | null
           total_zar?: number | null
           transport_zar?: number | null
