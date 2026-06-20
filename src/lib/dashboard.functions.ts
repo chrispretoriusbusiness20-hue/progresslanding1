@@ -18,6 +18,7 @@ export type QuoteRequest = {
   story_type: string | null;
   corner_install: boolean | null;
   message: string | null;
+  source: string | null;
   created_at: string;
 };
 
