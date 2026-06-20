@@ -293,7 +293,10 @@ function matchProduct(query: string): Product | null {
   return best?.product ?? null;
 }
 
-function transportPriceForKm(_km: number): { zone: string; price: number } {
+function transportPriceForKm(km: number, installationRequired: boolean): { zone: string; price: number } {
+  if (!installationRequired && km <= 50) {
+    return { zone: "Delivery (≤50 km)", price: 650 };
+  }
   return { zone: "Standard delivery", price: 800 };
 }
 
