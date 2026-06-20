@@ -380,7 +380,7 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
       : null;
 
     const distanceKm = data.address ? await computeDistanceKm(data.address) : null;
-    const transport = distanceKm !== null ? transportPriceForKm(distanceKm) : null;
+    const transport = distanceKm !== null ? transportPriceForKm(distanceKm, data.installationRequired) : null;
     const travelFee = data.installationRequired && distanceKm !== null && distanceKm <= 50 ? 250 : 0;
 
     const cornerInstallPrice = data.cornerInstall
