@@ -416,6 +416,7 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
       distance_km: distanceKm,
       transport_zar: transport?.price ?? null,
       total_zar: totalPriceNum,
+      source: "fireplacequotes.co.za",
     });
 
     await appendToQuoteSheet([
