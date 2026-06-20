@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useMemo } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { ArrowLeft, Facebook, Flame, MapPin, Phone, Mail, Calendar, Banknote } from "lucide-react";
 import { getQuoteRequests, type QuoteRequest } from "@/lib/dashboard.functions";
 import {
@@ -57,9 +57,31 @@ function isInternalTest(q: QuoteRequest): boolean {
   return testEmails.includes(q.email ?? "");
 }
 
-function DashboardPage() {
+function useQuotes() {
   const fetchQuotes = useServerFn(getQuoteRequests);
-  const { data: quotes = [] } = useRouteData({ fn: fetchQuotes });
+  const [quotes, setQuotes] = useState<QuoteRequest[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+    fetchQuotes()
+      .then((d) => {
+        if (!cancelled) setQuotes(d);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [fetchQuotes]);
+
+  return { quotes, loading };
+}
+
+function DashboardPage() {
+  const { quotes, loading } = useQuotes();
 
   const externalLeads = useMemo(
     () => quotes.filter((q) => !isInternalTest(q)),
@@ -222,62 +244,69 @@ function DashboardPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {quotes.length === 0 && (
+                  {loading ? (
+                    <TableRow>
+                      <TableCell colSpan={6} className="py-8 text-center text-muted-foreground">
+                        Loading quote requests…
+                      </TableCell>
+                    </TableRow>
+                  ) : quotes.length === 0 ? (
                     <TableRow>
                       <TableCell colSpan={6} className="py-8 text-center text-muted-foreground">
                         No quote requests yet.
                       </TableCell>
                     </TableRow>
+                  ) : (
+                    quotes.map((q) => {
+                      const fb = isFacebookClient(q);
+                      const test = isInternalTest(q);
+                      return (
+                        <TableRow
+                          key={q.id}
+                          className={fb ? "bg-[#1877F2]/5" : undefined}
+                        >
+                          <TableCell className="whitespace-nowrap text-xs">
+                            {formatDate(q.created_at)}
+                          </TableCell>
+                          <TableCell className="font-medium">
+                            {q.first_name} {q.last_name}
+                            {fb && (
+                              <Badge className="ml-2 bg-[#1877F2] text-white hover:bg-[#1877F2]">
+                                Facebook
+                              </Badge>
+                            )}
+                            {test && (
+                              <Badge variant="secondary" className="ml-2">
+                                Internal test
+                              </Badge>
+                            )}
+                          </TableCell>
+                          <TableCell className="text-xs">
+                            <div>{q.email}</div>
+                            <div className="text-muted-foreground">{q.phone}</div>
+                          </TableCell>
+                          <TableCell className="max-w-xs truncate text-xs">
+                            {q.matched_product ?? q.product_requested}
+                          </TableCell>
+                          <TableCell className="whitespace-nowrap text-right font-semibold">
+                            {formatZar(q.total_zar)}
+                          </TableCell>
+                          <TableCell>
+                            {fb ? (
+                              <span className="inline-flex items-center gap-1 text-xs font-medium text-[#1877F2]">
+                                <Facebook className="h-3 w-3" />
+                                Facebook
+                              </span>
+                            ) : test ? (
+                              <span className="text-xs text-muted-foreground">Test</span>
+                            ) : (
+                              <span className="text-xs text-muted-foreground">Organic</span>
+                            )}
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })
                   )}
-                  {quotes.map((q) => {
-                    const fb = isFacebookClient(q);
-                    const test = isInternalTest(q);
-                    return (
-                      <TableRow
-                        key={q.id}
-                        className={fb ? "bg-[#1877F2]/5" : undefined}
-                      >
-                        <TableCell className="whitespace-nowrap text-xs">
-                          {formatDate(q.created_at)}
-                        </TableCell>
-                        <TableCell className="font-medium">
-                          {q.first_name} {q.last_name}
-                          {fb && (
-                            <Badge className="ml-2 bg-[#1877F2] text-white hover:bg-[#1877F2]">
-                              Facebook
-                            </Badge>
-                          )}
-                          {test && (
-                            <Badge variant="secondary" className="ml-2">
-                              Internal test
-                            </Badge>
-                          )}
-                        </TableCell>
-                        <TableCell className="text-xs">
-                          <div>{q.email}</div>
-                          <div className="text-muted-foreground">{q.phone}</div>
-                        </TableCell>
-                        <TableCell className="max-w-xs truncate text-xs">
-                          {q.matched_product ?? q.product_requested}
-                        </TableCell>
-                        <TableCell className="whitespace-nowrap text-right font-semibold">
-                          {formatZar(q.total_zar)}
-                        </TableCell>
-                        <TableCell>
-                          {fb ? (
-                            <span className="inline-flex items-center gap-1 text-xs font-medium text-[#1877F2]">
-                              <Facebook className="h-3 w-3" />
-                              Facebook
-                            </span>
-                          ) : test ? (
-                            <span className="text-xs text-muted-foreground">Test</span>
-                          ) : (
-                            <span className="text-xs text-muted-foreground">Organic</span>
-                          )}
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
                 </TableBody>
               </Table>
             </div>
@@ -287,19 +316,3 @@ function DashboardPage() {
     </div>
   );
 }
-
-function useRouteData<T>(opts: { fn: () => Promise<T> }): { data: T | undefined } {
-  const [data, setData] = React.useState<T | undefined>(undefined);
-  React.useEffect(() => {
-    let cancelled = false;
-    opts.fn().then((d) => {
-      if (!cancelled) setData(d);
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, [opts.fn]);
-  return { data };
-}
-
-import * as React from "react";
