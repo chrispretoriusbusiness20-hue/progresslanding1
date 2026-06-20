@@ -1,6 +1,4 @@
 import { createServerFn } from "@tanstack/react-start";
-import { createClient } from "@supabase/supabase-js";
-import type { Database } from "@/integrations/supabase/types";
 
 export type QuoteRequest = {
   id: string;
@@ -25,15 +23,9 @@ export type QuoteRequest = {
 
 export const getQuoteRequests = createServerFn({ method: "GET" }).handler(
   async () => {
-    const supabase = createClient<Database>(
-      process.env.SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!,
-      {
-        auth: { storage: undefined, persistSession: false, autoRefreshToken: false },
-      }
-    );
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from("quote_requests")
       .select("*")
       .order("created_at", { ascending: false });
