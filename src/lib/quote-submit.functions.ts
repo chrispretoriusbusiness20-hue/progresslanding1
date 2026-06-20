@@ -295,9 +295,9 @@ function matchProduct(query: string): Product | null {
 
 function transportPriceForKm(km: number, installationRequired: boolean): { zone: string; price: number } {
   if (!installationRequired && km <= 50) {
-    return { zone: "Delivery (≤50 km)", price: 650 };
+    return { zone: "Delivery from Bellville (≤50 km)", price: 650 };
   }
-  return { zone: "Standard delivery", price: 800 };
+  return { zone: "Standard delivery from Bellville", price: 800 };
 }
 
 async function computeDistanceKm(destination: string): Promise<number | null> {
