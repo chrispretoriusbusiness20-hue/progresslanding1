@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useMemo, useState, useEffect } from "react";
-import { ArrowLeft, Facebook, Flame, MapPin, Phone, Mail, Calendar, Banknote } from "lucide-react";
+import { ArrowLeft, Globe, Flame, MapPin, Phone, Mail, Calendar, Banknote } from "lucide-react";
 import { getQuoteRequests, type QuoteRequest } from "@/lib/dashboard.functions";
 import {
   Table,
@@ -17,15 +17,16 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 export const Route = createFileRoute("/dashboard")({
   head: () => ({
     meta: [
-      { title: "Facebook Client Dashboard — The Progress Group" },
+      { title: "Quote Request Dashboard — The Progress Group" },
       {
         name: "description",
-        content: "Track incoming quote requests and Facebook leads.",
+        content: "Track incoming quote requests and lead pipeline.",
       },
     ],
   }),
   component: DashboardPage,
 });
+
 
 function formatZar(value: number | null): string {
   if (value == null) return "—";
