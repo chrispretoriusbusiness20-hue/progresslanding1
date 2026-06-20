@@ -297,7 +297,7 @@ function transportPriceForKm(km: number, installationRequired: boolean): { zone:
   if (!installationRequired && km <= 50) {
     return { zone: "Delivery from Bellville (≤50 km)", price: 650 };
   }
-  return { zone: "Standard delivery from Bellville", price: 800 };
+  return { zone: "Standard delivery from Bellville", price: 0 };
 }
 
 async function computeDistanceKm(destination: string): Promise<number | null> {
