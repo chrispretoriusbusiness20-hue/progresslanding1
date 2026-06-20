@@ -27,7 +27,6 @@ export const Route = createFileRoute("/dashboard")({
   component: DashboardPage,
 });
 
-
 function formatZar(value: number | null): string {
   if (value == null) return "—";
   return "R " + value.toLocaleString("en-ZA");
@@ -44,10 +43,6 @@ function formatDate(iso: string): string {
   });
 }
 
-function isFacebookClient(q: QuoteRequest): boolean {
-  return q.email === "bothawade00@gmail.com";
-}
-
 function isInternalTest(q: QuoteRequest): boolean {
   const testEmails = [
     "christiaanpretorius16@gmail.com",
@@ -56,6 +51,18 @@ function isInternalTest(q: QuoteRequest): boolean {
     "louis@progressinstallations.co.za",
   ];
   return testEmails.includes(q.email ?? "");
+}
+
+function getSourceLabel(q: QuoteRequest): string {
+  if (isInternalTest(q)) return "Test";
+  if (q.source && q.source !== "organic") return q.source;
+  return "Organic";
+}
+
+function getSourceColor(source: string): string {
+  if (source === "fireplacequotes.co.za") return "#E87722";
+  if (source === "Facebook") return "#1877F2";
+  return "#64748b";
 }
 
 function useQuotes() {
@@ -89,13 +96,18 @@ function DashboardPage() {
     [quotes]
   );
 
-  const facebookClient = useMemo(
-    () => externalLeads.find((q) => isFacebookClient(q)),
+  const featuredLead = useMemo(
+    () => externalLeads[0] ?? null,
     [externalLeads]
   );
 
   const totalValue = useMemo(
     () => externalLeads.reduce((sum, q) => sum + (q.total_zar ?? 0), 0),
+    [externalLeads]
+  );
+
+  const fireplaceCount = useMemo(
+    () => externalLeads.filter((q) => q.source === "fireplacequotes.co.za").length,
     [externalLeads]
   );
 
@@ -106,10 +118,10 @@ function DashboardPage() {
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="font-display text-3xl font-bold text-foreground md:text-4xl">
-              Facebook client dashboard
+              Quote request dashboard
             </h1>
             <p className="mt-1 text-sm text-muted-foreground">
-              Track quote requests and monitor your Facebook lead pipeline.
+              Track incoming quote requests and monitor your lead pipeline.
             </p>
           </div>
           <Link
@@ -126,14 +138,14 @@ function DashboardPage() {
           <Card className="border-2 border-primary shadow-brutal-sm">
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">
-                Facebook leads
+                fireplacequotes.co.za leads
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex items-center gap-3">
-                <Facebook className="h-6 w-6 text-[#1877F2]" />
+                <Globe className="h-6 w-6 text-[#E87722]" />
                 <span className="font-display text-3xl font-bold text-foreground">
-                  {externalLeads.length}
+                  {fireplaceCount}
                 </span>
               </div>
             </CardContent>
@@ -165,8 +177,8 @@ function DashboardPage() {
               <div className="flex items-center gap-3">
                 <Calendar className="h-6 w-6 text-primary" />
                 <span className="text-lg font-semibold text-foreground">
-                  {facebookClient
-                    ? `${facebookClient.first_name} ${facebookClient.last_name}`
+                  {featuredLead
+                    ? `${featuredLead.first_name} ${featuredLead.last_name}`
                     : "—"}
                 </span>
               </div>
@@ -174,16 +186,16 @@ function DashboardPage() {
           </Card>
         </div>
 
-        {/* Featured Facebook Client */}
-        {facebookClient && (
-          <Card className="relative overflow-hidden border-2 border-[#1877F2] shadow-brutal">
-            <div className="absolute right-0 top-0 bg-[#1877F2] px-3 py-1 text-xs font-bold text-white">
-              FACEBOOK CLIENT
+        {/* Featured Lead */}
+        {featuredLead && (
+          <Card className="relative overflow-hidden border-2 border-[#E87722] shadow-brutal">
+            <div className="absolute right-0 top-0 bg-[#E87722] px-3 py-1 text-xs font-bold text-white">
+              {getSourceLabel(featuredLead).toUpperCase()} LEAD
             </div>
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-xl">
                 <Flame className="h-5 w-5 text-primary" />
-                Featured lead: {facebookClient.first_name} {facebookClient.last_name}
+                Featured lead: {featuredLead.first_name} {featuredLead.last_name}
               </CardTitle>
             </CardHeader>
             <CardContent className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -191,35 +203,35 @@ function DashboardPage() {
                 <p className="text-xs text-muted-foreground">Email</p>
                 <div className="flex items-center gap-2 text-sm">
                   <Mail className="h-4 w-4 text-primary" />
-                  {facebookClient.email}
+                  {featuredLead.email}
                 </div>
               </div>
               <div className="space-y-1">
                 <p className="text-xs text-muted-foreground">Phone</p>
                 <div className="flex items-center gap-2 text-sm">
                   <Phone className="h-4 w-4 text-primary" />
-                  {facebookClient.phone ?? "—"}
+                  {featuredLead.phone ?? "—"}
                 </div>
               </div>
               <div className="space-y-1">
                 <p className="text-xs text-muted-foreground">Product</p>
                 <div className="flex items-center gap-2 text-sm">
                   <Flame className="h-4 w-4 text-primary" />
-                  {facebookClient.matched_product ?? facebookClient.product_requested}
+                  {featuredLead.matched_product ?? featuredLead.product_requested}
                 </div>
               </div>
               <div className="space-y-1">
                 <p className="text-xs text-muted-foreground">Quote total</p>
                 <div className="flex items-center gap-2 text-sm font-semibold">
                   <Banknote className="h-4 w-4 text-primary" />
-                  {formatZar(facebookClient.total_zar)}
+                  {formatZar(featuredLead.total_zar)}
                 </div>
               </div>
               <div className="space-y-1 sm:col-span-2 lg:col-span-4">
                 <p className="text-xs text-muted-foreground">Address</p>
                 <div className="flex items-center gap-2 text-sm">
                   <MapPin className="h-4 w-4 text-primary" />
-                  {facebookClient.address}
+                  {featuredLead.address}
                 </div>
               </div>
             </CardContent>
@@ -259,24 +271,25 @@ function DashboardPage() {
                     </TableRow>
                   ) : (
                     quotes.map((q) => {
-                      const fb = isFacebookClient(q);
-                      const test = isInternalTest(q);
+                      const source = getSourceLabel(q);
+                      const sourceColor = getSourceColor(source);
+                      const isFeatured = q.id === featuredLead?.id;
                       return (
                         <TableRow
                           key={q.id}
-                          className={fb ? "bg-[#1877F2]/5" : undefined}
+                          className={isFeatured ? `bg-[${sourceColor}]/5` : undefined}
                         >
                           <TableCell className="whitespace-nowrap text-xs">
                             {formatDate(q.created_at)}
                           </TableCell>
                           <TableCell className="font-medium">
                             {q.first_name} {q.last_name}
-                            {fb && (
-                              <Badge className="ml-2 bg-[#1877F2] text-white hover:bg-[#1877F2]">
-                                Facebook
+                            {isFeatured && (
+                              <Badge className="ml-2" style={{ backgroundColor: sourceColor }}>
+                                {source}
                               </Badge>
                             )}
-                            {test && (
+                            {isInternalTest(q) && (
                               <Badge variant="secondary" className="ml-2">
                                 Internal test
                               </Badge>
@@ -293,15 +306,15 @@ function DashboardPage() {
                             {formatZar(q.total_zar)}
                           </TableCell>
                           <TableCell>
-                            {fb ? (
-                              <span className="inline-flex items-center gap-1 text-xs font-medium text-[#1877F2]">
-                                <Facebook className="h-3 w-3" />
-                                Facebook
-                              </span>
-                            ) : test ? (
+                            {source === "Test" ? (
                               <span className="text-xs text-muted-foreground">Test</span>
                             ) : (
-                              <span className="text-xs text-muted-foreground">Organic</span>
+                              <span className="inline-flex items-center gap-1 text-xs font-medium" style={{ color: sourceColor }}>
+                                {source === "fireplacequotes.co.za" ? (
+                                  <Globe className="h-3 w-3" />
+                                ) : null}
+                                {source}
+                              </span>
                             )}
                           </TableCell>
                         </TableRow>
