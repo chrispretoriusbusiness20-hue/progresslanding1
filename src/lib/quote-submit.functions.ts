@@ -129,6 +129,25 @@ export const emailQuoteFromPath = createServerFn({ method: "POST" })
       if (signError || !signed?.signedUrl) {
         return { ok: false, error: signError?.message ?? "Failed to sign URL", downloadUrl: null };
       }
+
+      // Save the uploaded PDF path on the most recent matching quote_requests row
+      try {
+        const { data: latest } = await supabaseAdmin
+          .from("quote_requests")
+          .select("id")
+          .eq("email", data.to)
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .maybeSingle();
+        if (latest?.id) {
+          await supabaseAdmin
+            .from("quote_requests")
+            .update({ pdf_path: data.path })
+            .eq("id", latest.id);
+        }
+      } catch (err) {
+        console.error("Failed to save pdf_path on quote_requests", err);
+      }
       const { sendSmtpEmailDirect } = await import("@/lib/email/send-smtp.server");
       const clientName = data.clientName ?? "there";
       const productName = data.productName ?? "your selection";

@@ -211,6 +211,7 @@ export type Database = {
           last_name: string
           matched_product: string | null
           message: string | null
+          pdf_path: string | null
           phone: string
           product_requested: string | null
           quantity: number
@@ -232,6 +233,7 @@ export type Database = {
           last_name: string
           matched_product?: string | null
           message?: string | null
+          pdf_path?: string | null
           phone: string
           product_requested?: string | null
           quantity?: number
@@ -253,6 +255,7 @@ export type Database = {
           last_name?: string
           matched_product?: string | null
           message?: string | null
+          pdf_path?: string | null
           phone?: string
           product_requested?: string | null
           quantity?: number
