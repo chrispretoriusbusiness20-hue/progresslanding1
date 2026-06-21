@@ -164,7 +164,7 @@ export const emailQuoteFromPath = createServerFn({ method: "POST" })
           <p>Herewith your quote as requested. If you want to proceed click on the <strong>Accept Quote</strong> button below.</p>
           ${productBlock}
           <p style="margin:16px 0;padding:12px 16px;background:#fff7ed;border-left:4px solid #dd7400;color:#7c2d12;font-size:14px;line-height:1.6">
-            <strong>Payment terms:</strong> 100% deposit is required for ACCEPTANCE OF QUOTATION. Balance is payable on completion.
+            <strong>Payment terms:</strong> Balance is payable on completion.
           </p>
           <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:24px 0">
             <tr>
