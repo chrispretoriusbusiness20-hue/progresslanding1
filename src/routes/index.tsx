@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { CheckCircle2, FileDown, Loader2, MessageCircle } from "lucide-react";
+import { CheckCircle2, FileDown, Loader2, MessageCircle, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { submitQuoteRequest, createQuoteUploadUrl, emailQuoteFromPath } from "@/lib/quote-submit.functions";
 const generateQuotePDF = async (
