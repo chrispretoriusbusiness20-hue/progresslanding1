@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { CheckCircle2, FileDown, Loader2, MessageCircle } from "lucide-react";
+import { CheckCircle2, FileDown, Loader2, MessageCircle, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { submitQuoteRequest, createQuoteUploadUrl, emailQuoteFromPath } from "@/lib/quote-submit.functions";
 const generateQuotePDF = async (
@@ -558,6 +558,15 @@ function QuotePage() {
               Fill in your details below. We'll match your product to our catalog and
               calculate transport so your quote is ready in seconds.
             </p>
+            <a
+              href={QUOTE_APP_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-4 inline-flex items-center gap-2 border-2 border-foreground bg-accent px-4 py-2 text-xs font-bold uppercase tracking-wider text-foreground shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
+            >
+              <Sparkles className="h-3.5 w-3.5" />
+              Build your own quote instead
+            </a>
           </div>
 
           <form
