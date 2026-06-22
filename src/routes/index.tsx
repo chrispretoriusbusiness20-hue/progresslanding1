@@ -565,7 +565,7 @@ function QuotePage() {
               className="mt-4 inline-flex items-center gap-2 border-2 border-foreground bg-accent px-4 py-2 text-xs font-bold uppercase tracking-wider text-foreground shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
             >
               <Sparkles className="h-3.5 w-3.5" />
-              Build your own quote instead
+              Build your quote
             </a>
           </div>
 
