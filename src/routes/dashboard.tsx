@@ -124,13 +124,24 @@ function DashboardPage() {
               Track incoming quote requests and monitor your lead pipeline.
             </p>
           </div>
-          <Link
-            to="/"
-            className="inline-flex items-center gap-2 rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Back to site
-          </Link>
+          <div className="flex items-center gap-2">
+            <a
+              href="https://lovable.dev/projects/364b61b2-afc7-4dea-88ce-fd447bccc843"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 rounded-md border-2 border-primary bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow-brutal-sm transition-colors hover:bg-primary/90"
+            >
+              <Flame className="h-4 w-4" />
+              Open new leads CRM
+            </a>
+            <Link
+              to="/"
+              className="inline-flex items-center gap-2 rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Back to site
+            </Link>
+          </div>
         </div>
 
         {/* Stats */}
