@@ -78,9 +78,15 @@ function useQuotes() {
   const [quotes, setQuotes] = useState<QuoteRequest[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const reload = useCallback(() => {
+    setLoading(true);
+    return fetchQuotes()
+      .then((d) => setQuotes(d))
+      .finally(() => setLoading(false));
+  }, [fetchQuotes]);
+
   useEffect(() => {
     let cancelled = false;
-    setLoading(true);
     fetchQuotes()
       .then((d) => {
         if (!cancelled) setQuotes(d);
@@ -93,7 +99,15 @@ function useQuotes() {
     };
   }, [fetchQuotes]);
 
-  return { quotes, loading };
+  return { quotes, loading, reload };
+}
+
+function statusBadge(status: QuoteRequest["status"]) {
+  if (status === "approved")
+    return <Badge className="bg-green-600 hover:bg-green-700 text-white">Approved</Badge>;
+  if (status === "rejected")
+    return <Badge className="bg-red-600 hover:bg-red-700 text-white">Rejected</Badge>;
+  return <Badge variant="secondary">Pending</Badge>;
 }
 
 function DashboardPage() {
