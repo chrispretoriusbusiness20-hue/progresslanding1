@@ -1,8 +1,14 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useMemo, useState, useEffect } from "react";
-import { ArrowLeft, Globe, Flame, MapPin, Phone, Mail, Calendar, Banknote } from "lucide-react";
+import { useMemo, useState, useEffect, useCallback } from "react";
+import { ArrowLeft, Globe, Flame, MapPin, Phone, Mail, Calendar, Banknote, Check, X, Send } from "lucide-react";
 import { getQuoteRequests, type QuoteRequest } from "@/lib/dashboard.functions";
+import {
+  approveQuote,
+  rejectQuote,
+  sendQuoteToClient,
+  requestManagerApproval,
+} from "@/lib/quote-approval.functions";
 import {
   Table,
   TableBody,
@@ -12,7 +18,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/dashboard")({
   head: () => ({
@@ -70,9 +78,15 @@ function useQuotes() {
   const [quotes, setQuotes] = useState<QuoteRequest[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const reload = useCallback(() => {
+    setLoading(true);
+    return fetchQuotes()
+      .then((d) => setQuotes(d))
+      .finally(() => setLoading(false));
+  }, [fetchQuotes]);
+
   useEffect(() => {
     let cancelled = false;
-    setLoading(true);
     fetchQuotes()
       .then((d) => {
         if (!cancelled) setQuotes(d);
@@ -85,11 +99,67 @@ function useQuotes() {
     };
   }, [fetchQuotes]);
 
-  return { quotes, loading };
+  return { quotes, loading, reload };
+}
+
+function statusBadge(status: QuoteRequest["status"]) {
+  if (status === "approved")
+    return <Badge className="bg-green-600 hover:bg-green-700 text-white">Approved</Badge>;
+  if (status === "rejected")
+    return <Badge className="bg-red-600 hover:bg-red-700 text-white">Rejected</Badge>;
+  return <Badge variant="secondary">Pending</Badge>;
 }
 
 function DashboardPage() {
-  const { quotes, loading } = useQuotes();
+  const { quotes, loading, reload } = useQuotes();
+  const approveFn = useServerFn(approveQuote);
+  const rejectFn = useServerFn(rejectQuote);
+  const sendFn = useServerFn(sendQuoteToClient);
+  const requestFn = useServerFn(requestManagerApproval);
+  const [busyId, setBusyId] = useState<string | null>(null);
+
+  const withBusy = async (id: string, label: string, fn: () => Promise<unknown>) => {
+    setBusyId(id);
+    try {
+      await fn();
+      toast.success(label);
+      await reload();
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Action failed";
+      toast.error(msg);
+    } finally {
+      setBusyId(null);
+    }
+  };
+
+  const handleApprove = (id: string) => {
+    const note = window.prompt("Optional note for this approval (visible in logs):") ?? undefined;
+    void withBusy(id, "Quote approved – client notified", () =>
+      approveFn({ data: { id, note: note?.trim() ? note.trim() : undefined } }),
+    );
+  };
+
+  const handleReject = (id: string) => {
+    const note = window.prompt("Rejection note (required) – will be emailed to the team:");
+    if (!note || !note.trim()) {
+      toast.error("Rejection note is required");
+      return;
+    }
+    void withBusy(id, "Quote rejected – team notified", () =>
+      rejectFn({ data: { id, note: note.trim() } }),
+    );
+  };
+
+  const handleSend = (id: string) => {
+    void withBusy(id, "Quote re-sent to client", () => sendFn({ data: { id } }));
+  };
+
+  const handleRequest = (id: string) => {
+    void withBusy(id, "Approval request emailed to sales inbox", () =>
+      requestFn({ data: { id } }),
+    );
+  };
+
 
   const externalLeads = useMemo(
     () => quotes.filter((q) => !isInternalTest(q)),
@@ -265,18 +335,20 @@ function DashboardPage() {
                     <TableHead>Product</TableHead>
                     <TableHead className="text-right">Total</TableHead>
                     <TableHead>Source</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {loading ? (
                     <TableRow>
-                      <TableCell colSpan={6} className="py-8 text-center text-muted-foreground">
+                      <TableCell colSpan={8} className="py-8 text-center text-muted-foreground">
                         Loading quote requests…
                       </TableCell>
                     </TableRow>
                   ) : quotes.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={6} className="py-8 text-center text-muted-foreground">
+                      <TableCell colSpan={8} className="py-8 text-center text-muted-foreground">
                         No quote requests yet.
                       </TableCell>
                     </TableRow>
@@ -285,6 +357,8 @@ function DashboardPage() {
                       const source = getSourceLabel(q);
                       const sourceColor = getSourceColor(source);
                       const isFeatured = q.id === featuredLead?.id;
+                      const busy = busyId === q.id;
+                      const decided = q.status === "approved" || q.status === "rejected";
                       return (
                         <TableRow
                           key={q.id}
@@ -327,6 +401,47 @@ function DashboardPage() {
                                 {source}
                               </span>
                             )}
+                          </TableCell>
+                          <TableCell>{statusBadge(q.status)}</TableCell>
+                          <TableCell className="text-right">
+                            <div className="flex flex-wrap justify-end gap-1">
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                disabled={busy || !q.email}
+                                onClick={() => handleSend(q.id)}
+                                title="Re-send quote to client"
+                              >
+                                <Send className="h-3.5 w-3.5" />
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                disabled={busy}
+                                onClick={() => handleRequest(q.id)}
+                                title="Email approval request to sales inbox"
+                              >
+                                Ask
+                              </Button>
+                              <Button
+                                size="sm"
+                                className="bg-green-600 hover:bg-green-700 text-white"
+                                disabled={busy || decided}
+                                onClick={() => handleApprove(q.id)}
+                                title="Approve & email client"
+                              >
+                                <Check className="h-3.5 w-3.5" />
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="destructive"
+                                disabled={busy || decided}
+                                onClick={() => handleReject(q.id)}
+                                title="Reject with note"
+                              >
+                                <X className="h-3.5 w-3.5" />
+                              </Button>
+                            </div>
                           </TableCell>
                         </TableRow>
                       );

@@ -20,6 +20,10 @@ export type QuoteRequest = {
   message: string | null;
   source: string | null;
   created_at: string;
+  status: "pending" | "approved" | "rejected" | null;
+  approval_note: string | null;
+  decided_by: string | null;
+  decided_at: string | null;
 };
 
 export const getQuoteRequests = createServerFn({ method: "GET" }).handler(
