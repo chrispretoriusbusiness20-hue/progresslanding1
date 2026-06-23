@@ -111,7 +111,55 @@ function statusBadge(status: QuoteRequest["status"]) {
 }
 
 function DashboardPage() {
-  const { quotes, loading } = useQuotes();
+  const { quotes, loading, reload } = useQuotes();
+  const approveFn = useServerFn(approveQuote);
+  const rejectFn = useServerFn(rejectQuote);
+  const sendFn = useServerFn(sendQuoteToClient);
+  const requestFn = useServerFn(requestManagerApproval);
+  const [busyId, setBusyId] = useState<string | null>(null);
+
+  const withBusy = async (id: string, label: string, fn: () => Promise<unknown>) => {
+    setBusyId(id);
+    try {
+      await fn();
+      toast.success(label);
+      await reload();
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Action failed";
+      toast.error(msg);
+    } finally {
+      setBusyId(null);
+    }
+  };
+
+  const handleApprove = (id: string) => {
+    const note = window.prompt("Optional note for this approval (visible in logs):") ?? undefined;
+    void withBusy(id, "Quote approved – client notified", () =>
+      approveFn({ data: { id, note: note?.trim() ? note.trim() : undefined } }),
+    );
+  };
+
+  const handleReject = (id: string) => {
+    const note = window.prompt("Rejection note (required) – will be emailed to the team:");
+    if (!note || !note.trim()) {
+      toast.error("Rejection note is required");
+      return;
+    }
+    void withBusy(id, "Quote rejected – team notified", () =>
+      rejectFn({ data: { id, note: note.trim() } }),
+    );
+  };
+
+  const handleSend = (id: string) => {
+    void withBusy(id, "Quote re-sent to client", () => sendFn({ data: { id } }));
+  };
+
+  const handleRequest = (id: string) => {
+    void withBusy(id, "Approval request emailed to sales inbox", () =>
+      requestFn({ data: { id } }),
+    );
+  };
+
 
   const externalLeads = useMemo(
     () => quotes.filter((q) => !isInternalTest(q)),
