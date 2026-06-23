@@ -14,6 +14,44 @@ export type Database = {
   }
   public: {
     Tables: {
+      approval_logs: {
+        Row: {
+          action: string
+          actor_email: string | null
+          created_at: string
+          id: string
+          note: string | null
+          quote_id: string
+          template: string | null
+        }
+        Insert: {
+          action: string
+          actor_email?: string | null
+          created_at?: string
+          id?: string
+          note?: string | null
+          quote_id: string
+          template?: string | null
+        }
+        Update: {
+          action?: string
+          actor_email?: string | null
+          created_at?: string
+          id?: string
+          note?: string | null
+          quote_id?: string
+          template?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "approval_logs_quote_id_fkey"
+            columns: ["quote_id"]
+            isOneToOne: false
+            referencedRelation: "quote_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       chat_messages: {
         Row: {
           agent: string | null
@@ -201,8 +239,11 @@ export type Database = {
       quote_requests: {
         Row: {
           address: string | null
+          approval_note: string | null
           corner_install: boolean
           created_at: string
+          decided_at: string | null
+          decided_by: string | null
           distance_km: number | null
           email: string
           first_name: string
@@ -216,6 +257,7 @@ export type Database = {
           product_requested: string | null
           quantity: number
           source: string | null
+          status: string
           story_type: string | null
           total_zar: number | null
           transport_zar: number | null
@@ -223,8 +265,11 @@ export type Database = {
         }
         Insert: {
           address?: string | null
+          approval_note?: string | null
           corner_install?: boolean
           created_at?: string
+          decided_at?: string | null
+          decided_by?: string | null
           distance_km?: number | null
           email: string
           first_name: string
@@ -238,6 +283,7 @@ export type Database = {
           product_requested?: string | null
           quantity?: number
           source?: string | null
+          status?: string
           story_type?: string | null
           total_zar?: number | null
           transport_zar?: number | null
@@ -245,8 +291,11 @@ export type Database = {
         }
         Update: {
           address?: string | null
+          approval_note?: string | null
           corner_install?: boolean
           created_at?: string
+          decided_at?: string | null
+          decided_by?: string | null
           distance_km?: number | null
           email?: string
           first_name?: string
@@ -260,6 +309,7 @@ export type Database = {
           product_requested?: string | null
           quantity?: number
           source?: string | null
+          status?: string
           story_type?: string | null
           total_zar?: number | null
           transport_zar?: number | null
