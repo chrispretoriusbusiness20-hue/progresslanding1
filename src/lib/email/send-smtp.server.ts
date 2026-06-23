@@ -10,6 +10,49 @@ export type SendSmtpResult =
   | { success: true; messageId: string }
   | { success: false; error: string };
 
+function deriveImapHost(smtpHost: string): string {
+  // smtp.gmail.com -> imap.gmail.com, smtp.office365.com -> outlook.office365.com, etc.
+  if (/gmail\.com$/i.test(smtpHost)) return "imap.gmail.com";
+  if (/office365\.com$/i.test(smtpHost)) return "outlook.office365.com";
+  return smtpHost.replace(/^smtp\./i, "imap.");
+}
+
+async function appendToSentFolder(rawMessage: Buffer | string): Promise<void> {
+  const host = process.env.IMAP_HOST ?? (process.env.SMTP_HOST ? deriveImapHost(process.env.SMTP_HOST) : undefined);
+  const port = Number(process.env.IMAP_PORT ?? 993);
+  const user = process.env.IMAP_USER ?? process.env.SMTP_USER;
+  const pass = process.env.IMAP_PASS ?? process.env.SMTP_PASS;
+  if (!host || !user || !pass) return;
+
+  try {
+    const { ImapFlow } = await import("imapflow");
+    const client = new ImapFlow({
+      host,
+      port,
+      secure: port === 993,
+      auth: { user, pass },
+      logger: false,
+    });
+    await client.connect();
+    // Try common Sent folder names. Gmail uses "[Gmail]/Sent Mail".
+    const candidates = ["[Gmail]/Sent Mail", "Sent", "INBOX.Sent", "Sent Items", "Sent Messages"];
+    let appended = false;
+    for (const mailbox of candidates) {
+      try {
+        await client.append(mailbox, rawMessage, ["\\Seen"]);
+        appended = true;
+        break;
+      } catch {
+        // try next
+      }
+    }
+    await client.logout();
+    if (!appended) console.warn("[appendToSentFolder] no matching Sent folder found");
+  } catch (err) {
+    console.warn("[appendToSentFolder] failed", err instanceof Error ? err.message : err);
+  }
+}
+
 export async function sendSmtpEmailDirect(data: SendSmtpArgs): Promise<SendSmtpResult> {
   const host = process.env.SMTP_HOST;
   const port = Number(process.env.SMTP_PORT ?? 465);
@@ -30,14 +73,37 @@ export async function sendSmtpEmailDirect(data: SendSmtpArgs): Promise<SendSmtpR
       auth: { user, pass },
     });
 
-    const info = await transporter.sendMail({
+    const mailOptions = {
       from,
       to: data.to,
       cc: data.cc,
       subject: data.subject,
       html: data.html,
       replyTo: data.replyTo,
-    });
+    };
+
+    const info = await transporter.sendMail(mailOptions);
+
+    // Append a copy to the sender's Sent folder via IMAP so it shows up in their outbox.
+    try {
+      const raw = await new Promise<Buffer>((resolve, reject) => {
+        transporter.use("compile", () => {});
+        const mail = transporter.sendMail as unknown;
+        void mail;
+        // Build the raw MIME using nodemailer's MailComposer
+        import("nodemailer/lib/mail-composer/index.js")
+          .then(({ default: MailComposer }) => {
+            new MailComposer(mailOptions).compile().build((err: Error | null, message: Buffer) => {
+              if (err) reject(err);
+              else resolve(message);
+            });
+          })
+          .catch(reject);
+      });
+      await appendToSentFolder(raw);
+    } catch (err) {
+      console.warn("[sendSmtpEmailDirect] sent-folder copy skipped", err instanceof Error ? err.message : err);
+    }
 
     return { success: true, messageId: info.messageId };
   } catch (err) {
