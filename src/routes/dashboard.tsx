@@ -1,8 +1,14 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useMemo, useState, useEffect } from "react";
-import { ArrowLeft, Globe, Flame, MapPin, Phone, Mail, Calendar, Banknote } from "lucide-react";
+import { useMemo, useState, useEffect, useCallback } from "react";
+import { ArrowLeft, Globe, Flame, MapPin, Phone, Mail, Calendar, Banknote, Check, X, Send } from "lucide-react";
 import { getQuoteRequests, type QuoteRequest } from "@/lib/dashboard.functions";
+import {
+  approveQuote,
+  rejectQuote,
+  sendQuoteToClient,
+  requestManagerApproval,
+} from "@/lib/quote-approval.functions";
 import {
   Table,
   TableBody,
@@ -12,7 +18,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/dashboard")({
   head: () => ({
