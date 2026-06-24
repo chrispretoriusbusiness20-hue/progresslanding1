@@ -31,6 +31,8 @@ export function buildQuoteEmailHtml(data: QuoteEmailData): string {
     body,
     acceptUrl,
     acceptLabel = "Accept Quote",
+    viewUrl,
+    viewLabel = "View your quote",
     paymentTerms = "Balance is payable on completion.",
     extraHtml,
     accent = "#dd7400",
