@@ -229,13 +229,19 @@ export const sendQuoteToClient = createServerFn({ method: "POST" })
     const q = await loadQuote(data.id);
     if (!q.email) throw new Error("Quote has no client email");
 
+    const productName = q.matched_product ?? q.product_requested ?? undefined;
     const subject = quoteNumber(q.id);
     const html = buildQuoteEmailHtml({
       clientName: clientName(q),
       quoteNo: quoteNumber(q.id),
-      productName: q.matched_product ?? q.product_requested ?? undefined,
+      productName,
+      productImageUrl: getProductImageUrl({
+        category: categoryFor(q.matched_product),
+        productName,
+      }),
       extraHtml: summaryHtml(q),
     });
+
 
     await send({ to: q.email, subject, html });
     await logEmail(data.id, "quote-sent-to-client", data.actorEmail ?? null, null);
