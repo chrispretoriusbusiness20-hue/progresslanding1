@@ -524,6 +524,7 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
       ["Quantity", String(data.quantity)],
       ["Story type", data.storyType ?? "—"],
       ["Flooring", data.flooring ?? "—"],
+      ["Roofing", data.roofType ?? "—"],
       ["Plate", plate ? `${plate.type} (${fmtR(plate.price)})` : "—"],
       ["Corner install", data.cornerInstall ? `Yes${cornerInstallPrice ? ` (${fmtR(cornerInstallPrice)})` : ""}` : "No"],
       ["Address", data.address ?? "—"],
