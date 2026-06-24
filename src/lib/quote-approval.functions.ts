@@ -211,16 +211,14 @@ export const sendQuoteToClient = createServerFn({ method: "POST" })
     const q = await loadQuote(data.id);
     if (!q.email) throw new Error("Quote has no client email");
 
-    const subject = `Your quote from Progress Group – ${quoteNumber(q.id)}`;
-    const html = `
-      <div style="font-family:Arial,sans-serif;color:#111;max-width:600px">
-        <h2 style="margin:0 0 12px;color:#dd7400">Your quote from Progress Group</h2>
-        <p>Hi ${clientName(q)},</p>
-        <p>Thank you for your interest. Please find your quote summary below.</p>
-        ${summaryHtml(q)}
-        <p style="margin-top:18px"><strong>To approve this quote</strong>, please reply to this email with <em>"I approve"</em>, or contact us at <a href="mailto:${REPLY_TO}">${REPLY_TO}</a>.</p>
-        ${signature()}
-      </div>`;
+    const subject = quoteNumber(q.id);
+    const html = buildQuoteEmailHtml({
+      clientName: clientName(q),
+      quoteNo: quoteNumber(q.id),
+      productName: q.matched_product ?? q.product_requested ?? undefined,
+      extraHtml: summaryHtml(q),
+    });
+
     await send({ to: q.email, subject, html });
     await logEmail(data.id, "quote-sent-to-client", data.actorEmail ?? null, null);
 
