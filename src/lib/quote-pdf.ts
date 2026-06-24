@@ -112,7 +112,9 @@ export async function generateQuotePDF(
       unitPrice: input.unitPrice,
     });
   }
-  if (input.storyType) {
+  // Skip the flue kit line when the product already bundles one (e.g. the SPECIAL Magma).
+  const flueKitIncludedInProduct = /flue\s*kit/i.test(input.productName);
+  if (input.storyType && !flueKitIncludedInProduct) {
     const flueUnit = input.storyType === "double" ? 9650 : 7650;
     items.push({
       quantity: 1,
