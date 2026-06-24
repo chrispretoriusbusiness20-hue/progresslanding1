@@ -1,6 +1,18 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { buildQuoteEmailHtml } from "@/lib/quote-email-template";
+import { getProductImageUrl } from "@/lib/product-images";
+import productsData from "@/data/products.json";
+
+type ProductRow = { name: string; category: string };
+const PRODUCTS = productsData as ProductRow[];
+
+function categoryFor(name: string | null | undefined): string | null {
+  if (!name) return null;
+  const found = PRODUCTS.find((p) => p.name === name);
+  return found?.category ?? null;
+}
+
 
 const TEAM_EMAIL = "sales@progressgrp.co.za";
 const REPLY_TO = "sales@progressgrp.co.za";
