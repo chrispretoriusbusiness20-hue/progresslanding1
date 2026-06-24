@@ -215,6 +215,7 @@ function QuotePage() {
   const [quantity, setQuantity] = useState(1);
   const [storyType, setStoryType] = useState<"single" | "double" | "">("single");
   const [flooring, setFlooring] = useState("");
+  const [roofType, setRoofType] = useState("");
   const [plateType, setPlateType] = useState<"glass" | "granite" | "metal">("glass");
   const [cornerInstall, setCornerInstall] = useState(false);
   const [installationRequired, setInstallationRequired] = useState(true);
@@ -275,6 +276,7 @@ function QuotePage() {
           quantity,
           storyType: storyType === "" ? null : storyType,
           flooring: flooring || undefined,
+          roofType: roofType || undefined,
           plateType: flooring && !/tile/i.test(flooring) ? plateType : undefined,
           cornerInstall,
           installationRequired,
@@ -698,6 +700,22 @@ function QuotePage() {
                 </select>
               </Field>
             </div>
+
+            <Field label="Roofing type">
+              <select
+                value={roofType}
+                onChange={(e) => setRoofType(e.target.value)}
+                className="form-input"
+              >
+                <option value="">Select…</option>
+                <option value="Tile">Tile</option>
+                <option value="IBR / Corrugated">IBR / Corrugated</option>
+                <option value="Slate">Slate</option>
+                <option value="Thatch">Thatch</option>
+                <option value="Flat / Concrete">Flat / Concrete</option>
+                <option value="Other">Other</option>
+              </select>
+            </Field>
 
             {flooring && !/tile/i.test(flooring) && (
               <Field label="Floor plate (required for non-tile floors)">
