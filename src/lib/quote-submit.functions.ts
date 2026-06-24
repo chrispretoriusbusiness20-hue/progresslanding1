@@ -527,7 +527,7 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
       ["Corner install", data.cornerInstall ? `Yes${cornerInstallPrice ? ` (${fmtR(cornerInstallPrice)})` : ""}` : "No"],
       ["Address", data.address ?? "—"],
       ["Distance", distanceKm !== null ? `${Math.round(distanceKm * 10) / 10} km` : "—"],
-      ["Transport", transport ? `${transport.zone} (${fmtR(transport.price)})` : "—"],
+      [!data.installationRequired ? "Courier (estimate — confirm & edit before invoicing)" : "Transport", transport ? `${transport.zone} (${fmtR(transport.price)})` : "—"],
       ["Travel fee", travelFee > 0 ? fmtR(travelFee) : "—"],
       ["Unit price", unitPriceNum !== null ? fmtR(unitPriceNum) : "—"],
       ["Flue kit", flueKitPrice !== null ? fmtR(flueKitPrice) : "—"],
