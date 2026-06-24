@@ -1,8 +1,10 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
+import { buildQuoteEmailHtml } from "@/lib/quote-email-template";
 
 const TEAM_EMAIL = "sales@progressgrp.co.za";
 const REPLY_TO = "sales@progressgrp.co.za";
+
 
 type QuoteRow = {
   id: string;
