@@ -580,15 +580,33 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
         error: err instanceof Error ? err.message : "Unknown team notification error",
       };
     }
-
-
-
-
-
-
-
-
-
+    // Send approval request email to sales inbox so a manager can approve the quote.
+    try {
+      const { sendSmtpEmailDirect } = await import("@/lib/email/send-smtp.server");
+      const approvalSubject = `Approval needed — quote for ${customerName} (${productLabel})`;
+      const approvalHtml = `
+        <div style="font-family:Arial,sans-serif;color:#111;max-width:640px">
+          <h2 style="margin:0 0 12px;color:#dd7400">Quote approval requested</h2>
+          <p>A new quote has been submitted and is awaiting your approval before it is sent to the client.</p>
+          <table style="border-collapse:collapse;width:100%;margin-top:12px">
+            <tr><td style="padding:6px 10px;border:1px solid #eee;background:#fafafa;width:160px;font-weight:600">Client</td><td style="padding:6px 10px;border:1px solid #eee">${esc(customerName)}</td></tr>
+            <tr><td style="padding:6px 10px;border:1px solid #eee;background:#fafafa;font-weight:600">Email</td><td style="padding:6px 10px;border:1px solid #eee">${esc(data.email)}</td></tr>
+            <tr><td style="padding:6px 10px;border:1px solid #eee;background:#fafafa;font-weight:600">Phone</td><td style="padding:6px 10px;border:1px solid #eee">${esc(data.phone ?? "—")}</td></tr>
+            <tr><td style="padding:6px 10px;border:1px solid #eee;background:#fafafa;font-weight:600">Product</td><td style="padding:6px 10px;border:1px solid #eee">${esc(productLabel)}</td></tr>
+            <tr><td style="padding:6px 10px;border:1px solid #eee;background:#fafafa;font-weight:600">Submitted</td><td style="padding:6px 10px;border:1px solid #eee">${esc(submittedAtLabel)}</td></tr>
+          </table>
+          <p style="margin-top:18px">Please review the full quote details (sent in a separate email) and reply with <em>"Approved"</em> to release it to the client, or with edits/notes if changes are required.</p>
+          <p style="color:#888;font-size:13px;margin-top:24px">— Progress Group · automated approval request</p>
+        </div>`;
+      await sendSmtpEmailDirect({
+        to: QUOTE_TEAM_EMAIL,
+        subject: approvalSubject,
+        html: approvalHtml,
+        replyTo: data.email,
+      });
+    } catch (err) {
+      console.error("Approval request email failed", err);
+    }
 
 
     return {
