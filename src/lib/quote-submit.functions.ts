@@ -388,8 +388,10 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
     const unitPriceNum = matched ? parseRand(matched.price) : null;
     const productSubtotal = unitPriceNum !== null ? unitPriceNum * data.quantity : null;
 
-    const flueKitPrice =
-      data.storyType === "double" ? 9650 : data.storyType === "single" ? 7650 : null;
+    const flueKitIncluded = /flue\s*kit/i.test(matched?.name ?? "") || /flue\s*kit/i.test(data.product);
+    const flueKitPrice = flueKitIncluded
+      ? null
+      : data.storyType === "double" ? 9650 : data.storyType === "single" ? 7650 : null;
 
     const flooringLower = (data.flooring ?? "").toLowerCase();
     const needsPlate = flooringLower.length > 0 && !/tile/.test(flooringLower);
