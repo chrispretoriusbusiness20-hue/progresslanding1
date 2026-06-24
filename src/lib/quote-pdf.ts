@@ -462,10 +462,9 @@ export async function generateQuotePDF(
       body: [
         [`Installation within Cape Town (${input.storyType === "double" ? "double story" : "single story"})`, ZAR(5500)],
         ["Core Drilling Fee (double story only)", ZAR(input.storyType === "double" ? 1650 : 0)],
-
-        ["Travel Fee", ZAR(input.travelFee ?? 0)],
       ],
-      foot: [[{ content: "Total", styles: { fontStyle: "bold" } }, { content: ZAR(5500 + (input.storyType === "double" ? 1650 : 0) + (input.travelFee ?? 0)), styles: { fontStyle: "bold", halign: "right" } }]],
+      foot: [[{ content: "Total", styles: { fontStyle: "bold" } }, { content: ZAR(5500 + (input.storyType === "double" ? 1650 : 0)), styles: { fontStyle: "bold", halign: "right" } }]],
+
       styles: { fontSize: 10, cellPadding: 3, lineColor: [0, 0, 0], lineWidth: 0.2 },
       headStyles: { fillColor: [60, 60, 60], textColor: 255, fontStyle: "bold" },
       footStyles: { fillColor: [245, 245, 245], textColor: 0 },
