@@ -492,7 +492,7 @@ function QuotePage() {
     const flueKitIncluded = /flue\s*kit/i.test(product);
     const flueKit = flueKitIncluded ? null : storyType === "double" ? 9650 : storyType === "single" ? 7650 : null;
     const needsPlate = flooring.length > 0 && !/tile/i.test(flooring);
-    const plate = needsPlate ? (plateType === "granite" ? 2895 : plateType === "metal" ? 1490 : 2495) : null;
+    const plate = needsPlate ? platePrice(plateType, cornerInstall) : null;
     const corner = installationRequired && cornerInstall ? 800 : null;
     if (subtotal === null && flueKit === null && plate === null && corner === null) return null;
     return (subtotal ?? 0) + (flueKit ?? 0) + (plate ?? 0) + (corner ?? 0);
