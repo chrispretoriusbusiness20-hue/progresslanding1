@@ -86,7 +86,7 @@ async function loadQuote(id: string): Promise<QuoteRow> {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   const { data, error } = await supabaseAdmin
     .from("quote_requests")
-    .select("id, first_name, last_name, email, matched_product, product_requested, total_zar, source")
+    .select("id, first_name, last_name, email, matched_product, product_requested, total_zar, source, pdf_path")
     .eq("id", id)
     .single();
   if (error || !data) throw new Error(error?.message ?? "Quote not found");
