@@ -253,6 +253,7 @@ export const sendQuoteToClient = createServerFn({ method: "POST" })
 
     const productName = q.matched_product ?? q.product_requested ?? undefined;
     const subject = quoteNumber(q.id);
+    const viewUrl = await signQuoteViewUrl(q.pdf_path);
     const html = buildQuoteEmailHtml({
       clientName: clientName(q),
       quoteNo: quoteNumber(q.id),
@@ -261,6 +262,8 @@ export const sendQuoteToClient = createServerFn({ method: "POST" })
         category: categoryFor(q.matched_product),
         productName,
       }),
+      viewUrl,
+      viewLabel: "View your quote",
       extraHtml: summaryHtml(q),
     });
 
