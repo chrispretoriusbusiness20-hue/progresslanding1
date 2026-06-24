@@ -30,12 +30,55 @@ const PRESET_LOCATIONS: Suggestion[] = [
 
 export function AddressAutocomplete({ value, onChange, placeholder, className }: Props) {
   const fetchSuggestions = useServerFn(autocompleteAddress);
+  const reverse = useServerFn(reverseGeocode);
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [open, setOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
+  const [locating, setLocating] = useState(false);
+  const [locError, setLocError] = useState<string | null>(null);
   const sessionToken = useMemo(() => crypto.randomUUID(), []);
   const justSelectedRef = useRef(false);
   const listId = useId();
+
+  const useMyLocation = () => {
+    setLocError(null);
+    if (!("geolocation" in navigator)) {
+      setLocError("Geolocation not supported in this browser");
+      return;
+    }
+    setLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        try {
+          const res = await reverse({
+            data: { lat: pos.coords.latitude, lng: pos.coords.longitude },
+          });
+          if (res.address) {
+            justSelectedRef.current = true;
+            onChange(res.address);
+            setOpen(false);
+            setSuggestions([]);
+          } else {
+            setLocError("Couldn't determine address from your location");
+          }
+        } catch {
+          setLocError("Lookup failed — please try again");
+        } finally {
+          setLocating(false);
+        }
+      },
+      (err) => {
+        setLocating(false);
+        setLocError(
+          err.code === err.PERMISSION_DENIED
+            ? "Location permission denied"
+            : "Couldn't get your location",
+        );
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 },
+    );
+  };
+
 
   useEffect(() => {
     if (justSelectedRef.current) {
