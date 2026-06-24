@@ -315,6 +315,7 @@ function QuotePage() {
             distanceKm: result.match ? result.distanceKm : null,
             notes: message.trim() || undefined,
             extrasForAccount: extrasForAccount.trim() || undefined,
+            installationRequired,
           },
           { download: false },
         );
