@@ -423,19 +423,29 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
       ? 800 + (distanceKm !== null && distanceKm <= 50 ? 650 : 0)
       : null;
 
+    // Installation estimate (within Cape Town) — base fee + core drilling for double-story flues.
+    // Subject to site visit; mirrors the "Installation Estimate" page on the PDF.
+    const INSTALL_BASE = 5500;
+    const CORE_DRILL = 1650;
+    const installationEstimate = installEligible
+      ? INSTALL_BASE + (data.storyType === "double" ? CORE_DRILL : 0)
+      : null;
+
     const totalPriceNum =
       productSubtotal !== null ||
       flueKitPrice !== null ||
       plate !== null ||
       cornerInstallPrice !== null ||
       transport !== null ||
-      travelFee > 0
+      travelFee > 0 ||
+      installationEstimate !== null
         ? (productSubtotal ?? 0) +
           (flueKitPrice ?? 0) +
           (plate?.price ?? 0) +
           (cornerInstallPrice ?? 0) +
           (transport?.price ?? 0) +
-          travelFee
+          travelFee +
+          (installationEstimate ?? 0)
         : null;
 
     await supabaseAdmin.from("quote_requests").insert({
