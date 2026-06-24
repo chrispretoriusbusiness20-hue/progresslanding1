@@ -168,6 +168,7 @@ export const approveQuote = createServerFn({ method: "POST" })
     if (q.email) {
       const productName = q.matched_product ?? q.product_requested ?? undefined;
       const subject = quoteNumber(q.id);
+      const viewUrl = await signQuoteViewUrl(q.pdf_path);
       const html = buildQuoteEmailHtml({
         clientName: clientName(q),
         quoteNo: quoteNumber(q.id),
@@ -178,6 +179,8 @@ export const approveQuote = createServerFn({ method: "POST" })
         }),
         intro: `Great news — your quote has been <strong>approved</strong>. Thanks for choosing Progress Group.`,
         body: `Our team will be in touch shortly to arrange delivery, installation and any final site details.`,
+        viewUrl,
+        viewLabel: "View your quote",
         extraHtml: summaryHtml(q),
         accent: "#15803d",
       });
