@@ -478,8 +478,9 @@ export async function generateQuotePDF(
       theme: "grid",
       head: [["Estimated Installation Fee", "Amount"]],
       body: [
-        ["Within Cape Town", ZAR(5500)],
-        ["Core Drilling Fee", ZAR(input.storyType === "double" ? 1650 : 0)],
+        [`Installation within Cape Town (${input.storyType === "double" ? "double story" : "single story"})`, ZAR(5500)],
+        ["Core Drilling Fee (double story only)", ZAR(input.storyType === "double" ? 1650 : 0)],
+
         ["Travel Fee", ZAR(input.travelFee ?? 0)],
       ],
       foot: [[{ content: "Total", styles: { fontStyle: "bold" } }, { content: ZAR(5500 + (input.storyType === "double" ? 1650 : 0) + (input.travelFee ?? 0)), styles: { fontStyle: "bold", halign: "right" } }]],
