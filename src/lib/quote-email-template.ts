@@ -10,6 +10,9 @@ export interface QuoteEmailData {
   /** Optional CTA button. */
   acceptUrl?: string;
   acceptLabel?: string;
+  /** Optional secondary link to view/download the quote again. */
+  viewUrl?: string;
+  viewLabel?: string;
   /** Payment terms line shown above signature. */
   paymentTerms?: string;
   /** Optional extra HTML inserted before the signature (e.g. a summary table). */
