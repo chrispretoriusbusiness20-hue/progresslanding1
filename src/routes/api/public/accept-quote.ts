@@ -148,7 +148,7 @@ export const Route = createFileRoute("/api/public/accept-quote")({
           </table>
 
           <div style="margin:18px 0;padding:14px 18px;background:#fff7ed;border-left:4px solid #dd7400;color:#7c2d12;font-size:13px;line-height:1.6">
-            <strong>Payment terms:</strong> 100% deposit is required to confirm this order. Balance is payable on completion. Full line items, totals and banking details are on the attached PDF invoice.
+            <strong>Payment terms:</strong> 80% deposit is required to confirm this order. Balance is payable on completion. Full line items, totals and banking details are on the attached PDF invoice.
           </div>
 
           <h2 style="margin:0 0 8px;color:#111;font-family:'Playfair Display',Georgia,serif">Thank you${client ? `, ${esc(client.split(" ")[0])}` : ""}!</h2>
