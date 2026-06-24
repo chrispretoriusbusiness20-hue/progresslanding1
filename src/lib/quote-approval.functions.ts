@@ -27,7 +27,26 @@ type QuoteRow = {
   product_requested: string | null;
   total_zar: number | null;
   source: string | null;
+  pdf_path: string | null;
 };
+
+const QUOTE_BUCKET = "quotes";
+const QUOTE_PATH_RE = /^\d{4}-\d{2}-\d{2}\/[0-9a-f-]{36}-[A-Za-z0-9._-]+\.pdf$/;
+const VIEW_URL_EXPIRES_S = 60 * 60 * 24 * 30; // 30 days
+
+async function signQuoteViewUrl(pdfPath: string | null): Promise<string | undefined> {
+  if (!pdfPath || !QUOTE_PATH_RE.test(pdfPath)) return undefined;
+  try {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data } = await supabaseAdmin.storage
+      .from(QUOTE_BUCKET)
+      .createSignedUrl(pdfPath, VIEW_URL_EXPIRES_S);
+    return data?.signedUrl ?? undefined;
+  } catch (err) {
+    console.error("Failed to sign quote view URL", err);
+    return undefined;
+  }
+}
 
 function clientName(q: QuoteRow): string {
   return [q.first_name, q.last_name].filter(Boolean).join(" ").trim() || "there";
