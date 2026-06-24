@@ -1010,9 +1010,12 @@ function InstantQuote({
   const needsPlate = flooring.length > 0 && !/tile/i.test(flooring);
   const plate = needsPlate ? computePlatePrice(plateType, cornerInstall) : null;
   const corner = cornerInstall ? 800 : null;
+  const installationEstimate = installationRequired
+    ? 5500 + (storyType === "double" ? 1650 : 0)
+    : null;
   const total =
-    subtotal !== null || flueKit !== null || plate !== null || corner !== null
-      ? (subtotal ?? 0) + (flueKit ?? 0) + (plate ?? 0) + (corner ?? 0)
+    subtotal !== null || flueKit !== null || plate !== null || corner !== null || installationEstimate !== null
+      ? (subtotal ?? 0) + (flueKit ?? 0) + (plate ?? 0) + (corner ?? 0) + (installationEstimate ?? 0)
       : null;
 
   const rows: { label: string; value: number | null; hint?: string }[] = [
@@ -1041,6 +1044,17 @@ function InstantQuote({
         ]
       : []),
     { label: "Corner installation", value: corner, hint: cornerInstall ? "+R800 (+R650 if ≤50 km)" : "Standard wall" },
+    ...(installationRequired
+      ? [
+          {
+            label: "Installation estimate",
+            value: installationEstimate,
+            hint: storyType === "double"
+              ? "Within Cape Town · includes core drilling (subject to site visit)"
+              : "Within Cape Town (subject to site visit)",
+          },
+        ]
+      : []),
   ];
 
   return (
