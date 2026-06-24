@@ -977,8 +977,10 @@ function InstantQuote({
   const priceStr = PRODUCT_PRICE_MAP.get(productName) ?? null;
   const unitPrice = priceStr ? parseRand(priceStr) : null;
   const subtotal = unitPrice !== null ? unitPrice * quantity : null;
-  const flueKit =
-    storyType === "double" ? 9650 : storyType === "single" ? 7650 : null;
+  const flueKitIncluded = /flue\s*kit/i.test(productName);
+  const flueKit = flueKitIncluded
+    ? null
+    : storyType === "double" ? 9650 : storyType === "single" ? 7650 : null;
   const needsPlate = flooring.length > 0 && !/tile/i.test(flooring);
   const plate = needsPlate ? (plateType === "granite" ? 2895 : plateType === "metal" ? 1490 : 2495) : null;
   const corner = cornerInstall ? 800 : null;
