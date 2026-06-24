@@ -314,10 +314,10 @@ function matchProduct(query: string): Product | null {
 
 function transportPriceForKm(km: number, installationRequired: boolean): { zone: string; price: number } {
   if (!installationRequired) {
-    if (km <= 50) return { zone: "Courier within Cape Town (≤50 km)", price: 650 };
-    if (km <= 150) return { zone: "Courier 51–150 km (estimate — sales to confirm)", price: 1200 };
-    if (km <= 300) return { zone: "Courier 151–300 km (estimate — sales to confirm)", price: 2200 };
-    return { zone: "Courier 300 km+ (estimate — sales to confirm)", price: 3500 };
+    if (km <= 50) return { zone: "Courier within Cape Town (≤50 km)", price: 325 };
+    if (km <= 150) return { zone: "Courier 51–150 km (estimate — sales to confirm)", price: 600 };
+    if (km <= 300) return { zone: "Courier 151–300 km (estimate — sales to confirm)", price: 1100 };
+    return { zone: "Courier 300 km+ (estimate — sales to confirm)", price: 1750 };
   }
   return { zone: "Standard delivery from Bellville", price: 0 };
 }
