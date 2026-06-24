@@ -1079,16 +1079,20 @@ function InstantQuote({
       value: subtotal,
       hint: unitPrice !== null ? `${formatRand(unitPrice)} each` : undefined,
     },
-    {
-      label: "Flue kit",
-      value: flueKit,
-      hint:
-        storyType === ""
-          ? "Choose single or double story"
-          : storyType === "double"
-            ? "Double story"
-            : "Single story",
-    },
+    ...(flueKitIncluded
+      ? []
+      : [
+          {
+            label: "Flue kit",
+            value: flueKit,
+            hint:
+              storyType === ""
+                ? "Choose single or double story"
+                : storyType === "double"
+                  ? "Double story"
+                  : "Single story",
+          },
+        ]),
     ...(needsPlate
       ? [
           {
