@@ -141,7 +141,9 @@ export function AddressAutocomplete({ value, onChange, placeholder, className }:
         }}
         placeholder={placeholder}
         className={className}
-        autoComplete="off"
+        autoComplete="street-address"
+        name="street-address"
+
         role="combobox"
         aria-expanded={open}
         aria-controls={listId}
