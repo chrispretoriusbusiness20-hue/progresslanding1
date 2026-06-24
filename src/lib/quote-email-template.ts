@@ -10,6 +10,9 @@ export interface QuoteEmailData {
   /** Optional CTA button. */
   acceptUrl?: string;
   acceptLabel?: string;
+  /** Optional secondary link to view/download the quote again. */
+  viewUrl?: string;
+  viewLabel?: string;
   /** Payment terms line shown above signature. */
   paymentTerms?: string;
   /** Optional extra HTML inserted before the signature (e.g. a summary table). */
@@ -28,6 +31,8 @@ export function buildQuoteEmailHtml(data: QuoteEmailData): string {
     body,
     acceptUrl,
     acceptLabel = "Accept Quote",
+    viewUrl,
+    viewLabel = "View your quote",
     paymentTerms = "Balance is payable on completion.",
     extraHtml,
     accent = "#dd7400",
@@ -62,17 +67,31 @@ export function buildQuoteEmailHtml(data: QuoteEmailData): string {
       </tr>`
     : "";
 
-  const ctaBlock = acceptUrl
+  const acceptCell = acceptUrl
+    ? `<td style="background-color:${accent};border-radius:4px;padding:0;">
+         <a href="${escapeAttr(acceptUrl)}" style="display:inline-block;padding:14px 28px;color:#ffffff;font-size:15px;font-weight:700;text-decoration:none;font-family:Arial,Helvetica,sans-serif;">
+           ${escapeHtml(acceptLabel)}
+         </a>
+       </td>
+       ${viewUrl ? `<td style="width:12px;font-size:0;line-height:0;">&nbsp;</td>` : ""}`
+    : "";
+
+  const viewCell = viewUrl
+    ? `<td style="background-color:#ffffff;border:1px solid ${accent};border-radius:4px;padding:0;">
+         <a href="${escapeAttr(viewUrl)}" style="display:inline-block;padding:13px 26px;color:${accent};font-size:15px;font-weight:700;text-decoration:none;font-family:Arial,Helvetica,sans-serif;">
+           ${escapeHtml(viewLabel)}
+         </a>
+       </td>`
+    : "";
+
+  const ctaBlock = acceptUrl || viewUrl
     ? `
       <tr>
         <td style="padding:8px 32px 28px;">
           <table role="presentation" cellpadding="0" cellspacing="0" border="0">
             <tr>
-              <td style="background-color:${accent};border-radius:4px;">
-                <a href="${escapeAttr(acceptUrl)}" style="display:inline-block;padding:14px 28px;color:#ffffff;font-size:15px;font-weight:700;text-decoration:none;font-family:Arial,Helvetica,sans-serif;">
-                  ${escapeHtml(acceptLabel)}
-                </a>
-              </td>
+              ${acceptCell}
+              ${viewCell}
             </tr>
           </table>
         </td>
