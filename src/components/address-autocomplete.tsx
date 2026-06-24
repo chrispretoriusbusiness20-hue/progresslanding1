@@ -1,6 +1,8 @@
 import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { autocompleteAddress } from "@/lib/places.functions";
+import { autocompleteAddress, reverseGeocode } from "@/lib/places.functions";
+import { MapPin, Loader2 } from "lucide-react";
+
 
 type Suggestion = { placeId: string; text: string };
 
@@ -28,12 +30,55 @@ const PRESET_LOCATIONS: Suggestion[] = [
 
 export function AddressAutocomplete({ value, onChange, placeholder, className }: Props) {
   const fetchSuggestions = useServerFn(autocompleteAddress);
+  const reverse = useServerFn(reverseGeocode);
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [open, setOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
+  const [locating, setLocating] = useState(false);
+  const [locError, setLocError] = useState<string | null>(null);
   const sessionToken = useMemo(() => crypto.randomUUID(), []);
   const justSelectedRef = useRef(false);
   const listId = useId();
+
+  const useMyLocation = () => {
+    setLocError(null);
+    if (!("geolocation" in navigator)) {
+      setLocError("Geolocation not supported in this browser");
+      return;
+    }
+    setLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        try {
+          const res = await reverse({
+            data: { lat: pos.coords.latitude, lng: pos.coords.longitude },
+          });
+          if (res.address) {
+            justSelectedRef.current = true;
+            onChange(res.address);
+            setOpen(false);
+            setSuggestions([]);
+          } else {
+            setLocError("Couldn't determine address from your location");
+          }
+        } catch {
+          setLocError("Lookup failed — please try again");
+        } finally {
+          setLocating(false);
+        }
+      },
+      (err) => {
+        setLocating(false);
+        setLocError(
+          err.code === err.PERMISSION_DENIED
+            ? "Location permission denied"
+            : "Couldn't get your location",
+        );
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 },
+    );
+  };
+
 
   useEffect(() => {
     if (justSelectedRef.current) {
@@ -71,6 +116,8 @@ export function AddressAutocomplete({ value, onChange, placeholder, className }:
 
   return (
     <div className="relative">
+      <div className="relative">
+
       <input
         value={value}
         onChange={(e) => onChange(e.target.value)}
@@ -100,8 +147,21 @@ export function AddressAutocomplete({ value, onChange, placeholder, className }:
         aria-controls={listId}
         aria-autocomplete="list"
       />
+        <button
+          type="button"
+          onClick={useMyLocation}
+          disabled={locating}
+          title="Use my current location"
+          className="absolute inset-y-0 right-2 my-auto inline-flex h-7 items-center gap-1 rounded px-2 text-xs text-muted-foreground hover:text-foreground disabled:opacity-50"
+        >
+          {locating ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <MapPin className="h-3.5 w-3.5" />}
+          <span className="hidden sm:inline">{locating ? "Locating…" : "Use my location"}</span>
+        </button>
+      </div>
+      {locError && <p className="mt-1 text-xs text-destructive">{locError}</p>}
       {open && displayed.length > 0 && (
         <ul
+
           id={listId}
           role="listbox"
           className="absolute z-50 mt-1 w-full overflow-hidden rounded-md border border-border bg-popover text-popover-foreground shadow-lg"

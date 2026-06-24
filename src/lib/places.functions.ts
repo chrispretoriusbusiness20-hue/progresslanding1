@@ -54,3 +54,37 @@ export const autocompleteAddress = createServerFn({ method: "POST" })
 
     return { suggestions };
   });
+
+const ReverseSchema = z.object({
+  lat: z.number().min(-90).max(90),
+  lng: z.number().min(-180).max(180),
+});
+
+export const reverseGeocode = createServerFn({ method: "POST" })
+  .inputValidator((data: unknown) => ReverseSchema.parse(data))
+  .handler(async ({ data }) => {
+    const LOVABLE_API_KEY = process.env.LOVABLE_API_KEY;
+    const GOOGLE_MAPS_API_KEY = process.env.GOOGLE_MAPS_API_KEY;
+    if (!LOVABLE_API_KEY || !GOOGLE_MAPS_API_KEY) {
+      return { address: null as string | null };
+    }
+
+    const res = await fetch(
+      `${GATEWAY_URL}/maps/api/geocode/json?latlng=${data.lat},${data.lng}&language=en&region=za`,
+      {
+        headers: {
+          Authorization: `Bearer ${LOVABLE_API_KEY}`,
+          "X-Connection-Api-Key": GOOGLE_MAPS_API_KEY,
+        },
+      },
+    );
+
+    if (!res.ok) return { address: null as string | null };
+
+    const json = (await res.json()) as {
+      results?: Array<{ formatted_address?: string }>;
+    };
+    const address = json.results?.[0]?.formatted_address ?? null;
+    return { address };
+  });
+
