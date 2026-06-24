@@ -648,6 +648,8 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
       transportZone: transport?.zone ?? null,
       transportPrice: transport?.price ?? null,
       travelFee: travelFee > 0 ? travelFee : null,
+      installationEstimate,
+      installOutOfRange,
       bookingLink,
       preferredDate: data.preferredDate ?? null,
       preferredTime: data.preferredTime ?? null,
