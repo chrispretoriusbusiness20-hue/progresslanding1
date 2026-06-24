@@ -135,19 +135,20 @@ export const approveQuote = createServerFn({ method: "POST" })
     await logDecision(data.id, "approved", data.actorEmail ?? null, data.note ?? null);
 
     if (q.email) {
-      const subject = `Quote approved – we'll be in touch, ${clientName(q)}`;
-      const html = `
-        <div style="font-family:Arial,sans-serif;color:#111;max-width:600px">
-          <h2 style="margin:0 0 12px;color:#15803d">Your quote has been approved</h2>
-          <p>Hi ${clientName(q)},</p>
-          <p>Thank you for choosing Progress Group. Your quote <strong>${quoteNumber(q.id)}</strong> has been approved and our team will be in touch shortly to arrange the next steps (delivery, installation and any final site details).</p>
-          ${summaryHtml(q)}
-          <p style="margin-top:16px">If you have any questions in the meantime, just reply to this email.</p>
-          ${signature()}
-        </div>`;
+      const subject = quoteNumber(q.id);
+      const html = buildQuoteEmailHtml({
+        clientName: clientName(q),
+        quoteNo: quoteNumber(q.id),
+        productName: q.matched_product ?? q.product_requested ?? undefined,
+        intro: `Great news — your quote has been <strong>approved</strong>. Thanks for choosing Progress Group.`,
+        body: `Our team will be in touch shortly to arrange delivery, installation and any final site details.`,
+        extraHtml: summaryHtml(q),
+        accent: "#15803d",
+      });
       await send({ to: q.email, subject, html });
       await logEmail(data.id, "client-approval-confirmation", data.actorEmail ?? null, null);
     }
+
 
     return { ok: true };
   });
