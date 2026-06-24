@@ -31,6 +31,8 @@ export type QuoteInput = {
   notes?: string;
   extrasForAccount?: string;
   asInvoice?: boolean;
+  installationRequired?: boolean;
+
 };
 
 
