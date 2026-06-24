@@ -1004,7 +1004,7 @@ function InstantQuote({
     ? null
     : storyType === "double" ? 9650 : storyType === "single" ? 7650 : null;
   const needsPlate = flooring.length > 0 && !/tile/i.test(flooring);
-  const plate = needsPlate ? (plateType === "granite" ? 2895 : plateType === "metal" ? 1490 : 2495) : null;
+  const plate = needsPlate ? computePlatePrice(plateType, cornerInstall) : null;
   const corner = cornerInstall ? 800 : null;
   const total =
     subtotal !== null || flueKit !== null || plate !== null || corner !== null
