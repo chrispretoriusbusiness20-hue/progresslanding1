@@ -108,6 +108,8 @@ type LookupResult =
       transportZone: string | null;
       transportPrice: number | null;
       travelFee: number | null;
+      installationEstimate?: number | null;
+      installOutOfRange?: boolean;
       bookingLink?: string | null;
       submittedAt: string;
       teamNotificationOk?: boolean;
@@ -447,9 +449,10 @@ function QuotePage() {
   const cornerInstallPrice = matched?.cornerInstallPrice ?? null;
   const transportPrice = matched?.transportPrice ?? null;
   const travelFee = matched?.travelFee ?? null;
+  const installationEstimate = matched?.installationEstimate ?? null;
   const totalPriceNum =
-    productSubtotal !== null || flueKitPrice !== null || platePrice !== null || cornerInstallPrice !== null || transportPrice !== null || travelFee !== null
-      ? (productSubtotal ?? 0) + (flueKitPrice ?? 0) + (platePrice ?? 0) + (cornerInstallPrice ?? 0) + (transportPrice ?? 0) + (travelFee ?? 0)
+    productSubtotal !== null || flueKitPrice !== null || platePrice !== null || cornerInstallPrice !== null || transportPrice !== null || travelFee !== null || installationEstimate !== null
+      ? (productSubtotal ?? 0) + (flueKitPrice ?? 0) + (platePrice ?? 0) + (cornerInstallPrice ?? 0) + (transportPrice ?? 0) + (travelFee ?? 0) + (installationEstimate ?? 0)
       : null;
   const unitPriceLabel = unitPriceNum !== null ? formatRand(unitPriceNum) : null;
   const subtotalLabel = productSubtotal !== null ? formatRand(productSubtotal) : null;
@@ -458,6 +461,7 @@ function QuotePage() {
   const cornerInstallLabel = cornerInstallPrice !== null ? formatRand(cornerInstallPrice) : null;
   const transportLabel = transportPrice !== null ? formatRand(transportPrice) : null;
   const travelFeeLabel = travelFee !== null ? formatRand(travelFee) : null;
+  const installationEstimateLabel = installationEstimate !== null ? formatRand(installationEstimate) : null;
   const totalPriceLabel = totalPriceNum !== null ? formatRand(totalPriceNum) : null;
 
   const quoteUrl = matched
@@ -502,8 +506,9 @@ function QuotePage() {
     const needsPlate = flooring.length > 0 && !/tile/i.test(flooring);
     const plate = needsPlate ? computePlatePrice(plateType, cornerInstall) : null;
     const corner = installationRequired && cornerInstall ? 800 : null;
-    if (subtotal === null && flueKit === null && plate === null && corner === null) return null;
-    return (subtotal ?? 0) + (flueKit ?? 0) + (plate ?? 0) + (corner ?? 0);
+    const install = installationRequired ? 5500 + (storyType === "double" ? 1650 : 0) : null;
+    if (subtotal === null && flueKit === null && plate === null && corner === null && install === null) return null;
+    return (subtotal ?? 0) + (flueKit ?? 0) + (plate ?? 0) + (corner ?? 0) + (install ?? 0);
   }, [product, quantity, storyType, flooring, plateType, cornerInstall, installationRequired]);
 
 
@@ -1006,9 +1011,12 @@ function InstantQuote({
   const needsPlate = flooring.length > 0 && !/tile/i.test(flooring);
   const plate = needsPlate ? computePlatePrice(plateType, cornerInstall) : null;
   const corner = cornerInstall ? 800 : null;
+  const installationEstimate = installationRequired
+    ? 5500 + (storyType === "double" ? 1650 : 0)
+    : null;
   const total =
-    subtotal !== null || flueKit !== null || plate !== null || corner !== null
-      ? (subtotal ?? 0) + (flueKit ?? 0) + (plate ?? 0) + (corner ?? 0)
+    subtotal !== null || flueKit !== null || plate !== null || corner !== null || installationEstimate !== null
+      ? (subtotal ?? 0) + (flueKit ?? 0) + (plate ?? 0) + (corner ?? 0) + (installationEstimate ?? 0)
       : null;
 
   const rows: { label: string; value: number | null; hint?: string }[] = [
@@ -1037,6 +1045,17 @@ function InstantQuote({
         ]
       : []),
     { label: "Corner installation", value: corner, hint: cornerInstall ? "+R800 (+R650 if ≤50 km)" : "Standard wall" },
+    ...(installationRequired
+      ? [
+          {
+            label: "Installation estimate",
+            value: installationEstimate,
+            hint: storyType === "double"
+              ? "Within Cape Town · includes core drilling (subject to site visit)"
+              : "Within Cape Town (subject to site visit)",
+          },
+        ]
+      : []),
   ];
 
   return (

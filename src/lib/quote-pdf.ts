@@ -167,6 +167,26 @@ export async function generateQuotePDF(
       unitPrice: input.travelFee,
     });
   }
+  // Installation estimate (within Cape Town, ≤100 km) — mirrors the page 2 estimate.
+  {
+    const farFromCT = /100\s*[–-]\s*200|200\s*km\s*\+/i.test(input.transportZone ?? "");
+    const includeInstall = input.installationRequired !== false && !farFromCT;
+    if (includeInstall) {
+      const installBase = 5500;
+      items.push({
+        quantity: 1,
+        description: "Installation estimate (within Cape Town, subject to site visit)",
+        unitPrice: installBase,
+      });
+      if (input.storyType === "double") {
+        items.push({
+          quantity: 1,
+          description: "Core drilling fee (double story)",
+          unitPrice: 1650,
+        });
+      }
+    }
+  }
 
   const logoData = await fetchAsDataURL(progressLogo.url);
   // estimate page uses text header, no logo
