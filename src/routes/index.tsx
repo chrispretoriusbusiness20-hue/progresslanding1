@@ -884,6 +884,7 @@ function QuotePage() {
                         notes: message.trim() || undefined,
                         extrasForAccount: extrasForAccount.trim() || undefined,
                         asInvoice: true,
+                        installationRequired,
                       });
                     } catch (err) {
                       console.error("Invoice generation failed", err);
