@@ -718,18 +718,19 @@ function QuotePage() {
             </Field>
 
             {flooring && !/tile/i.test(flooring) && (
-              <Field label="Floor plate (required for non-tile floors)">
+              <Field label={`Plinth (required for non-tile floors)${cornerInstall ? " — corner pricing" : ""}`}>
                 <select
                   value={plateType}
-                  onChange={(e) => setPlateType(e.target.value as "glass" | "granite" | "metal")}
+                  onChange={(e) => setPlateType(e.target.value as "steel" | "glass" | "granite")}
                   className="form-input"
                 >
-                  <option value="glass">Glass plate · R2 495</option>
-                  <option value="granite">Granite plate · R2 895</option>
-                  <option value="metal">Metal plate · R1 490</option>
+                  <option value="steel">Black Steel (Square) 2mm · R1 500</option>
+                  <option value="glass">Glass {cornerInstall ? "(Corner)" : "(Square)"} 8/10mm · R{cornerInstall ? "3 500" : "2 500"}</option>
+                  <option value="granite">Granite {cornerInstall ? "(Corner)" : "(Square)"} 20mm · R{cornerInstall ? "5 500" : "4 500"}</option>
                 </select>
               </Field>
             )}
+
 
 
             <div className="block">
