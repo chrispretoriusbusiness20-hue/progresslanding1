@@ -396,16 +396,17 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
     const installEligible = data.installationRequired && !installOutOfRange;
 
     const flueKitIncluded = /flue\s*kit/i.test(matched?.name ?? "") || /flue\s*kit/i.test(data.product);
-    const flueKitPrice = !installEligible || flueKitIncluded
+    const flueKitPrice = flueKitIncluded
       ? null
       : data.storyType === "double" ? 9650 : data.storyType === "single" ? 7650 : null;
 
     const flooringLower = (data.flooring ?? "").toLowerCase();
-    const needsPlate = installEligible && flooringLower.length > 0 && !/tile/.test(flooringLower);
+    const needsPlate = flooringLower.length > 0 && !/tile/.test(flooringLower);
     const plateType: "glass" | "granite" | "metal" = data.plateType === "granite" ? "granite" : data.plateType === "metal" ? "metal" : "glass";
     const plate: { type: "glass" | "granite" | "metal"; price: number } | null = needsPlate
       ? { type: plateType, price: plateType === "granite" ? 2895 : plateType === "metal" ? 1490 : 2495 }
       : null;
+
 
     const transport = distanceKm !== null ? transportPriceForKm(distanceKm, data.installationRequired) : null;
     const travelFee = installEligible && distanceKm !== null && distanceKm <= 50 ? 250 : 0;
