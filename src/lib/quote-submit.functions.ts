@@ -388,23 +388,29 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
     const unitPriceNum = matched ? parseRand(matched.price) : null;
     const productSubtotal = unitPriceNum !== null ? unitPriceNum * data.quantity : null;
 
+    const distanceKm = data.address ? await computeDistanceKm(data.address) : null;
+
+    // Installation pricing only applies within 300 km of Cape Town (Bellville origin).
+    const installOutOfRange =
+      data.installationRequired && distanceKm !== null && distanceKm > 300;
+    const installEligible = data.installationRequired && !installOutOfRange;
+
     const flueKitIncluded = /flue\s*kit/i.test(matched?.name ?? "") || /flue\s*kit/i.test(data.product);
-    const flueKitPrice = flueKitIncluded
+    const flueKitPrice = !installEligible || flueKitIncluded
       ? null
       : data.storyType === "double" ? 9650 : data.storyType === "single" ? 7650 : null;
 
     const flooringLower = (data.flooring ?? "").toLowerCase();
-    const needsPlate = flooringLower.length > 0 && !/tile/.test(flooringLower);
+    const needsPlate = installEligible && flooringLower.length > 0 && !/tile/.test(flooringLower);
     const plateType: "glass" | "granite" | "metal" = data.plateType === "granite" ? "granite" : data.plateType === "metal" ? "metal" : "glass";
     const plate: { type: "glass" | "granite" | "metal"; price: number } | null = needsPlate
       ? { type: plateType, price: plateType === "granite" ? 2895 : plateType === "metal" ? 1490 : 2495 }
       : null;
 
-    const distanceKm = data.address ? await computeDistanceKm(data.address) : null;
     const transport = distanceKm !== null ? transportPriceForKm(distanceKm, data.installationRequired) : null;
-    const travelFee = data.installationRequired && distanceKm !== null && distanceKm <= 50 ? 250 : 0;
+    const travelFee = installEligible && distanceKm !== null && distanceKm <= 50 ? 250 : 0;
 
-    const cornerInstallPrice = data.cornerInstall
+    const cornerInstallPrice = installEligible && data.cornerInstall
       ? 800 + (distanceKm !== null && distanceKm <= 50 ? 650 : 0)
       : null;
 
