@@ -1030,7 +1030,7 @@ function InstantQuote({
     ...(needsPlate
       ? [
           {
-            label: `${plateType === "granite" ? "Granite" : "Glass"} floor plate` as string,
+            label: `${plateType === "steel" ? "Black steel" : plateType === "granite" ? "Granite" : "Glass"} plinth${cornerInstall && plateType !== "steel" ? " (corner)" : ""}` as string,
             value: plate as number | null,
             hint: "Required for non-tile floors" as string,
           },
