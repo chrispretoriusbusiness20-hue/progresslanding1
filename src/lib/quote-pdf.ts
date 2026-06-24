@@ -125,11 +125,20 @@ export async function generateQuotePDF(
     const flooringLower = (input.flooring ?? "").toLowerCase();
     const needsPlate = flooringLower.length > 0 && !/tile/.test(flooringLower);
     if (needsPlate) {
-      const plateType = input.plateType === "granite" ? "granite" : input.plateType === "metal" ? "metal" : "glass";
-      const platePrice = plateType === "granite" ? 2895 : plateType === "metal" ? 1490 : 2495;
+      const plateType: "steel" | "glass" | "granite" =
+        input.plateType === "granite" ? "granite" : input.plateType === "steel" ? "steel" : "glass";
+      const corner = !!input.cornerInstall;
+      const platePrice =
+        plateType === "steel" ? 1500 : plateType === "granite" ? (corner ? 5500 : 4500) : (corner ? 3500 : 2500);
+      const label =
+        plateType === "steel"
+          ? "Black Steel (Square) 2mm plinth"
+          : plateType === "granite"
+            ? `Granite ${corner ? "(Corner)" : "(Square)"} 20mm plinth`
+            : `Glass ${corner ? "(Corner)" : "(Square)"} 8/10mm plinth`;
       items.push({
         quantity: 1,
-        description: `${plateType === "granite" ? "Granite" : plateType === "metal" ? "Metal" : "Glass"} floor plate`,
+        description: label,
         unitPrice: platePrice,
       });
     }
