@@ -376,7 +376,7 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
       storyType: z.enum(["single", "double"]).nullable(),
       flooring: z.string().trim().max(80).optional(),
       roofType: z.string().trim().max(80).optional(),
-      plateType: z.enum(["glass", "granite", "metal"]).optional(),
+      plateType: z.enum(["steel", "glass", "granite"]).optional(),
       cornerInstall: z.boolean().default(false),
       installationRequired: z.boolean().default(true),
       address: z.string().trim().max(300).optional(),
@@ -407,9 +407,12 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
 
     const flooringLower = (data.flooring ?? "").toLowerCase();
     const needsPlate = flooringLower.length > 0 && !/tile/.test(flooringLower);
-    const plateType: "glass" | "granite" | "metal" = data.plateType === "granite" ? "granite" : data.plateType === "metal" ? "metal" : "glass";
-    const plate: { type: "glass" | "granite" | "metal"; price: number } | null = needsPlate
-      ? { type: plateType, price: plateType === "granite" ? 2895 : plateType === "metal" ? 1490 : 2495 }
+    const plateType: "steel" | "glass" | "granite" = data.plateType === "granite" ? "granite" : data.plateType === "steel" ? "steel" : "glass";
+    const corner = data.cornerInstall;
+    const platePriceVal =
+      plateType === "steel" ? 1500 : plateType === "granite" ? (corner ? 5500 : 4500) : (corner ? 3500 : 2500);
+    const plate: { type: "steel" | "glass" | "granite"; price: number } | null = needsPlate
+      ? { type: plateType, price: platePriceVal }
       : null;
 
 

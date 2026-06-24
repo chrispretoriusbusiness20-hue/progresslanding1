@@ -100,7 +100,7 @@ type LookupResult =
       storyText: string;
       flueKitPrice: number | null;
       flooringText: string;
-      plate: { type: "glass" | "granite"; price: number } | null;
+      plate: { type: "steel" | "glass" | "granite"; price: number } | null;
       cornerInstallPrice: number | null;
       cornerInstallText: string;
       destinationText: string;
@@ -206,6 +206,14 @@ function buildWhatsAppMessage(params: {
   return lines.join("\n");
 }
 
+function computePlatePrice(type: "steel" | "glass" | "granite", corner: boolean): number {
+  if (type === "steel") return 1500;
+  if (type === "granite") return corner ? 5500 : 4500;
+  return corner ? 3500 : 2500;
+}
+
+
+
 function QuotePage() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -216,7 +224,7 @@ function QuotePage() {
   const [storyType, setStoryType] = useState<"single" | "double" | "">("single");
   const [flooring, setFlooring] = useState("");
   const [roofType, setRoofType] = useState("");
-  const [plateType, setPlateType] = useState<"glass" | "granite" | "metal">("glass");
+  const [plateType, setPlateType] = useState<"steel" | "glass" | "granite">("glass");
   const [cornerInstall, setCornerInstall] = useState(false);
   const [installationRequired, setInstallationRequired] = useState(true);
   const [address, setAddress] = useState("");
@@ -492,7 +500,7 @@ function QuotePage() {
     const flueKitIncluded = /flue\s*kit/i.test(product);
     const flueKit = flueKitIncluded ? null : storyType === "double" ? 9650 : storyType === "single" ? 7650 : null;
     const needsPlate = flooring.length > 0 && !/tile/i.test(flooring);
-    const plate = needsPlate ? (plateType === "granite" ? 2895 : plateType === "metal" ? 1490 : 2495) : null;
+    const plate = needsPlate ? computePlatePrice(plateType, cornerInstall) : null;
     const corner = installationRequired && cornerInstall ? 800 : null;
     if (subtotal === null && flueKit === null && plate === null && corner === null) return null;
     return (subtotal ?? 0) + (flueKit ?? 0) + (plate ?? 0) + (corner ?? 0);
@@ -718,18 +726,19 @@ function QuotePage() {
             </Field>
 
             {flooring && !/tile/i.test(flooring) && (
-              <Field label="Floor plate (required for non-tile floors)">
+              <Field label={`Plinth (required for non-tile floors)${cornerInstall ? " — corner pricing" : ""}`}>
                 <select
                   value={plateType}
-                  onChange={(e) => setPlateType(e.target.value as "glass" | "granite" | "metal")}
+                  onChange={(e) => setPlateType(e.target.value as "steel" | "glass" | "granite")}
                   className="form-input"
                 >
-                  <option value="glass">Glass plate · R2 495</option>
-                  <option value="granite">Granite plate · R2 895</option>
-                  <option value="metal">Metal plate · R1 490</option>
+                  <option value="steel">Black Steel (Square) 2mm · R1 500</option>
+                  <option value="glass">Glass {cornerInstall ? "(Corner)" : "(Square)"} 8/10mm · R{cornerInstall ? "3 500" : "2 500"}</option>
+                  <option value="granite">Granite {cornerInstall ? "(Corner)" : "(Square)"} 20mm · R{cornerInstall ? "5 500" : "4 500"}</option>
                 </select>
               </Field>
             )}
+
 
 
             <div className="block">
@@ -983,7 +992,7 @@ function InstantQuote({
   quantity: number;
   storyType: "single" | "double" | "";
   flooring: string;
-  plateType: "glass" | "granite" | "metal";
+  plateType: "steel" | "glass" | "granite";
   cornerInstall: boolean;
   installationRequired: boolean;
 }) {
@@ -995,7 +1004,7 @@ function InstantQuote({
     ? null
     : storyType === "double" ? 9650 : storyType === "single" ? 7650 : null;
   const needsPlate = flooring.length > 0 && !/tile/i.test(flooring);
-  const plate = needsPlate ? (plateType === "granite" ? 2895 : plateType === "metal" ? 1490 : 2495) : null;
+  const plate = needsPlate ? computePlatePrice(plateType, cornerInstall) : null;
   const corner = cornerInstall ? 800 : null;
   const total =
     subtotal !== null || flueKit !== null || plate !== null || corner !== null
@@ -1021,7 +1030,7 @@ function InstantQuote({
     ...(needsPlate
       ? [
           {
-            label: `${plateType === "granite" ? "Granite" : "Glass"} floor plate` as string,
+            label: `${plateType === "steel" ? "Black steel" : plateType === "granite" ? "Granite" : "Glass"} plinth${cornerInstall && plateType !== "steel" ? " (corner)" : ""}` as string,
             value: plate as number | null,
             hint: "Required for non-tile floors" as string,
           },
