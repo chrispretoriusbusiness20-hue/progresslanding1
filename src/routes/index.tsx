@@ -1026,6 +1026,18 @@ function QuotePage() {
   );
 }
 
+function BreakdownRow({ label, value, hint }: { label: string; value: string; hint?: string }) {
+  return (
+    <li className="flex items-baseline justify-between gap-4 py-2">
+      <div className="min-w-0">
+        <p className="truncate font-semibold text-foreground">{label}</p>
+        {hint && <p className="text-xs text-muted-foreground">{hint}</p>}
+      </div>
+      <span className="shrink-0 font-mono text-sm font-semibold text-foreground">{value}</span>
+    </li>
+  );
+}
+
 function InstantQuote({
   productName,
   quantity,
