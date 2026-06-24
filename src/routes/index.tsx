@@ -849,6 +849,48 @@ function QuotePage() {
             <div className="mb-4 border-l-4 border-primary bg-primary/10 px-4 py-3 text-sm font-semibold text-foreground">
               80% deposit is required for ACCEPTANCE OF QUOTATION. Balance is payable on completion.
             </div>
+
+            {/* Quote breakdown — surfaces installation estimate for supply + install */}
+            {matched && (
+              <div className="mb-6 border-2 border-foreground bg-secondary/30 p-5 sm:p-6">
+                <div className="mb-3 flex items-center justify-between">
+                  <span className="inline-block bg-primary px-2 py-1 text-[10px] font-bold uppercase tracking-widest text-primary-foreground">
+                    Quote breakdown
+                  </span>
+                  {installationRequired && (
+                    <span className="text-[10px] font-semibold uppercase tracking-[0.24em] text-muted-foreground">
+                      Supply &amp; install
+                    </span>
+                  )}
+                </div>
+                <ul className="divide-y divide-foreground/15 text-sm">
+                  {subtotalLabel && (
+                    <BreakdownRow label={`${matched.catalog?.name ?? matched.productRequested} × ${matched.quantity}`} value={subtotalLabel} hint={unitPriceLabel ? `${unitPriceLabel} each` : undefined} />
+                  )}
+                  {flueKitLabel && <BreakdownRow label="Flue kit" value={flueKitLabel} hint={matched.storyType === "double" ? "Double story" : "Single story"} />}
+                  {plateLabel && <BreakdownRow label={`${matched.plate?.type === "steel" ? "Black steel" : matched.plate?.type === "granite" ? "Granite" : "Glass"} plinth`} value={plateLabel} />}
+                  {cornerInstallLabel && <BreakdownRow label="Corner installation" value={cornerInstallLabel} />}
+                  {transportLabel && <BreakdownRow label={installationRequired ? "Transport" : "Courier"} value={transportLabel} hint={matched.transportZone ?? undefined} />}
+                  {travelFeeLabel && <BreakdownRow label="Travel fee" value={travelFeeLabel} hint="Within 50 km" />}
+                  {installationEstimateLabel && (
+                    <BreakdownRow
+                      label="Installation estimate"
+                      value={installationEstimateLabel}
+                      hint={matched.storyType === "double"
+                        ? "Within Cape Town · includes core drilling (subject to site visit)"
+                        : "Within Cape Town (subject to site visit)"}
+                    />
+                  )}
+                </ul>
+                {totalPriceLabel && (
+                  <div className="mt-3 flex items-baseline justify-between border-t-2 border-foreground pt-3">
+                    <span className="text-xs font-bold uppercase tracking-[0.24em] text-foreground">Estimated total</span>
+                    <span className="font-mono text-xl font-bold text-foreground">{totalPriceLabel}</span>
+                  </div>
+                )}
+              </div>
+            )}
+
             <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <p className="text-lg text-muted-foreground">
                 Thank you for the enquiry find quote attached
@@ -981,6 +1023,18 @@ function QuotePage() {
         </div>
       </footer>
     </div>
+  );
+}
+
+function BreakdownRow({ label, value, hint }: { label: string; value: string; hint?: string }) {
+  return (
+    <li className="flex items-baseline justify-between gap-4 py-2">
+      <div className="min-w-0">
+        <p className="truncate font-semibold text-foreground">{label}</p>
+        {hint && <p className="text-xs text-muted-foreground">{hint}</p>}
+      </div>
+      <span className="shrink-0 font-mono text-sm font-semibold text-foreground">{value}</span>
+    </li>
   );
 }
 
