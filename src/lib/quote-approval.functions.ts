@@ -1,6 +1,18 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { buildQuoteEmailHtml } from "@/lib/quote-email-template";
+import { getProductImageUrl } from "@/lib/product-images";
+import productsData from "@/data/products.json";
+
+type ProductRow = { name: string; category: string };
+const PRODUCTS = productsData as ProductRow[];
+
+function categoryFor(name: string | null | undefined): string | null {
+  if (!name) return null;
+  const found = PRODUCTS.find((p) => p.name === name);
+  return found?.category ?? null;
+}
+
 
 const TEAM_EMAIL = "sales@progressgrp.co.za";
 const REPLY_TO = "sales@progressgrp.co.za";
@@ -135,11 +147,16 @@ export const approveQuote = createServerFn({ method: "POST" })
     await logDecision(data.id, "approved", data.actorEmail ?? null, data.note ?? null);
 
     if (q.email) {
+      const productName = q.matched_product ?? q.product_requested ?? undefined;
       const subject = quoteNumber(q.id);
       const html = buildQuoteEmailHtml({
         clientName: clientName(q),
         quoteNo: quoteNumber(q.id),
-        productName: q.matched_product ?? q.product_requested ?? undefined,
+        productName,
+        productImageUrl: getProductImageUrl({
+          category: categoryFor(q.matched_product),
+          productName,
+        }),
         intro: `Great news — your quote has been <strong>approved</strong>. Thanks for choosing Progress Group.`,
         body: `Our team will be in touch shortly to arrange delivery, installation and any final site details.`,
         extraHtml: summaryHtml(q),
@@ -148,6 +165,7 @@ export const approveQuote = createServerFn({ method: "POST" })
       await send({ to: q.email, subject, html });
       await logEmail(data.id, "client-approval-confirmation", data.actorEmail ?? null, null);
     }
+
 
 
     return { ok: true };
@@ -211,13 +229,19 @@ export const sendQuoteToClient = createServerFn({ method: "POST" })
     const q = await loadQuote(data.id);
     if (!q.email) throw new Error("Quote has no client email");
 
+    const productName = q.matched_product ?? q.product_requested ?? undefined;
     const subject = quoteNumber(q.id);
     const html = buildQuoteEmailHtml({
       clientName: clientName(q),
       quoteNo: quoteNumber(q.id),
-      productName: q.matched_product ?? q.product_requested ?? undefined,
+      productName,
+      productImageUrl: getProductImageUrl({
+        category: categoryFor(q.matched_product),
+        productName,
+      }),
       extraHtml: summaryHtml(q),
     });
+
 
     await send({ to: q.email, subject, html });
     await logEmail(data.id, "quote-sent-to-client", data.actorEmail ?? null, null);
