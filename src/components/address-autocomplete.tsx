@@ -159,8 +159,9 @@ export function AddressAutocomplete({ value, onChange, placeholder, className }:
         </button>
       </div>
       {locError && <p className="mt-1 text-xs text-destructive">{locError}</p>}
-
+      {open && displayed.length > 0 && (
         <ul
+
           id={listId}
           role="listbox"
           className="absolute z-50 mt-1 w-full overflow-hidden rounded-md border border-border bg-popover text-popover-foreground shadow-lg"
