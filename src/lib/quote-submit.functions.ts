@@ -545,7 +545,7 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
       [!data.installationRequired ? "Courier (estimate — confirm & edit before invoicing)" : "Transport", transport ? `${transport.zone} (${fmtR(transport.price)})` : "—"],
       ["Travel fee", travelFee > 0 ? fmtR(travelFee) : "—"],
       ["Unit price", unitPriceNum !== null ? fmtR(unitPriceNum) : "—"],
-      ["Flue kit", flueKitPrice !== null ? fmtR(flueKitPrice) : "—"],
+      ...(flueKitPrice !== null ? [["Flue kit", fmtR(flueKitPrice)] as [string, string]] : []),
       ["Installation estimate", installationEstimate !== null ? `${fmtR(installationEstimate)} (within Cape Town, subject to site visit)` : "—"],
       ["Estimated total", totalPriceNum !== null ? fmtR(totalPriceNum) : "—"],
       ...(installOutOfRange ? [["Installation", "Outside 300 km — supply only; installation quoted separately"] as [string, string]] : []),
