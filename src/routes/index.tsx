@@ -665,9 +665,8 @@ function QuotePage() {
                     onChange={() => {
                       setInstallationRequired(false);
                       setCornerInstall(false);
-                      setStoryType("");
-                      setFlooring("");
                     }}
+
                     className="h-4 w-4 accent-primary"
                   />
                   Product only (no installation)
