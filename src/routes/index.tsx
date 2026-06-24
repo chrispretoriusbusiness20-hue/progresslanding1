@@ -276,6 +276,7 @@ function QuotePage() {
           quantity,
           storyType: storyType === "" ? null : storyType,
           flooring: flooring || undefined,
+          roofType: roofType || undefined,
           plateType: flooring && !/tile/i.test(flooring) ? plateType : undefined,
           cornerInstall,
           installationRequired,
