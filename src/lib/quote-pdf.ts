@@ -31,6 +31,8 @@ export type QuoteInput = {
   notes?: string;
   extrasForAccount?: string;
   asInvoice?: boolean;
+  installationRequired?: boolean;
+
 };
 
 
@@ -387,7 +389,9 @@ export async function generateQuotePDF(
   // Excluded when the site is further than 100 km from Cape Town
   // (transport zones "100–200 km" or "200 km+").
   const farFromCT = /100\s*[–-]\s*200|200\s*km\s*\+/i.test(input.transportZone ?? "");
-  if (!farFromCT) {
+  const includeInstallEstimate = input.installationRequired !== false && !farFromCT;
+  if (includeInstallEstimate) {
+
     doc.addPage();
     let py = margin;
 

@@ -315,6 +315,7 @@ function QuotePage() {
             distanceKm: result.match ? result.distanceKm : null,
             notes: message.trim() || undefined,
             extrasForAccount: extrasForAccount.trim() || undefined,
+            installationRequired,
           },
           { download: false },
         );
@@ -483,11 +484,6 @@ function QuotePage() {
   void quoteUrl;
 
   const estimatedTotal = useMemo(() => {
-    if (!installationRequired) {
-      const priceStr = PRODUCT_PRICE_MAP.get(product);
-      const unitPrice = priceStr ? parseRand(priceStr) : null;
-      return unitPrice !== null ? unitPrice * quantity : null;
-    }
     const priceStr = PRODUCT_PRICE_MAP.get(product);
     const unitPrice = priceStr ? parseRand(priceStr) : null;
     const subtotal = unitPrice !== null ? unitPrice * quantity : null;
@@ -495,10 +491,11 @@ function QuotePage() {
     const flueKit = flueKitIncluded ? null : storyType === "double" ? 9650 : storyType === "single" ? 7650 : null;
     const needsPlate = flooring.length > 0 && !/tile/i.test(flooring);
     const plate = needsPlate ? (plateType === "granite" ? 2895 : plateType === "metal" ? 1490 : 2495) : null;
-    const corner = cornerInstall ? 800 : null;
+    const corner = installationRequired && cornerInstall ? 800 : null;
     if (subtotal === null && flueKit === null && plate === null && corner === null) return null;
     return (subtotal ?? 0) + (flueKit ?? 0) + (plate ?? 0) + (corner ?? 0);
   }, [product, quantity, storyType, flooring, plateType, cornerInstall, installationRequired]);
+
 
   const whatsappHref = useMemo(() => {
     const fullName = `${firstName.trim()} ${lastName.trim()}`.trim() || "Customer";
@@ -665,9 +662,8 @@ function QuotePage() {
                     onChange={() => {
                       setInstallationRequired(false);
                       setCornerInstall(false);
-                      setStoryType("");
-                      setFlooring("");
                     }}
+
                     className="h-4 w-4 accent-primary"
                   />
                   Product only (no installation)
@@ -675,51 +671,48 @@ function QuotePage() {
               </div>
             </Field>
 
-            {installationRequired && (
-              <>
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <Field label="Single or double story?">
-                    <select
-                      value={storyType}
-                      onChange={(e) => setStoryType(e.target.value as "single" | "double" | "")}
-                      className="form-input"
-                    >
-                      <option value="single">Single story</option>
-                      <option value="double">Double story</option>
-                    </select>
-                  </Field>
-                  <Field label="Flooring type">
-                    <select
-                      value={flooring}
-                      onChange={(e) => setFlooring(e.target.value)}
-                      className="form-input"
-                    >
-                      <option value="">Select…</option>
-                      <option value="Tile">Tile</option>
-                      <option value="Laminate">Laminate</option>
-                      <option value="Carpet">Carpet</option>
-                      <option value="Wood">Wood</option>
-                      <option value="Concrete">Concrete</option>
-                      <option value="Other">Other</option>
-                    </select>
-                  </Field>
-                </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <Field label="Single or double story?">
+                <select
+                  value={storyType}
+                  onChange={(e) => setStoryType(e.target.value as "single" | "double" | "")}
+                  className="form-input"
+                >
+                  <option value="single">Single story</option>
+                  <option value="double">Double story</option>
+                </select>
+              </Field>
+              <Field label="Flooring type">
+                <select
+                  value={flooring}
+                  onChange={(e) => setFlooring(e.target.value)}
+                  className="form-input"
+                >
+                  <option value="">Select…</option>
+                  <option value="Tile">Tile</option>
+                  <option value="Laminate">Laminate</option>
+                  <option value="Carpet">Carpet</option>
+                  <option value="Wood">Wood</option>
+                  <option value="Concrete">Concrete</option>
+                  <option value="Other">Other</option>
+                </select>
+              </Field>
+            </div>
 
-                {flooring && !/tile/i.test(flooring) && (
-                  <Field label="Floor plate (required for non-tile floors)">
-                    <select
-                      value={plateType}
-                      onChange={(e) => setPlateType(e.target.value as "glass" | "granite" | "metal")}
-                      className="form-input"
-                    >
-                      <option value="glass">Glass plate · R2 495</option>
-                      <option value="granite">Granite plate · R2 895</option>
-                      <option value="metal">Metal plate · R1 490</option>
-                    </select>
-                  </Field>
-                )}
-              </>
+            {flooring && !/tile/i.test(flooring) && (
+              <Field label="Floor plate (required for non-tile floors)">
+                <select
+                  value={plateType}
+                  onChange={(e) => setPlateType(e.target.value as "glass" | "granite" | "metal")}
+                  className="form-input"
+                >
+                  <option value="glass">Glass plate · R2 495</option>
+                  <option value="granite">Granite plate · R2 895</option>
+                  <option value="metal">Metal plate · R1 490</option>
+                </select>
+              </Field>
             )}
+
 
             <div className="block">
               <span className="mb-1 block text-[11px] font-semibold uppercase tracking-[0.24em] text-foreground/70">
@@ -854,6 +847,7 @@ function QuotePage() {
                         travelFee: matched ? matched.travelFee : null,
                         notes: message.trim() || undefined,
                         extrasForAccount: extrasForAccount.trim() || undefined,
+                        installationRequired,
                       });
                     } catch (err) {
                       console.error("Quote generation failed", err);
@@ -890,6 +884,7 @@ function QuotePage() {
                         notes: message.trim() || undefined,
                         extrasForAccount: extrasForAccount.trim() || undefined,
                         asInvoice: true,
+                        installationRequired,
                       });
                     } catch (err) {
                       console.error("Invoice generation failed", err);
