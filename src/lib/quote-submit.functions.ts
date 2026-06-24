@@ -313,11 +313,15 @@ function matchProduct(query: string): Product | null {
 }
 
 function transportPriceForKm(km: number, installationRequired: boolean): { zone: string; price: number } {
-  if (!installationRequired && km <= 50) {
-    return { zone: "Delivery from Bellville (≤50 km)", price: 650 };
+  if (!installationRequired) {
+    if (km <= 50) return { zone: "Courier within Cape Town (≤50 km)", price: 650 };
+    if (km <= 150) return { zone: "Courier 51–150 km (estimate — sales to confirm)", price: 1200 };
+    if (km <= 300) return { zone: "Courier 151–300 km (estimate — sales to confirm)", price: 2200 };
+    return { zone: "Courier 300 km+ (estimate — sales to confirm)", price: 3500 };
   }
   return { zone: "Standard delivery from Bellville", price: 0 };
 }
+
 
 async function computeDistanceKm(destination: string): Promise<number | null> {
   const lovableKey = process.env.LOVABLE_API_KEY;
@@ -523,7 +527,7 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
       ["Corner install", data.cornerInstall ? `Yes${cornerInstallPrice ? ` (${fmtR(cornerInstallPrice)})` : ""}` : "No"],
       ["Address", data.address ?? "—"],
       ["Distance", distanceKm !== null ? `${Math.round(distanceKm * 10) / 10} km` : "—"],
-      ["Transport", transport ? `${transport.zone} (${fmtR(transport.price)})` : "—"],
+      [!data.installationRequired ? "Courier (estimate — confirm & edit before invoicing)" : "Transport", transport ? `${transport.zone} (${fmtR(transport.price)})` : "—"],
       ["Travel fee", travelFee > 0 ? fmtR(travelFee) : "—"],
       ["Unit price", unitPriceNum !== null ? fmtR(unitPriceNum) : "—"],
       ["Flue kit", flueKitPrice !== null ? fmtR(flueKitPrice) : "—"],

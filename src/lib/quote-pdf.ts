@@ -143,11 +143,13 @@ export async function generateQuotePDF(
     });
   }
   if (input.transportPrice !== null && input.transportPrice > 0) {
+    const isCourier = input.installationRequired === false;
     items.push({
       quantity: 1,
-      description: `Delivery${input.transportZone ? ` (${input.transportZone})` : ""}`,
+      description: `${isCourier ? "Courier delivery" : "Delivery"}${input.transportZone ? ` (${input.transportZone})` : ""}`,
       unitPrice: input.transportPrice,
     });
+
   }
   if (input.travelFee !== null && input.travelFee !== undefined && input.travelFee > 0) {
     items.push({
