@@ -108,6 +108,8 @@ type LookupResult =
       transportZone: string | null;
       transportPrice: number | null;
       travelFee: number | null;
+      installationEstimate?: number | null;
+      installOutOfRange?: boolean;
       bookingLink?: string | null;
       submittedAt: string;
       teamNotificationOk?: boolean;
