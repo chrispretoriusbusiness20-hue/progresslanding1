@@ -149,8 +149,10 @@ export const lookupQuoteSubmission = createServerFn({ method: "POST" })
         : /single/.test(storyLower)
           ? "single"
           : null;
-      const flueKitPrice =
-        storyType === "double" ? 9650 : storyType === "single" ? 7650 : null;
+      const flueKitIncluded = /flue\s*kit/i.test(matched?.name ?? "") || /flue\s*kit/i.test(productText);
+      const flueKitPrice = flueKitIncluded
+        ? null
+        : storyType === "double" ? 9650 : storyType === "single" ? 7650 : null;
 
       const flooringText = idx.flooring >= 0 ? (row[idx.flooring] ?? "").trim() : "";
       const flooringLower = flooringText.toLowerCase();
