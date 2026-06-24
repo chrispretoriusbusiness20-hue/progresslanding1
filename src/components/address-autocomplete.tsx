@@ -147,7 +147,19 @@ export function AddressAutocomplete({ value, onChange, placeholder, className }:
         aria-controls={listId}
         aria-autocomplete="list"
       />
-      {open && displayed.length > 0 && (
+        <button
+          type="button"
+          onClick={useMyLocation}
+          disabled={locating}
+          title="Use my current location"
+          className="absolute inset-y-0 right-2 my-auto inline-flex h-7 items-center gap-1 rounded px-2 text-xs text-muted-foreground hover:text-foreground disabled:opacity-50"
+        >
+          {locating ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <MapPin className="h-3.5 w-3.5" />}
+          <span className="hidden sm:inline">{locating ? "Locating…" : "Use my location"}</span>
+        </button>
+      </div>
+      {locError && <p className="mt-1 text-xs text-destructive">{locError}</p>}
+
         <ul
           id={listId}
           role="listbox"
