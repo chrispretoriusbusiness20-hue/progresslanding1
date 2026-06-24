@@ -149,14 +149,21 @@ export const lookupQuoteSubmission = createServerFn({ method: "POST" })
         : /single/.test(storyLower)
           ? "single"
           : null;
+      const destinationText = idx.distance >= 0 ? (row[idx.distance] ?? "").trim() : "";
+      const distanceKm = destinationText ? await computeDistanceKm(destinationText) : null;
+      const transport = distanceKm !== null ? transportPriceForKm(distanceKm, destinationText) : null;
+
+      // Installation pricing only applies within 300 km of Cape Town.
+      const installEligible = distanceKm === null || distanceKm <= 300;
+
       const flueKitIncluded = /flue\s*kit/i.test(matched?.name ?? "") || /flue\s*kit/i.test(productText);
-      const flueKitPrice = flueKitIncluded
+      const flueKitPrice = !installEligible || flueKitIncluded
         ? null
         : storyType === "double" ? 9650 : storyType === "single" ? 7650 : null;
 
       const flooringText = idx.flooring >= 0 ? (row[idx.flooring] ?? "").trim() : "";
       const flooringLower = flooringText.toLowerCase();
-      const needsPlate = flooringLower.length > 0 && !/tile/.test(flooringLower);
+      const needsPlate = installEligible && flooringLower.length > 0 && !/tile/.test(flooringLower);
       const plate: { type: "glass" | "granite" | "metal"; price: number } | null = needsPlate
         ? { type: "glass", price: 2495 }
         : null;
@@ -165,11 +172,7 @@ export const lookupQuoteSubmission = createServerFn({ method: "POST" })
       const cornerInstallLower = cornerInstallText.toLowerCase();
       const isCornerInstall = /corner/.test(cornerInstallLower);
 
-      const destinationText = idx.distance >= 0 ? (row[idx.distance] ?? "").trim() : "";
-      const distanceKm = destinationText ? await computeDistanceKm(destinationText) : null;
-      const transport = distanceKm !== null ? transportPriceForKm(distanceKm, destinationText) : null;
-
-      const cornerInstallPrice = isCornerInstall
+      const cornerInstallPrice = installEligible && isCornerInstall
         ? 800 + (distanceKm !== null && distanceKm <= 50 ? 650 : 0)
         : null;
 
