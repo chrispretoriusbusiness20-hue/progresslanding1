@@ -206,7 +206,7 @@ function buildWhatsAppMessage(params: {
   return lines.join("\n");
 }
 
-function platePrice(type: "steel" | "glass" | "granite", corner: boolean): number {
+function computePlatePrice(type: "steel" | "glass" | "granite", corner: boolean): number {
   if (type === "steel") return 1500;
   if (type === "granite") return corner ? 5500 : 4500;
   return corner ? 3500 : 2500;
