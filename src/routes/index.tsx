@@ -847,6 +847,7 @@ function QuotePage() {
                         travelFee: matched ? matched.travelFee : null,
                         notes: message.trim() || undefined,
                         extrasForAccount: extrasForAccount.trim() || undefined,
+                        installationRequired,
                       });
                     } catch (err) {
                       console.error("Quote generation failed", err);
