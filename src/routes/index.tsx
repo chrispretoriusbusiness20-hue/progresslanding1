@@ -674,51 +674,48 @@ function QuotePage() {
               </div>
             </Field>
 
-            {installationRequired && (
-              <>
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <Field label="Single or double story?">
-                    <select
-                      value={storyType}
-                      onChange={(e) => setStoryType(e.target.value as "single" | "double" | "")}
-                      className="form-input"
-                    >
-                      <option value="single">Single story</option>
-                      <option value="double">Double story</option>
-                    </select>
-                  </Field>
-                  <Field label="Flooring type">
-                    <select
-                      value={flooring}
-                      onChange={(e) => setFlooring(e.target.value)}
-                      className="form-input"
-                    >
-                      <option value="">Select…</option>
-                      <option value="Tile">Tile</option>
-                      <option value="Laminate">Laminate</option>
-                      <option value="Carpet">Carpet</option>
-                      <option value="Wood">Wood</option>
-                      <option value="Concrete">Concrete</option>
-                      <option value="Other">Other</option>
-                    </select>
-                  </Field>
-                </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <Field label="Single or double story?">
+                <select
+                  value={storyType}
+                  onChange={(e) => setStoryType(e.target.value as "single" | "double" | "")}
+                  className="form-input"
+                >
+                  <option value="single">Single story</option>
+                  <option value="double">Double story</option>
+                </select>
+              </Field>
+              <Field label="Flooring type">
+                <select
+                  value={flooring}
+                  onChange={(e) => setFlooring(e.target.value)}
+                  className="form-input"
+                >
+                  <option value="">Select…</option>
+                  <option value="Tile">Tile</option>
+                  <option value="Laminate">Laminate</option>
+                  <option value="Carpet">Carpet</option>
+                  <option value="Wood">Wood</option>
+                  <option value="Concrete">Concrete</option>
+                  <option value="Other">Other</option>
+                </select>
+              </Field>
+            </div>
 
-                {flooring && !/tile/i.test(flooring) && (
-                  <Field label="Floor plate (required for non-tile floors)">
-                    <select
-                      value={plateType}
-                      onChange={(e) => setPlateType(e.target.value as "glass" | "granite" | "metal")}
-                      className="form-input"
-                    >
-                      <option value="glass">Glass plate · R2 495</option>
-                      <option value="granite">Granite plate · R2 895</option>
-                      <option value="metal">Metal plate · R1 490</option>
-                    </select>
-                  </Field>
-                )}
-              </>
+            {flooring && !/tile/i.test(flooring) && (
+              <Field label="Floor plate (required for non-tile floors)">
+                <select
+                  value={plateType}
+                  onChange={(e) => setPlateType(e.target.value as "glass" | "granite" | "metal")}
+                  className="form-input"
+                >
+                  <option value="glass">Glass plate · R2 495</option>
+                  <option value="granite">Granite plate · R2 895</option>
+                  <option value="metal">Metal plate · R1 490</option>
+                </select>
+              </Field>
             )}
+
 
             <div className="block">
               <span className="mb-1 block text-[11px] font-semibold uppercase tracking-[0.24em] text-foreground/70">
