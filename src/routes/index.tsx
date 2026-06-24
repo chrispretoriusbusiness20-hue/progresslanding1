@@ -992,7 +992,7 @@ function InstantQuote({
   quantity: number;
   storyType: "single" | "double" | "";
   flooring: string;
-  plateType: "glass" | "granite" | "metal";
+  plateType: "steel" | "glass" | "granite";
   cornerInstall: boolean;
   installationRequired: boolean;
 }) {
