@@ -376,7 +376,7 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
       storyType: z.enum(["single", "double"]).nullable(),
       flooring: z.string().trim().max(80).optional(),
       roofType: z.string().trim().max(80).optional(),
-      plateType: z.enum(["glass", "granite", "metal"]).optional(),
+      plateType: z.enum(["steel", "glass", "granite"]).optional(),
       cornerInstall: z.boolean().default(false),
       installationRequired: z.boolean().default(true),
       address: z.string().trim().max(300).optional(),
