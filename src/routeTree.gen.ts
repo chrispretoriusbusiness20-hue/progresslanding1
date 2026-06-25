@@ -17,6 +17,7 @@ import { Route as CatalogRouteImport } from './routes/catalog'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as EmailUnsubscribeRouteImport } from './routes/email/unsubscribe'
 import { Route as LovableEmailSuppressionRouteImport } from './routes/lovable/email/suppression'
+import { Route as ApiPublicBackfillSentRouteImport } from './routes/api/public/backfill-sent'
 import { Route as ApiPublicAcceptQuoteRouteImport } from './routes/api/public/accept-quote'
 import { Route as LovableEmailTransactionalSendRouteImport } from './routes/lovable/email/transactional/send'
 import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
@@ -64,6 +65,11 @@ const LovableEmailSuppressionRoute = LovableEmailSuppressionRouteImport.update({
   path: '/lovable/email/suppression',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicBackfillSentRoute = ApiPublicBackfillSentRouteImport.update({
+  id: '/api/public/backfill-sent',
+  path: '/api/public/backfill-sent',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicAcceptQuoteRoute = ApiPublicAcceptQuoteRouteImport.update({
   id: '/api/public/accept-quote',
   path: '/api/public/accept-quote',
@@ -107,6 +113,7 @@ export interface FileRoutesByFullPath {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/api/public/accept-quote': typeof ApiPublicAcceptQuoteRoute
+  '/api/public/backfill-sent': typeof ApiPublicBackfillSentRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
@@ -123,6 +130,7 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/api/public/accept-quote': typeof ApiPublicAcceptQuoteRoute
+  '/api/public/backfill-sent': typeof ApiPublicBackfillSentRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
@@ -140,6 +148,7 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/api/public/accept-quote': typeof ApiPublicAcceptQuoteRoute
+  '/api/public/backfill-sent': typeof ApiPublicBackfillSentRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
@@ -158,6 +167,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/email/unsubscribe'
     | '/api/public/accept-quote'
+    | '/api/public/backfill-sent'
     | '/lovable/email/suppression'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
@@ -174,6 +184,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/email/unsubscribe'
     | '/api/public/accept-quote'
+    | '/api/public/backfill-sent'
     | '/lovable/email/suppression'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
@@ -190,6 +201,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/email/unsubscribe'
     | '/api/public/accept-quote'
+    | '/api/public/backfill-sent'
     | '/lovable/email/suppression'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
@@ -207,6 +219,7 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   EmailUnsubscribeRoute: typeof EmailUnsubscribeRoute
   ApiPublicAcceptQuoteRoute: typeof ApiPublicAcceptQuoteRoute
+  ApiPublicBackfillSentRoute: typeof ApiPublicBackfillSentRoute
   LovableEmailSuppressionRoute: typeof LovableEmailSuppressionRoute
   LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
   LovableEmailAuthWebhookRoute: typeof LovableEmailAuthWebhookRoute
@@ -273,6 +286,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LovableEmailSuppressionRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/backfill-sent': {
+      id: '/api/public/backfill-sent'
+      path: '/api/public/backfill-sent'
+      fullPath: '/api/public/backfill-sent'
+      preLoaderRoute: typeof ApiPublicBackfillSentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/accept-quote': {
       id: '/api/public/accept-quote'
       path: '/api/public/accept-quote'
@@ -327,6 +347,7 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   EmailUnsubscribeRoute: EmailUnsubscribeRoute,
   ApiPublicAcceptQuoteRoute: ApiPublicAcceptQuoteRoute,
+  ApiPublicBackfillSentRoute: ApiPublicBackfillSentRoute,
   LovableEmailSuppressionRoute: LovableEmailSuppressionRoute,
   LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
   LovableEmailAuthWebhookRoute: LovableEmailAuthWebhookRoute,
@@ -337,13 +358,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
