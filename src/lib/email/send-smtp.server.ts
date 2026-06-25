@@ -34,24 +34,39 @@ async function appendToSentFolder(rawMessage: Buffer | string): Promise<void> {
       logger: false,
     });
     await client.connect();
-    // Try common Sent folder names. Gmail uses "[Gmail]/Sent Mail".
-    const candidates = ["[Gmail]/Sent Mail", "Sent", "INBOX.Sent", "Sent Items", "Sent Messages"];
-    let appended = false;
+
+    // Discover the actual Sent mailbox via IMAP SPECIAL-USE flag (\Sent),
+    // then fall back to common names if the server doesn't advertise it.
+    let sentMailbox: string | undefined;
+    try {
+      const list = await client.list();
+      const flagged = list.find((m: { specialUse?: string; path: string }) => m.specialUse === "\\Sent");
+      if (flagged) sentMailbox = flagged.path;
+    } catch (err) {
+      console.warn("[appendToSentFolder] list failed", err instanceof Error ? err.message : err);
+    }
+    const candidates = sentMailbox
+      ? [sentMailbox]
+      : ["Sent", "INBOX.Sent", "Sent Items", "Sent Messages", "[Gmail]/Sent Mail"];
+
+    let appendedTo: string | undefined;
     for (const mailbox of candidates) {
       try {
         await client.append(mailbox, rawMessage, ["\\Seen"]);
-        appended = true;
+        appendedTo = mailbox;
         break;
       } catch {
         // try next
       }
     }
     await client.logout();
-    if (!appended) console.warn("[appendToSentFolder] no matching Sent folder found");
+    if (appendedTo) console.log(`[appendToSentFolder] appended to "${appendedTo}"`);
+    else console.warn("[appendToSentFolder] no matching Sent folder found on", host);
   } catch (err) {
     console.warn("[appendToSentFolder] failed", err instanceof Error ? err.message : err);
   }
 }
+
 
 export async function sendSmtpEmailDirect(data: SendSmtpArgs): Promise<SendSmtpResult> {
   const host = process.env.SMTP_HOST;
