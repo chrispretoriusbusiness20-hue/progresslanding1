@@ -44,6 +44,7 @@ const CALENDAR_GATEWAY = "https://connector-gateway.lovable.dev/google_calendar/
 const QUOTE_SHEET_ID = "1AVvNPoavrAf0ptWt4dUXdA2zmGqNjA70ebPXn-gJgW8";
 const QUOTE_TEAM_EMAIL = "sales@progressgrp.co.za";
 const QUOTE_CC_EMAILS = [
+  "louis@progressgrp.co.za",
   "chris@progressinstallations.co.za",
 ];
 const ORIGIN_ADDRESS =
