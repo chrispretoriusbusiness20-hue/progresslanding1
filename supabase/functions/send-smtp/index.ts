@@ -332,19 +332,31 @@ async function* readImapLines(reader: ReadableStreamDefaultReader<Uint8Array>): 
 /** Append a message to the IMAP Sent folder. Best-effort: errors are logged, not thrown. */
 async function imapAppendToSent(opts: {
   hostname: string;
+async function imapAppendToSent(opts: {
+  hostname: string;
   port: number;
   username: string;
   password: string;
   message: string;
+  trace: string[];
 }): Promise<void> {
+  const t0 = Date.now();
+  const trace = opts.trace;
+  const log = (stage: string, detail?: unknown) => {
+    trace.push(`[+${Date.now() - t0}ms] imap.${stage}` + (detail !== undefined ? ` ${typeof detail === "string" ? detail : JSON.stringify(detail)}` : ""));
+  };
+
+  log("connect", { host: opts.hostname, port: opts.port });
   const conn = await Deno.connectTls({ hostname: opts.hostname, port: opts.port });
   const writer = conn.writable.getWriter();
   const encoder = new TextEncoder();
   const lines = readImapLines(conn.readable.getReader());
 
-  const send = async (text: string) => { await writer.write(encoder.encode(text)); };
+  const send = async (text: string, redactedAs?: string) => {
+    await writer.write(encoder.encode(text));
+    log(">>", redactedAs ?? text.replace(/\r?\n$/, ""));
+  };
 
-  // Helper: read until we see a tagged response for `tag`.
   async function waitForTag(tag: string): Promise<{ ok: boolean; lines: string[] }> {
     const collected: string[] = [];
     for await (const line of lines) {
@@ -357,15 +369,13 @@ async function imapAppendToSent(opts: {
   }
 
   try {
-    // Greeting
-    for await (const line of lines) { if (line.startsWith("* OK")) break; }
+    for await (const line of lines) { if (line.startsWith("* OK")) { log("<< greeting", line); break; } }
 
-    // LOGIN
-    await send(`a1 LOGIN "${opts.username}" "${opts.password.replace(/"/g, '\\"')}"\r\n`);
+    await send(`a1 LOGIN "${opts.username}" "********"\r\n`, `a1 LOGIN "${opts.username}" "********"`);
     const login = await waitForTag("a1");
-    if (!login.ok) throw new Error("IMAP login failed");
+    log("<< login", login.lines.slice(-1)[0]);
+    if (!login.ok) throw new Error("IMAP login failed: " + login.lines.slice(-1)[0]);
 
-    // LIST to find Sent folder (\Sent special-use)
     await send(`a2 LIST "" "*"\r\n`);
     const list = await waitForTag("a2");
     let sentMailbox = "Sent";
@@ -376,20 +386,20 @@ async function imapAppendToSent(opts: {
         break;
       }
     }
+    log("sent-mailbox", sentMailbox);
 
-    // APPEND
     const msgBytes = encoder.encode(opts.message);
     await send(`a3 APPEND "${sentMailbox}" (\\Seen) {${msgBytes.byteLength}}\r\n`);
-    // Wait for continuation "+"
-    for await (const line of lines) { if (line.startsWith("+")) break; }
+    for await (const line of lines) { if (line.startsWith("+")) { log("<< continuation", line); break; } }
     await writer.write(msgBytes);
-    await send(`\r\n`);
+    await send(`\r\n`, "<message-payload>");
     const append = await waitForTag("a3");
+    log("<< append", append.lines.slice(-1)[0]);
     if (!append.ok) throw new Error("IMAP APPEND failed: " + append.lines.slice(-1)[0]);
 
     await send(`a4 LOGOUT\r\n`);
   } finally {
-    writer.releaseLock();
+    try { writer.releaseLock(); } catch { /* ignore */ }
     try { conn.close(); } catch { /* ignore */ }
   }
 }
