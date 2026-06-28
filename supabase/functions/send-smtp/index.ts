@@ -45,18 +45,11 @@ Deno.serve(async (req) => {
 
   const auth = req.headers.get("authorization") ?? "";
   const token = auth.replace(/^Bearer\s+/i, "").trim();
-  const allowed = [
-    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
-    Deno.env.get("SUPABASE_ANON_KEY") ?? "",
-    Deno.env.get("SB_SERVICE_ROLE_KEY") ?? "",
-  ].filter(Boolean);
-  if (!allowed.includes(token)) {
-    console.warn("[send-smtp] auth mismatch", {
-      tokenLen: token.length,
-      allowedLens: allowed.map((k) => k.length),
-    });
+  const tokenSha = token ? await sha256Hex(token) : "";
+  if (tokenSha !== EXPECTED_TOKEN_SHA256) {
     return json(401, { ok: false, error: "Unauthorized" });
   }
+
 
 
   let body: any;
