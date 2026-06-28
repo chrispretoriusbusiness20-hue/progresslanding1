@@ -246,6 +246,137 @@ async function sendSmtpDirect(opts: {
   }
 }
 
+/** Build the same MIME message we sent over SMTP, for IMAP APPEND. */
+function buildMimeMessage(opts: {
+  from: string;
+  to: string;
+  cc: string[];
+  subject: string;
+  html: string;
+  replyTo?: string;
+}): string {
+  const encoder = new TextEncoder();
+  const boundary = `pg_${crypto.randomUUID().replace(/-/g, "")}`;
+  const date = new Date().toUTCString();
+
+  function qpEncode(text: string): string {
+    let out = "";
+    let line = "";
+    for (const char of text) {
+      const code = char.charCodeAt(0);
+      let seg: string;
+      if (code === 0x0d || code === 0x0a) continue;
+      else if (code === 0x3d) seg = "=3D";
+      else if (code > 0x7f || code < 0x20) {
+        const bytes = encoder.encode(char);
+        seg = Array.from(bytes).map((b) => "=" + b.toString(16).toUpperCase().padStart(2, "0")).join("");
+      } else seg = char;
+      if (line.length + seg.length > 75) { out += line + "=\r\n"; line = seg; }
+      else line += seg;
+    }
+    return out + line;
+  }
+
+  let headers = "";
+  headers += `MIME-Version: 1.0\r\n`;
+  headers += `From: <${opts.from}>\r\n`;
+  headers += `To: <${opts.to}>\r\n`;
+  if (opts.cc.length) headers += `Cc: ${opts.cc.map((c) => `<${c}>`).join(", ")}\r\n`;
+  if (opts.replyTo) headers += `Reply-To: <${opts.replyTo}>\r\n`;
+  headers += `Subject: ${opts.subject}\r\n`;
+  headers += `Date: ${date}\r\n`;
+  headers += `Content-Type: multipart/alternative; boundary="${boundary}"\r\n\r\n`;
+
+  const plain = qpEncode("Please view this message in an HTML-capable email client.");
+  const htmlPart = qpEncode(opts.html);
+  const body =
+    `--${boundary}\r\nContent-Type: text/plain; charset="utf-8"\r\nContent-Transfer-Encoding: quoted-printable\r\n\r\n${plain}\r\n\r\n` +
+    `--${boundary}\r\nContent-Type: text/html; charset="utf-8"\r\nContent-Transfer-Encoding: quoted-printable\r\n\r\n${htmlPart}\r\n\r\n` +
+    `--${boundary}--\r\n`;
+  return headers + body;
+}
+
+async function* readImapLines(reader: ReadableStreamDefaultReader<Uint8Array>): AsyncGenerator<string> {
+  const decoder = new TextDecoder();
+  let buffer = "";
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buffer += decoder.decode(value, { stream: true });
+    let idx;
+    while ((idx = buffer.indexOf("\r\n")) !== -1) {
+      yield buffer.slice(0, idx);
+      buffer = buffer.slice(idx + 2);
+    }
+  }
+  if (buffer.length) yield buffer;
+}
+
+/** Append a message to the IMAP Sent folder. Best-effort: errors are logged, not thrown. */
+async function imapAppendToSent(opts: {
+  hostname: string;
+  port: number;
+  username: string;
+  password: string;
+  message: string;
+}): Promise<void> {
+  const conn = await Deno.connectTls({ hostname: opts.hostname, port: opts.port });
+  const writer = conn.writable.getWriter();
+  const encoder = new TextEncoder();
+  const lines = readImapLines(conn.readable.getReader());
+
+  const send = async (text: string) => { await writer.write(encoder.encode(text)); };
+
+  // Helper: read until we see a tagged response for `tag`.
+  async function waitForTag(tag: string): Promise<{ ok: boolean; lines: string[] }> {
+    const collected: string[] = [];
+    for await (const line of lines) {
+      collected.push(line);
+      if (line.startsWith(tag + " ")) {
+        return { ok: line.startsWith(tag + " OK"), lines: collected };
+      }
+    }
+    return { ok: false, lines: collected };
+  }
+
+  try {
+    // Greeting
+    for await (const line of lines) { if (line.startsWith("* OK")) break; }
+
+    // LOGIN
+    await send(`a1 LOGIN "${opts.username}" "${opts.password.replace(/"/g, '\\"')}"\r\n`);
+    const login = await waitForTag("a1");
+    if (!login.ok) throw new Error("IMAP login failed");
+
+    // LIST to find Sent folder (\Sent special-use)
+    await send(`a2 LIST "" "*"\r\n`);
+    const list = await waitForTag("a2");
+    let sentMailbox = "Sent";
+    for (const ln of list.lines) {
+      if (ln.startsWith("* LIST") && /\\Sent/i.test(ln)) {
+        const m = ln.match(/"([^"]+)"\s*$/) ?? ln.match(/\s(\S+)\s*$/);
+        if (m) sentMailbox = m[1];
+        break;
+      }
+    }
+
+    // APPEND
+    const msgBytes = encoder.encode(opts.message);
+    await send(`a3 APPEND "${sentMailbox}" (\\Seen) {${msgBytes.byteLength}}\r\n`);
+    // Wait for continuation "+"
+    for await (const line of lines) { if (line.startsWith("+")) break; }
+    await writer.write(msgBytes);
+    await send(`\r\n`);
+    const append = await waitForTag("a3");
+    if (!append.ok) throw new Error("IMAP APPEND failed: " + append.lines.slice(-1)[0]);
+
+    await send(`a4 LOGOUT\r\n`);
+  } finally {
+    writer.releaseLock();
+    try { conn.close(); } catch { /* ignore */ }
+  }
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
   if (req.method !== "POST") return json(405, { ok: false, error: "Method not allowed" });
