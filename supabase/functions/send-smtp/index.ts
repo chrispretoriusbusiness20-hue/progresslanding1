@@ -240,34 +240,26 @@ async function sendSmtpDirect(opts: {
     `\r\n` +
     `--${boundary}--\r\n`;
 
-  await send("DATA");
-  await readSmtpResponse(lines, 354);
+  try {
+    await send("DATA");
+    await expect(354, "data-init");
 
-  // Write raw message (headers + body). Need to dot-stuff lines starting with "."
-  const fullMessage = headers + body;
-  const msgLines = fullMessage.split("\r\n");
-  for (const line of msgLines) {
-    if (line.startsWith(".")) {
-      await send("." + line);
-    } else {
-      await send(line);
+    // Write raw message (headers + body). Need to dot-stuff lines starting with "."
+    const fullMessage = headers + body;
+    const msgLines = fullMessage.split("\r\n");
+    const encoder2 = new TextEncoder();
+    for (const line of msgLines) {
+      const out = line.startsWith(".") ? "." + line : line;
+      await writer.write(encoder2.encode(out + "\r\n"));
     }
-  }
-  await send(".");
-  await readSmtpResponse(lines, 250);
+    await send(".", "<end-of-data>");
+    await expect(250, "data-accept");
 
-  await send("QUIT");
-  try {
-    await readSmtpResponse(lines, 221);
-  } catch {
-    // ignore
-  }
-
-  writer.releaseLock();
-  try {
-    conn.close();
-  } catch {
-    // ignore
+    await send("QUIT");
+    try { await expect(221, "quit"); } catch { /* ignore */ }
+  } finally {
+    try { writer.releaseLock(); } catch { /* ignore */ }
+    try { conn.close(); } catch { /* ignore */ }
   }
 }
 
