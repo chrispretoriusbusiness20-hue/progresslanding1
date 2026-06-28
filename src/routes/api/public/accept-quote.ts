@@ -50,7 +50,7 @@ export const Route = createFileRoute("/api/public/accept-quote")({
 
         // Build signed approve / reject links for the sales admin.
         const { signAcceptance } = await import("@/lib/accept-quote-sign.server");
-        const origin = new URL(request.url).origin;
+        const origin = "https://fireplacequotes.co.za";
         const buildLink = (action: "approve" | "reject") => {
           const p = `${action}|${to}|${quoteNo}|${invoiceNo}|${product}|${client}|${pdfPath}`;
           const s = signAcceptance(p);
