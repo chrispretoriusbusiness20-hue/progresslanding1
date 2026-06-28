@@ -441,6 +441,25 @@ Deno.serve(async (req) => {
     return json(400, { ok: false, error: "Missing to/subject/html" });
   }
 
+  // Generate a stable Message-ID we can return + log so callers can correlate
+  // a specific delivery attempt with edge function logs and mailbox headers.
+  const fromDomain = String(from).split("@")[1] ?? "localhost";
+  const messageId = `${crypto.randomUUID()}@${fromDomain}`;
+  const smtpTrace: string[] = [];
+  const imapTrace: string[] = [];
+  const requestStartedAt = new Date().toISOString();
+
+  const baseCtx = {
+    messageId,
+    to,
+    cc: cc ?? [],
+    subject,
+    from,
+    host,
+    port,
+    startedAt: requestStartedAt,
+  };
+
   try {
     await sendSmtpDirect({
       hostname: host,
@@ -453,7 +472,11 @@ Deno.serve(async (req) => {
       subject,
       html,
       replyTo,
+      messageId,
+      trace: smtpTrace,
     });
+
+    console.log("[send-smtp] sent", JSON.stringify({ ...baseCtx, status: "sent", smtpTrace }));
 
     // Best-effort IMAP append. Only attempt when IMAP_HOST is explicitly set,
     // otherwise the SMTP hostname's TLS cert won't match the IMAP service
@@ -469,16 +492,30 @@ Deno.serve(async (req) => {
           username: user,
           password: pass,
           message,
+          trace: imapTrace,
         });
+        console.log("[send-smtp] imap-appended", JSON.stringify({ ...baseCtx, imapHost, imapTrace }));
       } catch (imapErr) {
-        console.warn("[send-smtp] IMAP APPEND failed (non-fatal)", imapErr instanceof Error ? imapErr.message : String(imapErr));
+        console.warn("[send-smtp] IMAP APPEND failed (non-fatal)", JSON.stringify({
+          ...baseCtx,
+          imapHost,
+          error: imapErr instanceof Error ? imapErr.message : String(imapErr),
+          stack: imapErr instanceof Error ? imapErr.stack : undefined,
+          imapTrace,
+        }));
       }
     }
 
-    return json(200, { ok: true });
+    return json(200, { ok: true, messageId });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
-    console.error("[send-smtp] failed", message);
-    return json(500, { ok: false, error: message });
+    console.error("[send-smtp] failed", JSON.stringify({
+      ...baseCtx,
+      status: "failed",
+      error: message,
+      stack: err instanceof Error ? err.stack : undefined,
+      smtpTrace,
+    }));
+    return json(500, { ok: false, error: message, messageId });
   }
 });
