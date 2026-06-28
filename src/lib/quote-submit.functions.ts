@@ -201,7 +201,7 @@ export const emailQuoteFromPath = createServerFn({ method: "POST" })
       const send = await sendSmtpEmailDirect({
         to: data.to,
         cc: QUOTE_CC_EMAILS,
-        subject: `Thank you for your enquiry${quoteNo ? ` — ${quoteNo}` : ""} | Progress Group`,
+        subject: `Your Quote - ${quoteNo || "Progress Group"}`,
         html,
         templateName: "quote-customer",
       });
@@ -576,7 +576,7 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
     let teamSend: { ok: boolean; error?: string } = { ok: false, error: undefined };
     try {
       const { sendSmtpEmailDirect } = await import("@/lib/email/send-smtp.server");
-      const subject = `New quote request — ${customerName} (${productLabel})`;
+      const subject = `Your Quote - ${quoteNo || customerName}`;
       const recipients = [QUOTE_TEAM_EMAIL, ...QUOTE_CC_EMAILS];
       let firstError: string | undefined;
       let anyOk = false;
@@ -602,7 +602,7 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
     // Send approval request email to sales inbox so a manager can approve the quote.
     try {
       const { sendSmtpEmailDirect } = await import("@/lib/email/send-smtp.server");
-      const approvalSubject = `Approval needed — quote for ${customerName} (${productLabel})`;
+      const approvalSubject = `Your Quote - ${quoteNo || customerName}`;
       const approvalHtml = `
         <div style="font-family:Arial,sans-serif;color:#111;max-width:640px">
           <h2 style="margin:0 0 12px;color:#dd7400">Quote approval requested</h2>

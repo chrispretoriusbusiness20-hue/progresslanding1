@@ -101,7 +101,7 @@ export const Route = createFileRoute("/api/public/cron/quote-follow-up")({
             const send = await sendSmtpEmailDirect({
               to: row.email as string,
               cc: CC_EMAILS,
-              subject: `Following up on your Progress Group quote`,
+              subject: `Your Quote - Q-${String(row.id).slice(0, 8).toUpperCase()}`,
               html: buildFollowUpHtml({
                 firstName: (row.first_name as string | null) ?? "",
                 productName,

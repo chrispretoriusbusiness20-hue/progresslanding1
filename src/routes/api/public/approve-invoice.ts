@@ -56,14 +56,14 @@ export const Route = createFileRoute("/api/public/approve-invoice")({
             const { sendSmtpEmailDirect } = await import("@/lib/email/send-smtp.server");
             await sendSmtpEmailDirect({
               to,
-              subject: `Update on your quote ${quoteNo}`,
+              subject: `Your Quote - ${quoteNo}`,
               html: `<p>Hi ${esc(client || "")},</p><p>Thank you for your interest. Unfortunately we are unable to proceed with converting quote <strong>${esc(quoteNo)}</strong> into an invoice at this time. Our team will be in touch shortly.</p><p>— The Progress Group Team</p>`,
             });
             await Promise.all(
               [QUOTE_TEAM_EMAIL, ...QUOTE_CC_EMAILS].map((r) =>
                 sendSmtpEmailDirect({
                   to: r,
-                  subject: `REJECTED — ${client || to} (${quoteNo})`,
+                  subject: `Your Quote - ${quoteNo}`,
                   html: `<p>Invoice request <strong>${esc(invoiceNo)}</strong> for ${esc(client)} (${esc(to)}) was <strong>rejected</strong> at ${decidedAt} (SAST).</p>`,
                 }),
               ),
@@ -124,13 +124,13 @@ export const Route = createFileRoute("/api/public/approve-invoice")({
           await sendSmtpEmailDirect({
             to,
             cc: QUOTE_CC_EMAILS,
-            subject: `Your invoice ${invoiceNo} — Progress Group`,
+            subject: `Your Invoice - ${invoiceNo}`,
             html: clientHtml,
             templateName: "quote-invoice",
           });
           await sendSmtpEmailDirect({
             to: QUOTE_TEAM_EMAIL,
-            subject: `APPROVED — Invoice ${invoiceNo} sent to ${client || to}`,
+            subject: `Your Invoice - ${invoiceNo}`,
             html: `<p>Invoice <strong>${esc(invoiceNo)}</strong> for ${esc(client)} (${esc(to)}) was <strong>approved</strong> and emailed at ${decidedAt} (SAST).</p>`,
             templateName: "quote-invoice-team",
           });
