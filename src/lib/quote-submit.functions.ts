@@ -178,10 +178,10 @@ export const emailQuoteFromPath = createServerFn({ method: "POST" })
 
       const html = `
         <div style="font-family:Arial,sans-serif;color:#111;max-width:600px">
-          <h2 style="margin:0 0 12px">${quoteNo ? esc(quoteNo) : "Your quote"}</h2>
+          <h2 style="margin:0 0 12px;color:#dd7400">Thank you for your enquiry</h2>
           <p>Hi ${esc(clientName)},</p>
-          <p>Thanks for your interest in <strong>${esc(productName)}</strong>.</p>
-          <p>Herewith your quote as requested. If you want to proceed click on the <strong>Accept Quote</strong> button below.</p>
+          <p>Thank you for requesting a quote from <strong>Progress Group</strong>. We truly appreciate your interest in <strong>${esc(productName)}</strong>.</p>
+          <p>Please find your personalised quote ${quoteNo ? `(<strong>${esc(quoteNo)}</strong>) ` : ""}below. If you'd like to proceed, simply click <strong>Accept Quote</strong> and our sales team will be in touch shortly.</p>
           ${productBlock}
           <p style="margin:16px 0;padding:12px 16px;background:#fff7ed;border-left:4px solid #dd7400;color:#7c2d12;font-size:14px;line-height:1.6">
             <strong>Payment terms:</strong> Balance is payable on completion.
@@ -196,12 +196,12 @@ export const emailQuoteFromPath = createServerFn({ method: "POST" })
               </td>
             </tr>
           </table>
-          <p style="margin-top:24px">Kind regards<br/>The Progress Group Team</p>
+          <p style="margin-top:24px">Kind regards,<br/><strong>The Progress Group Sales Team</strong><br/><a href="mailto:sales@progressgrp.co.za" style="color:#dd7400;text-decoration:none">sales@progressgrp.co.za</a></p>
         </div>`;
       const send = await sendSmtpEmailDirect({
         to: data.to,
         cc: QUOTE_CC_EMAILS,
-        subject: quoteNo ? quoteNo : `Your quote — Progress Group`,
+        subject: `Thank you for your enquiry${quoteNo ? ` — ${quoteNo}` : ""} | Progress Group`,
         html,
         templateName: "quote-customer",
       });
