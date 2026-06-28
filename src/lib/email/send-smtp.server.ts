@@ -145,7 +145,7 @@ export async function sendSmtpEmailDirect(data: SendSmtpArgs): Promise<SendSmtpR
     }
 
     await writeEmailLog({
-      messageId,
+      messageId: payload.messageId ?? messageId,
       templateName,
       recipientEmail: data.to,
       status: "sent",
