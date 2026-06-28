@@ -111,7 +111,9 @@ export const Route = createFileRoute("/api/public/approve-invoice")({
               <tr><td style="padding:6px 10px;border:1px solid #eee;background:#fafafa;font-weight:600">Product</td><td style="padding:6px 10px;border:1px solid #eee">${esc(product)}</td></tr>
             </table>
             <div style="margin:18px 0;padding:14px 18px;background:#fff7ed;border-left:4px solid #dd7400;color:#7c2d12;font-size:13px;line-height:1.6">
-              <strong>Payment terms:</strong> 80% deposit confirms your order. Balance is payable on completion.
+              <strong>Payment terms:</strong> 80% deposit confirms your order. Balance is payable on completion.<br/>
+              <strong>EFT details:</strong> Our banking details are included on the attached invoice PDF.<br/>
+              <strong>Proof of payment:</strong> Please email your POP to <a href="mailto:sales@progressgrp.co.za" style="color:#dd7400;font-weight:600">sales@progressgrp.co.za</a> so we can confirm and schedule your order.
             </div>
             <div style="margin:24px 0">${downloadBtn}</div>
             <p style="color:#888;margin-top:24px;font-size:13px">— The Progress Group Team</p>
