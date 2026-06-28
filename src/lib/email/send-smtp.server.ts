@@ -1,3 +1,5 @@
+import type { Json } from "@/integrations/supabase/types";
+
 export interface SendSmtpArgs {
   to: string;
   subject: string;
@@ -5,7 +7,7 @@ export interface SendSmtpArgs {
   replyTo?: string;
   cc?: string[];
   templateName?: string;
-  metadata?: Record<string, unknown>;
+  metadata?: Record<string, Json | undefined>;
 }
 
 export type SendSmtpResult =
@@ -24,7 +26,7 @@ async function writeEmailLog(entry: {
   recipientEmail: string;
   status: "pending" | "sent" | "failed" | "dlq" | "suppressed";
   errorMessage?: string;
-  metadata?: Record<string, unknown>;
+  metadata?: Json;
 }): Promise<void> {
   try {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
@@ -49,7 +51,7 @@ async function writeEmailLog(entry: {
 export async function sendSmtpEmailDirect(data: SendSmtpArgs): Promise<SendSmtpResult> {
   const messageId = crypto.randomUUID();
   const templateName = data.templateName ?? "smtp-direct";
-  const logMetadata = {
+  const logMetadata: Json = {
     cc: data.cc ?? [],
     subject: data.subject,
     replyTo: data.replyTo ?? null,
