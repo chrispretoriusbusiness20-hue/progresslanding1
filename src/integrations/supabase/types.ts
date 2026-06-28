@@ -248,7 +248,9 @@ export type Database = {
           email: string
           first_name: string
           flooring: string | null
+          follow_up_sent_at: string | null
           id: string
+          invoice_sent_at: string | null
           last_name: string
           matched_product: string | null
           message: string | null
@@ -274,7 +276,9 @@ export type Database = {
           email: string
           first_name: string
           flooring?: string | null
+          follow_up_sent_at?: string | null
           id?: string
+          invoice_sent_at?: string | null
           last_name: string
           matched_product?: string | null
           message?: string | null
@@ -300,7 +304,9 @@ export type Database = {
           email?: string
           first_name?: string
           flooring?: string | null
+          follow_up_sent_at?: string | null
           id?: string
+          invoice_sent_at?: string | null
           last_name?: string
           matched_product?: string | null
           message?: string | null
