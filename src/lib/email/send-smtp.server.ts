@@ -23,12 +23,12 @@ function parsePort(raw: string | undefined, fallback: number): number {
  */
 export async function sendSmtpEmailDirect(data: SendSmtpArgs): Promise<SendSmtpResult> {
   const supabaseUrl = process.env.SUPABASE_URL ?? process.env.VITE_SUPABASE_URL;
-  const serviceKey =
-    process.env.SUPABASE_SERVICE_ROLE_KEY ?? process.env.SUPABASE_SERVICE_ROLE;
+  const edgeToken = process.env.EDGE_SMTP_TOKEN;
 
-  if (!supabaseUrl || !serviceKey) {
-    return { success: false, error: "Supabase service credentials missing" };
+  if (!supabaseUrl || !edgeToken) {
+    return { success: false, error: "Edge SMTP relay not configured" };
   }
+
 
   const host = process.env.SMTP_HOST;
   const port = parsePort(process.env.SMTP_PORT, 465);
