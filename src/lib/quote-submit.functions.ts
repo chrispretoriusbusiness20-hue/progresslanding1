@@ -203,6 +203,7 @@ export const emailQuoteFromPath = createServerFn({ method: "POST" })
         cc: QUOTE_CC_EMAILS,
         subject: quoteNo ? quoteNo : `Your quote — Progress Group`,
         html,
+        templateName: "quote-customer",
       });
       return {
         ok: send.success,
@@ -580,7 +581,13 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
       let firstError: string | undefined;
       let anyOk = false;
       for (const recipient of recipients) {
-        const r = await sendSmtpEmailDirect({ to: recipient, subject, html, replyTo: data.email });
+        const r = await sendSmtpEmailDirect({
+          to: recipient,
+          subject,
+          html,
+          replyTo: data.email,
+          templateName: "quote-team",
+        });
         if (r.success) anyOk = true;
         else if (!firstError) firstError = r.error;
       }
@@ -615,6 +622,7 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
         subject: approvalSubject,
         html: approvalHtml,
         replyTo: data.email,
+        templateName: "quote-approval-request",
       });
     } catch (err) {
       console.error("Approval request email failed", err);
