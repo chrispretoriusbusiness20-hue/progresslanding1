@@ -1,24 +1,9 @@
-// deno-lint-ignore-file no-explicit-any
 // Edge Function: send-smtp
 // Runs on Deno Deploy, which supports outbound TCP/TLS — unlike the
 // Cloudflare Worker that hosts the TanStack Start server functions.
-// Authenticates the caller via the Supabase service-role key passed in the
-// `Authorization: Bearer ...` header.
+// Authenticates the caller with the shared EDGE_SMTP_TOKEN secret.
 
 import { SMTPClient } from "https://deno.land/x/denomailer@1.6.0/mod.ts";
-
-// SHA-256 hex digest of the shared `EDGE_SMTP_TOKEN` secret. The raw token
-// lives only as an environment variable on the caller (Cloudflare Worker)
-// and is never committed to the repo.
-const EXPECTED_TOKEN_SHA256 =
-  "43e6973965d4c674925757153ab2c5233d9ec65580e326b9c3c821aed8ed7175";
-
-async function sha256Hex(input: string): Promise<string> {
-  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(input));
-  return Array.from(new Uint8Array(buf))
-    .map((b) => b.toString(16).padStart(2, "0"))
-    .join("");
-}
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -39,23 +24,66 @@ function parsePort(raw: string | null | undefined, fallback: number): number {
   return m ? Number(m[0]) : fallback;
 }
 
+interface SendSmtpBody {
+  host?: string;
+  port?: string | number;
+  user?: string;
+  pass?: string;
+  from?: string;
+  to?: string;
+  cc?: string[];
+  subject?: string;
+  html?: string;
+  replyTo?: string;
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function parseBody(value: unknown): SendSmtpBody | null {
+  if (!isRecord(value)) return null;
+  return {
+    host: typeof value.host === "string" ? value.host : undefined,
+    port:
+      typeof value.port === "string" || typeof value.port === "number"
+        ? value.port
+        : undefined,
+    user: typeof value.user === "string" ? value.user : undefined,
+    pass: typeof value.pass === "string" ? value.pass : undefined,
+    from: typeof value.from === "string" ? value.from : undefined,
+    to: typeof value.to === "string" ? value.to : undefined,
+    cc: Array.isArray(value.cc) && value.cc.every((item) => typeof item === "string")
+      ? value.cc
+      : undefined,
+    subject: typeof value.subject === "string" ? value.subject : undefined,
+    html: typeof value.html === "string" ? value.html : undefined,
+    replyTo: typeof value.replyTo === "string" ? value.replyTo : undefined,
+  };
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
   if (req.method !== "POST") return json(405, { ok: false, error: "Method not allowed" });
 
   const auth = req.headers.get("authorization") ?? "";
   const token = auth.replace(/^Bearer\s+/i, "").trim();
-  const tokenSha = token ? await sha256Hex(token) : "";
-  if (tokenSha !== EXPECTED_TOKEN_SHA256) {
+  const expectedToken = Deno.env.get("EDGE_SMTP_TOKEN") ?? "";
+  if (!expectedToken || token !== expectedToken) {
     return json(401, { ok: false, error: "Unauthorized" });
   }
 
 
 
-  let body: any;
+  let rawBody: unknown;
   try {
-    body = await req.json();
+    rawBody = await req.json();
   } catch {
+    return json(400, { ok: false, error: "Invalid JSON body" });
+  }
+
+  const body = parseBody(rawBody);
+  if (!body) {
     return json(400, { ok: false, error: "Invalid JSON body" });
   }
 
@@ -64,13 +92,7 @@ Deno.serve(async (req) => {
   const user = body.user ?? Deno.env.get("SMTP_USER");
   const pass = body.pass ?? Deno.env.get("SMTP_PASS");
   const from = body.from ?? Deno.env.get("SMTP_FROM") ?? user;
-  const { to, cc, subject, html, replyTo } = body as {
-    to: string;
-    cc?: string[];
-    subject: string;
-    html: string;
-    replyTo?: string;
-  };
+  const { to, cc, subject, html, replyTo } = body;
 
   if (!host || !user || !pass || !from) {
     return json(400, { ok: false, error: "SMTP configuration is incomplete" });
