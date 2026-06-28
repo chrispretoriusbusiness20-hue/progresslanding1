@@ -47,7 +47,7 @@ export async function sendSmtpEmailDirect(data: SendSmtpArgs): Promise<SendSmtpR
       method: "POST",
       headers: {
         "content-type": "application/json",
-        authorization: `Bearer ${serviceKey}`,
+        authorization: `Bearer ${edgeToken}`,
       },
       body: JSON.stringify({
         host,
