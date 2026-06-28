@@ -106,39 +106,62 @@ async function sendSmtpDirect(opts: {
   subject: string;
   html: string;
   replyTo?: string;
+  messageId: string;
+  trace: string[];
 }): Promise<void> {
+  const t0 = Date.now();
+  const trace = opts.trace;
+  const log = (stage: string, detail?: unknown) => {
+    const elapsed = Date.now() - t0;
+    const line = `[+${elapsed}ms] ${stage}` + (detail !== undefined ? ` ${typeof detail === "string" ? detail : JSON.stringify(detail)}` : "");
+    trace.push(line);
+  };
+
+  log("smtp.connect", { host: opts.hostname, port: opts.port });
   const conn = await Deno.connectTls({ hostname: opts.hostname, port: opts.port });
   const writer = conn.writable.getWriter();
   const lines = readSmtpLines(conn.readable.getReader());
 
-  const send = async (text: string) => {
+  const send = async (text: string, redactedAs?: string) => {
     const encoder = new TextEncoder();
     await writer.write(encoder.encode(text + "\r\n"));
+    log("smtp.>>", redactedAs ?? text);
   };
 
-  // Greeting
-  await readSmtpResponse(lines, 220);
+  const expect = async (code: number, stage: string) => {
+    try {
+      const resp = await readSmtpResponse(lines, code);
+      log(`smtp.<< ${stage}`, resp.join(" | "));
+      return resp;
+    } catch (err) {
+      log(`smtp.<< ${stage} ERROR`, err instanceof Error ? err.message : String(err));
+      throw err;
+    }
+  };
 
-  // EHLO
-  await send(`EHLO ${opts.hostname}`);
-  await readSmtpResponse(lines, 250);
+  try {
+    await expect(220, "greeting");
+    await send(`EHLO ${opts.hostname}`);
+    await expect(250, "ehlo");
 
-  // AUTH LOGIN
-  await send("AUTH LOGIN");
-  await readSmtpResponse(lines, 334);
-  await send(b64(opts.username));
-  await readSmtpResponse(lines, 334);
-  await send(b64(opts.password));
-  await readSmtpResponse(lines, 235);
+    await send("AUTH LOGIN");
+    await expect(334, "auth-init");
+    await send(b64(opts.username), "<base64 username>");
+    await expect(334, "auth-user");
+    await send(b64(opts.password), "<base64 password>");
+    await expect(235, "auth-pass");
 
-  // Envelope
-  await send(`MAIL FROM:<${opts.from}>`);
-  await readSmtpResponse(lines, 250);
-  await send(`RCPT TO:<${opts.to}>`);
-  await readSmtpResponse(lines, 250);
-  for (const c of opts.cc) {
-    await send(`RCPT TO:<${c}>`);
-    await readSmtpResponse(lines, 250);
+    await send(`MAIL FROM:<${opts.from}>`);
+    await expect(250, "mail-from");
+    await send(`RCPT TO:<${opts.to}>`);
+    await expect(250, "rcpt-to");
+    for (const c of opts.cc) {
+      await send(`RCPT TO:<${c}>`);
+      await expect(250, `rcpt-cc:${c}`);
+    }
+  } catch (err) {
+    try { writer.releaseLock(); conn.close(); } catch { /* ignore */ }
+    throw err;
   }
 
   // Build message
@@ -150,8 +173,10 @@ async function sendSmtpDirect(opts: {
 
   let headers = "";
   headers += `MIME-Version: 1.0\r\n`;
+  headers += `Message-ID: <${opts.messageId}>\r\n`;
   headers += `From: <${opts.from}>\r\n`;
   headers += `To: <${opts.to}>\r\n`;
+
   if (opts.cc.length) {
     headers += `Cc: ${opts.cc.map((c) => `<${c}>`).join(", ")}\r\n`;
   }
@@ -215,34 +240,26 @@ async function sendSmtpDirect(opts: {
     `\r\n` +
     `--${boundary}--\r\n`;
 
-  await send("DATA");
-  await readSmtpResponse(lines, 354);
+  try {
+    await send("DATA");
+    await expect(354, "data-init");
 
-  // Write raw message (headers + body). Need to dot-stuff lines starting with "."
-  const fullMessage = headers + body;
-  const msgLines = fullMessage.split("\r\n");
-  for (const line of msgLines) {
-    if (line.startsWith(".")) {
-      await send("." + line);
-    } else {
-      await send(line);
+    // Write raw message (headers + body). Need to dot-stuff lines starting with "."
+    const fullMessage = headers + body;
+    const msgLines = fullMessage.split("\r\n");
+    const encoder2 = new TextEncoder();
+    for (const line of msgLines) {
+      const out = line.startsWith(".") ? "." + line : line;
+      await writer.write(encoder2.encode(out + "\r\n"));
     }
-  }
-  await send(".");
-  await readSmtpResponse(lines, 250);
+    await send(".", "<end-of-data>");
+    await expect(250, "data-accept");
 
-  await send("QUIT");
-  try {
-    await readSmtpResponse(lines, 221);
-  } catch {
-    // ignore
-  }
-
-  writer.releaseLock();
-  try {
-    conn.close();
-  } catch {
-    // ignore
+    await send("QUIT");
+    try { await expect(221, "quit"); } catch { /* ignore */ }
+  } finally {
+    try { writer.releaseLock(); } catch { /* ignore */ }
+    try { conn.close(); } catch { /* ignore */ }
   }
 }
 
@@ -319,15 +336,25 @@ async function imapAppendToSent(opts: {
   username: string;
   password: string;
   message: string;
+  trace: string[];
 }): Promise<void> {
+  const t0 = Date.now();
+  const trace = opts.trace;
+  const log = (stage: string, detail?: unknown) => {
+    trace.push(`[+${Date.now() - t0}ms] imap.${stage}` + (detail !== undefined ? ` ${typeof detail === "string" ? detail : JSON.stringify(detail)}` : ""));
+  };
+
+  log("connect", { host: opts.hostname, port: opts.port });
   const conn = await Deno.connectTls({ hostname: opts.hostname, port: opts.port });
   const writer = conn.writable.getWriter();
   const encoder = new TextEncoder();
   const lines = readImapLines(conn.readable.getReader());
 
-  const send = async (text: string) => { await writer.write(encoder.encode(text)); };
+  const send = async (text: string, redactedAs?: string) => {
+    await writer.write(encoder.encode(text));
+    log(">>", redactedAs ?? text.replace(/\r?\n$/, ""));
+  };
 
-  // Helper: read until we see a tagged response for `tag`.
   async function waitForTag(tag: string): Promise<{ ok: boolean; lines: string[] }> {
     const collected: string[] = [];
     for await (const line of lines) {
@@ -340,15 +367,13 @@ async function imapAppendToSent(opts: {
   }
 
   try {
-    // Greeting
-    for await (const line of lines) { if (line.startsWith("* OK")) break; }
+    for await (const line of lines) { if (line.startsWith("* OK")) { log("<< greeting", line); break; } }
 
-    // LOGIN
-    await send(`a1 LOGIN "${opts.username}" "${opts.password.replace(/"/g, '\\"')}"\r\n`);
+    await send(`a1 LOGIN "${opts.username}" "********"\r\n`, `a1 LOGIN "${opts.username}" "********"`);
     const login = await waitForTag("a1");
-    if (!login.ok) throw new Error("IMAP login failed");
+    log("<< login", login.lines.slice(-1)[0]);
+    if (!login.ok) throw new Error("IMAP login failed: " + login.lines.slice(-1)[0]);
 
-    // LIST to find Sent folder (\Sent special-use)
     await send(`a2 LIST "" "*"\r\n`);
     const list = await waitForTag("a2");
     let sentMailbox = "Sent";
@@ -359,20 +384,20 @@ async function imapAppendToSent(opts: {
         break;
       }
     }
+    log("sent-mailbox", sentMailbox);
 
-    // APPEND
     const msgBytes = encoder.encode(opts.message);
     await send(`a3 APPEND "${sentMailbox}" (\\Seen) {${msgBytes.byteLength}}\r\n`);
-    // Wait for continuation "+"
-    for await (const line of lines) { if (line.startsWith("+")) break; }
+    for await (const line of lines) { if (line.startsWith("+")) { log("<< continuation", line); break; } }
     await writer.write(msgBytes);
-    await send(`\r\n`);
+    await send(`\r\n`, "<message-payload>");
     const append = await waitForTag("a3");
+    log("<< append", append.lines.slice(-1)[0]);
     if (!append.ok) throw new Error("IMAP APPEND failed: " + append.lines.slice(-1)[0]);
 
     await send(`a4 LOGOUT\r\n`);
   } finally {
-    writer.releaseLock();
+    try { writer.releaseLock(); } catch { /* ignore */ }
     try { conn.close(); } catch { /* ignore */ }
   }
 }
@@ -414,6 +439,25 @@ Deno.serve(async (req) => {
     return json(400, { ok: false, error: "Missing to/subject/html" });
   }
 
+  // Generate a stable Message-ID we can return + log so callers can correlate
+  // a specific delivery attempt with edge function logs and mailbox headers.
+  const fromDomain = String(from).split("@")[1] ?? "localhost";
+  const messageId = `${crypto.randomUUID()}@${fromDomain}`;
+  const smtpTrace: string[] = [];
+  const imapTrace: string[] = [];
+  const requestStartedAt = new Date().toISOString();
+
+  const baseCtx = {
+    messageId,
+    to,
+    cc: cc ?? [],
+    subject,
+    from,
+    host,
+    port,
+    startedAt: requestStartedAt,
+  };
+
   try {
     await sendSmtpDirect({
       hostname: host,
@@ -426,7 +470,11 @@ Deno.serve(async (req) => {
       subject,
       html,
       replyTo,
+      messageId,
+      trace: smtpTrace,
     });
+
+    console.log("[send-smtp] sent", JSON.stringify({ ...baseCtx, status: "sent", smtpTrace }));
 
     // Best-effort IMAP append. Only attempt when IMAP_HOST is explicitly set,
     // otherwise the SMTP hostname's TLS cert won't match the IMAP service
@@ -442,16 +490,30 @@ Deno.serve(async (req) => {
           username: user,
           password: pass,
           message,
+          trace: imapTrace,
         });
+        console.log("[send-smtp] imap-appended", JSON.stringify({ ...baseCtx, imapHost, imapTrace }));
       } catch (imapErr) {
-        console.warn("[send-smtp] IMAP APPEND failed (non-fatal)", imapErr instanceof Error ? imapErr.message : String(imapErr));
+        console.warn("[send-smtp] IMAP APPEND failed (non-fatal)", JSON.stringify({
+          ...baseCtx,
+          imapHost,
+          error: imapErr instanceof Error ? imapErr.message : String(imapErr),
+          stack: imapErr instanceof Error ? imapErr.stack : undefined,
+          imapTrace,
+        }));
       }
     }
 
-    return json(200, { ok: true });
+    return json(200, { ok: true, messageId });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
-    console.error("[send-smtp] failed", message);
-    return json(500, { ok: false, error: message });
+    console.error("[send-smtp] failed", JSON.stringify({
+      ...baseCtx,
+      status: "failed",
+      error: message,
+      stack: err instanceof Error ? err.stack : undefined,
+      smtpTrace,
+    }));
+    return json(500, { ok: false, error: message, messageId });
   }
 });
