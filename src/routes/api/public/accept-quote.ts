@@ -73,13 +73,9 @@ export const Route = createFileRoute("/api/public/accept-quote")({
         const { buildQuoteEmailHtml } = await import("@/lib/quote-email-template");
         const summaryTable = `
           <table style="border-collapse:collapse;width:100%;margin:8px 0 4px;font-size:14px;color:#111">
-            <tr><td style="padding:8px 12px;border:1px solid #eee;background:#fafafa;width:180px;font-weight:600">Client</td><td style="padding:8px 12px;border:1px solid #eee">${esc(client || "—")}</td></tr>
+            <tr><td style="padding:8px 12px;border:1px solid #eee;background:#fafafa;width:180px;font-weight:600">Invoice No</td><td style="padding:8px 12px;border:1px solid #eee">${esc(invoiceNo)}</td></tr>
+            <tr><td style="padding:8px 12px;border:1px solid #eee;background:#fafafa;font-weight:600">Client</td><td style="padding:8px 12px;border:1px solid #eee">${esc(client || "—")}</td></tr>
             <tr><td style="padding:8px 12px;border:1px solid #eee;background:#fafafa;font-weight:600">Email</td><td style="padding:8px 12px;border:1px solid #eee">${esc(to)}</td></tr>
-            <tr><td style="padding:8px 12px;border:1px solid #eee;background:#fafafa;font-weight:600">Quote No</td><td style="padding:8px 12px;border:1px solid #eee">${esc(quoteNo || "—")}</td></tr>
-            <tr><td style="padding:8px 12px;border:1px solid #eee;background:#fafafa;font-weight:600">Invoice No (pending)</td><td style="padding:8px 12px;border:1px solid #eee">${esc(invoiceNo)}</td></tr>
-            <tr><td style="padding:8px 12px;border:1px solid #eee;background:#fafafa;font-weight:600">Product</td><td style="padding:8px 12px;border:1px solid #eee">${esc(product || "—")}</td></tr>
-            <tr><td style="padding:8px 12px;border:1px solid #eee;background:#fafafa;font-weight:600">Requested at</td><td style="padding:8px 12px;border:1px solid #eee">${requestedAt} (SAST)</td></tr>
-            <tr><td style="padding:8px 12px;border:1px solid #eee;background:#fafafa;font-weight:600">Status</td><td style="padding:8px 12px;border:1px solid #eee;color:#b45309;font-weight:600">PENDING APPROVAL</td></tr>
           </table>
           <p style="margin:18px 0 6px;color:#111;font-size:14px;line-height:1.6">Reject if this should not proceed:</p>
           <p style="margin:0 0 4px"><a href="${rejectUrl}" style="color:#b91c1c;font-weight:600;text-decoration:underline">Reject this request</a></p>`;
