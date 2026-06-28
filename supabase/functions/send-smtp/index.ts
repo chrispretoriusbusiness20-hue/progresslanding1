@@ -1,9 +1,6 @@
 // Edge Function: send-smtp
-// Runs on Deno Deploy, which supports outbound TCP/TLS — unlike the
-// Cloudflare Worker that hosts the TanStack Start server functions.
-// Authenticates the caller with the shared EDGE_SMTP_TOKEN secret.
-
-import { SMTPClient } from "https://deno.land/x/denomailer@1.6.0/mod.ts";
+// Sends transactional email via raw SMTP over TLS using Deno TCP APIs.
+// Avoids denomailer's MIME boundary bug where a trailing space breaks parsing.
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -62,6 +59,193 @@ function parseBody(value: unknown): SendSmtpBody | null {
   };
 }
 
+/** Encode string to base64 (URL-safe alphabet not used). */
+function b64(text: string): string {
+  return btoa(text);
+}
+
+/** Simple SMTP line reader. */
+async function* readSmtpLines(reader: ReadableStreamDefaultReader<Uint8Array>): AsyncGenerator<string> {
+  const decoder = new TextDecoder();
+  let buffer = "";
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buffer += decoder.decode(value, { stream: true });
+    let idx;
+    while ((idx = buffer.indexOf("\r\n")) !== -1) {
+      const line = buffer.slice(0, idx);
+      buffer = buffer.slice(idx + 2);
+      yield line;
+    }
+  }
+  if (buffer.length) yield buffer;
+}
+
+/** Read until a line NOT starting with the continuation code. */
+async function readSmtpResponse(lines: AsyncGenerator<string>, expectCode: number): Promise<string[]> {
+  const out: string[] = [];
+  for await (const line of lines) {
+    if (line.length < 3) continue;
+    const code = parseInt(line.slice(0, 3), 10);
+    const rest = line.slice(4);
+    out.push(rest);
+    if (code !== expectCode || line[3] !== "-") break;
+  }
+  return out;
+}
+
+async function sendSmtpDirect(opts: {
+  hostname: string;
+  port: number;
+  username: string;
+  password: string;
+  from: string;
+  to: string;
+  cc: string[];
+  subject: string;
+  html: string;
+  replyTo?: string;
+}): Promise<void> {
+  const conn = await Deno.connectTls({ hostname: opts.hostname, port: opts.port });
+  const writer = conn.writable.getWriter();
+  const lines = readSmtpLines(conn.readable.getReader());
+
+  const send = async (text: string) => {
+    const encoder = new TextEncoder();
+    await writer.write(encoder.encode(text + "\r\n"));
+  };
+
+  // Greeting
+  await readSmtpResponse(lines, 220);
+
+  // EHLO
+  await send(`EHLO ${opts.hostname}`);
+  await readSmtpResponse(lines, 250);
+
+  // AUTH LOGIN
+  await send("AUTH LOGIN");
+  await readSmtpResponse(lines, 334);
+  await send(b64(opts.username));
+  await readSmtpResponse(lines, 334);
+  await send(b64(opts.password));
+  await readSmtpResponse(lines, 235);
+
+  // Envelope
+  await send(`MAIL FROM:<${opts.from}>`);
+  await readSmtpResponse(lines, 250);
+  await send(`RCPT TO:<${opts.to}>`);
+  await readSmtpResponse(lines, 250);
+  for (const c of opts.cc) {
+    await send(`RCPT TO:<${c}>`);
+    await readSmtpResponse(lines, 250);
+  }
+
+  // Build message
+  const boundary = `pg_${crypto.randomUUID().replace(/-/g, "")}`;
+  const plainText = "Please view this message in an HTML-capable email client.";
+
+  const date = new Date().toUTCString();
+  const subject = opts.subject;
+
+  let headers = "";
+  headers += `MIME-Version: 1.0\r\n`;
+  headers += `From: <${opts.from}>\r\n`;
+  headers += `To: <${opts.to}>\r\n`;
+  if (opts.cc.length) {
+    headers += `Cc: ${opts.cc.map((c) => `<${c}>`).join(", ")}\r\n`;
+  }
+  if (opts.replyTo) {
+    headers += `Reply-To: <${opts.replyTo}>\r\n`;
+  }
+  headers += `Subject: ${subject}\r\n`;
+  headers += `Date: ${date}\r\n`;
+  headers += `Content-Type: multipart/alternative; boundary="${boundary}"\r\n`;
+  headers += `\r\n`;
+
+  const encoder = new TextEncoder();
+
+  // Quoted-printable helper: encode only non-ASCII / unsafe bytes.
+  function qpEncode(text: string): string {
+    let out = "";
+    let line = "";
+    for (const char of text) {
+      const code = char.charCodeAt(0);
+      let seg: string;
+      if (code === 0x0d || code === 0x0a) {
+        continue; // we strip CRLF and re-add later
+      } else if (code === 0x3d) {
+        seg = "=3D";
+      } else if (code > 0x7f || code < 0x20) {
+        const bytes = encoder.encode(char);
+        seg = Array.from(bytes)
+          .map((b) => "=" + b.toString(16).toUpperCase().padStart(2, "0"))
+          .join("");
+      } else if (code === 0x09 || code === 0x20) {
+        seg = char; // tab/space allowed inline
+      } else {
+        seg = char;
+      }
+      if (line.length + seg.length > 75) {
+        out += line + "=\r\n";
+        line = seg;
+      } else {
+        line += seg;
+      }
+    }
+    out += line;
+    return out;
+  }
+
+  const plainPart = qpEncode(plainText);
+  const htmlPart = qpEncode(opts.html);
+
+  const body =
+    `--${boundary}\r\n` +
+    `Content-Type: text/plain; charset="utf-8"\r\n` +
+    `Content-Transfer-Encoding: quoted-printable\r\n` +
+    `\r\n` +
+    `${plainPart}\r\n` +
+    `\r\n` +
+    `--${boundary}\r\n` +
+    `Content-Type: text/html; charset="utf-8"\r\n` +
+    `Content-Transfer-Encoding: quoted-printable\r\n` +
+    `\r\n` +
+    `${htmlPart}\r\n` +
+    `\r\n` +
+    `--${boundary}--\r\n`;
+
+  await send("DATA");
+  await readSmtpResponse(lines, 354);
+
+  // Write raw message (headers + body). Need to dot-stuff lines starting with "."
+  const fullMessage = headers + body;
+  const msgLines = fullMessage.split("\r\n");
+  for (const line of msgLines) {
+    if (line.startsWith(".")) {
+      await send("." + line);
+    } else {
+      await send(line);
+    }
+  }
+  await send(".");
+  await readSmtpResponse(lines, 250);
+
+  await send("QUIT");
+  try {
+    await readSmtpResponse(lines, 221);
+  } catch {
+    // ignore
+  }
+
+  writer.releaseLock();
+  try {
+    conn.close();
+  } catch {
+    // ignore
+  }
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
   if (req.method !== "POST") return json(405, { ok: false, error: "Method not allowed" });
@@ -72,8 +256,6 @@ Deno.serve(async (req) => {
   if (!expectedToken || token !== expectedToken) {
     return json(401, { ok: false, error: "Unauthorized" });
   }
-
-
 
   let rawBody: unknown;
   try {
@@ -101,29 +283,21 @@ Deno.serve(async (req) => {
     return json(400, { ok: false, error: "Missing to/subject/html" });
   }
 
-  const client = new SMTPClient({
-    connection: {
+  try {
+    await sendSmtpDirect({
       hostname: host,
       port,
-      tls: port === 465,
-      auth: { username: user, password: pass },
-    },
-  });
-
-  try {
-    await client.send({
+      username: user,
+      password: pass,
       from,
       to,
-      cc,
-      replyTo,
+      cc: cc ?? [],
       subject,
-      content: "Please view this message in an HTML-capable email client.",
       html,
+      replyTo,
     });
-    await client.close();
     return json(200, { ok: true });
   } catch (err) {
-    try { await client.close(); } catch { /* noop */ }
     const message = err instanceof Error ? err.message : String(err);
     console.error("[send-smtp] failed", message);
     return json(500, { ok: false, error: message });
