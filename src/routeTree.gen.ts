@@ -25,6 +25,7 @@ import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/l
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
 import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
+import { Route as ApiPublicCronQuoteFollowUpRouteImport } from './routes/api/public/cron/quote-follow-up'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
@@ -109,6 +110,12 @@ const LovableEmailAuthPreviewRoute = LovableEmailAuthPreviewRouteImport.update({
   path: '/lovable/email/auth/preview',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicCronQuoteFollowUpRoute =
+  ApiPublicCronQuoteFollowUpRouteImport.update({
+    id: '/api/public/cron/quote-follow-up',
+    path: '/api/public/cron/quote-follow-up',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -122,6 +129,7 @@ export interface FileRoutesByFullPath {
   '/api/public/approve-invoice': typeof ApiPublicApproveInvoiceRoute
   '/api/public/backfill-sent': typeof ApiPublicBackfillSentRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
+  '/api/public/cron/quote-follow-up': typeof ApiPublicCronQuoteFollowUpRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -140,6 +148,7 @@ export interface FileRoutesByTo {
   '/api/public/approve-invoice': typeof ApiPublicApproveInvoiceRoute
   '/api/public/backfill-sent': typeof ApiPublicBackfillSentRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
+  '/api/public/cron/quote-follow-up': typeof ApiPublicCronQuoteFollowUpRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -159,6 +168,7 @@ export interface FileRoutesById {
   '/api/public/approve-invoice': typeof ApiPublicApproveInvoiceRoute
   '/api/public/backfill-sent': typeof ApiPublicBackfillSentRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
+  '/api/public/cron/quote-follow-up': typeof ApiPublicCronQuoteFollowUpRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -179,6 +189,7 @@ export interface FileRouteTypes {
     | '/api/public/approve-invoice'
     | '/api/public/backfill-sent'
     | '/lovable/email/suppression'
+    | '/api/public/cron/quote-follow-up'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
@@ -197,6 +208,7 @@ export interface FileRouteTypes {
     | '/api/public/approve-invoice'
     | '/api/public/backfill-sent'
     | '/lovable/email/suppression'
+    | '/api/public/cron/quote-follow-up'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
@@ -215,6 +227,7 @@ export interface FileRouteTypes {
     | '/api/public/approve-invoice'
     | '/api/public/backfill-sent'
     | '/lovable/email/suppression'
+    | '/api/public/cron/quote-follow-up'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
@@ -234,6 +247,7 @@ export interface RootRouteChildren {
   ApiPublicApproveInvoiceRoute: typeof ApiPublicApproveInvoiceRoute
   ApiPublicBackfillSentRoute: typeof ApiPublicBackfillSentRoute
   LovableEmailSuppressionRoute: typeof LovableEmailSuppressionRoute
+  ApiPublicCronQuoteFollowUpRoute: typeof ApiPublicCronQuoteFollowUpRoute
   LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
   LovableEmailAuthWebhookRoute: typeof LovableEmailAuthWebhookRoute
   LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
@@ -355,6 +369,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LovableEmailAuthPreviewRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/cron/quote-follow-up': {
+      id: '/api/public/cron/quote-follow-up'
+      path: '/api/public/cron/quote-follow-up'
+      fullPath: '/api/public/cron/quote-follow-up'
+      preLoaderRoute: typeof ApiPublicCronQuoteFollowUpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -370,6 +391,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicApproveInvoiceRoute: ApiPublicApproveInvoiceRoute,
   ApiPublicBackfillSentRoute: ApiPublicBackfillSentRoute,
   LovableEmailSuppressionRoute: LovableEmailSuppressionRoute,
+  ApiPublicCronQuoteFollowUpRoute: ApiPublicCronQuoteFollowUpRoute,
   LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
   LovableEmailAuthWebhookRoute: LovableEmailAuthWebhookRoute,
   LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,

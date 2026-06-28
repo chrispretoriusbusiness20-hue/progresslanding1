@@ -124,15 +124,28 @@ export const Route = createFileRoute("/api/public/approve-invoice")({
             cc: QUOTE_CC_EMAILS,
             subject: `Your invoice ${invoiceNo} — Progress Group`,
             html: clientHtml,
+            templateName: "quote-invoice",
           });
           await sendSmtpEmailDirect({
             to: QUOTE_TEAM_EMAIL,
             subject: `APPROVED — Invoice ${invoiceNo} sent to ${client || to}`,
             html: `<p>Invoice <strong>${esc(invoiceNo)}</strong> for ${esc(client)} (${esc(to)}) was <strong>approved</strong> and emailed at ${decidedAt} (SAST).</p>`,
+            templateName: "quote-invoice-team",
           });
+          try {
+            const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+            await supabaseAdmin
+              .from("quote_requests")
+              .update({ invoice_sent_at: new Date().toISOString(), status: "invoiced" })
+              .eq("email", to)
+              .is("invoice_sent_at", null);
+          } catch (err) {
+            console.error("invoice_sent_at update failed", err);
+          }
         } catch (err) {
           console.error("approve send failed", err);
         }
+
 
         return htmlPage(
           `Approved ${invoiceNo}`,
