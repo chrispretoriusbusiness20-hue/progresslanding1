@@ -332,8 +332,6 @@ async function* readImapLines(reader: ReadableStreamDefaultReader<Uint8Array>): 
 /** Append a message to the IMAP Sent folder. Best-effort: errors are logged, not thrown. */
 async function imapAppendToSent(opts: {
   hostname: string;
-async function imapAppendToSent(opts: {
-  hostname: string;
   port: number;
   username: string;
   password: string;
