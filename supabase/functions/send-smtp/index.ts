@@ -427,6 +427,23 @@ Deno.serve(async (req) => {
       html,
       replyTo,
     });
+
+    // Best-effort: append a copy to the IMAP Sent folder so it shows in webmail/Gmail "Sent".
+    try {
+      const imapHost = Deno.env.get("IMAP_HOST") ?? host;
+      const imapPort = parsePort(Deno.env.get("IMAP_PORT"), 993);
+      const message = buildMimeMessage({ from, to, cc: cc ?? [], subject, html, replyTo });
+      await imapAppendToSent({
+        hostname: imapHost,
+        port: imapPort,
+        username: user,
+        password: pass,
+        message,
+      });
+    } catch (imapErr) {
+      console.error("[send-smtp] IMAP APPEND failed (non-fatal)", imapErr instanceof Error ? imapErr.message : String(imapErr));
+    }
+
     return json(200, { ok: true });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
