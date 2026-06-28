@@ -7,7 +7,18 @@
 
 import { SMTPClient } from "https://deno.land/x/denomailer@1.6.0/mod.ts";
 
-const SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
+// SHA-256 hex digest of the shared `EDGE_SMTP_TOKEN` secret. The raw token
+// lives only as an environment variable on the caller (Cloudflare Worker)
+// and is never committed to the repo.
+const EXPECTED_TOKEN_SHA256 =
+  "43e6973965d4c674925757153ab2c5233d9ec65580e326b9c3c821aed8ed7175";
+
+async function sha256Hex(input: string): Promise<string> {
+  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(input));
+  return Array.from(new Uint8Array(buf))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+}
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
