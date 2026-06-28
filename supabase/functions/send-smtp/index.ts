@@ -106,39 +106,62 @@ async function sendSmtpDirect(opts: {
   subject: string;
   html: string;
   replyTo?: string;
+  messageId: string;
+  trace: string[];
 }): Promise<void> {
+  const t0 = Date.now();
+  const trace = opts.trace;
+  const log = (stage: string, detail?: unknown) => {
+    const elapsed = Date.now() - t0;
+    const line = `[+${elapsed}ms] ${stage}` + (detail !== undefined ? ` ${typeof detail === "string" ? detail : JSON.stringify(detail)}` : "");
+    trace.push(line);
+  };
+
+  log("smtp.connect", { host: opts.hostname, port: opts.port });
   const conn = await Deno.connectTls({ hostname: opts.hostname, port: opts.port });
   const writer = conn.writable.getWriter();
   const lines = readSmtpLines(conn.readable.getReader());
 
-  const send = async (text: string) => {
+  const send = async (text: string, redactedAs?: string) => {
     const encoder = new TextEncoder();
     await writer.write(encoder.encode(text + "\r\n"));
+    log("smtp.>>", redactedAs ?? text);
   };
 
-  // Greeting
-  await readSmtpResponse(lines, 220);
+  const expect = async (code: number, stage: string) => {
+    try {
+      const resp = await readSmtpResponse(lines, code);
+      log(`smtp.<< ${stage}`, resp.join(" | "));
+      return resp;
+    } catch (err) {
+      log(`smtp.<< ${stage} ERROR`, err instanceof Error ? err.message : String(err));
+      throw err;
+    }
+  };
 
-  // EHLO
-  await send(`EHLO ${opts.hostname}`);
-  await readSmtpResponse(lines, 250);
+  try {
+    await expect(220, "greeting");
+    await send(`EHLO ${opts.hostname}`);
+    await expect(250, "ehlo");
 
-  // AUTH LOGIN
-  await send("AUTH LOGIN");
-  await readSmtpResponse(lines, 334);
-  await send(b64(opts.username));
-  await readSmtpResponse(lines, 334);
-  await send(b64(opts.password));
-  await readSmtpResponse(lines, 235);
+    await send("AUTH LOGIN");
+    await expect(334, "auth-init");
+    await send(b64(opts.username), "<base64 username>");
+    await expect(334, "auth-user");
+    await send(b64(opts.password), "<base64 password>");
+    await expect(235, "auth-pass");
 
-  // Envelope
-  await send(`MAIL FROM:<${opts.from}>`);
-  await readSmtpResponse(lines, 250);
-  await send(`RCPT TO:<${opts.to}>`);
-  await readSmtpResponse(lines, 250);
-  for (const c of opts.cc) {
-    await send(`RCPT TO:<${c}>`);
-    await readSmtpResponse(lines, 250);
+    await send(`MAIL FROM:<${opts.from}>`);
+    await expect(250, "mail-from");
+    await send(`RCPT TO:<${opts.to}>`);
+    await expect(250, "rcpt-to");
+    for (const c of opts.cc) {
+      await send(`RCPT TO:<${c}>`);
+      await expect(250, `rcpt-cc:${c}`);
+    }
+  } catch (err) {
+    try { writer.releaseLock(); conn.close(); } catch { /* ignore */ }
+    throw err;
   }
 
   // Build message
@@ -150,8 +173,10 @@ async function sendSmtpDirect(opts: {
 
   let headers = "";
   headers += `MIME-Version: 1.0\r\n`;
+  headers += `Message-ID: <${opts.messageId}>\r\n`;
   headers += `From: <${opts.from}>\r\n`;
   headers += `To: <${opts.to}>\r\n`;
+
   if (opts.cc.length) {
     headers += `Cc: ${opts.cc.map((c) => `<${c}>`).join(", ")}\r\n`;
   }
