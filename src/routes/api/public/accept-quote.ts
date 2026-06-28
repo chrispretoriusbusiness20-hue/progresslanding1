@@ -104,7 +104,7 @@ export const Route = createFileRoute("/api/public/accept-quote")({
             recipients.map((r) =>
               sendSmtpEmailDirect({
                 to: r,
-                subject: `APPROVAL REQUIRED — Convert to invoice — ${client || to}${quoteNo ? ` (${quoteNo})` : ""}`,
+                subject: `Your Quote - ${quoteNo || invoiceNo}`,
                 html: adminHtml,
                 replyTo: to,
               }),

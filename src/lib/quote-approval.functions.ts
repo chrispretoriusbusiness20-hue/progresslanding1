@@ -167,7 +167,7 @@ export const approveQuote = createServerFn({ method: "POST" })
 
     if (q.email) {
       const productName = q.matched_product ?? q.product_requested ?? undefined;
-      const subject = quoteNumber(q.id);
+      const subject = `Your Quote - ${quoteNumber(q.id)}`;
       const viewUrl = await signQuoteViewUrl(q.pdf_path);
       const html = buildQuoteEmailHtml({
         clientName: clientName(q),
@@ -220,7 +220,7 @@ export const rejectQuote = createServerFn({ method: "POST" })
 
     await logDecision(data.id, "rejected", data.actorEmail ?? null, data.note);
 
-    const subject = `Quote ${quoteNumber(q.id)} was rejected`;
+    const subject = `Your Quote - ${quoteNumber(q.id)}`;
     const html = `
       <div style="font-family:Arial,sans-serif;color:#111;max-width:600px">
         <h2 style="margin:0 0 12px;color:#b91c1c">Quote rejected</h2>
@@ -252,7 +252,7 @@ export const sendQuoteToClient = createServerFn({ method: "POST" })
     if (!q.email) throw new Error("Quote has no client email");
 
     const productName = q.matched_product ?? q.product_requested ?? undefined;
-    const subject = quoteNumber(q.id);
+    const subject = `Your Quote - ${quoteNumber(q.id)}`;
     const viewUrl = await signQuoteViewUrl(q.pdf_path);
     const html = buildQuoteEmailHtml({
       clientName: clientName(q),
@@ -288,7 +288,7 @@ export const requestManagerApproval = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const q = await loadQuote(data.id);
 
-    const subject = `Quote ${quoteNumber(q.id)} requires your approval`;
+    const subject = `Your Quote - ${quoteNumber(q.id)}`;
     const html = `
       <div style="font-family:Arial,sans-serif;color:#111;max-width:600px">
         <h2 style="margin:0 0 12px;color:#dd7400">Approval requested</h2>
