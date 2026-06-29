@@ -513,6 +513,9 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
       cornerInstallPrice ?? "",
       totalPriceNum ?? "",
       data.message ?? "",
+      data.utmSource ?? "",
+      data.utmMedium ?? "",
+      data.utmCampaign ?? "",
     ]);
 
     let bookingLink: string | null = null;
