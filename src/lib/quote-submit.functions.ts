@@ -489,6 +489,31 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
       } catch (e) {
         console.warn("[quote-submit] CRM push failed", e);
       }
+
+      try {
+        const { sendLeadWebhookAlert } = await import("@/lib/lead-webhook.server");
+        await sendLeadWebhookAlert({
+          event: "new_lead",
+          quoteNumber: `FPQ-${insertedQuote.id.split("-")[0].toUpperCase()}`,
+          firstName: insertedQuote.first_name,
+          lastName: insertedQuote.last_name,
+          email: insertedQuote.email,
+          phone: insertedQuote.phone,
+          productRequested: insertedQuote.product_requested,
+          matchedProduct: insertedQuote.matched_product,
+          quantity: insertedQuote.quantity,
+          totalZar: insertedQuote.total_zar,
+          distanceKm: insertedQuote.distance_km,
+          address: insertedQuote.address,
+          source: insertedQuote.source,
+          utmSource: insertedQuote.utm_source,
+          utmMedium: insertedQuote.utm_medium,
+          utmCampaign: insertedQuote.utm_campaign,
+          submittedAt: insertedQuote.created_at,
+        });
+      } catch (e) {
+        console.warn("[quote-submit] lead webhook alert failed", e);
+      }
     }
 
     await appendToQuoteSheet([
