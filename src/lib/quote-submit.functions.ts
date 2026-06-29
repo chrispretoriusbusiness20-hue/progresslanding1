@@ -386,6 +386,9 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
       extrasForAccount: z.string().trim().max(2000).optional(),
       preferredDate: z.string().trim().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
       preferredTime: z.string().trim().regex(/^\d{2}:\d{2}$/).optional(),
+      utmSource: z.string().trim().max(100).optional(),
+      utmMedium: z.string().trim().max(100).optional(),
+      utmCampaign: z.string().trim().max(200).optional(),
     }),
   )
   .handler(async ({ data }) => {
