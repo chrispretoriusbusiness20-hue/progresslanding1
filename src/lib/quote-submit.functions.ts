@@ -386,6 +386,9 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
       extrasForAccount: z.string().trim().max(2000).optional(),
       preferredDate: z.string().trim().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
       preferredTime: z.string().trim().regex(/^\d{2}:\d{2}$/).optional(),
+      utmSource: z.string().trim().max(100).optional(),
+      utmMedium: z.string().trim().max(100).optional(),
+      utmCampaign: z.string().trim().max(200).optional(),
     }),
   )
   .handler(async ({ data }) => {
@@ -470,9 +473,12 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
         transport_zar: transport?.price ?? null,
         total_zar: totalPriceNum,
         source: "fireplacequotes.co.za",
+        utm_source: data.utmSource ?? null,
+        utm_medium: data.utmMedium ?? null,
+        utm_campaign: data.utmCampaign ?? null,
       })
       .select(
-        "id,first_name,last_name,email,phone,address,product_requested,matched_product,quantity,story_type,flooring,corner_install,distance_km,unit_price_zar,transport_zar,total_zar,pdf_path,source,created_at",
+        "id,first_name,last_name,email,phone,address,product_requested,matched_product,quantity,story_type,flooring,corner_install,distance_km,unit_price_zar,transport_zar,total_zar,pdf_path,source,created_at,utm_source,utm_medium,utm_campaign",
       )
       .single();
 
@@ -507,6 +513,9 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
       cornerInstallPrice ?? "",
       totalPriceNum ?? "",
       data.message ?? "",
+      data.utmSource ?? "",
+      data.utmMedium ?? "",
+      data.utmCampaign ?? "",
     ]);
 
     let bookingLink: string | null = null;

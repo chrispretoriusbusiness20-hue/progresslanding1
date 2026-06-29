@@ -21,6 +21,9 @@ export type QuoteRow = {
   source: string | null;
   status: string;
   pdf_path: string | null;
+  utm_source: string | null;
+  utm_medium: string | null;
+  utm_campaign: string | null;
 };
 
 export const listQuotes = createServerFn({ method: "GET" }).handler(async () => {
@@ -28,7 +31,7 @@ export const listQuotes = createServerFn({ method: "GET" }).handler(async () => 
   const { data, error } = await supabaseAdmin
     .from("quote_requests")
     .select(
-      "id,created_at,first_name,last_name,email,phone,address,product_requested,matched_product,quantity,story_type,flooring,corner_install,distance_km,unit_price_zar,transport_zar,total_zar,source,status,pdf_path",
+      "id,created_at,first_name,last_name,email,phone,address,product_requested,matched_product,quantity,story_type,flooring,corner_install,distance_km,unit_price_zar,transport_zar,total_zar,source,status,pdf_path,utm_source,utm_medium,utm_campaign",
     )
     .order("created_at", { ascending: false })
     .limit(1000);
