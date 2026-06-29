@@ -264,6 +264,9 @@ export type Database = {
           total_zar: number | null
           transport_zar: number | null
           unit_price_zar: number | null
+          utm_campaign: string | null
+          utm_medium: string | null
+          utm_source: string | null
         }
         Insert: {
           address?: string | null
@@ -292,6 +295,9 @@ export type Database = {
           total_zar?: number | null
           transport_zar?: number | null
           unit_price_zar?: number | null
+          utm_campaign?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
         }
         Update: {
           address?: string | null
@@ -320,6 +326,9 @@ export type Database = {
           total_zar?: number | null
           transport_zar?: number | null
           unit_price_zar?: number | null
+          utm_campaign?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
         }
         Relationships: []
       }
