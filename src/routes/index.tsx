@@ -323,6 +323,9 @@ function QuotePage() {
           installationRequired,
           address: address.trim() || undefined,
           message: message.trim() || undefined,
+          utmSource: utmSource || undefined,
+          utmMedium: utmMedium || undefined,
+          utmCampaign: utmCampaign || undefined,
         },
       })) as LookupResult;
       setLookup(result);
