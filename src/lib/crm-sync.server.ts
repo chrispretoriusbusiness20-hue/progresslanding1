@@ -38,6 +38,9 @@ export type QuoteForCRM = {
   pdf_path: string | null;
   source: string | null;
   created_at: string;
+  utm_source: string | null;
+  utm_medium: string | null;
+  utm_campaign: string | null;
 };
 
 function quoteNumberFor(q: QuoteForCRM) {
