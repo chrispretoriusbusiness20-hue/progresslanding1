@@ -450,25 +450,40 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
           (installationEstimate ?? 0)
         : null;
 
-    await supabaseAdmin.from("quote_requests").insert({
-      first_name: data.firstName,
-      last_name: data.lastName,
-      email: data.email,
-      phone: data.phone,
-      product_requested: data.product,
-      quantity: data.quantity,
-      story_type: data.storyType,
-      flooring: data.flooring ?? null,
-      corner_install: data.cornerInstall,
-      address: data.address ?? null,
-      message: data.message ?? null,
-      matched_product: matched?.name ?? null,
-      unit_price_zar: unitPriceNum,
-      distance_km: distanceKm,
-      transport_zar: transport?.price ?? null,
-      total_zar: totalPriceNum,
-      source: "fireplacequotes.co.za",
-    });
+    const { data: insertedQuote } = await supabaseAdmin
+      .from("quote_requests")
+      .insert({
+        first_name: data.firstName,
+        last_name: data.lastName,
+        email: data.email,
+        phone: data.phone,
+        product_requested: data.product,
+        quantity: data.quantity,
+        story_type: data.storyType,
+        flooring: data.flooring ?? null,
+        corner_install: data.cornerInstall,
+        address: data.address ?? null,
+        message: data.message ?? null,
+        matched_product: matched?.name ?? null,
+        unit_price_zar: unitPriceNum,
+        distance_km: distanceKm,
+        transport_zar: transport?.price ?? null,
+        total_zar: totalPriceNum,
+        source: "fireplacequotes.co.za",
+      })
+      .select(
+        "id,first_name,last_name,email,phone,address,product_requested,matched_product,quantity,story_type,flooring,corner_install,distance_km,unit_price_zar,transport_zar,total_zar,pdf_path,source,created_at",
+      )
+      .single();
+
+    if (insertedQuote) {
+      try {
+        const { pushQuoteToCRM } = await import("@/lib/crm-sync.server");
+        await pushQuoteToCRM(insertedQuote);
+      } catch (e) {
+        console.warn("[quote-submit] CRM push failed", e);
+      }
+    }
 
     await appendToQuoteSheet([
       new Date().toISOString(),
