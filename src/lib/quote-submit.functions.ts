@@ -473,9 +473,12 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
         transport_zar: transport?.price ?? null,
         total_zar: totalPriceNum,
         source: "fireplacequotes.co.za",
+        utm_source: data.utmSource ?? null,
+        utm_medium: data.utmMedium ?? null,
+        utm_campaign: data.utmCampaign ?? null,
       })
       .select(
-        "id,first_name,last_name,email,phone,address,product_requested,matched_product,quantity,story_type,flooring,corner_install,distance_km,unit_price_zar,transport_zar,total_zar,pdf_path,source,created_at",
+        "id,first_name,last_name,email,phone,address,product_requested,matched_product,quantity,story_type,flooring,corner_install,distance_km,unit_price_zar,transport_zar,total_zar,pdf_path,source,created_at,utm_source,utm_medium,utm_campaign",
       )
       .single();
 
