@@ -18,6 +18,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as EmailUnsubscribeRouteImport } from './routes/email/unsubscribe'
 import { Route as LovableEmailSuppressionRouteImport } from './routes/lovable/email/suppression'
 import { Route as ApiPublicBackfillSentRouteImport } from './routes/api/public/backfill-sent'
+import { Route as ApiPublicBackfillCrmRouteImport } from './routes/api/public/backfill-crm'
 import { Route as ApiPublicApproveInvoiceRouteImport } from './routes/api/public/approve-invoice'
 import { Route as ApiPublicAcceptQuoteRouteImport } from './routes/api/public/accept-quote'
 import { Route as LovableEmailTransactionalSendRouteImport } from './routes/lovable/email/transactional/send'
@@ -70,6 +71,11 @@ const LovableEmailSuppressionRoute = LovableEmailSuppressionRouteImport.update({
 const ApiPublicBackfillSentRoute = ApiPublicBackfillSentRouteImport.update({
   id: '/api/public/backfill-sent',
   path: '/api/public/backfill-sent',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicBackfillCrmRoute = ApiPublicBackfillCrmRouteImport.update({
+  id: '/api/public/backfill-crm',
+  path: '/api/public/backfill-crm',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiPublicApproveInvoiceRoute = ApiPublicApproveInvoiceRouteImport.update({
@@ -127,6 +133,7 @@ export interface FileRoutesByFullPath {
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/api/public/accept-quote': typeof ApiPublicAcceptQuoteRoute
   '/api/public/approve-invoice': typeof ApiPublicApproveInvoiceRoute
+  '/api/public/backfill-crm': typeof ApiPublicBackfillCrmRoute
   '/api/public/backfill-sent': typeof ApiPublicBackfillSentRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/api/public/cron/quote-follow-up': typeof ApiPublicCronQuoteFollowUpRoute
@@ -146,6 +153,7 @@ export interface FileRoutesByTo {
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/api/public/accept-quote': typeof ApiPublicAcceptQuoteRoute
   '/api/public/approve-invoice': typeof ApiPublicApproveInvoiceRoute
+  '/api/public/backfill-crm': typeof ApiPublicBackfillCrmRoute
   '/api/public/backfill-sent': typeof ApiPublicBackfillSentRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/api/public/cron/quote-follow-up': typeof ApiPublicCronQuoteFollowUpRoute
@@ -166,6 +174,7 @@ export interface FileRoutesById {
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/api/public/accept-quote': typeof ApiPublicAcceptQuoteRoute
   '/api/public/approve-invoice': typeof ApiPublicApproveInvoiceRoute
+  '/api/public/backfill-crm': typeof ApiPublicBackfillCrmRoute
   '/api/public/backfill-sent': typeof ApiPublicBackfillSentRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/api/public/cron/quote-follow-up': typeof ApiPublicCronQuoteFollowUpRoute
@@ -187,6 +196,7 @@ export interface FileRouteTypes {
     | '/email/unsubscribe'
     | '/api/public/accept-quote'
     | '/api/public/approve-invoice'
+    | '/api/public/backfill-crm'
     | '/api/public/backfill-sent'
     | '/lovable/email/suppression'
     | '/api/public/cron/quote-follow-up'
@@ -206,6 +216,7 @@ export interface FileRouteTypes {
     | '/email/unsubscribe'
     | '/api/public/accept-quote'
     | '/api/public/approve-invoice'
+    | '/api/public/backfill-crm'
     | '/api/public/backfill-sent'
     | '/lovable/email/suppression'
     | '/api/public/cron/quote-follow-up'
@@ -225,6 +236,7 @@ export interface FileRouteTypes {
     | '/email/unsubscribe'
     | '/api/public/accept-quote'
     | '/api/public/approve-invoice'
+    | '/api/public/backfill-crm'
     | '/api/public/backfill-sent'
     | '/lovable/email/suppression'
     | '/api/public/cron/quote-follow-up'
@@ -245,6 +257,7 @@ export interface RootRouteChildren {
   EmailUnsubscribeRoute: typeof EmailUnsubscribeRoute
   ApiPublicAcceptQuoteRoute: typeof ApiPublicAcceptQuoteRoute
   ApiPublicApproveInvoiceRoute: typeof ApiPublicApproveInvoiceRoute
+  ApiPublicBackfillCrmRoute: typeof ApiPublicBackfillCrmRoute
   ApiPublicBackfillSentRoute: typeof ApiPublicBackfillSentRoute
   LovableEmailSuppressionRoute: typeof LovableEmailSuppressionRoute
   ApiPublicCronQuoteFollowUpRoute: typeof ApiPublicCronQuoteFollowUpRoute
@@ -320,6 +333,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicBackfillSentRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/backfill-crm': {
+      id: '/api/public/backfill-crm'
+      path: '/api/public/backfill-crm'
+      fullPath: '/api/public/backfill-crm'
+      preLoaderRoute: typeof ApiPublicBackfillCrmRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/approve-invoice': {
       id: '/api/public/approve-invoice'
       path: '/api/public/approve-invoice'
@@ -389,6 +409,7 @@ const rootRouteChildren: RootRouteChildren = {
   EmailUnsubscribeRoute: EmailUnsubscribeRoute,
   ApiPublicAcceptQuoteRoute: ApiPublicAcceptQuoteRoute,
   ApiPublicApproveInvoiceRoute: ApiPublicApproveInvoiceRoute,
+  ApiPublicBackfillCrmRoute: ApiPublicBackfillCrmRoute,
   ApiPublicBackfillSentRoute: ApiPublicBackfillSentRoute,
   LovableEmailSuppressionRoute: LovableEmailSuppressionRoute,
   ApiPublicCronQuoteFollowUpRoute: ApiPublicCronQuoteFollowUpRoute,
@@ -401,13 +422,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
