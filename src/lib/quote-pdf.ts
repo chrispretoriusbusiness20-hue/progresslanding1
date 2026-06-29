@@ -455,15 +455,27 @@ export async function generateQuotePDF(
     py += 8;
 
     // --- Fee table ---
+    const km = input.distanceKm ?? 0;
+    const installTransport = km <= 50 ? 250 : km <= 100 ? 550 : 1000;
+    const transportLabel =
+      km <= 50
+        ? "Transport (within 50 km of Bellville)"
+        : km <= 100
+          ? "Transport (50–100 km from Bellville)"
+          : "Transport (100 km+ from Bellville)";
+    const coreDrill = input.storyType === "double" ? 1500 : 0;
+    const installFee = 5500;
+    const installTotal = installFee + coreDrill + installTransport;
     autoTable(doc, {
       startY: py,
       theme: "grid",
       head: [["Estimated Installation Fee", "Amount"]],
       body: [
-        [`Installation within Cape Town (${input.storyType === "double" ? "double story" : "single story"})`, ZAR(5500)],
-        ["Core Drilling Fee (double story only)", ZAR(input.storyType === "double" ? 1650 : 0)],
+        [`Installation within Cape Town (${input.storyType === "double" ? "double story" : "single story"})`, ZAR(installFee)],
+        ["Core Drilling Fee (double story only)", ZAR(coreDrill)],
+        [transportLabel, ZAR(installTransport)],
       ],
-      foot: [[{ content: "Total", styles: { fontStyle: "bold" } }, { content: ZAR(5500 + (input.storyType === "double" ? 1650 : 0)), styles: { fontStyle: "bold", halign: "right" } }]],
+      foot: [[{ content: "Total", styles: { fontStyle: "bold" } }, { content: ZAR(installTotal), styles: { fontStyle: "bold", halign: "right" } }]],
 
       styles: { fontSize: 10, cellPadding: 3, lineColor: [0, 0, 0], lineWidth: 0.2 },
       headStyles: { fillColor: [60, 60, 60], textColor: 255, fontStyle: "bold" },
@@ -473,6 +485,7 @@ export async function generateQuotePDF(
         1: { cellWidth: 45, halign: "right" },
       },
       margin: { left: margin, right: margin, bottom: bottomMargin },
+
     });
     // @ts-expect-error
     py = doc.lastAutoTable.finalY + 8;
