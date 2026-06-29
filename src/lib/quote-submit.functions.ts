@@ -428,7 +428,7 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
     // Installation estimate (within Cape Town) — base fee + core drilling for double-story flues.
     // Subject to site visit; mirrors the "Installation Estimate" page on the PDF.
     const INSTALL_BASE = 5500;
-    const CORE_DRILL = 1650;
+    const CORE_DRILL = 1500;
     const installationEstimate = installEligible
       ? INSTALL_BASE + (data.storyType === "double" ? CORE_DRILL : 0)
       : null;
