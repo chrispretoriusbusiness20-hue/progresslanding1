@@ -17,6 +17,8 @@ import progressLogo from "@/assets/progress-header-transparent.png.asset.json";
 
 import { SiteSurvey } from "@/components/site-survey";
 import { AddressAutocomplete } from "@/components/address-autocomplete";
+import { checkEmail } from "@/lib/email-typo";
+
 
 
 const QUOTE_APP_URL = "https://fireplacequotes.co.za/";
@@ -239,6 +241,7 @@ function QuotePage() {
   const [error, setError] = useState<string | null>(null);
   const [emailWarning, setEmailWarning] = useState<string | null>(null);
   const [emailConfirmed, setEmailConfirmed] = useState<string | null>(null);
+  const [emailTypo, setEmailTypo] = useState<ReturnType<typeof checkEmail>>({});
   const [headerHidden, setHeaderHidden] = useState(false);
   const [quoteNo, setQuoteNo] = useState<string | null>(null);
 
@@ -270,6 +273,22 @@ function QuotePage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!canContinue || loading) return;
+    const typoCheck = checkEmail(email);
+    setEmailTypo(typoCheck);
+    if (typoCheck.invalid) {
+      toast.error(typoCheck.invalid);
+      return;
+    }
+    if (typoCheck.suggestion) {
+      const ok = window.confirm(
+        `${typoCheck.reason}\n\nClick OK to use the suggested address, or Cancel to keep "${email.trim()}".`,
+      );
+      if (ok) {
+        setEmail(typoCheck.suggestion);
+        setEmailTypo({});
+        return;
+      }
+    }
     setLoading(true);
     setError(null);
     setEmailWarning(null);
@@ -609,11 +628,34 @@ function QuotePage() {
                 <input
                   type="email"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    setEmailTypo({});
+                  }}
+                  onBlur={(e) => setEmailTypo(checkEmail(e.target.value))}
                   required
                   className="form-input"
                   autoComplete="email"
+                  aria-invalid={Boolean(emailTypo.invalid)}
                 />
+                {emailTypo.invalid && (
+                  <p className="mt-1 text-sm text-red-600">{emailTypo.invalid}</p>
+                )}
+                {emailTypo.suggestion && !emailTypo.invalid && (
+                  <p className="mt-1 text-sm text-amber-700">
+                    {emailTypo.reason}{" "}
+                    <button
+                      type="button"
+                      className="underline font-medium hover:text-amber-900"
+                      onClick={() => {
+                        setEmail(emailTypo.suggestion!);
+                        setEmailTypo({});
+                      }}
+                    >
+                      Use this
+                    </button>
+                  </p>
+                )}
               </Field>
               <Field label="Phone *">
                 <input
