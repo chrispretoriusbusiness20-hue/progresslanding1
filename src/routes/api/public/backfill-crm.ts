@@ -20,7 +20,7 @@ export const Route = createFileRoute("/api/public/backfill-crm")({
         const { data, error } = await supabaseAdmin
           .from("quote_requests")
           .select(
-            "id,first_name,last_name,email,phone,address,product_requested,matched_product,quantity,story_type,flooring,corner_install,distance_km,unit_price_zar,transport_zar,total_zar,pdf_path,source,created_at",
+            "id,first_name,last_name,email,phone,address,product_requested,matched_product,quantity,story_type,flooring,corner_install,distance_km,unit_price_zar,transport_zar,total_zar,pdf_path,source,created_at,utm_source,utm_medium,utm_campaign",
           )
           .order("created_at", { ascending: true })
           .range(offset, offset + limit - 1);
