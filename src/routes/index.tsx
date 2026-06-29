@@ -273,6 +273,22 @@ function QuotePage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!canContinue || loading) return;
+    const typoCheck = checkEmail(email);
+    setEmailTypo(typoCheck);
+    if (typoCheck.invalid) {
+      toast.error(typoCheck.invalid);
+      return;
+    }
+    if (typoCheck.suggestion) {
+      const ok = window.confirm(
+        `${typoCheck.reason}\n\nClick OK to use the suggested address, or Cancel to keep "${email.trim()}".`,
+      );
+      if (ok) {
+        setEmail(typoCheck.suggestion);
+        setEmailTypo({});
+        return;
+      }
+    }
     setLoading(true);
     setError(null);
     setEmailWarning(null);
