@@ -1151,10 +1151,10 @@ function InstantQuote({
             label: "Installation estimate",
             value: installationEstimate,
             hint: storyType === "double"
-              ? "Double story: R5,500 + R1,650 core drilling · within Cape Town (subject to site visit)"
+              ? "Double story: R5,500 + R1,500 core drilling · within Cape Town (subject to site visit)"
               : storyType === "single"
                 ? "Single story: R5,500 · within Cape Town (subject to site visit)"
-                : "Single R5,500 · Double R7,150 (incl. core drilling) · within Cape Town (subject to site visit)",
+                : "Single R5,500 · Double R7,000 (incl. core drilling) · within Cape Town (subject to site visit)",
           },
 
         ]
