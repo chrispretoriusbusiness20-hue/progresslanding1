@@ -90,6 +90,9 @@ export async function pushQuoteToCRM(quote: QuoteForCRM): Promise<{ ok: boolean;
       flooring: quote.flooring,
       corner_install: quote.corner_install,
     },
+    utm_source: quote.utm_source,
+    utm_medium: quote.utm_medium,
+    utm_campaign: quote.utm_campaign,
   };
 
   const body = JSON.stringify(payload);
