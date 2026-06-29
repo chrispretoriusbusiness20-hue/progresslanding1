@@ -257,6 +257,18 @@ function QuotePage() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  const [utmSource, setUtmSource] = useState("");
+  const [utmMedium, setUtmMedium] = useState("");
+  const [utmCampaign, setUtmCampaign] = useState("");
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    setUtmSource(params.get("utm_source") ?? "");
+    setUtmMedium(params.get("utm_medium") ?? "");
+    setUtmCampaign(params.get("utm_campaign") ?? "");
+  }, []);
+
   const submitFn = useServerFn(submitQuoteRequest);
   const createUploadFn = useServerFn(createQuoteUploadUrl);
   const emailQuoteFn = useServerFn(emailQuoteFromPath);
