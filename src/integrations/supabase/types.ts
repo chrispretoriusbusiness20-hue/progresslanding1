@@ -242,6 +242,9 @@ export type Database = {
           approval_note: string | null
           corner_install: boolean
           created_at: string
+          crm_sync_error: string | null
+          crm_sync_status: string | null
+          crm_synced_at: string | null
           decided_at: string | null
           decided_by: string | null
           distance_km: number | null
@@ -273,6 +276,9 @@ export type Database = {
           approval_note?: string | null
           corner_install?: boolean
           created_at?: string
+          crm_sync_error?: string | null
+          crm_sync_status?: string | null
+          crm_synced_at?: string | null
           decided_at?: string | null
           decided_by?: string | null
           distance_km?: number | null
@@ -304,6 +310,9 @@ export type Database = {
           approval_note?: string | null
           corner_install?: boolean
           created_at?: string
+          crm_sync_error?: string | null
+          crm_sync_status?: string | null
+          crm_synced_at?: string | null
           decided_at?: string | null
           decided_by?: string | null
           distance_km?: number | null
