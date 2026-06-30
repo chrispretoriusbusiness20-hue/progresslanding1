@@ -243,18 +243,26 @@ function Row({ r }: { r: QuoteRow }) {
       </td>
       <td className="px-3 py-3">
         {r.pdf_path ? (
-          <a
-            href={`https://vqmrohoxuuyvphuomfuo.supabase.co/storage/v1/object/public/quotes/${r.pdf_path}`}
-            target="_blank"
-            rel="noreferrer"
+          <button
+            type="button"
+            onClick={async () => {
+              try {
+                const res = await getQuotePdfUrl({ data: { id: r.id } });
+                if (res.url) window.open(res.url, "_blank", "noopener,noreferrer");
+                else alert("PDF not available for this quote.");
+              } catch (e) {
+                alert(`Could not open PDF: ${(e as Error).message}`);
+              }
+            }}
             className="text-xs text-primary hover:underline"
           >
             View
-          </a>
+          </button>
         ) : (
           <span className="text-xs text-muted-foreground">—</span>
         )}
       </td>
+
     </tr>
   );
 }
