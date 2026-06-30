@@ -38,3 +38,22 @@ export const listQuotes = createServerFn({ method: "GET" }).handler(async () => 
   if (error) throw new Error(error.message);
   return (data ?? []) as QuoteRow[];
 });
+
+export const getQuotePdfUrl = createServerFn({ method: "POST" })
+  .inputValidator((input: { id: string }) => input)
+  .handler(async ({ data }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: row, error } = await supabaseAdmin
+      .from("quote_requests")
+      .select("pdf_path")
+      .eq("id", data.id)
+      .maybeSingle();
+    if (error) throw new Error(error.message);
+    if (!row?.pdf_path) return { url: null as string | null };
+    const { data: signed, error: sErr } = await supabaseAdmin.storage
+      .from("quotes")
+      .createSignedUrl(row.pdf_path, 60 * 60);
+    if (sErr) throw new Error(sErr.message);
+    return { url: signed?.signedUrl ?? null };
+  });
+
