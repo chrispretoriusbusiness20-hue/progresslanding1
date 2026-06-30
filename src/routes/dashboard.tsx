@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useSuspenseQuery, queryOptions } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
-import { listQuotes, type QuoteRow } from "@/lib/list-quotes.functions";
+import { listQuotes, getQuotePdfUrl, type QuoteRow } from "@/lib/list-quotes.functions";
 
 const quotesQO = queryOptions({
   queryKey: ["all-quotes"],
