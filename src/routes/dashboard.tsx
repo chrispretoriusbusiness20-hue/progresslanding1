@@ -203,7 +203,7 @@ function StatCard({ label, value }: { label: string; value: string }) {
   );
 }
 
-function Row({ r }: { r: QuoteRow }) {
+function Row({ r, onEdit }: { r: QuoteRow; onEdit: () => void }) {
   const installBits = [
     r.story_type,
     r.flooring,
@@ -270,7 +270,145 @@ function Row({ r }: { r: QuoteRow }) {
           <span className="text-xs text-muted-foreground">—</span>
         )}
       </td>
-
+      <td className="px-3 py-3">
+        <button
+          type="button"
+          onClick={onEdit}
+          className="text-xs text-primary hover:underline"
+        >
+          Edit
+        </button>
+      </td>
     </tr>
+  );
+}
+
+function EditModal({ row, onClose }: { row: QuoteRow; onClose: () => void }) {
+  const qc = useQueryClient();
+  const [form, setForm] = useState({
+    first_name: row.first_name ?? "",
+    last_name: row.last_name ?? "",
+    email: row.email ?? "",
+    phone: row.phone ?? "",
+    address: row.address ?? "",
+    matched_product: row.matched_product ?? row.product_requested ?? "",
+    quantity: row.quantity ?? 1,
+    unit_price_zar: row.unit_price_zar ?? 0,
+    transport_zar: row.transport_zar ?? 0,
+    total_zar: row.total_zar ?? 0,
+    status: row.status ?? "pending",
+  });
+  const [saving, setSaving] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+
+  const set = <K extends keyof typeof form>(k: K, v: (typeof form)[K]) =>
+    setForm((f) => ({ ...f, [k]: v }));
+
+  const save = async () => {
+    setSaving(true);
+    setErr(null);
+    try {
+      await updateQuote({
+        data: {
+          id: row.id,
+          first_name: form.first_name,
+          last_name: form.last_name,
+          email: form.email,
+          phone: form.phone,
+          address: form.address || null,
+          matched_product: form.matched_product || null,
+          quantity: Number(form.quantity) || 1,
+          unit_price_zar: Number(form.unit_price_zar) || 0,
+          transport_zar: Number(form.transport_zar) || 0,
+          total_zar: Number(form.total_zar) || 0,
+          status: form.status,
+        },
+      });
+      await qc.invalidateQueries({ queryKey: ["all-quotes"] });
+      onClose();
+    } catch (e) {
+      setErr((e as Error).message);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+      onClick={onClose}
+    >
+      <div
+        className="w-full max-w-2xl rounded-lg bg-background p-6 shadow-lg"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="text-lg font-semibold">Edit quote</h2>
+          <button onClick={onClose} className="text-muted-foreground hover:text-foreground">✕</button>
+        </div>
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <Field label="First name" value={form.first_name} onChange={(v) => set("first_name", v)} />
+          <Field label="Last name" value={form.last_name} onChange={(v) => set("last_name", v)} />
+          <Field label="Email" value={form.email} onChange={(v) => set("email", v)} />
+          <Field label="Phone" value={form.phone} onChange={(v) => set("phone", v)} />
+          <Field label="Address" value={form.address} onChange={(v) => set("address", v)} full />
+          <Field label="Product" value={form.matched_product} onChange={(v) => set("matched_product", v)} full />
+          <Field label="Qty" type="number" value={String(form.quantity)} onChange={(v) => set("quantity", Number(v))} />
+          <Field label="Unit price (R)" type="number" value={String(form.unit_price_zar)} onChange={(v) => set("unit_price_zar", Number(v))} />
+          <Field label="Transport (R)" type="number" value={String(form.transport_zar)} onChange={(v) => set("transport_zar", Number(v))} />
+          <Field label="Total (R)" type="number" value={String(form.total_zar)} onChange={(v) => set("total_zar", Number(v))} />
+          <div>
+            <label className="block text-xs font-medium text-muted-foreground">Status</label>
+            <select
+              value={form.status}
+              onChange={(e) => set("status", e.target.value)}
+              className="mt-1 w-full rounded-md border bg-background px-3 py-2 text-sm"
+            >
+              <option value="pending">Pending</option>
+              <option value="approved">Approved</option>
+              <option value="rejected">Rejected</option>
+            </select>
+          </div>
+        </div>
+        {err && <div className="mt-3 text-sm text-red-600">{err}</div>}
+        <div className="mt-6 flex justify-end gap-2">
+          <button
+            onClick={onClose}
+            className="rounded-md border px-4 py-2 text-sm hover:bg-muted"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={save}
+            disabled={saving}
+            className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90 disabled:opacity-50"
+          >
+            {saving ? "Saving…" : "Save changes"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Field({
+  label, value, onChange, type = "text", full = false,
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  type?: string;
+  full?: boolean;
+}) {
+  return (
+    <div className={full ? "sm:col-span-2" : ""}>
+      <label className="block text-xs font-medium text-muted-foreground">{label}</label>
+      <input
+        type={type}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="mt-1 w-full rounded-md border bg-background px-3 py-2 text-sm"
+      />
+    </div>
   );
 }
