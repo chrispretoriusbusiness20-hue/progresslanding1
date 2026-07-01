@@ -89,7 +89,8 @@ export const updateQuote = createServerFn({ method: "POST" })
     if (Object.keys(clean).length === 0) return { ok: true };
     const { error } = await supabaseAdmin
       .from("quote_requests")
-      .update(clean)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      .update(clean as any)
       .eq("id", id);
     if (error) throw new Error(error.message);
     return { ok: true };
