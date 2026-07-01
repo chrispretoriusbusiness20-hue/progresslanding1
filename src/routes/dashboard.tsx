@@ -36,6 +36,7 @@ function DashboardPage() {
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState<string>("all");
   const [source, setSource] = useState<string>("all");
+  const [editing, setEditing] = useState<QuoteRow | null>(null);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
