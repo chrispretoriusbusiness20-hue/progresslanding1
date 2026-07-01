@@ -180,6 +180,12 @@ function DashboardPage() {
           </table>
         </div>
       </div>
+      {editing && (
+        <EditModal
+          row={editing}
+          onClose={() => setEditing(null)}
+        />
+      )}
     </div>
   );
 }
