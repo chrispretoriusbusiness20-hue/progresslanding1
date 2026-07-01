@@ -57,3 +57,41 @@ export const getQuotePdfUrl = createServerFn({ method: "POST" })
     return { url: signed?.signedUrl ?? null };
   });
 
+export type QuoteUpdate = {
+  id: string;
+  first_name?: string;
+  last_name?: string;
+  email?: string;
+  phone?: string;
+  address?: string | null;
+  matched_product?: string | null;
+  quantity?: number;
+  unit_price_zar?: number | null;
+  transport_zar?: number | null;
+  total_zar?: number | null;
+  status?: string;
+};
+
+export const updateQuote = createServerFn({ method: "POST" })
+  .inputValidator((input: QuoteUpdate) => {
+    if (!input || typeof input.id !== "string" || !input.id) {
+      throw new Error("id required");
+    }
+    return input;
+  })
+  .handler(async ({ data }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { id, ...patch } = data;
+    const clean: Record<string, unknown> = {};
+    for (const [k, v] of Object.entries(patch)) {
+      if (v !== undefined) clean[k] = v;
+    }
+    if (Object.keys(clean).length === 0) return { ok: true };
+    const { error } = await supabaseAdmin
+      .from("quote_requests")
+      .update(clean)
+      .eq("id", id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
