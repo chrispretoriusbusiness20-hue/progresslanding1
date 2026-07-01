@@ -162,11 +162,12 @@ function DashboardPage() {
                 <Th>Source</Th>
                 <Th>Status</Th>
                 <Th>PDF</Th>
+                <Th>Edit</Th>
               </tr>
             </thead>
             <tbody>
               {filtered.map((r) => (
-                <Row key={r.id} r={r} />
+                <Row key={r.id} r={r} onEdit={() => setEditing(r)} />
               ))}
               {filtered.length === 0 && (
                 <tr>
