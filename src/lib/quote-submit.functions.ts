@@ -690,6 +690,10 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
 
 
     return {
+    const { signQuoteSession } = await import("@/lib/quote-session.server");
+
+    return {
+      session: signQuoteSession(data.email),
       match: true as const,
       firstName: data.firstName,
       lastName: data.lastName,
