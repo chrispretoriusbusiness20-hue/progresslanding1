@@ -99,8 +99,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "twitter:card", content: "summary" },
       { name: "twitter:title", content: "The Progress Group — Fireplaces, Braais, Lighting & Aircons" },
       { name: "twitter:description", content: "The Progress Group supplies and installs fireplaces, braais, lighting and aircons across South Africa. Request a tailored quote online." },
-      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/5xv0qmivVVhv9FE5bA4bTElDxzo2/social-images/social-1782992563374-1.webp" },
-      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/5xv0qmivVVhv9FE5bA4bTElDxzo2/social-images/social-1782992563374-1.webp" },
+      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/5xv0qmivVVhv9FE5bA4bTElDxzo2/social-images/social-1782992808210-ChatGPT_Image_Jul_2,_2026,_01_45_19_PM.webp" },
+      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/5xv0qmivVVhv9FE5bA4bTElDxzo2/social-images/social-1782992808210-ChatGPT_Image_Jul_2,_2026,_01_45_19_PM.webp" },
     ],
     links: [
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
