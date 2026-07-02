@@ -33,7 +33,7 @@ export function buildQuoteEmailHtml(data: QuoteEmailData): string {
     acceptLabel = "Accept Quote",
     viewUrl,
     viewLabel = "View your quote",
-    paymentTerms = "Balance is payable on completion.",
+    paymentTerms = "20% before delivery or collection.",
     extraHtml,
     accent = "#dd7400",
   } = data;
