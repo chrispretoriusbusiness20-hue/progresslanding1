@@ -90,6 +90,7 @@ type CatalogMatch = {
 
 type LookupResult =
   | {
+      session: string;
       match: true;
       firstName: string;
       lastName: string;
@@ -387,8 +388,12 @@ function QuotePage() {
               ? (result.catalog?.name ?? result.productRequested)
               : product;
             // 1) Get a signed upload URL (with one retry)
+            const session = result.match ? result.session : "";
             const uploadInfo = (await withRetry(
-              () => createUploadFn({ data: { filename: pdf.filename } }),
+              () =>
+                createUploadFn({
+                  data: { filename: pdf.filename, email: customerEmail, session },
+                }),
               "Create upload URL",
             )) as
               | { ok: true; path: string; token: string; signedUrl: string }
@@ -420,6 +425,7 @@ function QuotePage() {
                     clientName: fullName,
                     quoteNo: pdf.quoteNo,
                     productName,
+                    session,
                   },
                 }),
               "Send customer email",

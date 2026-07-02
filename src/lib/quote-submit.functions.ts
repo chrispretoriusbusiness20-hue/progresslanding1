@@ -69,10 +69,16 @@ export const createQuoteUploadUrl = createServerFn({ method: "POST" })
         .min(1)
         .max(200)
         .regex(/\.pdf$/i, "filename must end with .pdf"),
+      email: z.string().trim().email().max(200),
+      session: z.string().trim().min(10).max(300),
     }),
   )
   .handler(async ({ data }) => {
     try {
+      const { verifyQuoteSession } = await import("@/lib/quote-session.server");
+      if (!verifyQuoteSession(data.email, data.session)) {
+        return { ok: false as const, error: "Unauthorized" };
+      }
       const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
       const safeName = data.filename.replace(/[^A-Za-z0-9._-]/g, "_");
       const path = `${new Date().toISOString().slice(0, 10)}/${crypto.randomUUID()}-${safeName}`;
@@ -104,10 +110,15 @@ export const emailQuoteFromPath = createServerFn({ method: "POST" })
       clientName: z.string().trim().min(1).max(200).optional(),
       quoteNo: z.string().trim().min(1).max(80).optional(),
       productName: z.string().trim().min(1).max(300).optional(),
+      session: z.string().trim().min(10).max(300),
     }),
   )
   .handler(async ({ data }) => {
     try {
+      const { verifyQuoteSession } = await import("@/lib/quote-session.server");
+      if (!verifyQuoteSession(data.to, data.session)) {
+        return { ok: false, error: "Unauthorized", downloadUrl: null };
+      }
       const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
       // Verify the object exists AND was uploaded recently — prevents the
@@ -678,7 +689,10 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
     }
 
 
+    const { signQuoteSession } = await import("@/lib/quote-session.server");
+
     return {
+      session: signQuoteSession(data.email),
       match: true as const,
       firstName: data.firstName,
       lastName: data.lastName,
