@@ -904,7 +904,7 @@ function QuotePage() {
               </div>
             )}
             <div className="mb-4 border-l-4 border-primary bg-primary/10 px-4 py-3 text-sm font-semibold text-foreground">
-              80% deposit is required for ACCEPTANCE OF QUOTATION. Balance is payable on completion.
+              20% before delivery or collection.
             </div>
 
             {/* Quote breakdown — surfaces installation estimate for supply + install */}
@@ -1220,7 +1220,7 @@ function InstantQuote({
         Excludes transport. Final quote confirmed after we calculate distance from Bellville to your address.
       </p>
       <p className="mt-2 border-l-4 border-primary bg-primary/10 px-3 py-2 text-xs font-semibold text-foreground">
-        80% deposit required for ACCEPTANCE OF QUOTATION.
+        20% before delivery or collection.
       </p>
     </div>
   );

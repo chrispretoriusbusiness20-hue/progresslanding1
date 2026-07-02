@@ -387,7 +387,7 @@ export async function generateQuotePDF(
   // ---------- Footer terms ----------
   ensureSpace(6);
   doc.setFont("helvetica", "bold").setFontSize(9);
-  doc.text("80% DEPOSIT for ACCEPTANCE OF QUOTATION     BALANCE ON COMPLETION", margin, y);
+  doc.text("20% BEFORE DELIVERY OR COLLECTION", margin, y);
   y += 5;
   doc.setFont("helvetica", "normal");
   const footer = [

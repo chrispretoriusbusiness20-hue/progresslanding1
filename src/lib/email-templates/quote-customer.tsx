@@ -56,7 +56,7 @@ const Email = ({
           </Section>
         ) : null}
         <Text style={notice}>
-          <strong>Payment terms:</strong> Balance is payable on completion.
+          <strong>Payment terms:</strong> 20% before delivery or collection.
         </Text>
         <Section style={{ textAlign: 'center', margin: '28px 0' }}>
           <Button href={downloadUrl} style={button}>
