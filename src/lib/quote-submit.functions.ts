@@ -689,7 +689,6 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
     }
 
 
-    return {
     const { signQuoteSession } = await import("@/lib/quote-session.server");
 
     return {
