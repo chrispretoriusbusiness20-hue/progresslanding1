@@ -90,6 +90,7 @@ type CatalogMatch = {
 
 type LookupResult =
   | {
+      session: string;
       match: true;
       firstName: string;
       lastName: string;
