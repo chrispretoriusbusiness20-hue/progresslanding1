@@ -110,10 +110,15 @@ export const emailQuoteFromPath = createServerFn({ method: "POST" })
       clientName: z.string().trim().min(1).max(200).optional(),
       quoteNo: z.string().trim().min(1).max(80).optional(),
       productName: z.string().trim().min(1).max(300).optional(),
+      session: z.string().trim().min(10).max(300),
     }),
   )
   .handler(async ({ data }) => {
     try {
+      const { verifyQuoteSession } = await import("@/lib/quote-session.server");
+      if (!verifyQuoteSession(data.to, data.session)) {
+        return { ok: false, error: "Unauthorized", downloadUrl: null };
+      }
       const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
       // Verify the object exists AND was uploaded recently — prevents the
