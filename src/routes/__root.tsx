@@ -99,8 +99,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "twitter:card", content: "summary" },
       { name: "twitter:title", content: "The Progress Group — Fireplaces, Braais, Lighting & Aircons" },
       { name: "twitter:description", content: "The Progress Group supplies and installs fireplaces, braais, lighting and aircons across South Africa. Request a tailored quote online." },
-      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/5xv0qmivVVhv9FE5bA4bTElDxzo2/social-images/social-1780313139195-WhatsApp_Image_2026-06-01_at_13.25.19.webp" },
-      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/5xv0qmivVVhv9FE5bA4bTElDxzo2/social-images/social-1780313139195-WhatsApp_Image_2026-06-01_at_13.25.19.webp" },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/5db1ab77-ec0f-4d58-a69b-a4a6347082c0/id-preview-589f012e--2d9cc8b2-000b-4cff-99a8-7510e5712bbd.lovable.app-1782979723783.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/5db1ab77-ec0f-4d58-a69b-a4a6347082c0/id-preview-589f012e--2d9cc8b2-000b-4cff-99a8-7510e5712bbd.lovable.app-1782979723783.png" },
     ],
     links: [
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
