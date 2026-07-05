@@ -487,6 +487,9 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
         utm_source: data.utmSource ?? null,
         utm_medium: data.utmMedium ?? null,
         utm_campaign: data.utmCampaign ?? null,
+        status: "approved",
+        decided_by: "system:auto-approve",
+        decided_at: new Date().toISOString(),
       })
       .select(
         "id,first_name,last_name,email,phone,address,product_requested,matched_product,quantity,story_type,flooring,corner_install,distance_km,unit_price_zar,transport_zar,total_zar,pdf_path,source,created_at,utm_source,utm_medium,utm_campaign",
