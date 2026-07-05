@@ -464,7 +464,7 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
           (installationEstimate ?? 0)
         : null;
 
-    const { data: insertedQuote } = await supabaseAdmin
+    const { data: insertedQuote, error: insertError } = await supabaseAdmin
       .from("quote_requests")
       .insert({
         first_name: data.firstName,
@@ -492,9 +492,31 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
         decided_at: new Date().toISOString(),
       })
       .select(
-        "id,first_name,last_name,email,phone,address,product_requested,matched_product,quantity,story_type,flooring,corner_install,distance_km,unit_price_zar,transport_zar,total_zar,pdf_path,source,created_at,utm_source,utm_medium,utm_campaign",
+        "id,first_name,last_name,email,phone,address,product_requested,matched_product,quantity,story_type,flooring,corner_install,distance_km,unit_price_zar,transport_zar,total_zar,pdf_path,source,created_at,utm_source,utm_medium,utm_campaign,status",
       )
       .single();
+
+    if (insertError) {
+      console.error("[quote-submit] insert failed", insertError);
+    }
+
+    // Belt-and-suspenders: if the row didn't land as 'approved' (e.g. stale
+    // schema cache stripped the field, or a trigger reset it), force it now.
+    if (insertedQuote && insertedQuote.status !== "approved") {
+      const { error: updateError } = await supabaseAdmin
+        .from("quote_requests")
+        .update({
+          status: "approved",
+          decided_by: "system:auto-approve",
+          decided_at: new Date().toISOString(),
+        })
+        .eq("id", insertedQuote.id);
+      if (updateError) {
+        console.error("[quote-submit] auto-approve update failed", updateError);
+      } else {
+        insertedQuote.status = "approved";
+      }
+    }
 
     if (insertedQuote) {
       try {
