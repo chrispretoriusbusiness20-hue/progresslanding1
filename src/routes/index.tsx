@@ -285,6 +285,24 @@ function QuotePage() {
 
   const autoSubmittedRef = useRef(false);
 
+  // Auto-generate the quote once all required fields are valid.
+  // Debounced so users can finish typing; fires once per completion cycle.
+  useEffect(() => {
+    if (!canContinue) {
+      autoSubmittedRef.current = false;
+      return;
+    }
+    if (autoSubmittedRef.current || submitted || loading) return;
+    const t = setTimeout(() => {
+      if (autoSubmittedRef.current || submitted || loading) return;
+      autoSubmittedRef.current = true;
+      void handleSubmit(null, { auto: true });
+    }, 1200);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [canContinue, submitted, loading]);
+
+
   const handleSubmit = async (
     e?: React.FormEvent | null,
     opts: { auto?: boolean } = {},
