@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { CheckCircle2, FileDown, Loader2, MessageCircle, Sparkles } from "lucide-react";
 import { toast } from "sonner";
@@ -283,16 +283,39 @@ function QuotePage() {
     [firstName, lastName, email, phone, product],
   );
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const autoSubmittedRef = useRef(false);
+
+  // Auto-generate the quote once all required fields are valid.
+  // Debounced so users can finish typing; fires once per completion cycle.
+  useEffect(() => {
+    if (!canContinue) {
+      autoSubmittedRef.current = false;
+      return;
+    }
+    if (autoSubmittedRef.current || submitted || loading) return;
+    const t = setTimeout(() => {
+      if (autoSubmittedRef.current || submitted || loading) return;
+      autoSubmittedRef.current = true;
+      void handleSubmit(null, { auto: true });
+    }, 1200);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [canContinue, submitted, loading]);
+
+
+  const handleSubmit = async (
+    e?: React.FormEvent | null,
+    opts: { auto?: boolean } = {},
+  ) => {
+    if (e && typeof e.preventDefault === "function") e.preventDefault();
     if (!canContinue || loading) return;
     const typoCheck = checkEmail(email);
     setEmailTypo(typoCheck);
     if (typoCheck.invalid) {
-      toast.error(typoCheck.invalid);
+      if (!opts.auto) toast.error(typoCheck.invalid);
       return;
     }
-    if (typoCheck.suggestion) {
+    if (typoCheck.suggestion && !opts.auto) {
       const ok = window.confirm(
         `${typoCheck.reason}\n\nClick OK to use the suggested address, or Cancel to keep "${email.trim()}".`,
       );
