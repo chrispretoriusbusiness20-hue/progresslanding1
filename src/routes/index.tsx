@@ -842,8 +842,6 @@ function QuotePage() {
               />
             </Field>
 
-            <SiteSurvey />
-
             <Field label="Any flues or extras for client account">
               <textarea
                 value={extrasForAccount}
