@@ -909,9 +909,6 @@ function QuotePage() {
                 ✓ Quote email sent successfully to <strong>{emailConfirmed}</strong>. Please check your inbox (and spam folder).
               </div>
             )}
-            <div className="mb-4 border-l-4 border-primary bg-primary/10 px-4 py-3 text-sm font-semibold text-foreground">
-              20% before delivery or collection.
-            </div>
 
             {/* Quote breakdown — surfaces installation estimate for supply + install */}
             {matched && (
