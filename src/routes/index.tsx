@@ -842,16 +842,6 @@ function QuotePage() {
               />
             </Field>
 
-            <Field label="Any flues or extras for client account">
-              <textarea
-                value={extrasForAccount}
-                onChange={(e) => setExtrasForAccount(e.target.value)}
-                rows={3}
-                placeholder="e.g. extra flue lengths, bends, adaptors — to be added to the client's account"
-                className="form-input"
-              />
-            </Field>
-
             {/* Instant quote breakdown — live, no submission required */}
             <InstantQuote
               productName={product}
