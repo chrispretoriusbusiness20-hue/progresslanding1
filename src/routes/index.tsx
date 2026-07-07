@@ -15,7 +15,7 @@ import productsData from "@/data/products.json";
 import progressLogo from "@/assets/progress-header-transparent.png.asset.json";
 
 
-import { SiteSurvey } from "@/components/site-survey";
+
 import { AddressAutocomplete } from "@/components/address-autocomplete";
 import { checkEmail } from "@/lib/email-typo";
 
@@ -841,8 +841,6 @@ function QuotePage() {
                 className="form-input"
               />
             </Field>
-
-            <SiteSurvey />
 
             <Field label="Any flues or extras for client account">
               <textarea
