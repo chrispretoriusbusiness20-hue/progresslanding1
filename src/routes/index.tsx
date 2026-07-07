@@ -283,16 +283,21 @@ function QuotePage() {
     [firstName, lastName, email, phone, product],
   );
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const autoSubmittedRef = useRef(false);
+
+  const handleSubmit = async (
+    e?: React.FormEvent | null,
+    opts: { auto?: boolean } = {},
+  ) => {
+    if (e && typeof e.preventDefault === "function") e.preventDefault();
     if (!canContinue || loading) return;
     const typoCheck = checkEmail(email);
     setEmailTypo(typoCheck);
     if (typoCheck.invalid) {
-      toast.error(typoCheck.invalid);
+      if (!opts.auto) toast.error(typoCheck.invalid);
       return;
     }
-    if (typoCheck.suggestion) {
+    if (typoCheck.suggestion && !opts.auto) {
       const ok = window.confirm(
         `${typoCheck.reason}\n\nClick OK to use the suggested address, or Cancel to keep "${email.trim()}".`,
       );
