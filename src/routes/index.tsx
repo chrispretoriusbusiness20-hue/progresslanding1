@@ -1233,9 +1233,6 @@ function InstantQuote({
       <p className="mt-2 text-[11px] text-muted-foreground">
         Excludes transport. Final quote confirmed after we calculate distance from Bellville to your address.
       </p>
-      <p className="mt-2 border-l-4 border-primary bg-primary/10 px-3 py-2 text-xs font-semibold text-foreground">
-        20% before delivery or collection.
-      </p>
     </div>
   );
 }
