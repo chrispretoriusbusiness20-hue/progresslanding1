@@ -55,9 +55,6 @@ const Email = ({
             </Row>
           </Section>
         ) : null}
-        <Text style={notice}>
-          <strong>Payment terms:</strong> 20% before delivery or collection.
-        </Text>
         <Section style={{ textAlign: 'center', margin: '28px 0' }}>
           <Button href={downloadUrl} style={button}>
             Download your quote (PDF)
