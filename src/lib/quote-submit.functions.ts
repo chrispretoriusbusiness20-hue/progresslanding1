@@ -194,6 +194,9 @@ export const emailQuoteFromPath = createServerFn({ method: "POST" })
           <p>Thank you for requesting a quote from <strong>Progress Group</strong>. We truly appreciate your interest in <strong>${esc(productName)}</strong>.</p>
           <p>Please find your personalised quote ${quoteNo ? `(<strong>${esc(quoteNo)}</strong>) ` : ""}below. If you'd like to proceed, simply click <strong>Accept Quote</strong> and our sales team will be in touch shortly.</p>
           ${productBlock}
+          <p style="margin:16px 0;padding:12px 16px;background:#fff7ed;border-left:4px solid #dd7400;color:#7c2d12;font-size:14px;line-height:1.6">
+            <strong>Payment terms:</strong> Full payment on order.
+          </p>
           <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:24px 0">
             <tr>
               <td style="padding-right:12px">
