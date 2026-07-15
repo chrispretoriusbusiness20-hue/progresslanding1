@@ -87,6 +87,7 @@ export const Route = createFileRoute("/api/public/accept-quote")({
           body: "Please review the details below and click <strong>Approve &amp; send invoice</strong> to issue the invoice automatically to the client.",
           acceptUrl: approveUrl,
           acceptLabel: "Approve & send invoice",
+          paymentTerms: "Full payment on order.",
           extraHtml: summaryTable,
         });
 
