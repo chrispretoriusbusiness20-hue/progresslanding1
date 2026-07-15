@@ -332,7 +332,17 @@ function transportPriceForKm(km: number, installationRequired: boolean): { zone:
     if (km <= 300) return { zone: "Courier 151–300 km (estimate — sales to confirm)", price: 1100 };
     return { zone: "Courier 300 km+ (estimate — sales to confirm)", price: 1750 };
   }
-  return { zone: "Standard delivery from Bellville", price: 0 };
+  return { zone: "Included in installation estimate", price: 0 };
+}
+
+const INSTALL_BASE = 5500;
+const CORE_DRILL = 1500;
+const INCLUDED_KM = 25;
+const EXTRA_KM_RATE = 12;
+
+function transportInInstallEstimate(km: number | null): number {
+  if (km === null) return 0;
+  return Math.max(0, km - INCLUDED_KM) * EXTRA_KM_RATE;
 }
 
 
