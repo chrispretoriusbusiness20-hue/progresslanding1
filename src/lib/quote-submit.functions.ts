@@ -443,7 +443,6 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
 
 
     const transport = distanceKm !== null ? transportPriceForKm(distanceKm, data.installationRequired) : null;
-    const travelFee = installEligible && distanceKm !== null && distanceKm <= 50 ? 250 : 0;
 
     const cornerInstallPrice = installEligible && data.cornerInstall
       ? 800 + (distanceKm !== null && distanceKm <= 50 ? 650 : 0)
