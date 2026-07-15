@@ -55,6 +55,9 @@ const Email = ({
             </Row>
           </Section>
         ) : null}
+        <Text style={notice}>
+          <strong>Payment terms:</strong> Full payment on order.
+        </Text>
         <Section style={{ textAlign: 'center', margin: '28px 0' }}>
           <Button href={downloadUrl} style={button}>
             Download your quote (PDF)
@@ -86,6 +89,7 @@ const main = { backgroundColor: '#ffffff', fontFamily: 'Arial, sans-serif', colo
 const container = { padding: '24px', maxWidth: '640px' }
 const h1 = { fontSize: '22px', fontWeight: 700, margin: '0 0 16px' }
 const text = { fontSize: '15px', lineHeight: '1.6', margin: '0 0 12px' }
+const notice = { fontSize: '14px', lineHeight: '1.6', margin: '0 0 16px', padding: '12px 16px', backgroundColor: '#fff7ed', borderLeft: '4px solid #dd7400', color: '#7c2d12' }
 const muted = { fontSize: '13px', lineHeight: '1.6', color: '#555', margin: '0 0 8px' }
 const button = {
   backgroundColor: '#dd7400',
