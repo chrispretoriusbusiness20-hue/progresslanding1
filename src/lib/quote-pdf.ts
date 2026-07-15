@@ -386,6 +386,9 @@ export async function generateQuotePDF(
 
   // ---------- Footer terms ----------
   ensureSpace(6);
+  doc.setFont("helvetica", "bold").setFontSize(9);
+  doc.text("FULL PAYMENT ON ORDER", margin, y);
+  y += 5;
   doc.setFont("helvetica", "normal");
   const footer = [
     "All goods remain the property of Progress until full and final payment is received.",
