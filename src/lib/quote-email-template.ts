@@ -13,8 +13,6 @@ export interface QuoteEmailData {
   /** Optional secondary link to view/download the quote again. */
   viewUrl?: string;
   viewLabel?: string;
-  /** Payment terms line shown above signature. */
-  paymentTerms?: string;
   /** Optional extra HTML inserted before the signature (e.g. a summary table). */
   extraHtml?: string;
   /** Headline color accent. Defaults to brand orange. */
@@ -33,7 +31,6 @@ export function buildQuoteEmailHtml(data: QuoteEmailData): string {
     acceptLabel = "Accept Quote",
     viewUrl,
     viewLabel = "View your quote",
-    paymentTerms = "20% before delivery or collection.",
     extraHtml,
     accent = "#dd7400",
   } = data;
@@ -130,7 +127,6 @@ export function buildQuoteEmailHtml(data: QuoteEmailData): string {
           ${extraHtml ? `<tr><td style="padding:0 32px 16px;">${extraHtml}</td></tr>` : ""}
           <tr>
             <td style="padding:8px 32px 28px;">
-              <p style="margin:0 0 14px;color:#111111;font-size:14px;line-height:1.6;"><strong>Payment terms:</strong> ${escapeHtml(paymentTerms)}</p>
               <p style="margin:0 0 4px;color:#111111;font-size:15px;line-height:1.6;">Kind regards,</p>
               <p style="margin:0;color:#111111;font-size:15px;font-weight:700;line-height:1.6;">The Progress Group</p>
             </td>
