@@ -941,8 +941,7 @@ function QuotePage() {
                   {flueKitLabel && <BreakdownRow label="Flue kit" value={flueKitLabel} hint={matched.storyType === "double" ? "Double story" : "Single story"} />}
                   {plateLabel && <BreakdownRow label={`${matched.plate?.type === "steel" ? "Black steel" : matched.plate?.type === "granite" ? "Granite" : "Glass"} plinth`} value={plateLabel} />}
                   {cornerInstallLabel && <BreakdownRow label="Corner installation" value={cornerInstallLabel} />}
-                  {transportLabel && <BreakdownRow label={installationRequired ? "Transport" : "Courier"} value={transportLabel} hint={matched.transportZone ?? undefined} />}
-                  {travelFeeLabel && <BreakdownRow label="Travel fee" value={travelFeeLabel} hint="Within 50 km" />}
+                  {!installationRequired && transportLabel && <BreakdownRow label="Courier" value={transportLabel} hint={matched.transportZone ?? undefined} />}
                   {installationEstimateLabel && (
                     <BreakdownRow
                       label="Installation estimate"
@@ -986,10 +985,10 @@ function QuotePage() {
                         flooring,
                         plateType,
                         cornerInstall,
-                        transportPrice: matched ? matched.transportPrice : null,
-                        transportZone: matched ? matched.transportZone : null,
+                        transportPrice: installationRequired ? null : matched ? matched.transportPrice : null,
+                        transportZone: installationRequired ? null : matched ? matched.transportZone : null,
                         distanceKm: matched ? matched.distanceKm : null,
-                        travelFee: matched ? matched.travelFee : null,
+                        travelFee: null,
                         notes: message.trim() || undefined,
                         extrasForAccount: extrasForAccount.trim() || undefined,
                         installationRequired,
@@ -1022,10 +1021,10 @@ function QuotePage() {
                         flooring,
                         plateType,
                         cornerInstall,
-                        transportPrice: matched ? matched.transportPrice : null,
-                        transportZone: matched ? matched.transportZone : null,
+                        transportPrice: installationRequired ? null : matched ? matched.transportPrice : null,
+                        transportZone: installationRequired ? null : matched ? matched.transportZone : null,
                         distanceKm: matched ? matched.distanceKm : null,
-                        travelFee: matched ? matched.travelFee : null,
+                        travelFee: null,
                         notes: message.trim() || undefined,
                         extrasForAccount: extrasForAccount.trim() || undefined,
                         asInvoice: true,
@@ -1180,10 +1179,10 @@ function InstantQuote({
             label: "Installation estimate",
             value: installationEstimate,
             hint: storyType === "double"
-              ? "Double story: R5,500 + R1,500 core drilling · within Cape Town (subject to site visit)"
+              ? "Double story: R5,500 + R1,500 core drilling + transport beyond 25 km · within Cape Town (subject to site visit)"
               : storyType === "single"
-                ? "Single story: R5,500 · within Cape Town (subject to site visit)"
-                : "Single R5,500 · Double R7,000 (incl. core drilling) · within Cape Town (subject to site visit)",
+                ? "Single story: R5,500 + transport beyond 25 km · within Cape Town (subject to site visit)"
+                : "Single R5,500 · Double R7,000 (incl. core drilling) + transport beyond 25 km · within Cape Town (subject to site visit)",
           },
 
         ]
@@ -1212,15 +1211,28 @@ function InstantQuote({
             </span>
           </li>
         ))}
-        <li className="flex items-baseline justify-between gap-4 py-2">
-          <div>
-            <p className="font-semibold text-foreground">Transport</p>
-            <p className="text-xs text-muted-foreground">
-              {installationRequired ? "R250 travel fee if within 50 km (calculated on submit)" : "Calculated from your address on submit"}
-            </p>
-          </div>
-          <span className="shrink-0 font-mono text-xs text-muted-foreground">on submit</span>
-        </li>
+        {installationRequired && (
+          <li className="flex items-baseline justify-between gap-4 py-2">
+            <div>
+              <p className="font-semibold text-foreground">Transport</p>
+              <p className="text-xs text-muted-foreground">
+                First 25 km included; R12/km thereafter (calculated on submit)
+              </p>
+            </div>
+            <span className="shrink-0 font-mono text-xs text-muted-foreground">on submit</span>
+          </li>
+        )}
+        {!installationRequired && (
+          <li className="flex items-baseline justify-between gap-4 py-2">
+            <div>
+              <p className="font-semibold text-foreground">Courier</p>
+              <p className="text-xs text-muted-foreground">
+                Calculated from your address on submit
+              </p>
+            </div>
+            <span className="shrink-0 font-mono text-xs text-muted-foreground">on submit</span>
+          </li>
+        )}
       </ul>
       <div className="mt-3 flex items-baseline justify-between border-t-2 border-foreground pt-3">
         <span className="text-xs font-bold uppercase tracking-[0.24em] text-foreground">
@@ -1231,7 +1243,9 @@ function InstantQuote({
         </span>
       </div>
       <p className="mt-2 text-[11px] text-muted-foreground">
-        Excludes transport. Final quote confirmed after we calculate distance from Bellville to your address.
+        {installationRequired
+          ? "Transport included in installation estimate. Final quote confirmed after we calculate distance from Bellville to your address."
+          : "Excludes courier. Final quote confirmed after we calculate distance from Bellville to your address."}
       </p>
     </div>
   );

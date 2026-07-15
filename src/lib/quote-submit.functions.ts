@@ -332,7 +332,17 @@ function transportPriceForKm(km: number, installationRequired: boolean): { zone:
     if (km <= 300) return { zone: "Courier 151–300 km (estimate — sales to confirm)", price: 1100 };
     return { zone: "Courier 300 km+ (estimate — sales to confirm)", price: 1750 };
   }
-  return { zone: "Standard delivery from Bellville", price: 0 };
+  return { zone: "Included in installation estimate", price: 0 };
+}
+
+const INSTALL_BASE = 5500;
+const CORE_DRILL = 1500;
+const INCLUDED_KM = 25;
+const EXTRA_KM_RATE = 12;
+
+function transportInInstallEstimate(km: number | null): number {
+  if (km === null) return 0;
+  return Math.max(0, km - INCLUDED_KM) * EXTRA_KM_RATE;
 }
 
 
@@ -433,18 +443,15 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
 
 
     const transport = distanceKm !== null ? transportPriceForKm(distanceKm, data.installationRequired) : null;
-    const travelFee = installEligible && distanceKm !== null && distanceKm <= 50 ? 250 : 0;
 
     const cornerInstallPrice = installEligible && data.cornerInstall
       ? 800 + (distanceKm !== null && distanceKm <= 50 ? 650 : 0)
       : null;
 
-    // Installation estimate (within Cape Town) — base fee + core drilling for double-story flues.
+    // Installation estimate (within Cape Town) — base fee + core drilling for double-story flues + transport beyond 25 km.
     // Subject to site visit; mirrors the "Installation Estimate" page on the PDF.
-    const INSTALL_BASE = 5500;
-    const CORE_DRILL = 1500;
     const installationEstimate = installEligible
-      ? INSTALL_BASE + (data.storyType === "double" ? CORE_DRILL : 0)
+      ? INSTALL_BASE + (data.storyType === "double" ? CORE_DRILL : 0) + transportInInstallEstimate(distanceKm)
       : null;
 
     const totalPriceNum =
@@ -453,14 +460,12 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
       plate !== null ||
       cornerInstallPrice !== null ||
       transport !== null ||
-      travelFee > 0 ||
       installationEstimate !== null
         ? (productSubtotal ?? 0) +
           (flueKitPrice ?? 0) +
           (plate?.price ?? 0) +
           (cornerInstallPrice ?? 0) +
           (transport?.price ?? 0) +
-          travelFee +
           (installationEstimate ?? 0)
         : null;
 
@@ -567,7 +572,7 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
       distanceKm !== null ? Math.round(distanceKm * 10) / 10 : "",
       transport?.zone ?? "",
       transport?.price ?? "",
-      travelFee > 0 ? travelFee : "",
+      "",
       unitPriceNum ?? "",
       flueKitPrice ?? "",
       plate?.price ?? "",
@@ -630,10 +635,9 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
       ["Address", data.address ?? "—"],
       ["Distance", distanceKm !== null ? `${Math.round(distanceKm * 10) / 10} km` : "—"],
       [!data.installationRequired ? "Courier (estimate — confirm & edit before invoicing)" : "Transport", transport ? `${transport.zone} (${fmtR(transport.price)})` : "—"],
-      ["Travel fee", travelFee > 0 ? fmtR(travelFee) : "—"],
       ["Unit price", unitPriceNum !== null ? fmtR(unitPriceNum) : "—"],
       ...(flueKitPrice !== null ? [["Flue kit", fmtR(flueKitPrice)] as [string, string]] : []),
-      ["Installation estimate", installationEstimate !== null ? `${fmtR(installationEstimate)} (within Cape Town, subject to site visit)` : "—"],
+      ["Installation estimate", installationEstimate !== null ? `${fmtR(installationEstimate)} (within Cape Town, first 25 km included, subject to site visit)` : "—"],
       ["Estimated total", totalPriceNum !== null ? fmtR(totalPriceNum) : "—"],
       ...(installOutOfRange ? [["Installation", "Outside 300 km — supply only; installation quoted separately"] as [string, string]] : []),
       ["Preferred date/time", data.preferredDate ? `${data.preferredDate} ${data.preferredTime ?? ""}`.trim() : "—"],
@@ -719,7 +723,7 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
       distanceKm: distanceKm !== null ? Math.round(distanceKm * 10) / 10 : null,
       transportZone: transport?.zone ?? null,
       transportPrice: transport?.price ?? null,
-      travelFee: travelFee > 0 ? travelFee : null,
+      travelFee: null,
       installationEstimate,
       installOutOfRange,
       bookingLink,
