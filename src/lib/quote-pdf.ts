@@ -105,11 +105,15 @@ export async function generateQuotePDF(
   let y = margin;
 
   const items: QuoteLineItem[] = [];
+  // Some catalog prices (e.g. Magma 10kW SPECIAL) are quoted VAT-inclusive.
+  // Convert to ex-VAT so the 15% VAT line added below yields the original price.
+  const priceIsVatInclusive = /special/i.test(input.productName);
   if (input.unitPrice !== null && input.unitPrice > 0) {
+    const unit = priceIsVatInclusive ? input.unitPrice / 1.15 : input.unitPrice;
     items.push({
       quantity: input.quantity,
       description: input.productName,
-      unitPrice: input.unitPrice,
+      unitPrice: unit,
     });
   }
   // Skip the flue kit line when the product already bundles one (e.g. the SPECIAL Magma).
