@@ -249,10 +249,21 @@ function QuotePage() {
 
   useEffect(() => {
     let lastScrollY = window.scrollY;
+    let ticking = false;
+    let hidden = false;
     const onScroll = () => {
-      const currentY = window.scrollY;
-      setHeaderHidden(currentY > lastScrollY && currentY > 80);
-      lastScrollY = currentY;
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        const currentY = window.scrollY;
+        const nextHidden = currentY > lastScrollY && currentY > 80;
+        if (nextHidden !== hidden) {
+          hidden = nextHidden;
+          setHeaderHidden(nextHidden);
+        }
+        lastScrollY = currentY;
+        ticking = false;
+      });
     };
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
