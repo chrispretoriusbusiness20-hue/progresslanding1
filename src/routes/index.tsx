@@ -233,7 +233,7 @@ function QuotePage() {
   const [cornerInstall, setCornerInstall] = useState(false);
   const [installationRequired, setInstallationRequired] = useState(true);
   const [address, setAddress] = useState("");
-  const [message, setMessage] = useState("");
+  
   const [extrasForAccount, setExtrasForAccount] = useState("");
 
   const [submitted, setSubmitted] = useState(false);
@@ -346,7 +346,6 @@ function QuotePage() {
           cornerInstall,
           installationRequired,
           address: address.trim() || undefined,
-          message: message.trim() || undefined,
           utmSource: utmSource || undefined,
           utmMedium: utmMedium || undefined,
           utmCampaign: utmCampaign || undefined,
@@ -383,7 +382,6 @@ function QuotePage() {
             transportPrice: result.match ? result.transportPrice : null,
             transportZone: result.match ? result.transportZone : null,
             distanceKm: result.match ? result.distanceKm : null,
-            notes: message.trim() || undefined,
             extrasForAccount: extrasForAccount.trim() || undefined,
             installationRequired,
           },
@@ -856,14 +854,6 @@ function QuotePage() {
               </label>
             )}
 
-            <Field label="Anything else we should know?">
-              <textarea
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                rows={3}
-                className="form-input"
-              />
-            </Field>
 
             {/* Instant quote breakdown — live, no submission required */}
             <InstantQuote
@@ -989,7 +979,6 @@ function QuotePage() {
                         transportZone: installationRequired ? null : matched ? matched.transportZone : null,
                         distanceKm: matched ? matched.distanceKm : null,
                         travelFee: null,
-                        notes: message.trim() || undefined,
                         extrasForAccount: extrasForAccount.trim() || undefined,
                         installationRequired,
                       });
@@ -1025,7 +1014,6 @@ function QuotePage() {
                         transportZone: installationRequired ? null : matched ? matched.transportZone : null,
                         distanceKm: matched ? matched.distanceKm : null,
                         travelFee: null,
-                        notes: message.trim() || undefined,
                         extrasForAccount: extrasForAccount.trim() || undefined,
                         asInvoice: true,
                         installationRequired,
