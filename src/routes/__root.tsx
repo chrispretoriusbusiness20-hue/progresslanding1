@@ -147,6 +147,22 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const router = useRouter();
+
+  useEffect(() => {
+    // Fire Meta Pixel PageView on every client-side navigation.
+    // The initial PageView is sent by the base pixel snippet in <head>.
+    let lastPath = typeof window !== "undefined" ? window.location.pathname + window.location.search : "";
+    const unsub = router.subscribe("onResolved", () => {
+      if (typeof window === "undefined") return;
+      const current = window.location.pathname + window.location.search;
+      if (current === lastPath) return;
+      lastPath = current;
+      const fbq = (window as unknown as { fbq?: (...a: unknown[]) => void }).fbq;
+      if (typeof fbq === "function") fbq("track", "PageView");
+    });
+    return () => unsub();
+  }, [router]);
 
   return (
     <QueryClientProvider client={queryClient}>
