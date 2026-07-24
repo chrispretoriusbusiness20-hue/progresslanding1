@@ -1,7 +1,13 @@
 import { createHmac, timingSafeEqual } from "crypto";
 
 function getSecret(): string {
-  return process.env.LOVABLE_API_KEY ?? process.env.SMTP_PASS ?? "fallback-secret";
+  const s = process.env.QUOTE_SIGN_SECRET ?? process.env.LOVABLE_API_KEY;
+  if (!s || s.length < 16) {
+    throw new Error(
+      "Missing signing secret: set QUOTE_SIGN_SECRET (or LOVABLE_API_KEY) in the environment.",
+    );
+  }
+  return s;
 }
 
 export function signAcceptance(payload: string): string {
