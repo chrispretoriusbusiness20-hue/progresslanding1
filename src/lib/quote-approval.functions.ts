@@ -3,6 +3,7 @@ import { z } from "zod";
 import { buildQuoteEmailHtml } from "@/lib/quote-email-template";
 import { getProductImageUrl } from "@/lib/product-images";
 import productsData from "@/data/products.json";
+import { requireStaff } from "@/lib/staff-auth.server";
 
 type ProductRow = { name: string; category: string };
 const PRODUCTS = productsData as ProductRow[];

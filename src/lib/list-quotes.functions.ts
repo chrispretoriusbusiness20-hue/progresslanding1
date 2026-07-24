@@ -1,4 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
+import { requireStaff } from "@/lib/staff-auth.server";
 
 export type QuoteRow = {
   id: string;
@@ -26,7 +27,9 @@ export type QuoteRow = {
   utm_campaign: string | null;
 };
 
-export const listQuotes = createServerFn({ method: "GET" }).handler(async () => {
+export const listQuotes = createServerFn({ method: "GET" })
+  .middleware([requireStaff])
+  .handler(async () => {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   const { data, error } = await supabaseAdmin
     .from("quote_requests")
@@ -40,6 +43,7 @@ export const listQuotes = createServerFn({ method: "GET" }).handler(async () => 
 });
 
 export const getQuotePdfUrl = createServerFn({ method: "POST" })
+  .middleware([requireStaff])
   .inputValidator((input: { id: string }) => input)
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
@@ -73,6 +77,7 @@ export type QuoteUpdate = {
 };
 
 export const updateQuote = createServerFn({ method: "POST" })
+  .middleware([requireStaff])
   .inputValidator((input: QuoteUpdate) => {
     if (!input || typeof input.id !== "string" || !input.id) {
       throw new Error("id required");
