@@ -1,4 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
+import { requireStaff } from "@/lib/staff-auth.server";
 
 export type QuoteRequest = {
   id: string;
@@ -26,8 +27,9 @@ export type QuoteRequest = {
   decided_at: string | null;
 };
 
-export const getQuoteRequests = createServerFn({ method: "GET" }).handler(
-  async () => {
+export const getQuoteRequests = createServerFn({ method: "GET" })
+  .middleware([requireStaff])
+  .handler(async () => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
     const { data, error } = await supabaseAdmin
@@ -37,5 +39,4 @@ export const getQuoteRequests = createServerFn({ method: "GET" }).handler(
 
     if (error) throw new Error(error.message);
     return (data ?? []) as QuoteRequest[];
-  }
-);
+  });

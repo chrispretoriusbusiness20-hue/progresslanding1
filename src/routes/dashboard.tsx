@@ -1,12 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useSuspenseQuery, queryOptions, useQueryClient } from "@tanstack/react-query";
-import { useMemo, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useEffect, useMemo, useState } from "react";
 import { listQuotes, getQuotePdfUrl, updateQuote, type QuoteRow } from "@/lib/list-quotes.functions";
-
-const quotesQO = queryOptions({
-  queryKey: ["all-quotes"],
-  queryFn: () => listQuotes(),
-});
+import { supabase } from "@/integrations/supabase/client";
+import type { Session } from "@supabase/supabase-js";
 
 export const Route = createFileRoute("/dashboard")({
   head: () => ({
@@ -15,7 +12,6 @@ export const Route = createFileRoute("/dashboard")({
       { name: "robots", content: "noindex" },
     ],
   }),
-  loader: ({ context }) => context.queryClient.ensureQueryData(quotesQO),
   component: DashboardPage,
   errorComponent: ({ error }) => (
     <div className="p-8 text-sm text-red-600">Failed to load: {error.message}</div>
@@ -31,8 +27,111 @@ const fmtDate = (s: string) => {
   return `${String(d.getDate()).padStart(2, "0")}/${String(d.getMonth() + 1).padStart(2, "0")}/${d.getFullYear()}`;
 };
 
+function SignInGate({ onSession }: { onSession: (s: Session) => void }) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setBusy(true);
+    setErr(null);
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    setBusy(false);
+    if (error) setErr(error.message);
+    else if (data.session) onSession(data.session);
+  };
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-background p-6">
+      <form onSubmit={submit} className="w-full max-w-sm space-y-4 rounded-lg border bg-card p-6 shadow-sm">
+        <div>
+          <h1 className="text-xl font-semibold">Staff sign in</h1>
+          <p className="mt-1 text-xs text-muted-foreground">Access is restricted to Progress Group staff.</p>
+        </div>
+        <label className="block text-sm">
+          <span className="text-xs font-medium text-muted-foreground">Email</span>
+          <input
+            type="email"
+            required
+            autoComplete="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="mt-1 w-full rounded-md border bg-background px-3 py-2 text-sm"
+          />
+        </label>
+        <label className="block text-sm">
+          <span className="text-xs font-medium text-muted-foreground">Password</span>
+          <input
+            type="password"
+            required
+            autoComplete="current-password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="mt-1 w-full rounded-md border bg-background px-3 py-2 text-sm"
+          />
+        </label>
+        {err && <div className="text-sm text-red-600">{err}</div>}
+        <button
+          type="submit"
+          disabled={busy}
+          className="w-full rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90 disabled:opacity-50"
+        >
+          {busy ? "Signing in…" : "Sign in"}
+        </button>
+      </form>
+    </div>
+  );
+}
+
 function DashboardPage() {
-  const { data } = useSuspenseQuery(quotesQO);
+  const [session, setSession] = useState<Session | null | undefined>(undefined);
+
+  useEffect(() => {
+    let mounted = true;
+    supabase.auth.getSession().then(({ data }) => {
+      if (mounted) setSession(data.session);
+    });
+    const { data: sub } = supabase.auth.onAuthStateChange((_e, s) => setSession(s));
+    return () => {
+      mounted = false;
+      sub.subscription.unsubscribe();
+    };
+  }, []);
+
+  if (session === undefined) {
+    return <div className="p-8 text-sm text-muted-foreground">Loading…</div>;
+  }
+  if (!session) {
+    return <SignInGate onSession={setSession} />;
+  }
+  return <DashboardAuthed onSignOut={() => supabase.auth.signOut()} />;
+}
+
+function DashboardAuthed({ onSignOut }: { onSignOut: () => void }) {
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["all-quotes"],
+    queryFn: () => listQuotes(),
+  });
+
+  if (isLoading) return <div className="p-8 text-sm text-muted-foreground">Loading leads…</div>;
+  if (error) {
+    return (
+      <div className="p-8 text-sm text-red-600">
+        {error.message.includes("Forbidden") || error.message.includes("Unauthorized")
+          ? "Your account isn't authorised to view this dashboard."
+          : `Failed to load: ${error.message}`}
+        <div className="mt-4">
+          <button onClick={onSignOut} className="text-xs text-primary hover:underline">Sign out</button>
+        </div>
+      </div>
+    );
+  }
+  return <DashboardContent data={data ?? []} onSignOut={onSignOut} />;
+}
+
+function DashboardContent({ data, onSignOut }: { data: QuoteRow[]; onSignOut: () => void }) {
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState<string>("all");
   const [source, setSource] = useState<string>("all");
@@ -104,12 +203,20 @@ function DashboardPage() {
               All {stats.total} self-quoted leads from the form.
             </p>
           </div>
-          <button
-            onClick={exportCSV}
-            className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90"
-          >
-            Export CSV
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={exportCSV}
+              className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90"
+            >
+              Export CSV
+            </button>
+            <button
+              onClick={onSignOut}
+              className="rounded-md border px-4 py-2 text-sm hover:bg-muted"
+            >
+              Sign out
+            </button>
+          </div>
         </header>
 
         <div className="grid grid-cols-2 gap-3 md:grid-cols-5">

@@ -3,6 +3,7 @@ import { z } from "zod";
 import { buildQuoteEmailHtml } from "@/lib/quote-email-template";
 import { getProductImageUrl } from "@/lib/product-images";
 import productsData from "@/data/products.json";
+import { requireStaff } from "@/lib/staff-auth.server";
 
 type ProductRow = { name: string; category: string };
 const PRODUCTS = productsData as ProductRow[];
@@ -142,6 +143,7 @@ async function send(opts: {
  * Approve a quote: mark approved, email the client confirmation, log everything.
  */
 export const approveQuote = createServerFn({ method: "POST" })
+  .middleware([requireStaff])
   .inputValidator(
     z.object({
       id: z.string().uuid(),
@@ -197,6 +199,7 @@ export const approveQuote = createServerFn({ method: "POST" })
  * Reject a quote: mark rejected, notify the internal team with the rejection note, log everything.
  */
 export const rejectQuote = createServerFn({ method: "POST" })
+  .middleware([requireStaff])
   .inputValidator(
     z.object({
       id: z.string().uuid(),
@@ -241,6 +244,7 @@ export const rejectQuote = createServerFn({ method: "POST" })
  * Mirrors template (1) "Quote sent to client".
  */
 export const sendQuoteToClient = createServerFn({ method: "POST" })
+  .middleware([requireStaff])
   .inputValidator(
     z.object({
       id: z.string().uuid(),
@@ -279,6 +283,7 @@ export const sendQuoteToClient = createServerFn({ method: "POST" })
  * (every dashboard user can act on it from /dashboard).
  */
 export const requestManagerApproval = createServerFn({ method: "POST" })
+  .middleware([requireStaff])
   .inputValidator(
     z.object({
       id: z.string().uuid(),
