@@ -203,12 +203,20 @@ function DashboardContent({ data, onSignOut }: { data: QuoteRow[]; onSignOut: ()
               All {stats.total} self-quoted leads from the form.
             </p>
           </div>
-          <button
-            onClick={exportCSV}
-            className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90"
-          >
-            Export CSV
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={exportCSV}
+              className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90"
+            >
+              Export CSV
+            </button>
+            <button
+              onClick={onSignOut}
+              className="rounded-md border px-4 py-2 text-sm hover:bg-muted"
+            >
+              Sign out
+            </button>
+          </div>
         </header>
 
         <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
