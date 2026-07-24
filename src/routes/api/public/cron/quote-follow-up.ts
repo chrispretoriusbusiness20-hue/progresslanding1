@@ -37,13 +37,26 @@ export const Route = createFileRoute("/api/public/cron/quote-follow-up")({
     handlers: {
       POST: async ({ request }) => {
         const url = new URL(request.url);
-        const apiKey =
-          request.headers.get("apikey") ?? url.searchParams.get("apikey") ?? "";
-        const expected =
-          process.env.SUPABASE_PUBLISHABLE_KEY ??
-          process.env.SUPABASE_ANON_KEY ??
+        const provided =
+          request.headers.get("x-cron-secret") ??
+          request.headers.get("authorization")?.replace(/^Bearer\s+/i, "") ??
+          url.searchParams.get("cron_secret") ??
           "";
-        if (!expected || apiKey !== expected) {
+        const expected = process.env.CRON_SECRET ?? "";
+        const ok =
+          expected.length >= 16 &&
+          provided.length === expected.length &&
+          (() => {
+            try {
+              return require("crypto").timingSafeEqual(
+                Buffer.from(provided),
+                Buffer.from(expected),
+              );
+            } catch {
+              return false;
+            }
+          })();
+        if (!ok) {
           return new Response(JSON.stringify({ error: "Unauthorized" }), {
             status: 401,
             headers: { "Content-Type": "application/json" },
