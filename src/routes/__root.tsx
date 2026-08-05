@@ -13,6 +13,10 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { ChatWidget } from "@/components/chat-widget";
 
+/** Meta Pixel IDs tracked on every page. Add extra IDs here. */
+const META_PIXEL_IDS = ["2169427620464385"];
+
+
 function NotFoundComponent() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
