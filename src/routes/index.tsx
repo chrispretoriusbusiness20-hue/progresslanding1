@@ -18,6 +18,7 @@ import progressLogo from "@/assets/progress-header-transparent.png.asset.json";
 
 import { AddressAutocomplete } from "@/components/address-autocomplete";
 import { checkEmail } from "@/lib/email-typo";
+import { specialDiscountFor } from "@/lib/special-discount";
 
 
 
@@ -522,9 +523,12 @@ function QuotePage() {
   const transportPrice = matched?.transportPrice ?? null;
   const travelFee = matched?.travelFee ?? null;
   const installationEstimate = matched?.installationEstimate ?? null;
+  const specialDiscount = matched
+    ? specialDiscountFor(matched.catalog?.name ?? matched.productRequested, matched.quantity)
+    : 0;
   const totalPriceNum =
     productSubtotal !== null || flueKitPrice !== null || platePrice !== null || cornerInstallPrice !== null || transportPrice !== null || travelFee !== null || installationEstimate !== null
-      ? (productSubtotal ?? 0) + (flueKitPrice ?? 0) + (platePrice ?? 0) + (cornerInstallPrice ?? 0) + (transportPrice ?? 0) + (travelFee ?? 0) + (installationEstimate ?? 0)
+      ? (productSubtotal ?? 0) + (flueKitPrice ?? 0) + (platePrice ?? 0) + (cornerInstallPrice ?? 0) + (transportPrice ?? 0) + (travelFee ?? 0) + (installationEstimate ?? 0) - specialDiscount
       : null;
   const unitPriceLabel = unitPriceNum !== null ? formatRand(unitPriceNum) : null;
   const subtotalLabel = productSubtotal !== null ? formatRand(productSubtotal) : null;
@@ -534,6 +538,7 @@ function QuotePage() {
   const transportLabel = transportPrice !== null ? formatRand(transportPrice) : null;
   const travelFeeLabel = travelFee !== null ? formatRand(travelFee) : null;
   const installationEstimateLabel = installationEstimate !== null ? formatRand(installationEstimate) : null;
+  const specialDiscountLabel = specialDiscount > 0 ? `- ${formatRand(specialDiscount)}` : null;
   const totalPriceLabel = totalPriceNum !== null ? formatRand(totalPriceNum) : null;
 
   const quoteUrl = matched
@@ -943,6 +948,9 @@ function QuotePage() {
                   {plateLabel && <BreakdownRow label={`${matched.plate?.type === "steel" ? "Black steel" : matched.plate?.type === "granite" ? "Granite" : "Glass"} plinth`} value={plateLabel} />}
                   {cornerInstallLabel && <BreakdownRow label="Corner installation" value={cornerInstallLabel} />}
                   {!installationRequired && transportLabel && <BreakdownRow label="Courier" value={transportLabel} hint={matched.transportZone ?? undefined} />}
+                  {specialDiscountLabel && (
+                    <BreakdownRow label="Special promotion discount" value={specialDiscountLabel} hint="Winter special — R1,000 off" />
+                  )}
                   {installationEstimateLabel && (
                     <BreakdownRow
                       label="Installation estimate"
@@ -1137,9 +1145,10 @@ function InstantQuote({
   const installationEstimate = installationRequired
     ? 5500 + (storyType === "double" ? 1650 : 0)
     : null;
+  const specialDiscount = specialDiscountFor(productName, quantity);
   const total =
     subtotal !== null || flueKit !== null || plate !== null || corner !== null || installationEstimate !== null
-      ? (subtotal ?? 0) + (flueKit ?? 0) + (plate ?? 0) + (corner ?? 0) + (installationEstimate ?? 0)
+      ? (subtotal ?? 0) + (flueKit ?? 0) + (plate ?? 0) + (corner ?? 0) + (installationEstimate ?? 0) - specialDiscount
       : null;
 
   const rows: { label: string; value: number | null; hint?: string }[] = [
@@ -1162,6 +1171,15 @@ function InstantQuote({
                   : "Single story",
           },
         ]),
+    ...(specialDiscount > 0
+      ? [
+          {
+            label: "Special promotion discount",
+            value: -specialDiscount as number | null,
+            hint: "Winter special — R1,000 off" as string,
+          },
+        ]
+      : []),
     ...(needsPlate
       ? [
           {

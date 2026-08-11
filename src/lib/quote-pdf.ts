@@ -2,6 +2,7 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import progressLogo from "@/assets/progress-header-transparent.png.asset.json";
 import progressInstallationsLogo from "@/assets/progress-installations-logo.png.asset.json";
+import { specialDiscountFor } from "@/lib/special-discount";
 
 
 
@@ -116,6 +117,18 @@ export async function generateQuotePDF(
       unitPrice: unit,
     });
   }
+  {
+    // Winter special promotion: R1,000 off (VAT inclusive) on the SPECIAL Magma.
+    const discountIncl = specialDiscountFor(input.productName, input.quantity);
+    if (discountIncl > 0) {
+      items.push({
+        quantity: 1,
+        description: "Special promotion discount",
+        unitPrice: -(discountIncl / 1.15),
+      });
+    }
+  }
+
   // Skip the flue kit line when the product already bundles one (e.g. the SPECIAL Magma).
   const flueKitIncludedInProduct = /flue\s*kit/i.test(input.productName);
   if (input.storyType && !flueKitIncludedInProduct) {
