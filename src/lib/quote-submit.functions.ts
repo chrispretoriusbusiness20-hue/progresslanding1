@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import productsData from "@/data/products.json";
 import productsFullData from "@/data/products-full.json";
+import { specialDiscountFor } from "@/lib/special-discount";
 
 const PRODUCT_IMAGE_MAP = new Map(
   (productsFullData as Array<{ name: string; image?: string }>).map((p) => [p.name, p.image ?? ""]),
@@ -418,6 +419,7 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
     const matched = matchProduct(data.product);
     const unitPriceNum = matched ? parseRand(matched.price) : null;
     const productSubtotal = unitPriceNum !== null ? unitPriceNum * data.quantity : null;
+    const specialDiscount = specialDiscountFor(matched?.name ?? data.product, data.quantity);
 
     const distanceKm = data.address ? await computeDistanceKm(data.address) : null;
 
@@ -466,7 +468,8 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
           (plate?.price ?? 0) +
           (cornerInstallPrice ?? 0) +
           (transport?.price ?? 0) +
-          (installationEstimate ?? 0)
+          (installationEstimate ?? 0) -
+          specialDiscount
         : null;
 
     const { data: insertedQuote, error: insertError } = await supabaseAdmin
