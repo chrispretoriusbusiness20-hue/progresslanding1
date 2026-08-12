@@ -1,5 +1,5 @@
-/** Winter special promotion: R1,000 off the Magma 10kW incl Flue Kit SPECIAL (VAT inclusive). */
-export const SPECIAL_DISCOUNT_ZAR = 1000;
+/** Winter special promotion: the SPECIAL Magma is already priced at R21,000 (VAT incl.), so no extra discount applies. */
+export const SPECIAL_DISCOUNT_ZAR = 0;
 
 export function isSpecialProduct(productName: string | null | undefined): boolean {
   return /magma\s*10\s*kw.*flue\s*kit.*special/i.test(productName ?? "");
