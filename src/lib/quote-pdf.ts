@@ -473,16 +473,21 @@ export async function generateQuotePDF(
 
     // --- Fee table ---
     const km = input.distanceKm ?? 0;
+    const LOCAL_KM = 20;
     const INCLUDED_KM = 25;
     const BASE_TRANSPORT = 400;
     const EXTRA_KM_RATE = 12;
-    const installTransport = BASE_TRANSPORT + Math.max(0, km - INCLUDED_KM) * EXTRA_KM_RATE;
-    const transportLabel =
-      km <= INCLUDED_KM
+    const isLocal = km <= LOCAL_KM;
+    const installTransport = isLocal
+      ? 0
+      : BASE_TRANSPORT + Math.max(0, km - INCLUDED_KM) * EXTRA_KM_RATE;
+    const transportLabel = isLocal
+      ? "Transport (included — within 20 km of Bellville)"
+      : km <= INCLUDED_KM
         ? "Transport (within 25 km of Bellville)"
         : `Transport (R${BASE_TRANSPORT} base + R${EXTRA_KM_RATE}/km after 25 km)`;
     const coreDrill = input.storyType === "double" ? 1500 : 0;
-    const installFee = 5500;
+    const installFee = isLocal ? 4500 : 5500;
     const installTotal = installFee + coreDrill + installTransport;
     autoTable(doc, {
       startY: py,
