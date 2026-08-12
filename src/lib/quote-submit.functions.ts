@@ -337,13 +337,19 @@ function transportPriceForKm(km: number, installationRequired: boolean): { zone:
 }
 
 const INSTALL_BASE = 5500;
+const INSTALL_BASE_LOCAL = 4500;
+const LOCAL_KM = 20;
 const CORE_DRILL = 1500;
 const INCLUDED_KM = 25;
 const EXTRA_KM_RATE = 12;
 
 function transportInInstallEstimate(km: number | null): number {
-  if (km === null) return 0;
+  if (km === null || km <= LOCAL_KM) return 0;
   return Math.max(0, km - INCLUDED_KM) * EXTRA_KM_RATE;
+}
+
+function installBaseForKm(km: number | null): number {
+  return km !== null && km <= LOCAL_KM ? INSTALL_BASE_LOCAL : INSTALL_BASE;
 }
 
 
@@ -453,7 +459,7 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
     // Installation estimate (within Cape Town) — base fee + core drilling for double-story flues + transport beyond 25 km.
     // Subject to site visit; mirrors the "Installation Estimate" page on the PDF.
     const installationEstimate = installEligible
-      ? INSTALL_BASE + (data.storyType === "double" ? CORE_DRILL : 0) + transportInInstallEstimate(distanceKm)
+      ? installBaseForKm(distanceKm) + (data.storyType === "double" ? CORE_DRILL : 0) + transportInInstallEstimate(distanceKm)
       : null;
 
     const totalPriceNum =
