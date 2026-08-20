@@ -487,7 +487,7 @@ export async function generateQuotePDF(
         ? "Transport (within 25 km of Bellville)"
         : `Transport (R${BASE_TRANSPORT} base + R${EXTRA_KM_RATE}/km after 25 km)`;
     const coreDrill = input.storyType === "double" ? 1500 : 0;
-    const installFee = isLocal ? 4500 : 5500;
+    const installFee = 5500;
     const installTotal = installFee + coreDrill + installTransport;
     autoTable(doc, {
       startY: py,
