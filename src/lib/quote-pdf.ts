@@ -402,10 +402,18 @@ export async function generateQuotePDF(
   y = Math.max(bankEnd, ty) + 6;
 
   // ---------- Footer terms ----------
+  const isMagmaSpecial = priceIsVatInclusive;
   ensureSpace(6);
   doc.setFont("helvetica", "bold").setFontSize(9);
-  doc.text("FULL PAYMENT ON ORDER", margin, y);
+  doc.text(
+    isMagmaSpecial
+      ? "PAYMENT TERMS: 100% ON ORDER (PROGRESS GROUP QUOTE)"
+      : "FULL PAYMENT ON ORDER",
+    margin,
+    y,
+  );
   y += 5;
+
   doc.setFont("helvetica", "normal");
   const footer = [
     "All goods remain the property of Progress until full and final payment is received.",
@@ -512,6 +520,22 @@ export async function generateQuotePDF(
     });
     // @ts-expect-error
     py = doc.lastAutoTable.finalY + 8;
+
+    if (isMagmaSpecial) {
+      ensureSpacePage2(10);
+      doc.setFont("helvetica", "bold").setFontSize(10);
+      doc.text("PAYMENT TERMS: 75% DEPOSIT ON THIS ESTIMATE", margin, py);
+      py += 5;
+      doc.setFont("helvetica", "normal").setFontSize(9);
+      doc.text(
+        "75% of the installation estimate is payable to Progress Installations before installation; balance on completion.",
+        margin,
+        py,
+      );
+      py += 8;
+    }
+
+
 
     // --- Banking details box ---
     autoTable(doc, {
