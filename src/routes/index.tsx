@@ -1081,6 +1081,37 @@ function QuotePage() {
         </section>
       )}
 
+      {/* Sticky cart bar — keeps the convert-to-invoice CTA reachable */}
+      {showQuote && (
+        <div className="sticky bottom-0 z-40 border-t-2 border-foreground bg-background/95 backdrop-blur">
+          <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-6 py-3">
+            <div className="flex items-center gap-3">
+              <span className="relative inline-flex h-9 w-9 items-center justify-center border-2 border-foreground bg-secondary/40">
+                <ShoppingCart className="h-4 w-4" />
+                <span className="absolute -right-2 -top-2 inline-flex h-5 min-w-5 items-center justify-center border-2 border-foreground bg-primary px-1 font-mono text-[10px] font-bold text-primary-foreground">
+                  {quantity}
+                </span>
+              </span>
+              <div className="leading-tight">
+                <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-muted-foreground">Your cart</p>
+                <p className="font-mono text-sm font-bold text-foreground">{cartTotalLabel ?? "—"}</p>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={convertToInvoice}
+              disabled={converting}
+              className="inline-flex items-center justify-center gap-2 border-2 border-foreground bg-primary px-5 py-2.5 text-xs font-bold uppercase tracking-wider text-primary-foreground shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {converting ? <Loader2 className="h-4 w-4 animate-spin" /> : <ShoppingCart className="h-4 w-4" />}
+              {converting ? "Creating invoice…" : "Convert to invoice"}
+            </button>
+          </div>
+        </div>
+      )}
+
+
+
 
       {/* Footer */}
       <footer className="border-t border-foreground/15 bg-background">
