@@ -290,6 +290,8 @@ function QuotePage() {
   const submitFn = useServerFn(submitQuoteRequest);
   const createUploadFn = useServerFn(createQuoteUploadUrl);
   const emailQuoteFn = useServerFn(emailQuoteFromPath);
+  const createPopUploadFn = useServerFn(createPopUploadUrl);
+  const notifyPopFn = useServerFn(notifyProofOfPayment);
   const canContinue = useMemo(
     () =>
       firstName.trim().length > 0 &&
