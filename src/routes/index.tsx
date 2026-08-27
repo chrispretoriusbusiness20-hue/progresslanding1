@@ -4,6 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { CheckCircle2, FileDown, Loader2, MessageCircle, ShoppingCart, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { submitQuoteRequest, createQuoteUploadUrl, emailQuoteFromPath } from "@/lib/quote-submit.functions";
+import { createPopUploadUrl, notifyProofOfPayment } from "@/lib/pop.functions";
 const generateQuotePDF = async (
   ...args: Parameters<typeof import("@/lib/quote-pdf").generateQuotePDF>
 ) => {
