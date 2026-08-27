@@ -4,6 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { CheckCircle2, FileDown, Loader2, MessageCircle, ShoppingCart, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { submitQuoteRequest, createQuoteUploadUrl, emailQuoteFromPath } from "@/lib/quote-submit.functions";
+import { createPopUploadUrl, notifyProofOfPayment } from "@/lib/pop.functions";
 const generateQuotePDF = async (
   ...args: Parameters<typeof import("@/lib/quote-pdf").generateQuotePDF>
 ) => {
@@ -238,6 +239,11 @@ function QuotePage() {
   const [extrasForAccount, setExtrasForAccount] = useState("");
 
   const [submitted, setSubmitted] = useState(false);
+  const [quoteSession, setQuoteSession] = useState("");
+  const [popOpen, setPopOpen] = useState(false);
+  const [popFile, setPopFile] = useState<File | null>(null);
+  const [popSending, setPopSending] = useState(false);
+  const [popDone, setPopDone] = useState(false);
   const [lookup, setLookup] = useState<LookupResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -285,6 +291,8 @@ function QuotePage() {
   const submitFn = useServerFn(submitQuoteRequest);
   const createUploadFn = useServerFn(createQuoteUploadUrl);
   const emailQuoteFn = useServerFn(emailQuoteFromPath);
+  const createPopUploadFn = useServerFn(createPopUploadUrl);
+  const notifyPopFn = useServerFn(notifyProofOfPayment);
   const canContinue = useMemo(
     () =>
       firstName.trim().length > 0 &&
@@ -422,6 +430,7 @@ function QuotePage() {
               : product;
             // 1) Get a signed upload URL (with one retry)
             const session = result.match ? result.session : "";
+            setQuoteSession(session);
             const uploadInfo = (await withRetry(
               () =>
                 createUploadFn({
@@ -604,44 +613,111 @@ function QuotePage() {
 
   const [converting, setConverting] = useState(false);
 
-  const convertToInvoice = async () => {
-    if (converting) return;
-    setConverting(true);
+  const generateInvoicePdf = async () => {
+    const priceStr = PRODUCT_PRICE_MAP.get(product) ?? null;
+    const unitPrice = priceStr ? parseRand(priceStr) : null;
+    return generateQuotePDF({
+      firstName: firstName.trim() || "Customer",
+      lastName: lastName.trim(),
+      email: email.trim(),
+      phone: phone.trim(),
+      address: address.trim() || undefined,
+      productName: product,
+      quantity,
+      unitPrice,
+      storyType,
+      flooring,
+      plateType,
+      cornerInstall,
+      transportPrice: installationRequired ? null : matched ? matched.transportPrice : null,
+      transportZone: installationRequired ? null : matched ? matched.transportZone : null,
+      distanceKm: matched ? matched.distanceKm : null,
+      travelFee: null,
+      extrasForAccount: extrasForAccount.trim() || undefined,
+      asInvoice: true,
+      installationRequired,
+    });
+  };
+
+  /**
+   * Invoices are only issued once payment is proven, so this opens the
+   * proof-of-payment step instead of generating the document immediately.
+   */
+  const convertToInvoice = () => {
+    if (!submitted || !quoteSession) {
+      toast.error("Please submit your quote first — then upload your proof of payment.");
+      return;
+    }
+    setPopOpen(true);
+  };
+
+  const popMailtoHref = useMemo(() => {
+    const subject = `Proof of payment${quoteNo ? ` — ${quoteNo}` : ""}`;
+    const body = `Hi Progress Group,\n\nPlease find my proof of payment attached.\n\nName: ${`${firstName.trim()} ${lastName.trim()}`.trim()}\nQuote: ${quoteNo || "—"}\nProduct: ${product}\n\nThank you.`;
+    return `mailto:sales@progressgrp.co.za?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  }, [quoteNo, firstName, lastName, product]);
+
+  const submitProofOfPayment = async () => {
+    if (popSending) return;
+    if (!popFile) {
+      toast.error("Please choose your proof of payment file first.");
+      return;
+    }
+    if (popFile.size > 10 * 1024 * 1024) {
+      toast.error("That file is larger than 10MB. Please upload a smaller file.");
+      return;
+    }
+    setPopSending(true);
     try {
-      const priceStr = PRODUCT_PRICE_MAP.get(product) ?? null;
-      const unitPrice = priceStr ? parseRand(priceStr) : null;
-      await generateQuotePDF({
-        firstName: firstName.trim() || "Customer",
-        lastName: lastName.trim(),
-        email: email.trim(),
-        phone: phone.trim(),
-        address: address.trim() || undefined,
-        productName: product,
-        quantity,
-        unitPrice,
-        storyType,
-        flooring,
-        plateType,
-        cornerInstall,
-        transportPrice: installationRequired ? null : matched ? matched.transportPrice : null,
-        transportZone: installationRequired ? null : matched ? matched.transportZone : null,
-        distanceKm: matched ? matched.distanceKm : null,
-        travelFee: null,
-        extrasForAccount: extrasForAccount.trim() || undefined,
-        asInvoice: true,
-        installationRequired,
-      });
-      toast.success("Invoice created — check your downloads.");
+      const customerEmail = email.trim();
+      const fullName = `${firstName.trim()} ${lastName.trim()}`.trim() || "Customer";
+      const uploadInfo = (await createPopUploadFn({
+        data: { filename: popFile.name, email: customerEmail, session: quoteSession },
+      })) as
+        | { ok: true; path: string; token: string; signedUrl: string }
+        | { ok: false; error: string };
+      if (!uploadInfo.ok) throw new Error(uploadInfo.error || "Upload failed");
+
+      const { supabase } = await import("@/integrations/supabase/client");
+      const { error: uploadErr } = await supabase.storage
+        .from("quotes")
+        .uploadToSignedUrl(uploadInfo.path, uploadInfo.token, popFile, {
+          contentType: popFile.type || "application/octet-stream",
+        });
+      if (uploadErr) throw new Error(uploadErr.message);
+
+      const notified = (await notifyPopFn({
+        data: {
+          email: customerEmail,
+          session: quoteSession,
+          path: uploadInfo.path,
+          clientName: fullName,
+          invoiceNo: quoteNo || undefined,
+          productName: product,
+          amount: (totalPriceLabel ?? (estimatedTotal !== null ? formatRand(estimatedTotal) : null)) ?? undefined,
+        },
+      })) as { ok: boolean; error: string | null };
+      if (!notified.ok) throw new Error(notified.error || "Could not notify our team");
+
+      setPopDone(true);
+      setConverting(true);
+      await generateInvoicePdf();
+      toast.success("Payment received — your invoice has been created.");
+      setPopOpen(false);
     } catch (err) {
-      console.error("Invoice generation failed", err);
-      toast.error("We couldn't create the invoice. Please try again.");
+      console.error("Proof of payment failed", err);
+      toast.error(
+        err instanceof Error ? err.message : "We couldn't process your proof of payment.",
+      );
     } finally {
+      setPopSending(false);
       setConverting(false);
     }
   };
 
   const showQuote = (submitted && lookup?.match) || canContinue;
   const cartTotalLabel = totalPriceLabel ?? (estimatedTotal !== null ? formatRand(estimatedTotal) : null);
+
 
 
   return (
@@ -1054,7 +1130,7 @@ function QuotePage() {
                   type="button"
                   onClick={convertToInvoice}
                   disabled={converting}
-                  aria-label="Add to cart and convert this quote to an invoice"
+                  aria-label="Send proof of payment and get your invoice"
                   className="inline-flex items-center justify-center gap-2 border-2 border-foreground bg-primary px-5 py-3 text-sm font-bold uppercase tracking-wider text-primary-foreground shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {converting ? (
@@ -1062,7 +1138,7 @@ function QuotePage() {
                   ) : (
                     <ShoppingCart className="h-4 w-4" />
                   )}
-                  {converting ? "Creating invoice…" : "Add to cart · Convert to invoice"}
+                  {converting ? "Creating invoice…" : "Pay & get invoice"}
                 </button>
 
                 <a
@@ -1104,13 +1180,84 @@ function QuotePage() {
               className="inline-flex items-center justify-center gap-2 border-2 border-foreground bg-primary px-5 py-2.5 text-xs font-bold uppercase tracking-wider text-primary-foreground shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none disabled:cursor-not-allowed disabled:opacity-60"
             >
               {converting ? <Loader2 className="h-4 w-4 animate-spin" /> : <ShoppingCart className="h-4 w-4" />}
-              {converting ? "Creating invoice…" : "Convert to invoice"}
+              {converting ? "Creating invoice…" : "Pay & get invoice"}
             </button>
           </div>
         </div>
       )}
 
+      {/* Proof of payment step — the invoice is only issued once payment is proven */}
+      {popOpen && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="pop-title"
+          className="fixed inset-0 z-50 flex items-end justify-center bg-foreground/60 p-4 sm:items-center"
+        >
+          <div className="w-full max-w-lg border-2 border-foreground bg-background p-6 shadow-brutal-sm">
+            <h2 id="pop-title" className="text-lg font-bold uppercase tracking-wide text-foreground">
+              Send your proof of payment
+            </h2>
+            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+              We issue the invoice once payment is confirmed. Upload your proof of payment below,
+              or email it to us — we'll send your invoice straight after.
+            </p>
 
+            <div className="mt-4 border-2 border-foreground/20 bg-secondary/30 p-4 text-sm leading-relaxed">
+              <p className="font-bold uppercase tracking-wide text-foreground">Banking details</p>
+              <p className="mt-1 text-muted-foreground">
+                The Progress Group · Reference: {quoteNo || "your name"}
+              </p>
+              <p className="mt-1 font-mono font-bold text-foreground">
+                {(totalPriceLabel ?? (estimatedTotal !== null ? formatRand(estimatedTotal) : "—"))} due
+              </p>
+            </div>
+
+            <label htmlFor="pop-file" className="mt-5 block text-xs font-bold uppercase tracking-wider text-foreground">
+              Upload proof of payment (PDF or image, max 10MB)
+            </label>
+            <input
+              id="pop-file"
+              type="file"
+              accept=".pdf,image/png,image/jpeg,image/webp,image/heic"
+              onChange={(e) => setPopFile(e.target.files?.[0] ?? null)}
+              className="mt-2 w-full border-2 border-foreground bg-background px-3 py-2 text-sm file:mr-3 file:border-0 file:bg-secondary file:px-3 file:py-1 file:text-xs file:font-bold file:uppercase"
+            />
+
+            <div className="mt-5 flex flex-wrap gap-3">
+              <button
+                type="button"
+                onClick={submitProofOfPayment}
+                disabled={popSending || !popFile}
+                className="inline-flex items-center justify-center gap-2 border-2 border-foreground bg-primary px-5 py-3 text-sm font-bold uppercase tracking-wider text-primary-foreground shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {popSending ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4" />}
+                {popSending ? "Sending…" : "Send POP & get invoice"}
+              </button>
+              <a
+                href={popMailtoHref}
+                className="inline-flex items-center justify-center gap-2 border-2 border-foreground bg-background px-5 py-3 text-sm font-bold uppercase tracking-wider text-foreground shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
+              >
+                Email POP instead
+              </a>
+              <button
+                type="button"
+                onClick={() => setPopOpen(false)}
+                disabled={popSending}
+                className="inline-flex items-center justify-center px-3 py-3 text-sm font-bold uppercase tracking-wider text-muted-foreground underline-offset-4 hover:underline disabled:opacity-60"
+              >
+                Cancel
+              </button>
+            </div>
+
+            {popDone && (
+              <p className="mt-4 text-sm font-semibold text-foreground">
+                Thank you — your proof of payment is with our team.
+              </p>
+            )}
+          </div>
+        </div>
+      )}
 
 
       {/* Footer */}
