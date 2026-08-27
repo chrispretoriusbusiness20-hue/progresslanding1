@@ -238,6 +238,11 @@ function QuotePage() {
   const [extrasForAccount, setExtrasForAccount] = useState("");
 
   const [submitted, setSubmitted] = useState(false);
+  const [quoteSession, setQuoteSession] = useState("");
+  const [popOpen, setPopOpen] = useState(false);
+  const [popFile, setPopFile] = useState<File | null>(null);
+  const [popSending, setPopSending] = useState(false);
+  const [popDone, setPopDone] = useState(false);
   const [lookup, setLookup] = useState<LookupResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
