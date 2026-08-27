@@ -1186,7 +1186,78 @@ function QuotePage() {
         </div>
       )}
 
+      {/* Proof of payment step — the invoice is only issued once payment is proven */}
+      {popOpen && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="pop-title"
+          className="fixed inset-0 z-50 flex items-end justify-center bg-foreground/60 p-4 sm:items-center"
+        >
+          <div className="w-full max-w-lg border-2 border-foreground bg-background p-6 shadow-brutal-sm">
+            <h2 id="pop-title" className="text-lg font-bold uppercase tracking-wide text-foreground">
+              Send your proof of payment
+            </h2>
+            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+              We issue the invoice once payment is confirmed. Upload your proof of payment below,
+              or email it to us — we'll send your invoice straight after.
+            </p>
 
+            <div className="mt-4 border-2 border-foreground/20 bg-secondary/30 p-4 text-sm leading-relaxed">
+              <p className="font-bold uppercase tracking-wide text-foreground">Banking details</p>
+              <p className="mt-1 text-muted-foreground">
+                The Progress Group · Reference: {quoteNo || "your name"}
+              </p>
+              <p className="mt-1 font-mono font-bold text-foreground">
+                {(totalPriceLabel ?? (estimatedTotal !== null ? formatRand(estimatedTotal) : "—"))} due
+              </p>
+            </div>
+
+            <label htmlFor="pop-file" className="mt-5 block text-xs font-bold uppercase tracking-wider text-foreground">
+              Upload proof of payment (PDF or image, max 10MB)
+            </label>
+            <input
+              id="pop-file"
+              type="file"
+              accept=".pdf,image/png,image/jpeg,image/webp,image/heic"
+              onChange={(e) => setPopFile(e.target.files?.[0] ?? null)}
+              className="mt-2 w-full border-2 border-foreground bg-background px-3 py-2 text-sm file:mr-3 file:border-0 file:bg-secondary file:px-3 file:py-1 file:text-xs file:font-bold file:uppercase"
+            />
+
+            <div className="mt-5 flex flex-wrap gap-3">
+              <button
+                type="button"
+                onClick={submitProofOfPayment}
+                disabled={popSending || !popFile}
+                className="inline-flex items-center justify-center gap-2 border-2 border-foreground bg-primary px-5 py-3 text-sm font-bold uppercase tracking-wider text-primary-foreground shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {popSending ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4" />}
+                {popSending ? "Sending…" : "Send POP & get invoice"}
+              </button>
+              <a
+                href={popMailtoHref}
+                className="inline-flex items-center justify-center gap-2 border-2 border-foreground bg-background px-5 py-3 text-sm font-bold uppercase tracking-wider text-foreground shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
+              >
+                Email POP instead
+              </a>
+              <button
+                type="button"
+                onClick={() => setPopOpen(false)}
+                disabled={popSending}
+                className="inline-flex items-center justify-center px-3 py-3 text-sm font-bold uppercase tracking-wider text-muted-foreground underline-offset-4 hover:underline disabled:opacity-60"
+              >
+                Cancel
+              </button>
+            </div>
+
+            {popDone && (
+              <p className="mt-4 text-sm font-semibold text-foreground">
+                Thank you — your proof of payment is with our team.
+              </p>
+            )}
+          </div>
+        </div>
+      )}
 
 
       {/* Footer */}
