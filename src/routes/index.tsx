@@ -1052,40 +1052,19 @@ function QuotePage() {
                 </button>
                 <button
                   type="button"
-                  onClick={async () => {
-                    try {
-                      const priceStr = PRODUCT_PRICE_MAP.get(product) ?? null;
-                      const unitPrice = priceStr ? parseRand(priceStr) : null;
-                      await generateQuotePDF({
-                        firstName: firstName.trim() || "Customer",
-                        lastName: lastName.trim(),
-                        email: email.trim(),
-                        phone: phone.trim(),
-                        address: address.trim() || undefined,
-                        productName: product,
-                        quantity,
-                        unitPrice,
-                        storyType,
-                        flooring,
-                        plateType,
-                        cornerInstall,
-                        transportPrice: installationRequired ? null : matched ? matched.transportPrice : null,
-                        transportZone: installationRequired ? null : matched ? matched.transportZone : null,
-                        distanceKm: matched ? matched.distanceKm : null,
-                        travelFee: null,
-                        extrasForAccount: extrasForAccount.trim() || undefined,
-                        asInvoice: true,
-                        installationRequired,
-                      });
-                    } catch (err) {
-                      console.error("Invoice generation failed", err);
-                    }
-                  }}
-                  className="inline-flex items-center justify-center gap-2 border-2 border-foreground bg-primary px-5 py-3 text-sm font-bold uppercase tracking-wider text-primary-foreground shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
+                  onClick={convertToInvoice}
+                  disabled={converting}
+                  aria-label="Add to cart and convert this quote to an invoice"
+                  className="inline-flex items-center justify-center gap-2 border-2 border-foreground bg-primary px-5 py-3 text-sm font-bold uppercase tracking-wider text-primary-foreground shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none disabled:cursor-not-allowed disabled:opacity-60"
                 >
-                  <CheckCircle2 className="h-4 w-4" />
-                  Accept My Quote / Get Invoice & Book Installation
+                  {converting ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <ShoppingCart className="h-4 w-4" />
+                  )}
+                  {converting ? "Creating invoice…" : "Add to cart · Convert to invoice"}
                 </button>
+
                 <a
                   href={whatsappHref}
                   target="_blank"
