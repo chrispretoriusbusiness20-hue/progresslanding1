@@ -694,7 +694,7 @@ function QuotePage() {
           clientName: fullName,
           invoiceNo: quoteNo || undefined,
           productName: product,
-          amount: cartTotalLabelValue ?? undefined,
+          amount: (totalPriceLabel ?? (estimatedTotal !== null ? formatRand(estimatedTotal) : null)) ?? undefined,
         },
       })) as { ok: boolean; error: string | null };
       if (!notified.ok) throw new Error(notified.error || "Could not notify our team");
