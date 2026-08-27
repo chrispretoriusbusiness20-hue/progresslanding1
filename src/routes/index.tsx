@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { CheckCircle2, FileDown, Loader2, MessageCircle, Sparkles } from "lucide-react";
+import { CheckCircle2, FileDown, Loader2, MessageCircle, ShoppingCart, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { submitQuoteRequest, createQuoteUploadUrl, emailQuoteFromPath } from "@/lib/quote-submit.functions";
 const generateQuotePDF = async (
@@ -602,7 +602,47 @@ function QuotePage() {
     return `https://wa.me/27689560320?text=${encodeURIComponent(text)}`;
   }, [firstName, lastName, quoteNo, product, totalPriceNum, totalPriceLabel, estimatedTotal, submitted]);
 
+  const [converting, setConverting] = useState(false);
+
+  const convertToInvoice = async () => {
+    if (converting) return;
+    setConverting(true);
+    try {
+      const priceStr = PRODUCT_PRICE_MAP.get(product) ?? null;
+      const unitPrice = priceStr ? parseRand(priceStr) : null;
+      await generateQuotePDF({
+        firstName: firstName.trim() || "Customer",
+        lastName: lastName.trim(),
+        email: email.trim(),
+        phone: phone.trim(),
+        address: address.trim() || undefined,
+        productName: product,
+        quantity,
+        unitPrice,
+        storyType,
+        flooring,
+        plateType,
+        cornerInstall,
+        transportPrice: installationRequired ? null : matched ? matched.transportPrice : null,
+        transportZone: installationRequired ? null : matched ? matched.transportZone : null,
+        distanceKm: matched ? matched.distanceKm : null,
+        travelFee: null,
+        extrasForAccount: extrasForAccount.trim() || undefined,
+        asInvoice: true,
+        installationRequired,
+      });
+      toast.success("Invoice created — check your downloads.");
+    } catch (err) {
+      console.error("Invoice generation failed", err);
+      toast.error("We couldn't create the invoice. Please try again.");
+    } finally {
+      setConverting(false);
+    }
+  };
+
   const showQuote = (submitted && lookup?.match) || canContinue;
+  const cartTotalLabel = totalPriceLabel ?? (estimatedTotal !== null ? formatRand(estimatedTotal) : null);
+
 
   return (
     <div className="min-h-screen text-foreground">
@@ -1012,40 +1052,19 @@ function QuotePage() {
                 </button>
                 <button
                   type="button"
-                  onClick={async () => {
-                    try {
-                      const priceStr = PRODUCT_PRICE_MAP.get(product) ?? null;
-                      const unitPrice = priceStr ? parseRand(priceStr) : null;
-                      await generateQuotePDF({
-                        firstName: firstName.trim() || "Customer",
-                        lastName: lastName.trim(),
-                        email: email.trim(),
-                        phone: phone.trim(),
-                        address: address.trim() || undefined,
-                        productName: product,
-                        quantity,
-                        unitPrice,
-                        storyType,
-                        flooring,
-                        plateType,
-                        cornerInstall,
-                        transportPrice: installationRequired ? null : matched ? matched.transportPrice : null,
-                        transportZone: installationRequired ? null : matched ? matched.transportZone : null,
-                        distanceKm: matched ? matched.distanceKm : null,
-                        travelFee: null,
-                        extrasForAccount: extrasForAccount.trim() || undefined,
-                        asInvoice: true,
-                        installationRequired,
-                      });
-                    } catch (err) {
-                      console.error("Invoice generation failed", err);
-                    }
-                  }}
-                  className="inline-flex items-center justify-center gap-2 border-2 border-foreground bg-primary px-5 py-3 text-sm font-bold uppercase tracking-wider text-primary-foreground shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
+                  onClick={convertToInvoice}
+                  disabled={converting}
+                  aria-label="Add to cart and convert this quote to an invoice"
+                  className="inline-flex items-center justify-center gap-2 border-2 border-foreground bg-primary px-5 py-3 text-sm font-bold uppercase tracking-wider text-primary-foreground shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none disabled:cursor-not-allowed disabled:opacity-60"
                 >
-                  <CheckCircle2 className="h-4 w-4" />
-                  Accept My Quote / Get Invoice & Book Installation
+                  {converting ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <ShoppingCart className="h-4 w-4" />
+                  )}
+                  {converting ? "Creating invoice…" : "Add to cart · Convert to invoice"}
                 </button>
+
                 <a
                   href={whatsappHref}
                   target="_blank"
@@ -1061,6 +1080,37 @@ function QuotePage() {
           </div>
         </section>
       )}
+
+      {/* Sticky cart bar — keeps the convert-to-invoice CTA reachable */}
+      {showQuote && (
+        <div className="sticky bottom-0 z-40 border-t-2 border-foreground bg-background/95 backdrop-blur">
+          <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-6 py-3">
+            <div className="flex items-center gap-3">
+              <span className="relative inline-flex h-9 w-9 items-center justify-center border-2 border-foreground bg-secondary/40">
+                <ShoppingCart className="h-4 w-4" />
+                <span className="absolute -right-2 -top-2 inline-flex h-5 min-w-5 items-center justify-center border-2 border-foreground bg-primary px-1 font-mono text-[10px] font-bold text-primary-foreground">
+                  {quantity}
+                </span>
+              </span>
+              <div className="leading-tight">
+                <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-muted-foreground">Your cart</p>
+                <p className="font-mono text-sm font-bold text-foreground">{cartTotalLabel ?? "—"}</p>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={convertToInvoice}
+              disabled={converting}
+              className="inline-flex items-center justify-center gap-2 border-2 border-foreground bg-primary px-5 py-2.5 text-xs font-bold uppercase tracking-wider text-primary-foreground shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {converting ? <Loader2 className="h-4 w-4 animate-spin" /> : <ShoppingCart className="h-4 w-4" />}
+              {converting ? "Creating invoice…" : "Convert to invoice"}
+            </button>
+          </div>
+        </div>
+      )}
+
+
 
 
       {/* Footer */}
