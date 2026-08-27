@@ -613,44 +613,111 @@ function QuotePage() {
 
   const [converting, setConverting] = useState(false);
 
-  const convertToInvoice = async () => {
-    if (converting) return;
-    setConverting(true);
+  const generateInvoicePdf = async () => {
+    const priceStr = PRODUCT_PRICE_MAP.get(product) ?? null;
+    const unitPrice = priceStr ? parseRand(priceStr) : null;
+    return generateQuotePDF({
+      firstName: firstName.trim() || "Customer",
+      lastName: lastName.trim(),
+      email: email.trim(),
+      phone: phone.trim(),
+      address: address.trim() || undefined,
+      productName: product,
+      quantity,
+      unitPrice,
+      storyType,
+      flooring,
+      plateType,
+      cornerInstall,
+      transportPrice: installationRequired ? null : matched ? matched.transportPrice : null,
+      transportZone: installationRequired ? null : matched ? matched.transportZone : null,
+      distanceKm: matched ? matched.distanceKm : null,
+      travelFee: null,
+      extrasForAccount: extrasForAccount.trim() || undefined,
+      asInvoice: true,
+      installationRequired,
+    });
+  };
+
+  /**
+   * Invoices are only issued once payment is proven, so this opens the
+   * proof-of-payment step instead of generating the document immediately.
+   */
+  const convertToInvoice = () => {
+    if (!submitted || !quoteSession) {
+      toast.error("Please submit your quote first — then upload your proof of payment.");
+      return;
+    }
+    setPopOpen(true);
+  };
+
+  const popMailtoHref = useMemo(() => {
+    const subject = `Proof of payment${quoteNo ? ` — ${quoteNo}` : ""}`;
+    const body = `Hi Progress Group,\n\nPlease find my proof of payment attached.\n\nName: ${`${firstName.trim()} ${lastName.trim()}`.trim()}\nQuote: ${quoteNo || "—"}\nProduct: ${product}\n\nThank you.`;
+    return `mailto:sales@progressgrp.co.za?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  }, [quoteNo, firstName, lastName, product]);
+
+  const submitProofOfPayment = async () => {
+    if (popSending) return;
+    if (!popFile) {
+      toast.error("Please choose your proof of payment file first.");
+      return;
+    }
+    if (popFile.size > 10 * 1024 * 1024) {
+      toast.error("That file is larger than 10MB. Please upload a smaller file.");
+      return;
+    }
+    setPopSending(true);
     try {
-      const priceStr = PRODUCT_PRICE_MAP.get(product) ?? null;
-      const unitPrice = priceStr ? parseRand(priceStr) : null;
-      await generateQuotePDF({
-        firstName: firstName.trim() || "Customer",
-        lastName: lastName.trim(),
-        email: email.trim(),
-        phone: phone.trim(),
-        address: address.trim() || undefined,
-        productName: product,
-        quantity,
-        unitPrice,
-        storyType,
-        flooring,
-        plateType,
-        cornerInstall,
-        transportPrice: installationRequired ? null : matched ? matched.transportPrice : null,
-        transportZone: installationRequired ? null : matched ? matched.transportZone : null,
-        distanceKm: matched ? matched.distanceKm : null,
-        travelFee: null,
-        extrasForAccount: extrasForAccount.trim() || undefined,
-        asInvoice: true,
-        installationRequired,
-      });
-      toast.success("Invoice created — check your downloads.");
+      const customerEmail = email.trim();
+      const fullName = `${firstName.trim()} ${lastName.trim()}`.trim() || "Customer";
+      const uploadInfo = (await createPopUploadFn({
+        data: { filename: popFile.name, email: customerEmail, session: quoteSession },
+      })) as
+        | { ok: true; path: string; token: string; signedUrl: string }
+        | { ok: false; error: string };
+      if (!uploadInfo.ok) throw new Error(uploadInfo.error || "Upload failed");
+
+      const { supabase } = await import("@/integrations/supabase/client");
+      const { error: uploadErr } = await supabase.storage
+        .from("quotes")
+        .uploadToSignedUrl(uploadInfo.path, uploadInfo.token, popFile, {
+          contentType: popFile.type || "application/octet-stream",
+        });
+      if (uploadErr) throw new Error(uploadErr.message);
+
+      const notified = (await notifyPopFn({
+        data: {
+          email: customerEmail,
+          session: quoteSession,
+          path: uploadInfo.path,
+          clientName: fullName,
+          invoiceNo: quoteNo || undefined,
+          productName: product,
+          amount: cartTotalLabelValue ?? undefined,
+        },
+      })) as { ok: boolean; error: string | null };
+      if (!notified.ok) throw new Error(notified.error || "Could not notify our team");
+
+      setPopDone(true);
+      setConverting(true);
+      await generateInvoicePdf();
+      toast.success("Payment received — your invoice has been created.");
+      setPopOpen(false);
     } catch (err) {
-      console.error("Invoice generation failed", err);
-      toast.error("We couldn't create the invoice. Please try again.");
+      console.error("Proof of payment failed", err);
+      toast.error(
+        err instanceof Error ? err.message : "We couldn't process your proof of payment.",
+      );
     } finally {
+      setPopSending(false);
       setConverting(false);
     }
   };
 
   const showQuote = (submitted && lookup?.match) || canContinue;
   const cartTotalLabel = totalPriceLabel ?? (estimatedTotal !== null ? formatRand(estimatedTotal) : null);
+
 
 
   return (
