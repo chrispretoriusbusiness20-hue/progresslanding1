@@ -430,6 +430,7 @@ function QuotePage() {
               : product;
             // 1) Get a signed upload URL (with one retry)
             const session = result.match ? result.session : "";
+            setQuoteSession(session);
             const uploadInfo = (await withRetry(
               () =>
                 createUploadFn({
