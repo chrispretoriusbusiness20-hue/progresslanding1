@@ -602,7 +602,47 @@ function QuotePage() {
     return `https://wa.me/27689560320?text=${encodeURIComponent(text)}`;
   }, [firstName, lastName, quoteNo, product, totalPriceNum, totalPriceLabel, estimatedTotal, submitted]);
 
+  const [converting, setConverting] = useState(false);
+
+  const convertToInvoice = async () => {
+    if (converting) return;
+    setConverting(true);
+    try {
+      const priceStr = PRODUCT_PRICE_MAP.get(product) ?? null;
+      const unitPrice = priceStr ? parseRand(priceStr) : null;
+      await generateQuotePDF({
+        firstName: firstName.trim() || "Customer",
+        lastName: lastName.trim(),
+        email: email.trim(),
+        phone: phone.trim(),
+        address: address.trim() || undefined,
+        productName: product,
+        quantity,
+        unitPrice,
+        storyType,
+        flooring,
+        plateType,
+        cornerInstall,
+        transportPrice: installationRequired ? null : matched ? matched.transportPrice : null,
+        transportZone: installationRequired ? null : matched ? matched.transportZone : null,
+        distanceKm: matched ? matched.distanceKm : null,
+        travelFee: null,
+        extrasForAccount: extrasForAccount.trim() || undefined,
+        asInvoice: true,
+        installationRequired,
+      });
+      toast.success("Invoice created — check your downloads.");
+    } catch (err) {
+      console.error("Invoice generation failed", err);
+      toast.error("We couldn't create the invoice. Please try again.");
+    } finally {
+      setConverting(false);
+    }
+  };
+
   const showQuote = (submitted && lookup?.match) || canContinue;
+  const cartTotalLabel = totalPriceLabel ?? (estimatedTotal !== null ? formatRand(estimatedTotal) : null);
+
 
   return (
     <div className="min-h-screen text-foreground">
