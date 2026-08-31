@@ -1197,12 +1197,32 @@ function QuotePage() {
         >
           <div className="w-full max-w-lg border-2 border-foreground bg-background p-6 shadow-brutal-sm">
             <h2 id="pop-title" className="text-lg font-bold uppercase tracking-wide text-foreground">
-              Send your proof of payment
+              Pay &amp; get your invoice
             </h2>
             <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-              We issue the invoice once payment is confirmed. Upload your proof of payment below,
-              or email it to us — we'll send your invoice straight after.
+              We issue the invoice once payment is confirmed. Pay online with Stitch for the
+              fastest option, or pay by EFT and send us your proof of payment below.
             </p>
+
+            <a
+              href={STITCH_PAY_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-4 flex w-full items-center justify-center gap-2 border-2 border-foreground bg-primary px-5 py-3 text-sm font-bold uppercase tracking-wider text-primary-foreground shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
+            >
+              <ShoppingCart className="h-4 w-4" />
+              Pay online with Stitch
+            </a>
+            <p className="mt-2 text-center text-xs text-muted-foreground">
+              Secure card, EFT &amp; bank payments via Stitch
+            </p>
+
+            <div className="mt-4 flex items-center gap-3" aria-hidden="true">
+              <span className="h-px flex-1 bg-foreground/20" />
+              <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Or pay by EFT</span>
+              <span className="h-px flex-1 bg-foreground/20" />
+            </div>
+
 
             <div className="mt-4 border-2 border-foreground/20 bg-secondary/30 p-4 text-sm leading-relaxed">
               <p className="font-bold uppercase tracking-wide text-foreground">Banking details</p>
