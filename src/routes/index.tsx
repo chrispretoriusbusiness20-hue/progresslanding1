@@ -19,7 +19,7 @@ import progressLogo from "@/assets/progress-header-transparent.png.asset.json";
 
 import { AddressAutocomplete } from "@/components/address-autocomplete";
 import { checkEmail } from "@/lib/email-typo";
-import { specialDiscountFor } from "@/lib/special-discount";
+import { isAllInclusiveProduct, specialDiscountFor } from "@/lib/special-discount";
 
 
 
@@ -590,12 +590,13 @@ function QuotePage() {
     const priceStr = PRODUCT_PRICE_MAP.get(product);
     const unitPrice = priceStr ? parseRand(priceStr) : null;
     const subtotal = unitPrice !== null ? unitPrice * quantity : null;
-    const flueKitIncluded = /flue\s*kit/i.test(product);
+    const allInclusive = isAllInclusiveProduct(product);
+    const flueKitIncluded = allInclusive || /flue\s*kit/i.test(product);
     const flueKit = flueKitIncluded ? null : storyType === "double" ? 9650 : storyType === "single" ? 7650 : null;
-    const needsPlate = flooring.length > 0 && !/tile/i.test(flooring);
+    const needsPlate = !allInclusive && flooring.length > 0 && !/tile/i.test(flooring);
     const plate = needsPlate ? computePlatePrice(plateType, cornerInstall) : null;
-    const corner = installationRequired && cornerInstall ? 800 : null;
-    const install = installationRequired ? 5500 + (storyType === "double" ? 1500 : 0) : null;
+    const corner = !allInclusive && installationRequired && cornerInstall ? 800 : null;
+    const install = allInclusive ? null : installationRequired ? 5500 + (storyType === "double" ? 1500 : 0) : null;
     if (subtotal === null && flueKit === null && plate === null && corner === null && install === null) return null;
     return (subtotal ?? 0) + (flueKit ?? 0) + (plate ?? 0) + (corner ?? 0) + (install ?? 0);
   }, [product, quantity, storyType, flooring, plateType, cornerInstall, installationRequired]);
@@ -1405,16 +1406,19 @@ function InstantQuote({
   const priceStr = PRODUCT_PRICE_MAP.get(productName) ?? null;
   const unitPrice = priceStr ? parseRand(priceStr) : null;
   const subtotal = unitPrice !== null ? unitPrice * quantity : null;
-  const flueKitIncluded = /flue\s*kit/i.test(productName);
+  const allInclusive = isAllInclusiveProduct(productName);
+  const flueKitIncluded = allInclusive || /flue\s*kit/i.test(productName);
   const flueKit = flueKitIncluded
     ? null
     : storyType === "double" ? 9650 : storyType === "single" ? 7650 : null;
-  const needsPlate = flooring.length > 0 && !/tile/i.test(flooring);
+  const needsPlate = !allInclusive && flooring.length > 0 && !/tile/i.test(flooring);
   const plate = needsPlate ? computePlatePrice(plateType, cornerInstall) : null;
-  const corner = cornerInstall ? 800 : null;
-  const installationEstimate = installationRequired
-    ? 4500 + (storyType === "double" ? 1650 : 0)
-    : null;
+  const corner = allInclusive ? null : cornerInstall ? 800 : null;
+  const installationEstimate = allInclusive
+    ? null
+    : installationRequired
+      ? 5500 + (storyType === "double" ? 1500 : 0)
+      : null;
   const specialDiscount = specialDiscountFor(productName, quantity);
   const total =
     subtotal !== null || flueKit !== null || plate !== null || corner !== null || installationEstimate !== null
@@ -1459,8 +1463,11 @@ function InstantQuote({
           },
         ]
       : []),
-    { label: "Corner installation", value: corner, hint: cornerInstall ? "+R800 (+R650 if ≤50 km)" : "Standard wall" },
-    ...(installationRequired
+    ...(allInclusive ? [] : [{ label: "Corner installation", value: corner, hint: cornerInstall ? "+R800 (+R650 if ≤50 km)" : "Standard wall" }]),
+    ...(allInclusive
+      ? [{ label: "Installation, flue kit & plinth", value: 0 as number | null, hint: "Included in the special price" as string }]
+      : []),
+    ...(!allInclusive && installationRequired
       ? [
           {
             label: "Installation estimate",

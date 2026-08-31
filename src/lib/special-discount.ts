@@ -9,3 +9,11 @@ export function isSpecialProduct(productName: string | null | undefined): boolea
 export function specialDiscountFor(productName: string | null | undefined, quantity = 1): number {
   return isSpecialProduct(productName) ? SPECIAL_DISCOUNT_ZAR * Math.max(quantity, 1) : 0;
 }
+
+/**
+ * Products whose catalog price is all-inclusive: installation, flue kit and
+ * plinth are already covered, so those line items must not be added on top.
+ */
+export function isAllInclusiveProduct(productName: string | null | undefined): boolean {
+  return isSpecialProduct(productName);
+}

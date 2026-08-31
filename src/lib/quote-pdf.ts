@@ -2,7 +2,7 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import progressLogo from "@/assets/progress-header-transparent.png.asset.json";
 import progressInstallationsLogo from "@/assets/progress-installations-logo.png.asset.json";
-import { specialDiscountFor } from "@/lib/special-discount";
+import { isAllInclusiveProduct, specialDiscountFor } from "@/lib/special-discount";
 
 
 
@@ -130,7 +130,8 @@ export async function generateQuotePDF(
   }
 
   // Skip the flue kit line when the product already bundles one (e.g. the SPECIAL Magma).
-  const flueKitIncludedInProduct = /flue\s*kit/i.test(input.productName);
+  const allInclusive = isAllInclusiveProduct(input.productName);
+  const flueKitIncludedInProduct = allInclusive || /flue\s*kit/i.test(input.productName);
   if (input.storyType && !flueKitIncludedInProduct) {
     const flueUnit = input.storyType === "double" ? 9650 : 7650;
     items.push({
@@ -142,7 +143,7 @@ export async function generateQuotePDF(
 
   {
     const flooringLower = (input.flooring ?? "").toLowerCase();
-    const needsPlate = flooringLower.length > 0 && !/tile/.test(flooringLower);
+    const needsPlate = !allInclusive && flooringLower.length > 0 && !/tile/.test(flooringLower);
     if (needsPlate) {
       const plateType: "steel" | "glass" | "granite" =
         input.plateType === "granite" ? "granite" : input.plateType === "steel" ? "steel" : "glass";
@@ -429,7 +430,7 @@ export async function generateQuotePDF(
   // Excluded when the site is further than 100 km from Cape Town
   // (transport zones "100–200 km" or "200 km+").
   const farFromCT = /100\s*[–-]\s*200|200\s*km\s*\+/i.test(input.transportZone ?? "");
-  const includeInstallEstimate = input.installationRequired !== false && !farFromCT;
+  const includeInstallEstimate = input.installationRequired !== false && !farFromCT && !allInclusive;
   if (includeInstallEstimate) {
 
     doc.addPage();
