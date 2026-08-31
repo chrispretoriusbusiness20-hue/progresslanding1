@@ -136,11 +136,36 @@ export const Route = createFileRoute("/api/public/approve-invoice")({
           });
           try {
             const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-            await supabaseAdmin
-              .from("quote_requests")
-              .update({ invoice_sent_at: new Date().toISOString(), status: "invoiced" })
-              .eq("email", to)
-              .is("invoice_sent_at", null);
+            // Resolve the single quote row this invoice belongs to — never
+            // blanket-update every un-invoiced row for the email address.
+            let targetId: string | null = null;
+            if (pdfPath && QUOTE_PATH_RE.test(pdfPath)) {
+              const { data: byPath } = await supabaseAdmin
+                .from("quote_requests")
+                .select("id")
+                .eq("pdf_path", pdfPath)
+                .limit(1)
+                .maybeSingle();
+              targetId = byPath?.id ?? null;
+            }
+            if (!targetId) {
+              const { data: latest } = await supabaseAdmin
+                .from("quote_requests")
+                .select("id")
+                .eq("email", to)
+                .is("invoice_sent_at", null)
+                .order("created_at", { ascending: false })
+                .limit(1)
+                .maybeSingle();
+              targetId = latest?.id ?? null;
+            }
+            if (targetId) {
+              await supabaseAdmin
+                .from("quote_requests")
+                .update({ invoice_sent_at: new Date().toISOString(), status: "invoiced" })
+                .eq("id", targetId)
+                .is("invoice_sent_at", null);
+            }
           } catch (err) {
             console.error("invoice_sent_at update failed", err);
           }
