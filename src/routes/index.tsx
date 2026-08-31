@@ -24,6 +24,7 @@ import { specialDiscountFor } from "@/lib/special-discount";
 
 
 const QUOTE_APP_URL = "https://fireplacequotes.co.za/";
+const STITCH_PAY_URL = "https://express.stitch.money/progress-installations";
 const PRODUCT_LIST = productsData as { name: string; price: string }[];
 const PRODUCT_NAMES = PRODUCT_LIST.map((p) => p.name);
 const PRODUCT_PRICE_MAP = new Map(PRODUCT_LIST.map((p) => [p.name, p.price]));
