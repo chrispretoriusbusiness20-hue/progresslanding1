@@ -753,6 +753,12 @@ function QuotePage() {
 
   const showQuote = (submitted && lookup?.match) || canContinue;
   const cartTotalLabel = totalPriceLabel ?? (estimatedTotal !== null ? formatRand(estimatedTotal) : null);
+  const cartTotalNum = totalPriceNum ?? estimatedTotal;
+  const INSTALMENT_MONTHS = 6;
+  const instalmentLabel =
+    cartTotalNum !== null && cartTotalNum > 0
+      ? formatRand(Math.round((cartTotalNum / INSTALMENT_MONTHS) * 100) / 100)
+      : null;
 
 
 
