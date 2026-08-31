@@ -24,7 +24,7 @@ import { specialDiscountFor } from "@/lib/special-discount";
 
 
 const QUOTE_APP_URL = "https://fireplacequotes.co.za/";
-const STITCH_PAY_URL = "https://express.stitch.money/progress-installations";
+import { createStitchPaymentLink, STITCH_FALLBACK_URL } from "@/lib/stitch.functions";
 const PRODUCT_LIST = productsData as { name: string; price: string }[];
 const PRODUCT_NAMES = PRODUCT_LIST.map((p) => p.name);
 const PRODUCT_PRICE_MAP = new Map(PRODUCT_LIST.map((p) => [p.name, p.price]));
@@ -293,6 +293,8 @@ function QuotePage() {
   const createUploadFn = useServerFn(createQuoteUploadUrl);
   const emailQuoteFn = useServerFn(emailQuoteFromPath);
   const createPopUploadFn = useServerFn(createPopUploadUrl);
+  const createStitchLinkFn = useServerFn(createStitchPaymentLink);
+  const [stitchLoading, setStitchLoading] = useState(false);
   const notifyPopFn = useServerFn(notifyProofOfPayment);
   const canContinue = useMemo(
     () =>
@@ -612,6 +614,39 @@ function QuotePage() {
     return `https://wa.me/27689560320?text=${encodeURIComponent(text)}`;
   }, [firstName, lastName, quoteNo, product, totalPriceNum, totalPriceLabel, estimatedTotal, submitted]);
 
+  const payWithStitch = async () => {
+    if (stitchLoading) return;
+    const amountZar = totalPriceNum ?? estimatedTotal;
+    const reference = quoteNo || `${firstName.trim()} ${lastName.trim()}`.trim();
+    // Without a session or amount we can only send them to the generic page.
+    if (!quoteSession || !amountZar || amountZar <= 0 || !reference) {
+      window.open(STITCH_FALLBACK_URL, "_blank", "noopener,noreferrer");
+      return;
+    }
+    setStitchLoading(true);
+    try {
+      const res = await createStitchLinkFn({
+        data: {
+          email: email.trim(),
+          session: quoteSession,
+          amountZar,
+          reference,
+          payerName: `${firstName.trim()} ${lastName.trim()}`.trim() || undefined,
+        },
+      });
+      if (!res.ok) {
+        toast.error("Couldn't preset your amount — opening our payment page instead.");
+      }
+      window.open(res.url, "_blank", "noopener,noreferrer");
+    } catch (err) {
+      console.error("Stitch link failed", err);
+      toast.error("Couldn't open the payment page. Please try again.");
+      window.open(STITCH_FALLBACK_URL, "_blank", "noopener,noreferrer");
+    } finally {
+      setStitchLoading(false);
+    }
+  };
+
   const [converting, setConverting] = useState(false);
 
   const generateInvoicePdf = async () => {
@@ -718,6 +753,12 @@ function QuotePage() {
 
   const showQuote = (submitted && lookup?.match) || canContinue;
   const cartTotalLabel = totalPriceLabel ?? (estimatedTotal !== null ? formatRand(estimatedTotal) : null);
+  const cartTotalNum = totalPriceNum ?? estimatedTotal;
+  const INSTALMENT_MONTHS = 6;
+  const instalmentLabel =
+    cartTotalNum !== null && cartTotalNum > 0
+      ? formatRand(Math.round((cartTotalNum / INSTALMENT_MONTHS) * 100) / 100)
+      : null;
 
 
 
@@ -1170,18 +1211,29 @@ function QuotePage() {
                 </span>
               </span>
               <div className="leading-tight">
-                <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-muted-foreground">Your cart</p>
-                <p className="font-mono text-sm font-bold text-foreground">{cartTotalLabel ?? "—"}</p>
+                <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-muted-foreground">
+                  Your cart · {cartTotalLabel ?? "—"} total
+                </p>
+                {instalmentLabel ? (
+                  <p className="font-mono text-2xl font-bold leading-tight text-foreground sm:text-3xl">
+                    {instalmentLabel}
+                    <span className="ml-1 text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                      × {INSTALMENT_MONTHS} payments
+                    </span>
+                  </p>
+                ) : (
+                  <p className="font-mono text-2xl font-bold text-foreground">—</p>
+                )}
               </div>
             </div>
             <button
               type="button"
-              onClick={convertToInvoice}
-              disabled={converting}
-              className="inline-flex items-center justify-center gap-2 border-2 border-foreground bg-primary px-5 py-2.5 text-xs font-bold uppercase tracking-wider text-primary-foreground shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none disabled:cursor-not-allowed disabled:opacity-60"
+              onClick={payWithStitch}
+              disabled={stitchLoading}
+              className="inline-flex items-center justify-center gap-2 border-2 border-foreground bg-primary px-6 py-3 text-sm font-bold uppercase tracking-wider text-primary-foreground shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none disabled:cursor-not-allowed disabled:opacity-60"
             >
-              {converting ? <Loader2 className="h-4 w-4 animate-spin" /> : <ShoppingCart className="h-4 w-4" />}
-              {converting ? "Creating invoice…" : "Pay & get invoice"}
+              {stitchLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ShoppingCart className="h-4 w-4" />}
+              {stitchLoading ? "Preparing…" : "Pay it off"}
             </button>
           </div>
         </div>
@@ -1204,15 +1256,15 @@ function QuotePage() {
               fastest option, or pay by EFT and send us your proof of payment below.
             </p>
 
-            <a
-              href={STITCH_PAY_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-4 flex w-full items-center justify-center gap-2 border-2 border-foreground bg-primary px-5 py-3 text-sm font-bold uppercase tracking-wider text-primary-foreground shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
+            <button
+              type="button"
+              onClick={payWithStitch}
+              disabled={stitchLoading}
+              className="mt-4 flex w-full items-center justify-center gap-2 border-2 border-foreground bg-primary px-5 py-3 text-sm font-bold uppercase tracking-wider text-primary-foreground shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none disabled:cursor-not-allowed disabled:opacity-60"
             >
-              <ShoppingCart className="h-4 w-4" />
-              Pay online with Stitch
-            </a>
+              {stitchLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ShoppingCart className="h-4 w-4" />}
+              {stitchLoading ? "Preparing payment…" : `Pay ${totalPriceLabel ?? (estimatedTotal !== null ? formatRand(estimatedTotal) : "")} with Stitch`}
+            </button>
             <p className="mt-2 text-center text-xs text-muted-foreground">
               Secure card, EFT &amp; bank payments via Stitch
             </p>
