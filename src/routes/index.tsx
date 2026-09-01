@@ -24,7 +24,7 @@ import { allInclusiveAddOns, isAllInclusiveProduct, specialDiscountFor } from "@
 
 
 const QUOTE_APP_URL = "https://fireplacequotes.co.za/";
-import { createStitchPaymentLink, STITCH_FALLBACK_URL } from "@/lib/stitch.functions";
+import { createStitchPaymentLink } from "@/lib/stitch.functions";
 const PRODUCT_LIST = productsData as { name: string; price: string }[];
 const PRODUCT_NAMES = PRODUCT_LIST.map((p) => p.name);
 const PRODUCT_PRICE_MAP = new Map(PRODUCT_LIST.map((p) => [p.name, p.price]));
