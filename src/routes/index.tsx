@@ -234,7 +234,7 @@ function QuotePage() {
   const [roofType, setRoofType] = useState("");
   const [plateType, setPlateType] = useState<"steel" | "glass" | "granite">("glass");
   const [cornerInstall, setCornerInstall] = useState(false);
-  const [installationRequired, setInstallationRequired] = useState(true);
+  const [installationRequired, setInstallationRequired] = useState(false);
   const [address, setAddress] = useState("");
   
   const [extrasForAccount, setExtrasForAccount] = useState("");
@@ -541,7 +541,7 @@ function QuotePage() {
     : 0;
   const totalPriceNum =
     productSubtotal !== null || flueKitPrice !== null || platePrice !== null || cornerInstallPrice !== null || transportPrice !== null || travelFee !== null || installationEstimate !== null
-      ? (productSubtotal ?? 0) + (flueKitPrice ?? 0) + (platePrice ?? 0) + (cornerInstallPrice ?? 0) + (transportPrice ?? 0) + (travelFee ?? 0) + (installationEstimate ?? 0) - specialDiscount
+      ? (productSubtotal ?? 0) + (flueKitPrice ?? 0) + (platePrice ?? 0) + (cornerInstallPrice ?? 0) + (installationRequired ? 0 : (transportPrice ?? 0)) + (travelFee ?? 0) + (installationEstimate ?? 0) - specialDiscount
       : null;
   const unitPriceLabel = unitPriceNum !== null ? formatRand(unitPriceNum) : null;
   const subtotalLabel = productSubtotal !== null ? formatRand(productSubtotal) : null;
@@ -943,7 +943,7 @@ function QuotePage() {
                     onChange={() => setInstallationRequired(true)}
                     className="h-4 w-4 accent-primary"
                   />
-                  Supply &amp; install
+                  Supply &amp; install <span className="text-xs font-semibold text-primary">(recommended)</span>
                 </label>
                 <label className="flex items-center gap-2">
                   <input
@@ -1129,7 +1129,7 @@ function QuotePage() {
                   {flueKitLabel && <BreakdownRow label="Flue kit" value={flueKitLabel} hint={matched.storyType === "double" ? "Double story" : "Single story"} />}
                   {plateLabel && <BreakdownRow label={`${matched.plate?.type === "steel" ? "Black steel" : matched.plate?.type === "granite" ? "Granite" : "Glass"} plinth`} value={plateLabel} />}
                   {cornerInstallLabel && <BreakdownRow label="Corner installation" value={cornerInstallLabel} />}
-                  {transportLabel && <BreakdownRow label={installationRequired ? "Transport" : "Courier"} value={transportLabel} hint={matched.transportZone ?? undefined} />}
+                  {transportLabel && !installationRequired && <BreakdownRow label="Courier" value={transportLabel} hint={matched.transportZone ?? undefined} />}
                   {specialDiscountLabel && (
                     <BreakdownRow label="Special promotion discount" value={specialDiscountLabel} hint="Winter special — R1,000 off" />
                   )}
