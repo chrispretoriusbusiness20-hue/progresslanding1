@@ -765,6 +765,9 @@ function QuotePage() {
   };
 
   const showQuote = (submitted && lookup?.match) || canContinue;
+  // Once the quote is submitted, the client is in the payment step — lock all
+  // option inputs so the quoted configuration/amount cannot be altered.
+  const optionsLocked = submitted;
   const cartTotalLabel = totalPriceLabel ?? (estimatedTotal !== null ? formatRand(estimatedTotal) : null);
   const cartTotalNum = totalPriceNum ?? estimatedTotal;
   const INSTALMENT_MONTHS = 6;
