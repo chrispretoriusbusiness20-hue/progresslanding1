@@ -1339,8 +1339,7 @@ function QuotePage() {
             </div>
 
             <p className="mt-3 text-xs text-muted-foreground">
-              Pay your first installment online with Stitch, or pay by EFT and upload proof of
-              payment. We issue your invoice once the first payment is confirmed.
+              Pay online with Stitch. We issue your invoice once the first payment is confirmed.
             </p>
 
             <div className="mt-5 flex flex-wrap gap-3">
@@ -1366,16 +1365,6 @@ function QuotePage() {
               >
                 <CheckCircle2 className="h-4 w-4" />
                 Pay {cartTotalLabel ?? ""} once off
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setTermsOpen(false);
-                  setPopOpen(true);
-                }}
-                className="inline-flex items-center justify-center gap-2 border-2 border-foreground bg-background px-5 py-3 text-sm font-bold uppercase tracking-wider text-foreground shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
-              >
-                Pay by EFT & upload POP
               </button>
               <button
                 type="button"
