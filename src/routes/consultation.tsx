@@ -146,7 +146,7 @@ function ConsultationPage() {
 
         {done ? (
           <div className="mt-10 rounded-lg border border-border bg-card p-6">
-            <h2 className="text-lg font-medium text-foreground">Request received</h2>
+            <h2 className="text-lg font-medium text-foreground">Your slot has been requested</h2>
             <p className="mt-2 text-sm text-muted-foreground">
               We've sent a confirmation to your email. Your preferred slot:
             </p>
