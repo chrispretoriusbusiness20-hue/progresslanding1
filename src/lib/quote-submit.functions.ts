@@ -333,11 +333,10 @@ function transportPriceForKm(km: number, installationRequired: boolean): { zone:
     return { zone: "Courier 300 km+ (estimate — sales to confirm)", price: 1750 };
   }
   // With installation, transport is billed as its own line item (never bundled
-  // into the installation estimate): free within 20 km of Bellville, otherwise
-  // R400 base + R12/km beyond 25 km.
-  if (km <= LOCAL_KM) return { zone: "Transport included — within 20 km of Bellville", price: 0 };
+  // into the installation estimate): R495 includes the first 100 km, then
+  // R12/km thereafter.
   return {
-    zone: `Transport (R${BASE_TRANSPORT} base + R${EXTRA_KM_RATE}/km after ${INCLUDED_KM} km)`,
+    zone: `Transport (R${BASE_TRANSPORT} incl. first ${INCLUDED_KM} km · R${EXTRA_KM_RATE}/km thereafter)`,
     price: BASE_TRANSPORT + Math.max(0, km - INCLUDED_KM) * EXTRA_KM_RATE,
   };
 }

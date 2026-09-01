@@ -14,3 +14,4 @@
 - [open] Lock quote options once submitted (payment step) — done in code, verify
 - [open] Monthly (÷6) amount must update when add-ons are added — verify live
 - [open] Installation estimate single story = R5,995; remove transport from that line — transport shows separately as R975
+- [open] Transport: R495 incl. first 100 km, R12/km thereafter (install line shows R5,995 without transport; transport separate, calc on submit)
