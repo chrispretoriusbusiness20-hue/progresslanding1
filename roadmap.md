@@ -32,3 +32,7 @@
 - [open] Display invoice number + product by selection, notes, and 2-week buffer date after installation
 - [open] Consultation: show "Your slot has been requested" message after submission
 - [open] Consultation: add "Are you a client or want to become one?" selector
+
+## 2026-09-01 (consultation)
+- [done] Add Home button to consultation page header
+- [done] Add enquiry type selector that auto-fills the topic field
