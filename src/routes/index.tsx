@@ -46,6 +46,12 @@ export const Route = createFileRoute("/")({
       },
       { property: "og:type", content: "website" },
       { property: "og:url", content: "https://quote-joy-link.lovable.app/" },
+      { name: "twitter:card", content: "summary" },
+      { name: "twitter:title", content: "Request a Quote — The Progress Group" },
+      {
+        name: "twitter:description",
+        content: "Get a quote on fireplaces, braais, lighting and aircons from The Progress Group.",
+      },
     ],
     links: [
       { rel: "canonical", href: "https://quote-joy-link.lovable.app/" },
@@ -133,7 +139,10 @@ function parseRand(price: string): number | null {
 }
 
 function formatRand(n: number): string {
-  return `R${n.toLocaleString("en-ZA", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  const fixed = n.toFixed(2);
+  const [whole = "0", decimals = "00"] = fixed.split(".");
+  const grouped = whole.replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+  return `R${grouped},${decimals}`;
 }
 
 function buildQuoteUrl(params: {
