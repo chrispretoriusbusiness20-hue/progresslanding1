@@ -249,7 +249,6 @@ function QuotePage() {
   const [lookup, setLookup] = useState<LookupResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [emailWarning, setEmailWarning] = useState<string | null>(null);
   const [emailConfirmed, setEmailConfirmed] = useState<string | null>(null);
   const [emailTypo, setEmailTypo] = useState<ReturnType<typeof checkEmail>>({});
   const [headerHidden, setHeaderHidden] = useState(false);
