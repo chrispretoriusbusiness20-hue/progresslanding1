@@ -1554,7 +1554,7 @@ function InstantQuote({
   const installationEstimate = allInclusive
     ? null
     : installationRequired
-      ? 6000 + (storyType === "double" ? 1500 : 0)
+      ? 5995 + (storyType === "double" ? 1500 : 0)
       : null;
   const addOns = allInclusiveAddOns({ productName, storyType, cornerInstall, plateType, flooring, installationRequired });
   const specialDiscount = specialDiscountFor(productName, quantity);
