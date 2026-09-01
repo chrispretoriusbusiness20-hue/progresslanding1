@@ -36,3 +36,5 @@
 ## 2026-09-01 (consultation)
 - [done] Add Home button to consultation page header
 - [done] Add enquiry type selector that auto-fills the topic field
+- [open] Stitch "Pay it off" 401 — rewrote integration to official clientId+clientSecret token flow; waiting for matching credential pair from Stitch Express dashboard (Settings → API credentials)
+- [done] Footer: progressgroup.co.za now links to https://www.progressgroup.co.za
