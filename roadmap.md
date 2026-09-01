@@ -21,4 +21,4 @@
 - [done] Email failure warning banner hidden from clients
 - [done] Transport (R495 ≤100 km) shown in summary as part of installation estimate; radios Supply & install / Product only stay selectable after submit
 - [done] Email failure warning fully hidden from clients (banner + toast removed; errors only logged server-side)
-- [ ] Stitch pay link: reference = invoice number (INV-...), amount fixed, no fallback to editable generic page
+- [done] Stitch pay link: reference = invoice number (INV-...), amount fixed, no fallback to editable generic page
