@@ -16,3 +16,8 @@
 - [done] Installation estimate single story = R5,995; transport removed from that line
 - [done] Transport: R495 incl. first 100 km, R12/km thereafter, separate line
 - [done] Unified transport everywhere: R495 incl. first 100 km from 189 Durban Rd Bellville, R12/km thereafter (quote engine, PDF, lookup fn, form hint)
+- [done] Transport only on main invoice when courier (no installation); with install it lives in the page-2 installation estimate
+- [done] Supply & install no longer pre-ticked — shown as recommended, default is Product only
+- [done] Email failure warning banner hidden from clients
+- [done] Transport (R495 ≤100 km) shown in summary as part of installation estimate; radios Supply & install / Product only stay selectable after submit
+- [done] Email failure warning fully hidden from clients (banner + toast removed; errors only logged server-side)

@@ -234,7 +234,7 @@ function QuotePage() {
   const [roofType, setRoofType] = useState("");
   const [plateType, setPlateType] = useState<"steel" | "glass" | "granite">("glass");
   const [cornerInstall, setCornerInstall] = useState(false);
-  const [installationRequired, setInstallationRequired] = useState(true);
+  const [installationRequired, setInstallationRequired] = useState(false);
   const [address, setAddress] = useState("");
   
   const [extrasForAccount, setExtrasForAccount] = useState("");
@@ -249,7 +249,6 @@ function QuotePage() {
   const [lookup, setLookup] = useState<LookupResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [emailWarning, setEmailWarning] = useState<string | null>(null);
   const [emailConfirmed, setEmailConfirmed] = useState<string | null>(null);
   const [emailTypo, setEmailTypo] = useState<ReturnType<typeof checkEmail>>({});
   const [headerHidden, setHeaderHidden] = useState(false);
@@ -351,7 +350,6 @@ function QuotePage() {
     }
     setLoading(true);
     setError(null);
-    setEmailWarning(null);
     setEmailConfirmed(null);
     const warnings: string[] = [];
     try {
@@ -502,13 +500,7 @@ function QuotePage() {
         console.error("PDF generation failed", pdfErr);
       }
 
-      if (warnings.length > 0) {
-        setEmailWarning(warnings.join(" • "));
-        toast.error("Email could not be sent", {
-          description: `Your quote was saved, but we couldn't send the email. ${warnings.join(" • ")}`,
-          duration: 8000,
-        });
-      } else if (result.match) {
+      if (result.match) {
         toast.success("Quote saved and email sent");
       }
 
@@ -550,7 +542,12 @@ function QuotePage() {
   const cornerInstallLabel = cornerInstallPrice !== null ? formatRand(cornerInstallPrice) : null;
   const transportLabel = transportPrice !== null ? formatRand(transportPrice) : null;
   const travelFeeLabel = travelFee !== null ? formatRand(travelFee) : null;
-  const installationEstimateLabel = installationEstimate !== null ? formatRand(installationEstimate) : null;
+  // With installation, transport is part of the installation estimate, not the main quote.
+  const installationEstimateTotal =
+    installationEstimate !== null
+      ? installationEstimate + (installationRequired && transportPrice !== null ? transportPrice : 0)
+      : null;
+  const installationEstimateLabel = installationEstimateTotal !== null ? formatRand(installationEstimateTotal) : null;
   const specialDiscountLabel = specialDiscount > 0 ? `- ${formatRand(specialDiscount)}` : null;
   const totalPriceLabel = totalPriceNum !== null ? formatRand(totalPriceNum) : null;
 
@@ -939,18 +936,16 @@ function QuotePage() {
                     type="radio"
                     name="installationRequired"
                     checked={installationRequired}
-                    disabled={optionsLocked}
                     onChange={() => setInstallationRequired(true)}
                     className="h-4 w-4 accent-primary"
                   />
-                  Supply &amp; install
+                  Supply &amp; install <span className="text-xs font-semibold text-primary">(recommended)</span>
                 </label>
                 <label className="flex items-center gap-2">
                   <input
                     type="radio"
                     name="installationRequired"
                     checked={!installationRequired}
-                    disabled={optionsLocked}
                     onChange={() => {
                       setInstallationRequired(false);
                       setCornerInstall(false);
@@ -1098,12 +1093,7 @@ function QuotePage() {
       {showQuote && (
         <section id="quote" className="border-t border-border bg-background">
           <div className="mx-auto max-w-6xl px-6 py-16 sm:py-20">
-            {emailWarning && (
-              <div className="mb-6 border-2 border-amber-500 bg-amber-500/10 px-3 py-2 text-sm text-amber-900 dark:text-amber-200">
-                Your quote was saved, but: {emailWarning}. Please contact us if you do not receive the email.
-              </div>
-            )}
-            {emailConfirmed && !emailWarning && (
+            {emailConfirmed && (
               <div className="mb-6 border-2 border-emerald-500 bg-emerald-500/10 px-3 py-2 text-sm text-emerald-900 dark:text-emerald-200">
                 ✓ Quote email sent successfully to <strong>{emailConfirmed}</strong>. Please check your inbox (and spam folder).
               </div>
@@ -1129,19 +1119,26 @@ function QuotePage() {
                   {flueKitLabel && <BreakdownRow label="Flue kit" value={flueKitLabel} hint={matched.storyType === "double" ? "Double story" : "Single story"} />}
                   {plateLabel && <BreakdownRow label={`${matched.plate?.type === "steel" ? "Black steel" : matched.plate?.type === "granite" ? "Granite" : "Glass"} plinth`} value={plateLabel} />}
                   {cornerInstallLabel && <BreakdownRow label="Corner installation" value={cornerInstallLabel} />}
-                  {transportLabel && <BreakdownRow label={installationRequired ? "Transport" : "Courier"} value={transportLabel} hint={matched.transportZone ?? undefined} />}
+                  {transportLabel && !installationRequired && <BreakdownRow label="Courier" value={transportLabel} hint={matched.transportZone ?? undefined} />}
                   {specialDiscountLabel && (
                     <BreakdownRow label="Special promotion discount" value={specialDiscountLabel} hint="Winter special — R1,000 off" />
                   )}
                   {installationEstimateLabel && (
                     <BreakdownRow
-                      label="Installation estimate"
-                      value={installationEstimateLabel}
-                      hint={matched.storyType === "double"
-                        ? "Within Cape Town · includes core drilling (subject to site visit)"
-                        : "Within Cape Town (subject to site visit)"}
-                    />
-                  )}
+                       label="Installation estimate"
+                       value={installationEstimateLabel}
+                       hint={matched.storyType === "double"
+                         ? "Within Cape Town · includes core drilling (subject to site visit)"
+                         : "Within Cape Town (subject to site visit)"}
+                     />
+                   )}
+                   {transportLabel && installationRequired && (
+                     <BreakdownRow
+                       label="Transport"
+                       value={transportLabel}
+                       hint="Part of installation estimate · first 100 km included in R495, R12/km thereafter"
+                     />
+                   )}
                 </ul>
                 {totalPriceLabel && (
                   <div className="mt-3 flex items-baseline justify-between border-t-2 border-foreground pt-3">

@@ -193,11 +193,14 @@ export async function generateQuotePDF(
       items.push({ quantity: 1, description: "Granite plinth upgrade", unitPrice: addOns.graniteUpgrade });
     }
   }
-  if (input.transportPrice !== null && input.transportPrice > 0) {
-    const isCourier = input.installationRequired === false;
+  // Transport only appears on the main quote/invoice when there is NO
+  // installation (courier delivery). With installation, transport is billed
+  // on the page-2 installation estimate instead.
+  const isCourier = input.installationRequired === false;
+  if (isCourier && input.transportPrice !== null && input.transportPrice > 0) {
     items.push({
       quantity: 1,
-      description: `${isCourier ? "Courier delivery" : "Delivery"}${input.transportZone ? ` (${input.transportZone})` : ""}`,
+      description: `Courier delivery${input.transportZone ? ` (${input.transportZone})` : ""}`,
       unitPrice: input.transportPrice,
     });
 
