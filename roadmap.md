@@ -22,3 +22,7 @@
 - [done] Transport (R495 ≤100 km) shown in summary as part of installation estimate; radios Supply & install / Product only stay selectable after submit
 - [done] Email failure warning fully hidden from clients (banner + toast removed; errors only logged server-side)
 - [done] Stitch pay link: reference = invoice number (INV-...), amount fixed, no fallback to editable generic page
+
+## 2026-09-01 (new)
+- [open] Stitch "Pay with Stitch" button doesn't work — investigate API call / popup
+- [open] INSTALLATION DATE CONFIRMATION BY SALES AGENT — add flow for sales agent to confirm installation date
