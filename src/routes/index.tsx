@@ -936,7 +936,6 @@ function QuotePage() {
                     type="radio"
                     name="installationRequired"
                     checked={installationRequired}
-                    disabled={optionsLocked}
                     onChange={() => setInstallationRequired(true)}
                     className="h-4 w-4 accent-primary"
                   />
@@ -947,7 +946,6 @@ function QuotePage() {
                     type="radio"
                     name="installationRequired"
                     checked={!installationRequired}
-                    disabled={optionsLocked}
                     onChange={() => {
                       setInstallationRequired(false);
                       setCornerInstall(false);
