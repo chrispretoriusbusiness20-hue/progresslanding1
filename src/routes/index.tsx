@@ -1657,7 +1657,7 @@ function InstantQuote({
             <div>
               <p className="font-semibold text-foreground">Transport</p>
               <p className="text-xs text-muted-foreground">
-                First 25 km included; R12/km thereafter (calculated on submit)
+                First 100 km included in R495; R12/km thereafter (calculated on submit)
               </p>
             </div>
             <span className="shrink-0 font-mono text-xs text-muted-foreground">on submit</span>

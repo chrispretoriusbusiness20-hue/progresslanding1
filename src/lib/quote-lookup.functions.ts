@@ -8,15 +8,18 @@ const GATEWAY = "https://connector-gateway.lovable.dev/google_sheets/v4";
 const MAPS_GATEWAY = "https://connector-gateway.lovable.dev/google_maps";
 const ORIGIN_ADDRESS = "189 Durban Road, Bellville, Cape Town, 7530, South Africa";
 
-// Transport zones (km thresholds → price ZAR incl VAT).
-function transportPriceForKm(km: number, destination: string): { zone: string; price: number } {
-  const destLower = destination.toLowerCase();
-  if (/cape town|capetown/.test(destLower)) return { zone: "Cape Town", price: 650 };
-  if (km <= 25) return { zone: "0–25 km", price: 0 };
-  if (km <= 50) return { zone: "25–50 km", price: 450 };
-  if (km <= 100) return { zone: "50–100 km", price: 900 };
-  if (km <= 200) return { zone: "100–200 km", price: 1500 };
-  return { zone: "200 km+", price: 1800 };
+// Transport: R495 base includes the first 100 km from 189 Durban Road,
+// Bellville; R12/km thereafter (calculated on submit).
+function transportPriceForKm(km: number, _destination: string): { zone: string; price: number } {
+  const BASE_TRANSPORT = 495;
+  const INCLUDED_KM = 100;
+  const EXTRA_KM_RATE = 12;
+  const price = BASE_TRANSPORT + Math.max(0, km - INCLUDED_KM) * EXTRA_KM_RATE;
+  const zone =
+    km <= INCLUDED_KM
+      ? `Transport (R${BASE_TRANSPORT} — includes first ${INCLUDED_KM} km)`
+      : `Transport (R${BASE_TRANSPORT} incl. first ${INCLUDED_KM} km + R${EXTRA_KM_RATE}/km thereafter)`;
+  return { zone, price };
 }
 
 async function computeDistanceKm(destination: string): Promise<number | null> {
