@@ -625,7 +625,9 @@ function QuotePage() {
         : `INV-${quoteNo}`
       : null;
     // Open the tab synchronously inside the click gesture so pop-up blockers allow it.
-    const payTab = window.open("", "_blank", "noopener,noreferrer");
+    // NOTE: Do NOT use "noopener" — the parent needs a handle to navigate the tab
+    // to the Stitch payment URL once the server function returns.
+    const payTab = window.open("", "_blank");
     const closePayTab = () => {
       if (payTab && !payTab.closed) payTab.close();
     };
@@ -643,6 +645,22 @@ function QuotePage() {
       closePayTab();
       toast.error("Please request your quote first so we can lock in your amount.");
       return;
+    }
+    // Show a loading screen in the popup while the server creates the link.
+    if (payTab) {
+      try {
+        payTab.document.write(
+          '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Opening payment…</title>' +
+            '<style>body{font-family:system-ui,sans-serif;display:flex;align-items:center;justify-content:center;' +
+            "height:100vh;margin:0;background:#faf9f5;color:#4a3b2f}" +
+            '.spinner{width:40px;height:40px;border:4px solid #e0d6c8;border-top-color:#dd7400;' +
+            "border-radius:50%;animation:spin 1s linear infinite;margin-right:16px}" +
+            "@keyframes spin{to{transform:rotate(360deg)}}" +
+            "</style></head><body><div class=spinner></div>Opening your secure payment page…</body></html>",
+        );
+      } catch {
+        // Cross-origin restriction — ignore; the tab will navigate once we have the URL.
+      }
     }
     setStitchLoading(true);
     try {
