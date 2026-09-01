@@ -1125,13 +1125,20 @@ function QuotePage() {
                   )}
                   {installationEstimateLabel && (
                     <BreakdownRow
-                      label="Installation estimate"
-                      value={installationEstimateLabel}
-                      hint={matched.storyType === "double"
-                        ? "Within Cape Town · includes core drilling (subject to site visit)"
-                        : "Within Cape Town (subject to site visit)"}
-                    />
-                  )}
+                       label="Installation estimate"
+                       value={installationEstimateLabel}
+                       hint={matched.storyType === "double"
+                         ? "Within Cape Town · includes core drilling (subject to site visit)"
+                         : "Within Cape Town (subject to site visit)"}
+                     />
+                   )}
+                   {transportLabel && installationRequired && (
+                     <BreakdownRow
+                       label="Transport"
+                       value={transportLabel}
+                       hint="Part of installation estimate · first 100 km included in R495, R12/km thereafter"
+                     />
+                   )}
                 </ul>
                 {totalPriceLabel && (
                   <div className="mt-3 flex items-baseline justify-between border-t-2 border-foreground pt-3">
