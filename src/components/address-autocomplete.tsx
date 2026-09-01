@@ -11,6 +11,7 @@ type Props = {
   onChange: (value: string) => void;
   placeholder?: string;
   className?: string;
+  disabled?: boolean;
 };
 
 const PRESET_LOCATIONS: Suggestion[] = [
@@ -28,7 +29,7 @@ const PRESET_LOCATIONS: Suggestion[] = [
   { placeId: "preset-george", text: "George, Western Cape" },
 ];
 
-export function AddressAutocomplete({ value, onChange, placeholder, className }: Props) {
+export function AddressAutocomplete({ value, onChange, placeholder, className, disabled }: Props) {
   const fetchSuggestions = useServerFn(autocompleteAddress);
   const reverse = useServerFn(reverseGeocode);
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
@@ -121,6 +122,7 @@ export function AddressAutocomplete({ value, onChange, placeholder, className }:
       <input
         value={value}
         onChange={(e) => onChange(e.target.value)}
+        disabled={disabled}
         onBlur={() => setTimeout(() => setOpen(false), 150)}
         onFocus={() => setOpen(true)}
 
@@ -152,7 +154,7 @@ export function AddressAutocomplete({ value, onChange, placeholder, className }:
         <button
           type="button"
           onClick={useMyLocation}
-          disabled={locating}
+          disabled={locating || disabled}
           title="Use my current location"
           className="absolute inset-y-0 right-2 my-auto inline-flex h-7 items-center gap-1 rounded px-2 text-xs text-muted-foreground hover:text-foreground disabled:opacity-50"
         >
