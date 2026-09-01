@@ -348,8 +348,8 @@ const INCLUDED_KM = 100;
 const EXTRA_KM_RATE = 12;
 const BASE_TRANSPORT = 495;
 
-function installBaseForKm(km: number | null): number {
-  return km !== null && km <= LOCAL_KM ? INSTALL_BASE_LOCAL : INSTALL_BASE;
+function installBaseForKm(_km: number | null): number {
+  return INSTALL_BASE;
 }
 
 
