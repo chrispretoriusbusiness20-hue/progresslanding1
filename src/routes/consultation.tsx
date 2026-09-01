@@ -84,8 +84,23 @@ function ConsultationPage() {
   const [topic, setTopic] = useState("");
   const [notes, setNotes] = useState("");
   const [customerType, setCustomerType] = useState<"new" | "existing">("new");
+  const [selectedOption, setSelectedOption] = useState("general");
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState<{ date: string; timeSlot: string } | null>(null);
+
+  const TOPIC_PRESETS: Record<string, string> = {
+    general: "",
+    fireplace: "Closed-combustion fireplace consultation",
+    braai: "Built-in braai consultation",
+    lighting: "Lighting design consultation",
+    aircon: "Air conditioning consultation",
+    invoice: "Invoice and payment enquiry",
+  };
+
+  const handleOptionChange = (value: string) => {
+    setSelectedOption(value);
+    setTopic(TOPIC_PRESETS[value] ?? "");
+  };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
