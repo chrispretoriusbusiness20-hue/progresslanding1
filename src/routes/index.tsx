@@ -1544,10 +1544,11 @@ function InstantQuote({
     : installationRequired
       ? 5500 + (storyType === "double" ? 1500 : 0)
       : null;
+  const addOns = allInclusiveAddOns({ productName, storyType, cornerInstall, plateType, flooring, installationRequired });
   const specialDiscount = specialDiscountFor(productName, quantity);
   const total =
     subtotal !== null || flueKit !== null || plate !== null || corner !== null || installationEstimate !== null
-      ? (subtotal ?? 0) + (flueKit ?? 0) + (plate ?? 0) + (corner ?? 0) + (installationEstimate ?? 0) - specialDiscount
+      ? (subtotal ?? 0) + (flueKit ?? 0) + (plate ?? 0) + (corner ?? 0) + (installationEstimate ?? 0) + addOns.total - specialDiscount
       : null;
 
   const rows: { label: string; value: number | null; hint?: string }[] = [
