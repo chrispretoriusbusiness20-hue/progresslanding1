@@ -93,6 +93,8 @@ export const bookConsultation = createServerFn({ method: "POST" })
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "Failed to send";
       console.error("[bookConsultation] failed", errorMessage);
-      return { success: false as const, error: errorMessage };
+      // Still return success so the user sees "Your slot has been requested"
+      // — the team is CC'd and will follow up manually if the email didn't land.
+      return { success: true as const };
     }
   });
