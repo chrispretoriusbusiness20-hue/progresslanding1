@@ -463,6 +463,18 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
       ? installBaseForKm(distanceKm) + (data.storyType === "double" ? CORE_DRILL : 0) + transportInInstallEstimate(distanceKm)
       : null;
 
+    // All-inclusive SPECIAL: base price covers single-story basic install only;
+    // add-ons (double story, corner, granite upgrade) are charged on top.
+    const addOns = allInclusiveAddOns({
+      productName: matched?.name ?? data.product,
+      storyType: data.storyType ?? "",
+      cornerInstall: !!data.cornerInstall,
+      plateType,
+      flooring: data.flooring ?? "",
+      installationRequired: !!data.installationRequired,
+      distanceKm,
+    });
+
     const totalPriceNum =
       productSubtotal !== null ||
       flueKitPrice !== null ||
@@ -475,7 +487,8 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
           (plate?.price ?? 0) +
           (cornerInstallPrice ?? 0) +
           (transport?.price ?? 0) +
-          (installationEstimate ?? 0) -
+          (installationEstimate ?? 0) +
+          addOns.total -
           specialDiscount
         : null;
 

@@ -171,6 +171,28 @@ export async function generateQuotePDF(
       unitPrice: nearby ? 800 + 650 : 800,
     });
   }
+  // All-inclusive SPECIAL: the R23,970 price covers a single-story basic
+  // install only — charge add-ons (double story, corner, granite upgrade).
+  if (allInclusive) {
+    const addOns = allInclusiveAddOns({
+      productName: input.productName,
+      storyType: input.storyType ?? "",
+      cornerInstall: !!input.cornerInstall,
+      plateType: input.plateType === "granite" ? "granite" : input.plateType === "steel" ? "steel" : "glass",
+      flooring: input.flooring ?? "",
+      installationRequired: input.installationRequired !== false,
+      distanceKm: input.distanceKm,
+    });
+    if (addOns.doubleStorySurcharge !== null) {
+      items.push({ quantity: 1, description: "Double-story surcharge (core drilling)", unitPrice: addOns.doubleStorySurcharge });
+    }
+    if (addOns.cornerInstall !== null) {
+      items.push({ quantity: 1, description: "Corner installation add-on", unitPrice: addOns.cornerInstall });
+    }
+    if (addOns.graniteUpgrade !== null) {
+      items.push({ quantity: 1, description: "Granite plinth upgrade", unitPrice: addOns.graniteUpgrade });
+    }
+  }
   if (input.transportPrice !== null && input.transportPrice > 0) {
     const isCourier = input.installationRequired === false;
     items.push({

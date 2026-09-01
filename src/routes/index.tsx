@@ -1591,7 +1591,16 @@ function InstantQuote({
       : []),
     ...(allInclusive ? [] : [{ label: "Corner installation", value: corner, hint: cornerInstall ? "+R800 (+R650 if ≤50 km)" : "Standard wall" }]),
     ...(allInclusive
-      ? [{ label: "Installation, flue kit & plinth", value: 0 as number | null, hint: "Included in the special price" as string }]
+      ? [{ label: "Installation, flue kit & plinth (single story, basic)", value: 0 as number | null, hint: "Included in the special price" as string }]
+      : []),
+    ...(addOns.doubleStorySurcharge !== null
+      ? [{ label: "Double-story surcharge", value: addOns.doubleStorySurcharge as number | null, hint: "Core drilling — not covered by the basic special" as string }]
+      : []),
+    ...(addOns.cornerInstall !== null
+      ? [{ label: "Corner installation add-on", value: addOns.cornerInstall as number | null, hint: "Not covered by the basic special" as string }]
+      : []),
+    ...(addOns.graniteUpgrade !== null
+      ? [{ label: "Granite plinth upgrade", value: addOns.graniteUpgrade as number | null, hint: "Upgrade from the included glass plinth" as string }]
       : []),
     ...(!allInclusive && installationRequired
       ? [
