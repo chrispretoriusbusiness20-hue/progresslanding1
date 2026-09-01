@@ -11,11 +11,12 @@ export function specialDiscountFor(productName: string | null | undefined, quant
 }
 
 /**
- * Products whose catalog price is all-inclusive: installation, flue kit and
- * plinth are already covered, so those line items must not be added on top.
+ * The SPECIAL is quoted at R17,500 (VAT incl., flue kit included) — installation
+ * (R6,000 estimate) and delivery (R470 within ±100 km of Bellville) are charged
+ * on top, so nothing is treated as all-inclusive anymore.
  */
-export function isAllInclusiveProduct(productName: string | null | undefined): boolean {
-  return isSpecialProduct(productName);
+export function isAllInclusiveProduct(_productName: string | null | undefined): boolean {
+  return false;
 }
 
 /**

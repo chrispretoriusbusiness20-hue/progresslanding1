@@ -597,7 +597,7 @@ function QuotePage() {
     const needsPlate = !allInclusive && flooring.length > 0 && !/tile/i.test(flooring);
     const plate = needsPlate ? computePlatePrice(plateType, cornerInstall) : null;
     const corner = !allInclusive && installationRequired && cornerInstall ? 800 : null;
-    const install = allInclusive ? null : installationRequired ? 5500 + (storyType === "double" ? 1500 : 0) : null;
+    const install = allInclusive ? null : installationRequired ? 6000 + (storyType === "double" ? 1500 : 0) : null;
     const addOns = allInclusiveAddOns({ productName: product, storyType, cornerInstall, plateType, flooring, installationRequired });
     if (subtotal === null && flueKit === null && plate === null && corner === null && install === null && addOns.total === 0) return null;
     return (subtotal ?? 0) + (flueKit ?? 0) + (plate ?? 0) + (corner ?? 0) + (install ?? 0) + addOns.total;
@@ -1542,7 +1542,7 @@ function InstantQuote({
   const installationEstimate = allInclusive
     ? null
     : installationRequired
-      ? 5500 + (storyType === "double" ? 1500 : 0)
+      ? 6000 + (storyType === "double" ? 1500 : 0)
       : null;
   const addOns = allInclusiveAddOns({ productName, storyType, cornerInstall, plateType, flooring, installationRequired });
   const specialDiscount = specialDiscountFor(productName, quantity);
@@ -1608,10 +1608,10 @@ function InstantQuote({
             label: "Installation estimate",
             value: installationEstimate,
             hint: storyType === "double"
-              ? "Double story: R5,500 + R1,500 core drilling + transport beyond 25 km · within Cape Town (subject to site visit)"
+              ? "Double story: R6,000 + R1,500 core drilling + transport beyond 25 km · within Cape Town (subject to site visit)"
               : storyType === "single"
-                ? "Single story: R5,500 + transport beyond 25 km · within Cape Town (subject to site visit)"
-                : "Single R5,500 · Double R7,000 (incl. core drilling) + transport beyond 25 km · within Cape Town (subject to site visit)",
+                ? "Single story: R6,000 + transport beyond 25 km · within Cape Town (subject to site visit)"
+                : "Single R6,000 · Double R7,500 (incl. core drilling) + transport beyond 25 km · within Cape Town (subject to site visit)",
           },
 
         ]

@@ -328,16 +328,16 @@ function matchProduct(query: string): Product | null {
 
 function transportPriceForKm(km: number, installationRequired: boolean): { zone: string; price: number } {
   if (!installationRequired) {
-    if (km <= 50) return { zone: "Courier within Cape Town (≤50 km)", price: 325 };
-    if (km <= 150) return { zone: "Courier 51–150 km (estimate — sales to confirm)", price: 600 };
-    if (km <= 300) return { zone: "Courier 151–300 km (estimate — sales to confirm)", price: 1100 };
+    if (km <= 100) return { zone: "Delivery within ±100 km of Bellville", price: 470 };
+    if (km <= 300) return { zone: "Courier 101–300 km (estimate — sales to confirm)", price: 1100 };
     return { zone: "Courier 300 km+ (estimate — sales to confirm)", price: 1750 };
   }
+  if (km <= 100) return { zone: "Delivery within ±100 km of Bellville", price: 470 };
   return { zone: "Included in installation estimate", price: 0 };
 }
 
-const INSTALL_BASE = 5500;
-const INSTALL_BASE_LOCAL = 5500;
+const INSTALL_BASE = 6000;
+const INSTALL_BASE_LOCAL = 6000;
 const LOCAL_KM = 20;
 const CORE_DRILL = 1500;
 const INCLUDED_KM = 25;
