@@ -459,10 +459,11 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
       ? 800 + (distanceKm !== null && distanceKm <= 50 ? 650 : 0)
       : null;
 
-    // Installation estimate (within Cape Town) — base fee + core drilling for double-story flues + transport beyond 25 km.
+    // Installation estimate (within Cape Town) — base fee + core drilling for
+    // double-story flues. Transport is billed as its own line item, never here.
     // Subject to site visit; mirrors the "Installation Estimate" page on the PDF.
     const installationEstimate = installEligible && !allInclusive
-      ? installBaseForKm(distanceKm) + (data.storyType === "double" ? CORE_DRILL : 0) + transportInInstallEstimate(distanceKm)
+      ? installBaseForKm(distanceKm) + (data.storyType === "double" ? CORE_DRILL : 0)
       : null;
 
     // All-inclusive SPECIAL: base price covers single-story basic install only;
