@@ -133,9 +133,18 @@ function ConsultationPage() {
   return (
     <main className="min-h-screen bg-background px-6 py-20">
       <div className="mx-auto max-w-xl">
-        <p className="font-display text-[10px] uppercase tracking-[0.36em] text-primary">
-          The Progress Group
-        </p>
+        <div className="flex items-center justify-between">
+          <p className="font-display text-[10px] uppercase tracking-[0.36em] text-primary">
+            The Progress Group
+          </p>
+          <Link
+            to="/"
+            className="inline-flex items-center gap-1.5 rounded-md border border-input px-3 py-1.5 text-sm font-medium text-foreground transition-colors hover:bg-muted"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            Home
+          </Link>
+        </div>
         <h1 className="mt-3 text-3xl font-semibold tracking-tight text-foreground">
           Book a private consultation
         </h1>
