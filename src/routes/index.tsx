@@ -620,9 +620,19 @@ function QuotePage() {
     if (stitchLoading) return;
     const amountZar = totalPriceNum ?? estimatedTotal;
     const reference = quoteNo || `${firstName.trim()} ${lastName.trim()}`.trim();
+    // Open the tab synchronously inside the click gesture so pop-up blockers allow it.
+    const payTab = window.open("", "_blank", "noopener,noreferrer");
+    const sendTo = (url: string) => {
+      if (payTab && !payTab.closed) {
+        payTab.location.replace(url);
+      } else {
+        // Pop-up was blocked — navigate in the current tab instead.
+        window.location.assign(url);
+      }
+    };
     // Without a session or amount we can only send them to the generic page.
     if (!quoteSession || !amountZar || amountZar <= 0 || !reference) {
-      window.open(STITCH_FALLBACK_URL, "_blank", "noopener,noreferrer");
+      sendTo(STITCH_FALLBACK_URL);
       return;
     }
     setStitchLoading(true);
@@ -639,11 +649,11 @@ function QuotePage() {
       if (!res.ok) {
         toast.error("Couldn't preset your amount — opening our payment page instead.");
       }
-      window.open(res.url, "_blank", "noopener,noreferrer");
+      sendTo(res.url);
     } catch (err) {
       console.error("Stitch link failed", err);
       toast.error("Couldn't open the payment page. Please try again.");
-      window.open(STITCH_FALLBACK_URL, "_blank", "noopener,noreferrer");
+      sendTo(STITCH_FALLBACK_URL);
     } finally {
       setStitchLoading(false);
     }
