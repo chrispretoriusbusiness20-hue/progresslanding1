@@ -113,11 +113,11 @@ function ConsultationPage() {
     setSubmitting(true);
     try {
       const result = await submit({
-        data: { name: n, email: em, phone: ph, date, timeSlot, topic: topic.trim(), notes: notes.trim() },
+        data: { name: n, email: em, phone: ph, date, timeSlot, topic: topic.trim(), notes: notes.trim(), customerType },
       });
       if (result.success) {
         setDone({ date, timeSlot });
-        toast.success("Consultation request sent — we'll confirm shortly");
+        toast.success("Your slot has been requested");
       } else {
         toast.error("Couldn't send your request", { description: result.error });
       }
