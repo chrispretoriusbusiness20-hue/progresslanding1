@@ -5,3 +5,4 @@
 ## Done
 - Magma SPECIAL R23,970 all-inclusive: installation, flue kit, plinth and corner-install add-ons suppressed everywhere
 - BNPL 6 x R3,995 equals the cash total (23,970)
+- [open] Confirm Magma SPECIAL price: data says R23 970,00 all-in; user quoted R16 500
