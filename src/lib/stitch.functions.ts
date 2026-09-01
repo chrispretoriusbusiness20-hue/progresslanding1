@@ -1,16 +1,39 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
-/** Fallback: the generic Express page (no preset amount) if the API call fails. */
-export const STITCH_FALLBACK_URL = "https://express.stitch.money/progress-installations";
-
-const STITCH_API_BASE = "https://express.stitch.money/api/v1";
+const STITCH_API_BASE = "https://express.stitch.money";
 const LINK_TTL_MS = 1000 * 60 * 60 * 24 * 10; // 10 days, matching quote validity
 
+interface StitchTokenResponse {
+  success?: boolean;
+  data?: { accessToken?: string };
+  generalErrors?: string[];
+}
+
+/** Exchanges the Stitch Express client credentials for a short-lived access token. */
+async function getStitchAccessToken(clientId: string, clientSecret: string): Promise<string> {
+  const res = await fetch(`${STITCH_API_BASE}/api/v1/token`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ clientId, clientSecret }),
+  });
+  const text = await res.text();
+  if (!res.ok) {
+    throw new Error(`Stitch token ${res.status}: ${text.slice(0, 200)}`);
+  }
+  const body = JSON.parse(text) as StitchTokenResponse;
+  const token = body.data?.accessToken;
+  if (!token) {
+    throw new Error(`Stitch token missing: ${(body.generalErrors ?? []).join(", ") || text.slice(0, 200)}`);
+  }
+  return token;
+}
+
 /**
- * Creates a Stitch Express payment link preset with the customer's quote total
- * and the quote number as the merchant reference, so payments reconcile
- * automatically against the quote.
+ * Creates a Stitch Express payment preset with the customer's quote total
+ * and the invoice number as the merchant reference, so payments reconcile
+ * automatically against the invoice. Amount and reference are locked —
+ * the client cannot edit them on the payment page.
  */
 export const createStitchPaymentLink = createServerFn({ method: "POST" })
   .inputValidator(
@@ -27,34 +50,42 @@ export const createStitchPaymentLink = createServerFn({ method: "POST" })
     try {
       const { verifyQuoteSession } = await import("@/lib/quote-session.server");
       if (!verifyQuoteSession(data.email, data.session)) {
-        return { ok: false as const, url: STITCH_FALLBACK_URL, error: "Unauthorized" };
+        return { ok: false as const, url: "", error: "Unauthorized" };
       }
 
-      const apiKey = process.env["STITCH_EXPRESS_API_KEY"];
-      if (!apiKey) {
-        return { ok: false as const, url: STITCH_FALLBACK_URL, error: "Stitch API key not configured" };
+      // Stitch Express authenticates with a client ID + client secret pair
+      // (POST /api/v1/token), not a single API key.
+      const clientId = process.env["STITCH_CLIENT_ID"] ?? process.env["STITCH_EXPRESS_API_KEY"];
+      const clientSecret = process.env["STITCH_CLIENT_SECRET"];
+      if (!clientId || !clientSecret) {
+        console.error("Stitch credentials missing", { hasClientId: Boolean(clientId), hasClientSecret: Boolean(clientSecret) });
+        return { ok: false as const, url: "", error: "Stitch credentials not configured" };
       }
 
-      const res = await fetch(`${STITCH_API_BASE}/payment-links`, {
+      const token = await getStitchAccessToken(clientId, clientSecret);
+
+      const res = await fetch(`${STITCH_API_BASE}/api/v1/payments`, {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${apiKey}`,
+          Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
           // Stitch Express expects the amount in cents.
           amount: Math.round(data.amountZar * 100),
+          currency: "ZAR",
           merchantReference: data.reference,
+          payerName: data.payerName ?? data.email,
+          payerEmailAddress: data.email,
+          skipCheckoutPage: false,
           expiresAt: new Date(Date.now() + LINK_TTL_MS).toISOString(),
-          payerName: data.payerName,
-          payerEmail: data.email,
         }),
       });
 
       const text = await res.text();
       if (!res.ok) {
         console.error("Stitch payment link failed", res.status, text);
-        return { ok: false as const, url: STITCH_FALLBACK_URL, error: `Stitch ${res.status}` };
+        return { ok: false as const, url: "", error: `Stitch ${res.status}` };
       }
 
       let parsed: unknown = null;
@@ -64,17 +95,20 @@ export const createStitchPaymentLink = createServerFn({ method: "POST" })
         console.error("Stitch returned non-JSON", text.slice(0, 300));
       }
       const body = (parsed ?? {}) as Record<string, unknown>;
-      const nested = (body["data"] ?? body["paymentLink"] ?? {}) as Record<string, unknown>;
+      const nested = (body["data"] ?? {}) as Record<string, unknown>;
+      const payment = (nested["payment"] ?? nested["paymentLink"] ?? {}) as Record<string, unknown>;
       const url =
-        (typeof body["url"] === "string" && body["url"]) ||
-        (typeof body["link"] === "string" && body["link"]) ||
+        (typeof payment["link"] === "string" && payment["link"]) ||
+        (typeof payment["url"] === "string" && payment["url"]) ||
         (typeof nested["url"] === "string" && nested["url"]) ||
         (typeof nested["link"] === "string" && nested["link"]) ||
+        (typeof body["url"] === "string" && body["url"]) ||
+        (typeof body["link"] === "string" && body["link"]) ||
         "";
 
       if (!url) {
         console.error("Stitch response had no url", text.slice(0, 500));
-        return { ok: false as const, url: STITCH_FALLBACK_URL, error: "No payment URL returned" };
+        return { ok: false as const, url: "", error: "No payment URL returned" };
       }
 
       return { ok: true as const, url, error: null };
@@ -82,7 +116,7 @@ export const createStitchPaymentLink = createServerFn({ method: "POST" })
       console.error("Stitch payment link error", err);
       return {
         ok: false as const,
-        url: STITCH_FALLBACK_URL,
+        url: "",
         error: err instanceof Error ? err.message : "Unknown error",
       };
     }
