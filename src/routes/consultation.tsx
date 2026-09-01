@@ -177,6 +177,48 @@ function ConsultationPage() {
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="mt-10 space-y-5">
+            <fieldset>
+              <legend className="block text-sm font-medium text-foreground">
+                Are you a client or want to become one?
+              </legend>
+              <div className="mt-2 flex gap-3">
+                <label
+                  className={`flex-1 cursor-pointer rounded-md border px-4 py-2.5 text-sm font-medium transition-colors ${
+                    customerType === "new"
+                      ? "border-primary bg-primary/5 text-foreground"
+                      : "border-input text-muted-foreground hover:bg-muted"
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="customerType"
+                    value="new"
+                    checked={customerType === "new"}
+                    onChange={() => setCustomerType("new")}
+                    className="sr-only"
+                  />
+                  I want to become a client
+                </label>
+                <label
+                  className={`flex-1 cursor-pointer rounded-md border px-4 py-2.5 text-sm font-medium transition-colors ${
+                    customerType === "existing"
+                      ? "border-primary bg-primary/5 text-foreground"
+                      : "border-input text-muted-foreground hover:bg-muted"
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="customerType"
+                    value="existing"
+                    checked={customerType === "existing"}
+                    onChange={() => setCustomerType("existing")}
+                    className="sr-only"
+                  />
+                  I'm an existing client
+                </label>
+              </div>
+            </fieldset>
+
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
               <div>
                 <label htmlFor="c-name" className="block text-sm font-medium text-foreground">
