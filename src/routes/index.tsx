@@ -1098,12 +1098,7 @@ function QuotePage() {
       {showQuote && (
         <section id="quote" className="border-t border-border bg-background">
           <div className="mx-auto max-w-6xl px-6 py-16 sm:py-20">
-            {emailWarning && (
-              <div className="mb-6 border-2 border-amber-500 bg-amber-500/10 px-3 py-2 text-sm text-amber-900 dark:text-amber-200">
-                Your quote was saved, but: {emailWarning}. Please contact us if you do not receive the email.
-              </div>
-            )}
-            {emailConfirmed && !emailWarning && (
+            {emailConfirmed && (
               <div className="mb-6 border-2 border-emerald-500 bg-emerald-500/10 px-3 py-2 text-sm text-emerald-900 dark:text-emerald-200">
                 ✓ Quote email sent successfully to <strong>{emailConfirmed}</strong>. Please check your inbox (and spam folder).
               </div>
