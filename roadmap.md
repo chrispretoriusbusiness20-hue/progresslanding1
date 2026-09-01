@@ -19,3 +19,4 @@
 - [done] Transport only on main invoice when courier (no installation); with install it lives in the page-2 installation estimate
 - [done] Supply & install no longer pre-ticked — shown as recommended, default is Product only
 - [done] Email failure warning banner hidden from clients
+- [done] Transport (R495 ≤100 km) shown in summary as part of installation estimate; radios Supply & install / Product only stay selectable after submit
