@@ -30,3 +30,5 @@
 - [open] Add "Are you a client or want to become one?" selector to quote form
 - [open] INSTALLATION DATE CONFIRMATION BY SALES AGENT — add flow for sales agent to confirm installation date
 - [open] Display invoice number + product by selection, notes, and 2-week buffer date after installation
+- [open] Consultation: show "Your slot has been requested" message after submission
+- [open] Consultation: add "Are you a client or want to become one?" selector
