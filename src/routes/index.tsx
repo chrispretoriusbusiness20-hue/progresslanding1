@@ -597,7 +597,7 @@ function QuotePage() {
     const needsPlate = !allInclusive && flooring.length > 0 && !/tile/i.test(flooring);
     const plate = needsPlate ? computePlatePrice(plateType, cornerInstall) : null;
     const corner = !allInclusive && installationRequired && cornerInstall ? 800 : null;
-    const install = allInclusive ? null : installationRequired ? 6000 + (storyType === "double" ? 1500 : 0) : null;
+    const install = allInclusive ? null : installationRequired ? 5995 + (storyType === "double" ? 1500 : 0) : null;
     const addOns = allInclusiveAddOns({ productName: product, storyType, cornerInstall, plateType, flooring, installationRequired });
     if (subtotal === null && flueKit === null && plate === null && corner === null && install === null && addOns.total === 0) return null;
     return (subtotal ?? 0) + (flueKit ?? 0) + (plate ?? 0) + (corner ?? 0) + (install ?? 0) + addOns.total;
