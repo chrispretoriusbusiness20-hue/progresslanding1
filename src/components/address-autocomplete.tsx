@@ -81,6 +81,16 @@ export function AddressAutocomplete({ value, onChange, placeholder, className, d
   };
 
 
+  // Auto-fill from the device's current location on first mount (browser will
+  // ask for permission once; denial falls back to typing/presets silently).
+  const autoLocatedRef = useRef(false);
+  useEffect(() => {
+    if (autoLocatedRef.current || disabled || value.trim().length > 0) return;
+    autoLocatedRef.current = true;
+    useMyLocation();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   useEffect(() => {
     if (justSelectedRef.current) {
       justSelectedRef.current = false;
