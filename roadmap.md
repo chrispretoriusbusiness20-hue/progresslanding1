@@ -1,4 +1,5 @@
 # Roadmap
 
-- [ ] Resolve workspace email sending-limit rejection.
-- [ ] Confirm quote emails can send from sales@progressgrp.co.za.
+- [ ] Complete DNS verification for progressgrp.co.za in the email setup screen.
+- [ ] Retry quote email after the rolling 100-emails-per-hour window resets.
+- [ ] Confirm quote emails send from sales@progressgrp.co.za.
