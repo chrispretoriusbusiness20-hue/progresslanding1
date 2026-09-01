@@ -83,6 +83,7 @@ function ConsultationPage() {
   const [timeSlot, setTimeSlot] = useState(TIME_SLOTS[0]);
   const [topic, setTopic] = useState("");
   const [notes, setNotes] = useState("");
+  const [customerType, setCustomerType] = useState<"new" | "existing">("new");
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState<{ date: string; timeSlot: string } | null>(null);
 
