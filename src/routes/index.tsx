@@ -1249,12 +1249,22 @@ function QuotePage() {
               </button>
               <button
                 type="button"
-                onClick={payWithStitch}
+                onClick={() => void payWithStitch()}
                 disabled={stitchLoading}
                 className="inline-flex items-center justify-center gap-2 border-2 border-foreground bg-primary px-6 py-3 text-sm font-bold uppercase tracking-wider text-primary-foreground shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {stitchLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ShoppingCart className="h-4 w-4" />}
                 {stitchLoading ? "Preparing…" : "Pay it off"}
+              </button>
+              <button
+                type="button"
+                onClick={() => void payWithStitch()}
+                disabled={stitchLoading}
+                aria-label={`Pay ${cartTotalLabel ?? "the full amount"} once off online`}
+                className="inline-flex items-center justify-center gap-2 border-2 border-foreground bg-foreground px-6 py-3 text-sm font-bold uppercase tracking-wider text-background shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {stitchLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4" />}
+                {stitchLoading ? "Preparing…" : `Pay ${cartTotalLabel ?? ""} once off`}
               </button>
             </div>
           </div>
@@ -1320,6 +1330,17 @@ function QuotePage() {
               >
                 {stitchLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ShoppingCart className="h-4 w-4" />}
                 {stitchLoading ? "Preparing payment…" : "Pay first installment"}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setTermsOpen(false);
+                  void payWithStitch();
+                }}
+                className="inline-flex items-center justify-center gap-2 border-2 border-foreground bg-foreground px-5 py-3 text-sm font-bold uppercase tracking-wider text-background shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
+              >
+                <CheckCircle2 className="h-4 w-4" />
+                Pay {cartTotalLabel ?? ""} once off
               </button>
               <button
                 type="button"
