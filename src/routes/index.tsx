@@ -907,7 +907,6 @@ function QuotePage() {
                   value={PRODUCT_NAMES.includes(product) ? product : ""}
                   onChange={(e) => setProduct(e.target.value)}
                   required
-                  disabled={optionsLocked}
                   className="form-input"
                 >
                   <option value="" disabled>
