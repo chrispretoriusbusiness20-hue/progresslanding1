@@ -1620,10 +1620,10 @@ function InstantQuote({
             label: "Installation estimate",
             value: installationEstimate,
             hint: storyType === "double"
-              ? "Double story: R6,000 + R1,500 core drilling + transport beyond 25 km · within Cape Town (subject to site visit)"
+              ? "Double story: R5,995 + R1,500 core drilling · within Cape Town (subject to site visit) · transport billed separately"
               : storyType === "single"
-                ? "Single story: R6,000 + transport beyond 25 km · within Cape Town (subject to site visit)"
-                : "Single R6,000 · Double R7,500 (incl. core drilling) + transport beyond 25 km · within Cape Town (subject to site visit)",
+                ? "Single story: R5,995 · within Cape Town (subject to site visit) · transport billed separately"
+                : "Single R5,995 · Double R7,495 (incl. core drilling) · within Cape Town (subject to site visit) · transport billed separately",
           },
 
         ]
