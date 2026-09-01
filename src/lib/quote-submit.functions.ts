@@ -332,24 +332,23 @@ function transportPriceForKm(km: number, installationRequired: boolean): { zone:
     if (km <= 300) return { zone: "Courier 101–300 km (estimate — sales to confirm)", price: 1100 };
     return { zone: "Courier 300 km+ (estimate — sales to confirm)", price: 1750 };
   }
-  if (km <= 100) return { zone: "Delivery within ±100 km of Bellville", price: 470 };
-  return { zone: "Included in installation estimate", price: 0 };
+  // With installation, transport is billed as its own line item (never bundled
+  // into the installation estimate): R495 includes the first 100 km, then
+  // R12/km thereafter.
+  return {
+    zone: `Transport (R${BASE_TRANSPORT} incl. first ${INCLUDED_KM} km · R${EXTRA_KM_RATE}/km thereafter)`,
+    price: BASE_TRANSPORT + Math.max(0, km - INCLUDED_KM) * EXTRA_KM_RATE,
+  };
 }
 
-const INSTALL_BASE = 6000;
-const INSTALL_BASE_LOCAL = 6000;
-const LOCAL_KM = 20;
+const INSTALL_BASE = 5995;
 const CORE_DRILL = 1500;
-const INCLUDED_KM = 25;
+const INCLUDED_KM = 100;
 const EXTRA_KM_RATE = 12;
+const BASE_TRANSPORT = 495;
 
-function transportInInstallEstimate(km: number | null): number {
-  if (km === null || km <= LOCAL_KM) return 0;
-  return Math.max(0, km - INCLUDED_KM) * EXTRA_KM_RATE;
-}
-
-function installBaseForKm(km: number | null): number {
-  return km !== null && km <= LOCAL_KM ? INSTALL_BASE_LOCAL : INSTALL_BASE;
+function installBaseForKm(_km: number | null): number {
+  return INSTALL_BASE;
 }
 
 
@@ -457,10 +456,11 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
       ? 800 + (distanceKm !== null && distanceKm <= 50 ? 650 : 0)
       : null;
 
-    // Installation estimate (within Cape Town) — base fee + core drilling for double-story flues + transport beyond 25 km.
+    // Installation estimate (within Cape Town) — base fee + core drilling for
+    // double-story flues. Transport is billed as its own line item, never here.
     // Subject to site visit; mirrors the "Installation Estimate" page on the PDF.
     const installationEstimate = installEligible && !allInclusive
-      ? installBaseForKm(distanceKm) + (data.storyType === "double" ? CORE_DRILL : 0) + transportInInstallEstimate(distanceKm)
+      ? installBaseForKm(distanceKm) + (data.storyType === "double" ? CORE_DRILL : 0)
       : null;
 
     // All-inclusive SPECIAL: base price covers single-story basic install only;

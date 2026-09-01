@@ -597,7 +597,7 @@ function QuotePage() {
     const needsPlate = !allInclusive && flooring.length > 0 && !/tile/i.test(flooring);
     const plate = needsPlate ? computePlatePrice(plateType, cornerInstall) : null;
     const corner = !allInclusive && installationRequired && cornerInstall ? 800 : null;
-    const install = allInclusive ? null : installationRequired ? 6000 + (storyType === "double" ? 1500 : 0) : null;
+    const install = allInclusive ? null : installationRequired ? 5995 + (storyType === "double" ? 1500 : 0) : null;
     const addOns = allInclusiveAddOns({ productName: product, storyType, cornerInstall, plateType, flooring, installationRequired });
     if (subtotal === null && flueKit === null && plate === null && corner === null && install === null && addOns.total === 0) return null;
     return (subtotal ?? 0) + (flueKit ?? 0) + (plate ?? 0) + (corner ?? 0) + (install ?? 0) + addOns.total;
@@ -678,8 +678,8 @@ function QuotePage() {
       flooring,
       plateType,
       cornerInstall,
-      transportPrice: installationRequired ? null : matched ? matched.transportPrice : null,
-      transportZone: installationRequired ? null : matched ? matched.transportZone : null,
+      transportPrice: matched ? matched.transportPrice : null,
+      transportZone: matched ? matched.transportZone : null,
       distanceKm: matched ? matched.distanceKm : null,
       travelFee: null,
       extrasForAccount: extrasForAccount.trim() || undefined,
@@ -765,6 +765,9 @@ function QuotePage() {
   };
 
   const showQuote = (submitted && lookup?.match) || canContinue;
+  // Once the quote is submitted, the client is in the payment step — lock all
+  // option inputs so the quoted configuration/amount cannot be altered.
+  const optionsLocked = submitted;
   const cartTotalLabel = totalPriceLabel ?? (estimatedTotal !== null ? formatRand(estimatedTotal) : null);
   const cartTotalNum = totalPriceNum ?? estimatedTotal;
   const INSTALMENT_MONTHS = 6;
@@ -904,6 +907,7 @@ function QuotePage() {
                   value={PRODUCT_NAMES.includes(product) ? product : ""}
                   onChange={(e) => setProduct(e.target.value)}
                   required
+                  disabled={optionsLocked}
                   className="form-input"
                 >
                   <option value="" disabled>
@@ -923,6 +927,7 @@ function QuotePage() {
                   max={50}
                   value={quantity}
                   onChange={(e) => setQuantity(Math.max(1, Number(e.target.value) || 1))}
+                  disabled={optionsLocked}
                   className="form-input"
                 />
               </Field>
@@ -935,6 +940,7 @@ function QuotePage() {
                     type="radio"
                     name="installationRequired"
                     checked={installationRequired}
+                    disabled={optionsLocked}
                     onChange={() => setInstallationRequired(true)}
                     className="h-4 w-4 accent-primary"
                   />
@@ -945,6 +951,7 @@ function QuotePage() {
                     type="radio"
                     name="installationRequired"
                     checked={!installationRequired}
+                    disabled={optionsLocked}
                     onChange={() => {
                       setInstallationRequired(false);
                       setCornerInstall(false);
@@ -962,6 +969,7 @@ function QuotePage() {
                 <select
                   value={storyType}
                   onChange={(e) => setStoryType(e.target.value as "single" | "double" | "")}
+                  disabled={optionsLocked}
                   className="form-input"
                 >
                   <option value="single">Single story</option>
@@ -972,6 +980,7 @@ function QuotePage() {
                 <select
                   value={flooring}
                   onChange={(e) => setFlooring(e.target.value)}
+                  disabled={optionsLocked}
                   className="form-input"
                 >
                   <option value="">Select…</option>
@@ -989,6 +998,7 @@ function QuotePage() {
               <select
                 value={roofType}
                 onChange={(e) => setRoofType(e.target.value)}
+                disabled={optionsLocked}
                 className="form-input"
               >
                 <option value="">Select…</option>
@@ -1006,6 +1016,7 @@ function QuotePage() {
                 <select
                   value={plateType}
                   onChange={(e) => setPlateType(e.target.value as "steel" | "glass" | "granite")}
+                  disabled={optionsLocked}
                   className="form-input"
                 >
                   <option value="steel">Black Steel (Square) 2mm · R1 500</option>
@@ -1034,6 +1045,7 @@ function QuotePage() {
                 <input
                   type="checkbox"
                   checked={cornerInstall}
+                  disabled={optionsLocked}
                   onChange={(e) => setCornerInstall(e.target.checked)}
                   className="h-4 w-4 accent-primary"
                 />
@@ -1118,7 +1130,7 @@ function QuotePage() {
                   {flueKitLabel && <BreakdownRow label="Flue kit" value={flueKitLabel} hint={matched.storyType === "double" ? "Double story" : "Single story"} />}
                   {plateLabel && <BreakdownRow label={`${matched.plate?.type === "steel" ? "Black steel" : matched.plate?.type === "granite" ? "Granite" : "Glass"} plinth`} value={plateLabel} />}
                   {cornerInstallLabel && <BreakdownRow label="Corner installation" value={cornerInstallLabel} />}
-                  {!installationRequired && transportLabel && <BreakdownRow label="Courier" value={transportLabel} hint={matched.transportZone ?? undefined} />}
+                  {transportLabel && <BreakdownRow label={installationRequired ? "Transport" : "Courier"} value={transportLabel} hint={matched.transportZone ?? undefined} />}
                   {specialDiscountLabel && (
                     <BreakdownRow label="Special promotion discount" value={specialDiscountLabel} hint="Winter special — R1,000 off" />
                   )}
@@ -1165,8 +1177,8 @@ function QuotePage() {
                         flooring,
                         plateType,
                         cornerInstall,
-                        transportPrice: installationRequired ? null : matched ? matched.transportPrice : null,
-                        transportZone: installationRequired ? null : matched ? matched.transportZone : null,
+                        transportPrice: matched ? matched.transportPrice : null,
+                        transportZone: matched ? matched.transportZone : null,
                         distanceKm: matched ? matched.distanceKm : null,
                         travelFee: null,
                         extrasForAccount: extrasForAccount.trim() || undefined,
@@ -1542,7 +1554,7 @@ function InstantQuote({
   const installationEstimate = allInclusive
     ? null
     : installationRequired
-      ? 6000 + (storyType === "double" ? 1500 : 0)
+      ? 5995 + (storyType === "double" ? 1500 : 0)
       : null;
   const addOns = allInclusiveAddOns({ productName, storyType, cornerInstall, plateType, flooring, installationRequired });
   const specialDiscount = specialDiscountFor(productName, quantity);
@@ -1608,10 +1620,10 @@ function InstantQuote({
             label: "Installation estimate",
             value: installationEstimate,
             hint: storyType === "double"
-              ? "Double story: R6,000 + R1,500 core drilling + transport beyond 25 km · within Cape Town (subject to site visit)"
+              ? "Double story: R5,995 + R1,500 core drilling · within Cape Town (subject to site visit) · transport billed separately"
               : storyType === "single"
-                ? "Single story: R6,000 + transport beyond 25 km · within Cape Town (subject to site visit)"
-                : "Single R6,000 · Double R7,500 (incl. core drilling) + transport beyond 25 km · within Cape Town (subject to site visit)",
+                ? "Single story: R5,995 · within Cape Town (subject to site visit) · transport billed separately"
+                : "Single R5,995 · Double R7,495 (incl. core drilling) · within Cape Town (subject to site visit) · transport billed separately",
           },
 
         ]
