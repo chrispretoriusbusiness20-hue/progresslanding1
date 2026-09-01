@@ -332,21 +332,23 @@ function transportPriceForKm(km: number, installationRequired: boolean): { zone:
     if (km <= 300) return { zone: "Courier 101–300 km (estimate — sales to confirm)", price: 1100 };
     return { zone: "Courier 300 km+ (estimate — sales to confirm)", price: 1750 };
   }
-  if (km <= 100) return { zone: "Delivery within ±100 km of Bellville", price: 470 };
-  return { zone: "Included in installation estimate", price: 0 };
+  // With installation, transport is billed as its own line item (never bundled
+  // into the installation estimate): free within 20 km of Bellville, otherwise
+  // R400 base + R12/km beyond 25 km.
+  if (km <= LOCAL_KM) return { zone: "Transport included — within 20 km of Bellville", price: 0 };
+  return {
+    zone: `Transport (R${BASE_TRANSPORT} base + R${EXTRA_KM_RATE}/km after ${INCLUDED_KM} km)`,
+    price: BASE_TRANSPORT + Math.max(0, km - INCLUDED_KM) * EXTRA_KM_RATE,
+  };
 }
 
-const INSTALL_BASE = 6000;
-const INSTALL_BASE_LOCAL = 6000;
+const INSTALL_BASE = 5995;
+const INSTALL_BASE_LOCAL = 5995;
 const LOCAL_KM = 20;
 const CORE_DRILL = 1500;
 const INCLUDED_KM = 25;
 const EXTRA_KM_RATE = 12;
-
-function transportInInstallEstimate(km: number | null): number {
-  if (km === null || km <= LOCAL_KM) return 0;
-  return Math.max(0, km - INCLUDED_KM) * EXTRA_KM_RATE;
-}
+const BASE_TRANSPORT = 400;
 
 function installBaseForKm(km: number | null): number {
   return km !== null && km <= LOCAL_KM ? INSTALL_BASE_LOCAL : INSTALL_BASE;
