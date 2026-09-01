@@ -907,6 +907,7 @@ function QuotePage() {
                   value={PRODUCT_NAMES.includes(product) ? product : ""}
                   onChange={(e) => setProduct(e.target.value)}
                   required
+                  disabled={optionsLocked}
                   className="form-input"
                 >
                   <option value="" disabled>
@@ -926,6 +927,7 @@ function QuotePage() {
                   max={50}
                   value={quantity}
                   onChange={(e) => setQuantity(Math.max(1, Number(e.target.value) || 1))}
+                  disabled={optionsLocked}
                   className="form-input"
                 />
               </Field>
@@ -938,6 +940,7 @@ function QuotePage() {
                     type="radio"
                     name="installationRequired"
                     checked={installationRequired}
+                    disabled={optionsLocked}
                     onChange={() => setInstallationRequired(true)}
                     className="h-4 w-4 accent-primary"
                   />
@@ -948,6 +951,7 @@ function QuotePage() {
                     type="radio"
                     name="installationRequired"
                     checked={!installationRequired}
+                    disabled={optionsLocked}
                     onChange={() => {
                       setInstallationRequired(false);
                       setCornerInstall(false);
@@ -965,6 +969,7 @@ function QuotePage() {
                 <select
                   value={storyType}
                   onChange={(e) => setStoryType(e.target.value as "single" | "double" | "")}
+                  disabled={optionsLocked}
                   className="form-input"
                 >
                   <option value="single">Single story</option>
@@ -975,6 +980,7 @@ function QuotePage() {
                 <select
                   value={flooring}
                   onChange={(e) => setFlooring(e.target.value)}
+                  disabled={optionsLocked}
                   className="form-input"
                 >
                   <option value="">Select…</option>
@@ -992,6 +998,7 @@ function QuotePage() {
               <select
                 value={roofType}
                 onChange={(e) => setRoofType(e.target.value)}
+                disabled={optionsLocked}
                 className="form-input"
               >
                 <option value="">Select…</option>
@@ -1009,6 +1016,7 @@ function QuotePage() {
                 <select
                   value={plateType}
                   onChange={(e) => setPlateType(e.target.value as "steel" | "glass" | "granite")}
+                  disabled={optionsLocked}
                   className="form-input"
                 >
                   <option value="steel">Black Steel (Square) 2mm · R1 500</option>
@@ -1037,6 +1045,7 @@ function QuotePage() {
                 <input
                   type="checkbox"
                   checked={cornerInstall}
+                  disabled={optionsLocked}
                   onChange={(e) => setCornerInstall(e.target.checked)}
                   className="h-4 w-4 accent-primary"
                 />
