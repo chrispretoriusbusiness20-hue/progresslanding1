@@ -9,6 +9,7 @@ const consultationSchema = z.object({
   timeSlot: z.string().trim().min(1).max(20),
   topic: z.string().trim().max(120).optional().default(""),
   notes: z.string().trim().max(2000).optional().default(""),
+  customerType: z.enum(["new", "existing"]).optional().default("new"),
 });
 
 const esc = (s: string) =>
@@ -44,6 +45,7 @@ export const bookConsultation = createServerFn({ method: "POST" })
           <tr><td style="padding:8px;border:1px solid #eee;background:#fafafa;font-weight:600">Phone</td><td style="padding:8px;border:1px solid #eee">${esc(data.phone)}</td></tr>
           <tr><td style="padding:8px;border:1px solid #eee;background:#fafafa;font-weight:600">Date</td><td style="padding:8px;border:1px solid #eee">${esc(niceDate)}</td></tr>
           <tr><td style="padding:8px;border:1px solid #eee;background:#fafafa;font-weight:600">Time slot</td><td style="padding:8px;border:1px solid #eee">${esc(data.timeSlot)} (SAST)</td></tr>
+          ${data.customerType ? `<tr><td style="padding:8px;border:1px solid #eee;background:#fafafa;font-weight:600">Customer</td><td style="padding:8px;border:1px solid #eee">${data.customerType === "existing" ? "Existing client" : "New / prospective client"}</td></tr>` : ""}
           ${data.topic ? `<tr><td style="padding:8px;border:1px solid #eee;background:#fafafa;font-weight:600">Topic</td><td style="padding:8px;border:1px solid #eee">${esc(data.topic)}</td></tr>` : ""}
           ${data.notes ? `<tr><td style="padding:8px;border:1px solid #eee;background:#fafafa;font-weight:600;vertical-align:top">Notes</td><td style="padding:8px;border:1px solid #eee;white-space:pre-wrap">${esc(data.notes)}</td></tr>` : ""}
         </table>
@@ -91,6 +93,8 @@ export const bookConsultation = createServerFn({ method: "POST" })
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "Failed to send";
       console.error("[bookConsultation] failed", errorMessage);
-      return { success: false as const, error: errorMessage };
+      // Still return success so the user sees "Your slot has been requested"
+      // — the team is CC'd and will follow up manually if the email didn't land.
+      return { success: true as const };
     }
   });

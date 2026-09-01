@@ -22,3 +22,17 @@
 - [done] Transport (R495 ≤100 km) shown in summary as part of installation estimate; radios Supply & install / Product only stay selectable after submit
 - [done] Email failure warning fully hidden from clients (banner + toast removed; errors only logged server-side)
 - [done] Stitch pay link: reference = invoice number (INV-...), amount fixed, no fallback to editable generic page
+
+## 2026-09-01 (new)
+- [open] Stitch "Pay with Stitch" button doesn't work — investigate API call / popup
+- [open] INSTALLATION DATE CONFIRMATION BY SALES AGENT — add flow for sales agent to confirm installation date
+- [open] Stitch button: fixed API URL from api.express.stitch.money → express.stitch.money/api/v1 — testing
+- [open] Add "Are you a client or want to become one?" selector to quote form
+- [open] INSTALLATION DATE CONFIRMATION BY SALES AGENT — add flow for sales agent to confirm installation date
+- [open] Display invoice number + product by selection, notes, and 2-week buffer date after installation
+- [open] Consultation: show "Your slot has been requested" message after submission
+- [open] Consultation: add "Are you a client or want to become one?" selector
+
+## 2026-09-01 (consultation)
+- [done] Add Home button to consultation page header
+- [done] Add enquiry type selector that auto-fills the topic field

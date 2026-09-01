@@ -83,8 +83,24 @@ function ConsultationPage() {
   const [timeSlot, setTimeSlot] = useState(TIME_SLOTS[0]);
   const [topic, setTopic] = useState("");
   const [notes, setNotes] = useState("");
+  const [customerType, setCustomerType] = useState<"new" | "existing">("new");
+  const [selectedOption, setSelectedOption] = useState("general");
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState<{ date: string; timeSlot: string } | null>(null);
+
+  const TOPIC_PRESETS: Record<string, string> = {
+    general: "",
+    fireplace: "Closed-combustion fireplace consultation",
+    braai: "Built-in braai consultation",
+    lighting: "Lighting design consultation",
+    aircon: "Air conditioning consultation",
+    invoice: "Invoice and payment enquiry",
+  };
+
+  const handleOptionChange = (value: string) => {
+    setSelectedOption(value);
+    setTopic(TOPIC_PRESETS[value] ?? "");
+  };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -112,11 +128,11 @@ function ConsultationPage() {
     setSubmitting(true);
     try {
       const result = await submit({
-        data: { name: n, email: em, phone: ph, date, timeSlot, topic: topic.trim(), notes: notes.trim() },
+        data: { name: n, email: em, phone: ph, date, timeSlot, topic: topic.trim(), notes: notes.trim(), customerType },
       });
       if (result.success) {
         setDone({ date, timeSlot });
-        toast.success("Consultation request sent — we'll confirm shortly");
+        toast.success("Your slot has been requested");
       } else {
         toast.error("Couldn't send your request", { description: result.error });
       }
@@ -132,9 +148,18 @@ function ConsultationPage() {
   return (
     <main className="min-h-screen bg-background px-6 py-20">
       <div className="mx-auto max-w-xl">
-        <p className="font-display text-[10px] uppercase tracking-[0.36em] text-primary">
-          The Progress Group
-        </p>
+        <div className="flex items-center justify-between">
+          <p className="font-display text-[10px] uppercase tracking-[0.36em] text-primary">
+            The Progress Group
+          </p>
+          <Link
+            to="/"
+            className="inline-flex items-center gap-1.5 rounded-md border border-input px-3 py-1.5 text-sm font-medium text-foreground transition-colors hover:bg-muted"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            Home
+          </Link>
+        </div>
         <h1 className="mt-3 text-3xl font-semibold tracking-tight text-foreground">
           Book a private consultation
         </h1>
@@ -145,7 +170,7 @@ function ConsultationPage() {
 
         {done ? (
           <div className="mt-10 rounded-lg border border-border bg-card p-6">
-            <h2 className="text-lg font-medium text-foreground">Request received</h2>
+            <h2 className="text-lg font-medium text-foreground">Your slot has been requested</h2>
             <p className="mt-2 text-sm text-muted-foreground">
               We've sent a confirmation to your email. Your preferred slot:
             </p>
@@ -176,6 +201,48 @@ function ConsultationPage() {
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="mt-10 space-y-5">
+            <fieldset>
+              <legend className="block text-sm font-medium text-foreground">
+                Are you a client or want to become one?
+              </legend>
+              <div className="mt-2 flex gap-3">
+                <label
+                  className={`flex-1 cursor-pointer rounded-md border px-4 py-2.5 text-sm font-medium transition-colors ${
+                    customerType === "new"
+                      ? "border-primary bg-primary/5 text-foreground"
+                      : "border-input text-muted-foreground hover:bg-muted"
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="customerType"
+                    value="new"
+                    checked={customerType === "new"}
+                    onChange={() => setCustomerType("new")}
+                    className="sr-only"
+                  />
+                  I want to become a client
+                </label>
+                <label
+                  className={`flex-1 cursor-pointer rounded-md border px-4 py-2.5 text-sm font-medium transition-colors ${
+                    customerType === "existing"
+                      ? "border-primary bg-primary/5 text-foreground"
+                      : "border-input text-muted-foreground hover:bg-muted"
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="customerType"
+                    value="existing"
+                    checked={customerType === "existing"}
+                    onChange={() => setCustomerType("existing")}
+                    className="sr-only"
+                  />
+                  I'm an existing client
+                </label>
+              </div>
+            </fieldset>
+
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
               <div>
                 <label htmlFor="c-name" className="block text-sm font-medium text-foreground">
@@ -256,6 +323,25 @@ function ConsultationPage() {
                   ))}
                 </select>
               </div>
+            </div>
+
+            <div>
+              <label htmlFor="c-option" className="block text-sm font-medium text-foreground">
+                What are you enquiring about?
+              </label>
+              <select
+                id="c-option"
+                value={selectedOption}
+                onChange={(e) => handleOptionChange(e.target.value)}
+                className="mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-ring"
+              >
+                <option value="general">General enquiry</option>
+                <option value="fireplace">Fireplace</option>
+                <option value="braai">Built-in braai</option>
+                <option value="lighting">Lighting</option>
+                <option value="aircon">Air conditioning</option>
+                <option value="invoice">Invoice / payment</option>
+              </select>
             </div>
 
             <div>

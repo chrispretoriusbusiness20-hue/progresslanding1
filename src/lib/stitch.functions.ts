@@ -4,7 +4,7 @@ import { z } from "zod";
 /** Fallback: the generic Express page (no preset amount) if the API call fails. */
 export const STITCH_FALLBACK_URL = "https://express.stitch.money/progress-installations";
 
-const STITCH_API_BASE = "https://api.express.stitch.money/api/v1";
+const STITCH_API_BASE = "https://express.stitch.money/api/v1";
 const LINK_TTL_MS = 1000 * 60 * 60 * 24 * 10; // 10 days, matching quote validity
 
 /**
