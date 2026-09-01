@@ -1108,13 +1108,10 @@ function QuotePage() {
               <button
                 type="submit"
                 disabled={!canContinue || loading}
-                className="inline-flex items-center gap-2 border-2 border-foreground bg-primary px-6 py-3 text-sm font-bold uppercase tracking-wider text-primary-foreground shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none disabled:cursor-not-allowed disabled:opacity-50"
+                className="hidden"
+                aria-hidden="true"
+                tabIndex={-1}
               >
-                {loading ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  <CheckCircle2 className="h-4 w-4" />
-                )}
                 {loading ? "Building your quote…" : "Get my quote"}
               </button>
             </div>
