@@ -533,7 +533,7 @@ function QuotePage() {
     : 0;
   const totalPriceNum =
     productSubtotal !== null || flueKitPrice !== null || platePrice !== null || cornerInstallPrice !== null || transportPrice !== null || travelFee !== null || installationEstimate !== null
-      ? (productSubtotal ?? 0) + (flueKitPrice ?? 0) + (platePrice ?? 0) + (cornerInstallPrice ?? 0) + (installationRequired ? 0 : (transportPrice ?? 0)) + (travelFee ?? 0) + (installationEstimate ?? 0) - specialDiscount
+      ? (productSubtotal ?? 0) + (flueKitPrice ?? 0) + (platePrice ?? 0) + (cornerInstallPrice ?? 0) + (transportPrice ?? 0) + (travelFee ?? 0) + (installationEstimate ?? 0) - specialDiscount
       : null;
   const unitPriceLabel = unitPriceNum !== null ? formatRand(unitPriceNum) : null;
   const subtotalLabel = productSubtotal !== null ? formatRand(productSubtotal) : null;
@@ -542,7 +542,12 @@ function QuotePage() {
   const cornerInstallLabel = cornerInstallPrice !== null ? formatRand(cornerInstallPrice) : null;
   const transportLabel = transportPrice !== null ? formatRand(transportPrice) : null;
   const travelFeeLabel = travelFee !== null ? formatRand(travelFee) : null;
-  const installationEstimateLabel = installationEstimate !== null ? formatRand(installationEstimate) : null;
+  // With installation, transport is part of the installation estimate, not the main quote.
+  const installationEstimateTotal =
+    installationEstimate !== null
+      ? installationEstimate + (installationRequired && transportPrice !== null ? transportPrice : 0)
+      : null;
+  const installationEstimateLabel = installationEstimateTotal !== null ? formatRand(installationEstimateTotal) : null;
   const specialDiscountLabel = specialDiscount > 0 ? `- ${formatRand(specialDiscount)}` : null;
   const totalPriceLabel = totalPriceNum !== null ? formatRand(totalPriceNum) : null;
 
