@@ -49,7 +49,7 @@ const QUOTE_CC_EMAILS = [
   "chris@progressinstallations.co.za",
 ];
 const ORIGIN_ADDRESS =
-  "Progress Lighting & Fires, 189 Durban Rd, Bellville, Cape Town, 7530, South Africa";
+  "189 Durban Road, Bellville, Cape Town, 7530, South Africa";
 const QUOTE_BUCKET = "quotes";
 const QUOTE_SIGNED_URL_EXPIRES_S = 60 * 60 * 24 * 30; // 30 days
 
