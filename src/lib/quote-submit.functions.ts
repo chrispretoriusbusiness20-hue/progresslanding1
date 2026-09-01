@@ -2,7 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import productsData from "@/data/products.json";
 import productsFullData from "@/data/products-full.json";
-import { isAllInclusiveProduct, specialDiscountFor } from "@/lib/special-discount";
+import { allInclusiveAddOns, isAllInclusiveProduct, specialDiscountFor } from "@/lib/special-discount";
 
 const PRODUCT_IMAGE_MAP = new Map(
   (productsFullData as Array<{ name: string; image?: string }>).map((p) => [p.name, p.image ?? ""]),
