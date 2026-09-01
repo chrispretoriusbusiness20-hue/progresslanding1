@@ -19,7 +19,7 @@ import progressLogo from "@/assets/progress-header-transparent.png.asset.json";
 
 import { AddressAutocomplete } from "@/components/address-autocomplete";
 import { checkEmail } from "@/lib/email-typo";
-import { isAllInclusiveProduct, specialDiscountFor } from "@/lib/special-discount";
+import { allInclusiveAddOns, isAllInclusiveProduct, specialDiscountFor } from "@/lib/special-discount";
 
 
 
@@ -598,8 +598,9 @@ function QuotePage() {
     const plate = needsPlate ? computePlatePrice(plateType, cornerInstall) : null;
     const corner = !allInclusive && installationRequired && cornerInstall ? 800 : null;
     const install = allInclusive ? null : installationRequired ? 5500 + (storyType === "double" ? 1500 : 0) : null;
-    if (subtotal === null && flueKit === null && plate === null && corner === null && install === null) return null;
-    return (subtotal ?? 0) + (flueKit ?? 0) + (plate ?? 0) + (corner ?? 0) + (install ?? 0);
+    const addOns = allInclusiveAddOns({ productName: product, storyType, cornerInstall, plateType, flooring, installationRequired });
+    if (subtotal === null && flueKit === null && plate === null && corner === null && install === null && addOns.total === 0) return null;
+    return (subtotal ?? 0) + (flueKit ?? 0) + (plate ?? 0) + (corner ?? 0) + (install ?? 0) + addOns.total;
   }, [product, quantity, storyType, flooring, plateType, cornerInstall, installationRequired]);
 
 
@@ -1543,10 +1544,11 @@ function InstantQuote({
     : installationRequired
       ? 5500 + (storyType === "double" ? 1500 : 0)
       : null;
+  const addOns = allInclusiveAddOns({ productName, storyType, cornerInstall, plateType, flooring, installationRequired });
   const specialDiscount = specialDiscountFor(productName, quantity);
   const total =
     subtotal !== null || flueKit !== null || plate !== null || corner !== null || installationEstimate !== null
-      ? (subtotal ?? 0) + (flueKit ?? 0) + (plate ?? 0) + (corner ?? 0) + (installationEstimate ?? 0) - specialDiscount
+      ? (subtotal ?? 0) + (flueKit ?? 0) + (plate ?? 0) + (corner ?? 0) + (installationEstimate ?? 0) + addOns.total - specialDiscount
       : null;
 
   const rows: { label: string; value: number | null; hint?: string }[] = [
@@ -1589,7 +1591,16 @@ function InstantQuote({
       : []),
     ...(allInclusive ? [] : [{ label: "Corner installation", value: corner, hint: cornerInstall ? "+R800 (+R650 if ≤50 km)" : "Standard wall" }]),
     ...(allInclusive
-      ? [{ label: "Installation, flue kit & plinth", value: 0 as number | null, hint: "Included in the special price" as string }]
+      ? [{ label: "Installation, flue kit & plinth (single story, basic)", value: 0 as number | null, hint: "Included in the special price" as string }]
+      : []),
+    ...(addOns.doubleStorySurcharge !== null
+      ? [{ label: "Double-story surcharge", value: addOns.doubleStorySurcharge as number | null, hint: "Core drilling — not covered by the basic special" as string }]
+      : []),
+    ...(addOns.cornerInstall !== null
+      ? [{ label: "Corner installation add-on", value: addOns.cornerInstall as number | null, hint: "Not covered by the basic special" as string }]
+      : []),
+    ...(addOns.graniteUpgrade !== null
+      ? [{ label: "Granite plinth upgrade", value: addOns.graniteUpgrade as number | null, hint: "Upgrade from the included glass plinth" as string }]
       : []),
     ...(!allInclusive && installationRequired
       ? [
