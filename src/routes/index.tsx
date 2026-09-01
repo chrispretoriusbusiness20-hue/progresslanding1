@@ -1251,6 +1251,88 @@ function QuotePage() {
         </div>
       )}
 
+      {/* BNPL payment-terms dialog — explains the 6-payment plan, then routes to payment */}
+      {termsOpen && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="terms-title"
+          className="fixed inset-0 z-50 flex items-end justify-center bg-foreground/60 p-4 sm:items-center"
+        >
+          <div className="w-full max-w-lg border-2 border-foreground bg-background p-6 shadow-brutal-sm">
+            <h2 id="terms-title" className="text-lg font-bold uppercase tracking-wide text-foreground">
+              Buy now, pay later
+            </h2>
+            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+              Split your purchase into {INSTALMENT_MONTHS} equal, interest-free payments. The total
+              stays the same as paying in full — no extra fees.
+            </p>
+
+            <div className="mt-4 border-2 border-foreground/20 bg-secondary/30 p-4 text-sm leading-relaxed">
+              <div className="flex items-baseline justify-between">
+                <span className="text-xs font-bold uppercase tracking-[0.24em] text-muted-foreground">
+                  Per payment
+                </span>
+                <span className="font-mono text-2xl font-bold text-foreground">
+                  {instalmentLabel ?? "—"}
+                </span>
+              </div>
+              <div className="mt-2 flex items-baseline justify-between">
+                <span className="text-xs font-bold uppercase tracking-[0.24em] text-muted-foreground">
+                  Number of payments
+                </span>
+                <span className="font-mono font-bold text-foreground">{INSTALMENT_MONTHS}</span>
+              </div>
+              <div className="mt-2 flex items-baseline justify-between border-t border-foreground/15 pt-2">
+                <span className="text-xs font-bold uppercase tracking-[0.24em] text-muted-foreground">
+                  Total (same as cash)
+                </span>
+                <span className="font-mono font-bold text-foreground">
+                  {cartTotalLabel ?? "—"}
+                </span>
+              </div>
+            </div>
+
+            <p className="mt-3 text-xs text-muted-foreground">
+              Pay your first installment online with Stitch, or pay by EFT and upload proof of
+              payment. We issue your invoice once the first payment is confirmed.
+            </p>
+
+            <div className="mt-5 flex flex-wrap gap-3">
+              <button
+                type="button"
+                onClick={() => {
+                  setTermsOpen(false);
+                  void payWithStitch();
+                }}
+                disabled={stitchLoading}
+                className="inline-flex items-center justify-center gap-2 border-2 border-foreground bg-primary px-5 py-3 text-sm font-bold uppercase tracking-wider text-primary-foreground shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {stitchLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ShoppingCart className="h-4 w-4" />}
+                {stitchLoading ? "Preparing payment…" : "Pay first installment"}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setTermsOpen(false);
+                  setPopOpen(true);
+                }}
+                className="inline-flex items-center justify-center gap-2 border-2 border-foreground bg-background px-5 py-3 text-sm font-bold uppercase tracking-wider text-foreground shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
+              >
+                Pay by EFT & upload POP
+              </button>
+              <button
+                type="button"
+                onClick={() => setTermsOpen(false)}
+                className="inline-flex items-center justify-center gap-2 px-5 py-3 text-sm font-bold uppercase tracking-wider text-muted-foreground transition hover:text-foreground"
+              >
+                Not now
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Proof of payment step — the invoice is only issued once payment is proven */}
       {popOpen && (
         <div
