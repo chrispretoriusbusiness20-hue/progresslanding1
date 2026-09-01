@@ -617,9 +617,18 @@ function QuotePage() {
   const payWithStitch = async () => {
     if (stitchLoading) return;
     const amountZar = totalPriceNum ?? estimatedTotal;
-    const reference = quoteNo || `${firstName.trim()} ${lastName.trim()}`.trim();
+    // The payment reference must be the invoice number (INV-...) so Stitch
+    // payments reconcile against the invoice.
+    const invoiceNo = quoteNo
+      ? quoteNo.startsWith("INV-")
+        ? quoteNo
+        : `INV-${quoteNo}`
+      : null;
     // Open the tab synchronously inside the click gesture so pop-up blockers allow it.
     const payTab = window.open("", "_blank", "noopener,noreferrer");
+    const closePayTab = () => {
+      if (payTab && !payTab.closed) payTab.close();
+    };
     const sendTo = (url: string) => {
       if (payTab && !payTab.closed) {
         payTab.location.replace(url);
@@ -628,9 +637,11 @@ function QuotePage() {
         window.location.assign(url);
       }
     };
-    // Without a session or amount we can only send them to the generic page.
-    if (!quoteSession || !amountZar || amountZar <= 0 || !reference) {
-      sendTo(STITCH_FALLBACK_URL);
+    // Without a session, amount or invoice number we can't create a locked
+    // payment link — don't send the client to the generic editable page.
+    if (!quoteSession || !amountZar || amountZar <= 0 || !invoiceNo) {
+      closePayTab();
+      toast.error("Please request your quote first so we can lock in your amount.");
       return;
     }
     setStitchLoading(true);
@@ -640,18 +651,23 @@ function QuotePage() {
           email: email.trim(),
           session: quoteSession,
           amountZar,
-          reference,
+          reference: invoiceNo,
           payerName: `${firstName.trim()} ${lastName.trim()}`.trim() || undefined,
         },
       });
       if (!res.ok) {
-        toast.error("Couldn't preset your amount — opening our payment page instead.");
+        // Never fall back to the generic page — its amount/reference fields
+        // are editable by the client.
+        console.error("Stitch link creation failed", res.error);
+        closePayTab();
+        toast.error("Couldn't open your secure payment page. Please try again or contact us.");
+        return;
       }
       sendTo(res.url);
     } catch (err) {
       console.error("Stitch link failed", err);
+      closePayTab();
       toast.error("Couldn't open the payment page. Please try again.");
-      sendTo(STITCH_FALLBACK_URL);
     } finally {
       setStitchLoading(false);
     }
