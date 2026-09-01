@@ -15,3 +15,4 @@
 - [done] Monthly ÷6 derives from total incl. add-ons
 - [done] Installation estimate single story = R5,995; transport removed from that line
 - [done] Transport: R495 incl. first 100 km, R12/km thereafter, separate line
+- [done] Unified transport everywhere: R495 incl. first 100 km from 189 Durban Rd Bellville, R12/km thereafter (quote engine, PDF, lookup fn, form hint)
