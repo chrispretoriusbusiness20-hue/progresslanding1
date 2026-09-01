@@ -11,7 +11,7 @@
 
 ## 2026-09-01
 - [done] Magma 001 SPECIAL: R17,500 VAT incl quote; R6,000 install estimate; R470 delivery ±100km Bellville; add-ons billed extra and raise BNPL monthly amount
-- [open] Lock quote options once submitted (payment step) — done in code, verify
-- [open] Monthly (÷6) amount must update when add-ons are added — verify live
-- [open] Installation estimate single story = R5,995; remove transport from that line — transport shows separately as R975
-- [open] Transport: R495 incl. first 100 km, R12/km thereafter (install line shows R5,995 without transport; transport separate, calc on submit)
+- [done] Options locked once quote submitted
+- [done] Monthly ÷6 derives from total incl. add-ons
+- [done] Installation estimate single story = R5,995; transport removed from that line
+- [done] Transport: R495 incl. first 100 km, R12/km thereafter, separate line
