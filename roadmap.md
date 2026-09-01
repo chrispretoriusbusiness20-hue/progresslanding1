@@ -26,3 +26,7 @@
 ## 2026-09-01 (new)
 - [open] Stitch "Pay with Stitch" button doesn't work — investigate API call / popup
 - [open] INSTALLATION DATE CONFIRMATION BY SALES AGENT — add flow for sales agent to confirm installation date
+- [open] Stitch button: fixed API URL from api.express.stitch.money → express.stitch.money/api/v1 — testing
+- [open] Add "Are you a client or want to become one?" selector to quote form
+- [open] INSTALLATION DATE CONFIRMATION BY SALES AGENT — add flow for sales agent to confirm installation date
+- [open] Display invoice number + product by selection, notes, and 2-week buffer date after installation
