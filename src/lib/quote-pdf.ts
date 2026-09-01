@@ -163,7 +163,7 @@ export async function generateQuotePDF(
       });
     }
   }
-  if (input.cornerInstall) {
+  if (input.cornerInstall && !allInclusive) {
     const nearby = input.distanceKm !== null && input.distanceKm !== undefined && input.distanceKm <= 50;
     items.push({
       quantity: 1,
