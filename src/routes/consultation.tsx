@@ -326,6 +326,25 @@ function ConsultationPage() {
             </div>
 
             <div>
+              <label htmlFor="c-option" className="block text-sm font-medium text-foreground">
+                What are you enquiring about?
+              </label>
+              <select
+                id="c-option"
+                value={selectedOption}
+                onChange={(e) => handleOptionChange(e.target.value)}
+                className="mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-ring"
+              >
+                <option value="general">General enquiry</option>
+                <option value="fireplace">Fireplace</option>
+                <option value="braai">Built-in braai</option>
+                <option value="lighting">Lighting</option>
+                <option value="aircon">Air conditioning</option>
+                <option value="invoice">Invoice / payment</option>
+              </select>
+            </div>
+
+            <div>
               <label htmlFor="c-topic" className="block text-sm font-medium text-foreground">
                 What would you like to discuss? <span className="text-muted-foreground">(optional)</span>
               </label>
