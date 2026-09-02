@@ -592,7 +592,7 @@ function QuotePage() {
       });
   void quoteUrl;
 
-  const estimatedTotal = useMemo(() => {
+  const estimatedBreakdown = useMemo(() => {
     const priceStr = PRODUCT_PRICE_MAP.get(product);
     const unitPrice = priceStr ? parseRand(priceStr) : null;
     const subtotal = unitPrice !== null ? unitPrice * quantity : null;
@@ -604,9 +604,19 @@ function QuotePage() {
     const corner = !allInclusive && installationRequired && cornerInstall ? 800 : null;
     const install = allInclusive ? null : installationRequired ? 5995 + (storyType === "double" ? 1500 : 0) : null;
     const addOns = allInclusiveAddOns({ productName: product, storyType, cornerInstall, plateType, flooring, installationRequired });
-    if (subtotal === null && flueKit === null && plate === null && corner === null && install === null && addOns.total === 0) return null;
-    return (subtotal ?? 0) + (flueKit ?? 0) + (plate ?? 0) + (corner ?? 0) + (install ?? 0) + addOns.total;
+    const hasAny = subtotal !== null || flueKit !== null || plate !== null || corner !== null || install !== null || addOns.total !== 0;
+    const productTotal = (subtotal ?? 0) + (flueKit ?? 0) + (plate ?? 0) + (corner ?? 0) + addOns.total;
+    const installTotal = install ?? 0;
+    return {
+      total: hasAny ? productTotal + installTotal : null,
+      productTotal: hasAny ? productTotal : null,
+      installTotal,
+    };
   }, [product, quantity, storyType, flooring, plateType, cornerInstall, installationRequired]);
+
+  const estimatedTotal = estimatedBreakdown.total;
+  const estimatedProductTotal = estimatedBreakdown.productTotal;
+  const estimatedInstallTotal = estimatedBreakdown.installTotal;
 
   // One unified total — the quote total IS the cart total. It recalculates
   // live from the current selection and adds transport once distance is known.
@@ -615,6 +625,27 @@ function QuotePage() {
       ? estimatedTotal + (transportPrice ?? 0) + (travelFee ?? 0)
       : totalPriceNum;
   const cartTotalLabel = cartTotalNum !== null ? formatRand(cartTotalNum) : null;
+
+  // Split the cart total by payee so the EFT section can show what each
+  // account owes. Transport is part of the installation estimate, so it
+  // belongs to Progress Installations; when installation isn't required the
+  // delivery fee rolls into the Progress Group (product) subtotal.
+  const progressGroupNum = useMemo(() => {
+    const prod = estimatedProductTotal !== null
+      ? estimatedProductTotal
+      : (productSubtotal ?? 0) + (flueKitPrice ?? 0) + (platePrice ?? 0) + (cornerInstallPrice ?? 0) - specialDiscount;
+    if (!installationRequired) return prod + (transportPrice ?? 0) + (travelFee ?? 0);
+    return prod;
+  }, [estimatedProductTotal, productSubtotal, flueKitPrice, platePrice, cornerInstallPrice, specialDiscount, installationRequired, transportPrice, travelFee]);
+
+  const progressInstallationsNum = useMemo(() => {
+    if (!installationRequired) return 0;
+    const inst = estimatedTotal !== null ? estimatedInstallTotal : (installationEstimate ?? 0);
+    return inst + (transportPrice ?? 0) + (travelFee ?? 0);
+  }, [installationRequired, estimatedTotal, estimatedInstallTotal, installationEstimate, transportPrice, travelFee]);
+
+  const progressGroupLabel = progressGroupNum > 0 ? formatRand(progressGroupNum) : null;
+  const progressInstallationsLabel = progressInstallationsNum > 0 ? formatRand(progressInstallationsNum) : null;
 
 
   const whatsappHref = useMemo(() => {
@@ -1477,6 +1508,10 @@ function QuotePage() {
                   <dt className="font-semibold text-foreground">Reference</dt>
                   <dd>{quoteNo ? (quoteNo.startsWith("INV-") ? quoteNo : `INV-${quoteNo}`) : "Your invoice number"}</dd>
                 </dl>
+                <p className="mt-3 flex items-center justify-between border-t-2 border-foreground/10 pt-2 font-mono text-sm">
+                  <span className="font-bold uppercase tracking-wide text-foreground">Progress Group subtotal</span>
+                  <span className="font-bold text-foreground">{progressGroupLabel ?? "—"}</span>
+                </p>
               </div>
 
               {installationRequired && (
@@ -1498,6 +1533,10 @@ function QuotePage() {
                     <dt className="font-semibold text-foreground">Reference</dt>
                     <dd>{quoteNo || "Your quote number"}</dd>
                   </dl>
+                  <p className="mt-3 flex items-center justify-between border-t-2 border-foreground/10 pt-2 font-mono text-sm">
+                    <span className="font-bold uppercase tracking-wide text-foreground">Progress Installations total</span>
+                    <span className="font-bold text-foreground">{progressInstallationsLabel ?? "—"}</span>
+                  </p>
                 </div>
               )}
 
