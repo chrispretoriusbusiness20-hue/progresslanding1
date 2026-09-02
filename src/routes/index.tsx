@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { CheckCircle2, FileDown, Loader2, MessageCircle, ShoppingCart, Sparkles } from "lucide-react";
+import { CheckCircle2, FileDown, Landmark, Loader2, MessageCircle, ShoppingCart, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { submitQuoteRequest, createQuoteUploadUrl, emailQuoteFromPath } from "@/lib/quote-submit.functions";
 import { createPopUploadUrl, notifyProofOfPayment } from "@/lib/pop.functions";
@@ -1242,6 +1242,15 @@ function QuotePage() {
                     <ShoppingCart className="h-4 w-4" />
                   )}
                   {converting ? "Creating invoice…" : "Pay & get invoice"}
+                </button>
+                <button
+                  type="button"
+                  onClick={convertToInvoice}
+                  aria-label="Pay by EFT and upload proof of payment"
+                  className="inline-flex items-center justify-center gap-2 border-2 border-foreground bg-background px-5 py-3 text-sm font-bold uppercase tracking-wider text-foreground shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
+                >
+                  <Landmark className="h-4 w-4" />
+                  Pay by EFT
                 </button>
 
                 <a
