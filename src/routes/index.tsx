@@ -608,6 +608,14 @@ function QuotePage() {
     return (subtotal ?? 0) + (flueKit ?? 0) + (plate ?? 0) + (corner ?? 0) + (install ?? 0) + addOns.total;
   }, [product, quantity, storyType, flooring, plateType, cornerInstall, installationRequired]);
 
+  // One unified total — the quote total IS the cart total. It recalculates
+  // live from the current selection and adds transport once distance is known.
+  const cartTotalNum =
+    estimatedTotal !== null
+      ? estimatedTotal + (transportPrice ?? 0) + (travelFee ?? 0)
+      : totalPriceNum;
+  const cartTotalLabel = cartTotalNum !== null ? formatRand(cartTotalNum) : null;
+
 
   const whatsappHref = useMemo(() => {
     const fullName = `${firstName.trim()} ${lastName.trim()}`.trim() || "Customer";
@@ -807,8 +815,6 @@ function QuotePage() {
   // Once the quote is submitted, the client is in the payment step — lock all
   // option inputs so the quoted configuration/amount cannot be altered.
   const optionsLocked = submitted;
-  const cartTotalLabel = totalPriceLabel ?? (estimatedTotal !== null ? formatRand(estimatedTotal) : null);
-  const cartTotalNum = totalPriceNum ?? estimatedTotal;
   const INSTALMENT_MONTHS = 6;
   const instalmentAmount =
     cartTotalNum !== null && cartTotalNum > 0
