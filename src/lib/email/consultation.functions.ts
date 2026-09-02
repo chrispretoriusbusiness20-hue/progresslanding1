@@ -82,19 +82,29 @@ export const bookConsultation = createServerFn({ method: "POST" })
         html: teamHtml,
       });
 
-      await transporter.sendMail({
-        from,
-        to: data.email,
-        subject: `Consultation request received — ${niceDate} ${data.timeSlot}`,
-        html: clientHtml,
-      });
+      // The confirmation to the client is a nice-to-have: never fail the
+      // booking because of it, the team already has the request.
+      try {
+        await transporter.sendMail({
+          from,
+          to: data.email,
+          subject: `Consultation request received — ${niceDate} ${data.timeSlot}`,
+          html: clientHtml,
+        });
+      } catch (err) {
+        console.error("[bookConsultation] client confirmation failed", err);
+      }
 
       return { success: true as const };
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "Failed to send";
       console.error("[bookConsultation] failed", errorMessage);
-      // Still return success so the user sees "Your slot has been requested"
-      // — the team is CC'd and will follow up manually if the email didn't land.
-      return { success: true as const };
+      // The team never received the request — tell the visitor instead of
+      // pretending the slot was booked.
+      return {
+        success: false as const,
+        error: "We couldn't submit your request. Please call us on 021 100 0000 or email sales@progressgrp.co.za.",
+      };
     }
   });
+
