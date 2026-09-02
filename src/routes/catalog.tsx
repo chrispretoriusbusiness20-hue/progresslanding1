@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { ArrowLeft, Search, Check, ImageOff, Heart, Sparkles, Trash2 } from "lucide-react";
+import { ArrowLeft, Check, ImageOff, Heart, Sparkles, Trash2 } from "lucide-react";
 import productsData from "@/data/products-full.json";
 import { useFavorites } from "@/hooks/use-favorites";
 import progressLogo from "@/assets/progress-logo.jpeg.asset.json";
@@ -16,7 +16,11 @@ type Product = {
   subcategory: string;
 };
 
-const products = productsData as Product[];
+const allProducts = productsData as Product[];
+
+// Only the Magma 001 Special is available for quoting right now.
+const MAGMA_SPECIAL_ID = "magma-10kw-closed-combustion-fireplace-incl-flue-kit-special";
+const products = allProducts.filter((p) => p.id === MAGMA_SPECIAL_ID);
 
 // Build category list dynamically, sorted by item count desc for nicer UX.
 const CATEGORY_ORDER = (() => {
@@ -176,10 +180,10 @@ function CatalogPage() {
         <div className="absolute inset-0 bg-dot-grid opacity-[0.06]" aria-hidden />
         <div className="relative mx-auto max-w-6xl px-6 py-12 sm:py-16">
           <span className="inline-flex items-center gap-1.5 border-2 border-foreground bg-primary px-3 py-1 text-xs font-bold uppercase tracking-widest text-primary-foreground shadow-brutal-sm">
-            Full Catalog · {products.length} products
+            Featured Special · Magma 001
           </span>
           <h1 className="mt-6 font-display text-4xl leading-[0.95] sm:text-5xl md:text-6xl">
-            PICK A PRODUCT.
+            THE MAGMA 001.
             <br />
             <span className="relative inline-block">
               <span className="relative z-10 px-3 text-background">QUOTE IT.</span>
@@ -187,24 +191,13 @@ function CatalogPage() {
             </span>
           </h1>
           <p className="mt-6 max-w-2xl text-base text-foreground/75 sm:text-lg">
-            The complete Progress Group range — fireplaces, braais, HVAC,
-            lighting, flues and accessories. Tap a product to copy its name,
-            then paste it into the quote form.
+            The Magma 001 — a 10kW closed-combustion fireplace with flue kit,
+            available as a special including VAT. Tap the product to copy its
+            name, then paste it into the quote form.
           </p>
 
-          {/* Search */}
-          <div className="relative mt-8 max-w-xl">
-            <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-foreground/50" />
-            <input
-              type="search"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search 700+ products by name or range…"
-              className="w-full border-2 border-foreground bg-background py-3 pl-11 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-            />
-          </div>
-          <p className="mt-3 text-xs uppercase tracking-widest text-muted-foreground">
-            Showing {totalShown} of {products.length}
+          <p className="mt-8 text-xs uppercase tracking-widest text-muted-foreground">
+            Showing 1 featured product
           </p>
         </div>
       </section>
