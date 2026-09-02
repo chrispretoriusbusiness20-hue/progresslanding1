@@ -1445,7 +1445,7 @@ function QuotePage() {
               className="mt-4 flex w-full items-center justify-center gap-2 border-2 border-foreground bg-primary px-5 py-3 text-sm font-bold uppercase tracking-wider text-primary-foreground shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none disabled:cursor-not-allowed disabled:opacity-60"
             >
               {stitchLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ShoppingCart className="h-4 w-4" />}
-              {stitchLoading ? "Preparing payment…" : `Pay ${totalPriceLabel ?? (estimatedTotal !== null ? formatRand(estimatedTotal) : "")} with Stitch`}
+              {stitchLoading ? "Preparing payment…" : `Pay ${cartTotalLabel ?? ""} with Stitch`}
             </button>
             <p className="mt-2 text-center text-xs text-muted-foreground">
               Secure card, EFT &amp; bank payments via Stitch
@@ -1464,7 +1464,7 @@ function QuotePage() {
                 The Progress Group · Reference: {quoteNo || "your name"}
               </p>
               <p className="mt-1 font-mono font-bold text-foreground">
-                {(totalPriceLabel ?? (estimatedTotal !== null ? formatRand(estimatedTotal) : "—"))} due
+                {cartTotalLabel ?? "—"} due
               </p>
             </div>
 
