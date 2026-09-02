@@ -5,3 +5,4 @@
 - [ ] Confirm quote emails send from sales@progressgrp.co.za.
 - [ ] After Stitch payment opens: record payment status on the record and email the client a confirmation (blocked: Stitch credentials return invalid_client; consultations are email-only with no stored record).
 - [ ] Custom domain (progressgrp.co.za): create own Google Maps API key with referrer allowlist, then link it as a new Maps connection.
+- [ ] Add STITCH_WEBHOOK_SECRET and register https://progresslanding1.lovable.app/api/public/stitch-webhook in the Stitch dashboard.

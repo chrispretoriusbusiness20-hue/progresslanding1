@@ -257,6 +257,10 @@ export type Database = {
           last_name: string
           matched_product: string | null
           message: string | null
+          paid_at: string | null
+          payment_amount_zar: number | null
+          payment_reference: string | null
+          payment_status: string
           pdf_path: string | null
           phone: string
           product_requested: string | null
@@ -291,6 +295,10 @@ export type Database = {
           last_name: string
           matched_product?: string | null
           message?: string | null
+          paid_at?: string | null
+          payment_amount_zar?: number | null
+          payment_reference?: string | null
+          payment_status?: string
           pdf_path?: string | null
           phone: string
           product_requested?: string | null
@@ -325,6 +333,10 @@ export type Database = {
           last_name?: string
           matched_product?: string | null
           message?: string | null
+          paid_at?: string | null
+          payment_amount_zar?: number | null
+          payment_reference?: string | null
+          payment_status?: string
           pdf_path?: string | null
           phone?: string
           product_requested?: string | null

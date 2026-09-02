@@ -20,6 +20,7 @@ import { Route as ApiPublicAcceptQuoteRouteImport } from './routes/api/public/ac
 import { Route as ApiPublicApproveInvoiceRouteImport } from './routes/api/public/approve-invoice'
 import { Route as ApiPublicBackfillCrmRouteImport } from './routes/api/public/backfill-crm'
 import { Route as ApiPublicBackfillSentRouteImport } from './routes/api/public/backfill-sent'
+import { Route as ApiPublicStitchWebhookRouteImport } from './routes/api/public/stitch-webhook'
 import { Route as LovableEmailSuppressionRouteImport } from './routes/lovable/email/suppression'
 import { Route as ApiPublicCronQuoteFollowUpRouteImport } from './routes/api/public/cron/quote-follow-up'
 import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
@@ -83,6 +84,11 @@ const ApiPublicBackfillSentRoute = ApiPublicBackfillSentRouteImport.update({
   path: '/api/public/backfill-sent',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicStitchWebhookRoute = ApiPublicStitchWebhookRouteImport.update({
+  id: '/api/public/stitch-webhook',
+  path: '/api/public/stitch-webhook',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LovableEmailSuppressionRoute = LovableEmailSuppressionRouteImport.update({
   id: '/lovable/email/suppression',
   path: '/lovable/email/suppression',
@@ -135,6 +141,7 @@ export interface FileRoutesByFullPath {
   '/api/public/approve-invoice': typeof ApiPublicApproveInvoiceRoute
   '/api/public/backfill-crm': typeof ApiPublicBackfillCrmRoute
   '/api/public/backfill-sent': typeof ApiPublicBackfillSentRoute
+  '/api/public/stitch-webhook': typeof ApiPublicStitchWebhookRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/api/public/cron/quote-follow-up': typeof ApiPublicCronQuoteFollowUpRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
@@ -155,6 +162,7 @@ export interface FileRoutesByTo {
   '/api/public/approve-invoice': typeof ApiPublicApproveInvoiceRoute
   '/api/public/backfill-crm': typeof ApiPublicBackfillCrmRoute
   '/api/public/backfill-sent': typeof ApiPublicBackfillSentRoute
+  '/api/public/stitch-webhook': typeof ApiPublicStitchWebhookRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/api/public/cron/quote-follow-up': typeof ApiPublicCronQuoteFollowUpRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
@@ -176,6 +184,7 @@ export interface FileRoutesById {
   '/api/public/approve-invoice': typeof ApiPublicApproveInvoiceRoute
   '/api/public/backfill-crm': typeof ApiPublicBackfillCrmRoute
   '/api/public/backfill-sent': typeof ApiPublicBackfillSentRoute
+  '/api/public/stitch-webhook': typeof ApiPublicStitchWebhookRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/api/public/cron/quote-follow-up': typeof ApiPublicCronQuoteFollowUpRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
@@ -198,6 +207,7 @@ export interface FileRouteTypes {
     | '/api/public/approve-invoice'
     | '/api/public/backfill-crm'
     | '/api/public/backfill-sent'
+    | '/api/public/stitch-webhook'
     | '/lovable/email/suppression'
     | '/api/public/cron/quote-follow-up'
     | '/lovable/email/auth/preview'
@@ -218,6 +228,7 @@ export interface FileRouteTypes {
     | '/api/public/approve-invoice'
     | '/api/public/backfill-crm'
     | '/api/public/backfill-sent'
+    | '/api/public/stitch-webhook'
     | '/lovable/email/suppression'
     | '/api/public/cron/quote-follow-up'
     | '/lovable/email/auth/preview'
@@ -238,6 +249,7 @@ export interface FileRouteTypes {
     | '/api/public/approve-invoice'
     | '/api/public/backfill-crm'
     | '/api/public/backfill-sent'
+    | '/api/public/stitch-webhook'
     | '/lovable/email/suppression'
     | '/api/public/cron/quote-follow-up'
     | '/lovable/email/auth/preview'
@@ -259,6 +271,7 @@ export interface RootRouteChildren {
   ApiPublicApproveInvoiceRoute: typeof ApiPublicApproveInvoiceRoute
   ApiPublicBackfillCrmRoute: typeof ApiPublicBackfillCrmRoute
   ApiPublicBackfillSentRoute: typeof ApiPublicBackfillSentRoute
+  ApiPublicStitchWebhookRoute: typeof ApiPublicStitchWebhookRoute
   LovableEmailSuppressionRoute: typeof LovableEmailSuppressionRoute
   ApiPublicCronQuoteFollowUpRoute: typeof ApiPublicCronQuoteFollowUpRoute
   LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
@@ -347,6 +360,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicBackfillSentRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/stitch-webhook': {
+      id: '/api/public/stitch-webhook'
+      path: '/api/public/stitch-webhook'
+      fullPath: '/api/public/stitch-webhook'
+      preLoaderRoute: typeof ApiPublicStitchWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/lovable/email/suppression': {
       id: '/lovable/email/suppression'
       path: '/lovable/email/suppression'
@@ -411,6 +431,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicApproveInvoiceRoute: ApiPublicApproveInvoiceRoute,
   ApiPublicBackfillCrmRoute: ApiPublicBackfillCrmRoute,
   ApiPublicBackfillSentRoute: ApiPublicBackfillSentRoute,
+  ApiPublicStitchWebhookRoute: ApiPublicStitchWebhookRoute,
   LovableEmailSuppressionRoute: LovableEmailSuppressionRoute,
   ApiPublicCronQuoteFollowUpRoute: ApiPublicCronQuoteFollowUpRoute,
   LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,

@@ -119,7 +119,29 @@ export const createStitchPaymentLink = createServerFn({ method: "POST" })
         return { ok: false as const, url: "", error: "No payment URL returned" };
       }
 
+      // Tag the customer's latest quote with the payment reference so the
+      // Stitch webhook can match the payment back to this record.
+      try {
+        const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+        const { data: latest } = await supabaseAdmin
+          .from("quote_requests")
+          .select("id")
+          .eq("email", data.email.toLowerCase())
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .maybeSingle();
+        if (latest) {
+          await supabaseAdmin
+            .from("quote_requests")
+            .update({ payment_reference: data.reference, payment_status: "pending" })
+            .eq("id", latest.id);
+        }
+      } catch (tagErr) {
+        console.error("Could not tag quote with payment reference", tagErr);
+      }
+
       return { ok: true as const, url, error: null };
+
     } catch (err) {
       console.error("Stitch payment link error", err);
       return {
