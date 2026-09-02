@@ -1497,11 +1497,14 @@ function QuotePage() {
               </a>
               <button
                 type="button"
-                onClick={() => setPopOpen(false)}
+                onClick={() => {
+                  setPopOpen(false);
+                  toast.success("No rush — your quote and our banking details are in your email. Pay by EFT anytime and send your proof of payment to sales@progressgrp.co.za to get your invoice.");
+                }}
                 disabled={popSending}
-                className="inline-flex items-center justify-center px-3 py-3 text-sm font-bold uppercase tracking-wider text-muted-foreground underline-offset-4 hover:underline disabled:opacity-60"
+                className="inline-flex items-center justify-center gap-2 border-2 border-foreground/30 bg-background px-3 py-3 text-sm font-bold uppercase tracking-wider text-muted-foreground transition hover:border-foreground hover:text-foreground disabled:opacity-60"
               >
-                Cancel
+                Exit — pay &amp; get your invoice later
               </button>
             </div>
 
