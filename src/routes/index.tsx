@@ -810,10 +810,11 @@ function QuotePage() {
   const cartTotalLabel = totalPriceLabel ?? (estimatedTotal !== null ? formatRand(estimatedTotal) : null);
   const cartTotalNum = totalPriceNum ?? estimatedTotal;
   const INSTALMENT_MONTHS = 6;
-  const instalmentLabel =
+  const instalmentAmount =
     cartTotalNum !== null && cartTotalNum > 0
-      ? formatRand(Math.round((cartTotalNum / INSTALMENT_MONTHS) * 100) / 100)
+      ? Math.round((cartTotalNum / INSTALMENT_MONTHS) * 100) / 100
       : null;
+  const instalmentLabel = instalmentAmount !== null ? formatRand(instalmentAmount) : null;
 
 
 
