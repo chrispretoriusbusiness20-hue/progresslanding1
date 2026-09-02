@@ -608,10 +608,18 @@ function QuotePage() {
     return (subtotal ?? 0) + (flueKit ?? 0) + (plate ?? 0) + (corner ?? 0) + (install ?? 0) + addOns.total;
   }, [product, quantity, storyType, flooring, plateType, cornerInstall, installationRequired]);
 
+  // One unified total — the quote total IS the cart total. It recalculates
+  // live from the current selection and adds transport once distance is known.
+  const cartTotalNum =
+    estimatedTotal !== null
+      ? estimatedTotal + (transportPrice ?? 0) + (travelFee ?? 0)
+      : totalPriceNum;
+  const cartTotalLabel = cartTotalNum !== null ? formatRand(cartTotalNum) : null;
+
 
   const whatsappHref = useMemo(() => {
     const fullName = `${firstName.trim()} ${lastName.trim()}`.trim() || "Customer";
-    const price = totalPriceNum !== null ? totalPriceLabel : estimatedTotal !== null ? formatRand(estimatedTotal) : null;
+    const price = cartTotalLabel;
     const text = buildWhatsAppMessage({
       fullName,
       quoteNo,
@@ -624,7 +632,7 @@ function QuotePage() {
 
   const payWithStitch = async (amountOverride?: number) => {
     if (stitchLoading) return;
-    const amountZar = amountOverride ?? totalPriceNum ?? estimatedTotal;
+    const amountZar = amountOverride ?? cartTotalNum;
     // The payment reference must be the invoice number (INV-...) so Stitch
     // payments reconcile against the invoice.
     const invoiceNo = quoteNo
@@ -782,7 +790,7 @@ function QuotePage() {
           clientName: fullName,
           invoiceNo: quoteNo || undefined,
           productName: product,
-          amount: (totalPriceLabel ?? (estimatedTotal !== null ? formatRand(estimatedTotal) : null)) ?? undefined,
+          amount: cartTotalLabel ?? undefined,
         },
       })) as { ok: boolean; error: string | null };
       if (!notified.ok) throw new Error(notified.error || "Could not notify our team");
@@ -807,8 +815,6 @@ function QuotePage() {
   // Once the quote is submitted, the client is in the payment step — lock all
   // option inputs so the quoted configuration/amount cannot be altered.
   const optionsLocked = submitted;
-  const cartTotalLabel = totalPriceLabel ?? (estimatedTotal !== null ? formatRand(estimatedTotal) : null);
-  const cartTotalNum = totalPriceNum ?? estimatedTotal;
   const INSTALMENT_MONTHS = 6;
   const instalmentAmount =
     cartTotalNum !== null && cartTotalNum > 0
@@ -1180,10 +1186,10 @@ function QuotePage() {
                      />
                    )}
                 </ul>
-                {totalPriceLabel && (
-                  <div className="mt-3 flex items-baseline justify-between border-t-2 border-foreground pt-3">
-                    <span className="text-xs font-bold uppercase tracking-[0.24em] text-foreground">Estimated total</span>
-                    <span className="font-mono text-xl font-bold text-foreground">{totalPriceLabel}</span>
+                 {cartTotalLabel && (
+                   <div className="mt-3 flex items-baseline justify-between border-t-2 border-foreground pt-3">
+                     <span className="text-xs font-bold uppercase tracking-[0.24em] text-foreground">Estimated total</span>
+                     <span className="font-mono text-xl font-bold text-foreground">{cartTotalLabel}</span>
                   </div>
                 )}
               </div>
@@ -1439,7 +1445,7 @@ function QuotePage() {
               className="mt-4 flex w-full items-center justify-center gap-2 border-2 border-foreground bg-primary px-5 py-3 text-sm font-bold uppercase tracking-wider text-primary-foreground shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none disabled:cursor-not-allowed disabled:opacity-60"
             >
               {stitchLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ShoppingCart className="h-4 w-4" />}
-              {stitchLoading ? "Preparing payment…" : `Pay ${totalPriceLabel ?? (estimatedTotal !== null ? formatRand(estimatedTotal) : "")} with Stitch`}
+              {stitchLoading ? "Preparing payment…" : `Pay ${cartTotalLabel ?? ""} with Stitch`}
             </button>
             <p className="mt-2 text-center text-xs text-muted-foreground">
               Secure card, EFT &amp; bank payments via Stitch
@@ -1458,7 +1464,7 @@ function QuotePage() {
                 The Progress Group · Reference: {quoteNo || "your name"}
               </p>
               <p className="mt-1 font-mono font-bold text-foreground">
-                {(totalPriceLabel ?? (estimatedTotal !== null ? formatRand(estimatedTotal) : "—"))} due
+                {cartTotalLabel ?? "—"} due
               </p>
             </div>
 
@@ -1491,11 +1497,14 @@ function QuotePage() {
               </a>
               <button
                 type="button"
-                onClick={() => setPopOpen(false)}
+                onClick={() => {
+                  setPopOpen(false);
+                  toast.success("No rush — your quote and our banking details are in your email. Pay by EFT anytime and send your proof of payment to sales@progressgrp.co.za to get your invoice.");
+                }}
                 disabled={popSending}
-                className="inline-flex items-center justify-center px-3 py-3 text-sm font-bold uppercase tracking-wider text-muted-foreground underline-offset-4 hover:underline disabled:opacity-60"
+                className="inline-flex items-center justify-center gap-2 border-2 border-foreground/30 bg-background px-3 py-3 text-sm font-bold uppercase tracking-wider text-muted-foreground transition hover:border-foreground hover:text-foreground disabled:opacity-60"
               >
-                Cancel
+                Exit — pay &amp; get your invoice later
               </button>
             </div>
 

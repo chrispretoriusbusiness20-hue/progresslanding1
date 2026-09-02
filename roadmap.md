@@ -8,3 +8,7 @@
 - [ ] Add STITCH_WEBHOOK_SECRET and register https://progresslanding1.lovable.app/api/public/stitch-webhook in the Stitch dashboard.
 - [x] "Pay it off" CTA opens the installment options dialog and pays the first installment amount.
 - [ ] Confirm a real Stitch payment flips a quote to paid (needs a live card/bank payment by the user).
+
+- [x] Unify quote total with live cart total everywhere
+- [x] Visible "Pay by EFT" button on quote panel
+- [x] "Exit — pay & get your invoice later" option in payment modal
