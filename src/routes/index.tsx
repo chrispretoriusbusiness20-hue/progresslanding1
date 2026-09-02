@@ -619,7 +619,7 @@ function QuotePage() {
 
   const whatsappHref = useMemo(() => {
     const fullName = `${firstName.trim()} ${lastName.trim()}`.trim() || "Customer";
-    const price = totalPriceNum !== null ? totalPriceLabel : estimatedTotal !== null ? formatRand(estimatedTotal) : null;
+    const price = cartTotalLabel;
     const text = buildWhatsAppMessage({
       fullName,
       quoteNo,
@@ -632,7 +632,7 @@ function QuotePage() {
 
   const payWithStitch = async (amountOverride?: number) => {
     if (stitchLoading) return;
-    const amountZar = amountOverride ?? totalPriceNum ?? estimatedTotal;
+    const amountZar = amountOverride ?? cartTotalNum;
     // The payment reference must be the invoice number (INV-...) so Stitch
     // payments reconcile against the invoice.
     const invoiceNo = quoteNo
