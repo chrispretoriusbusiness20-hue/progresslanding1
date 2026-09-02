@@ -1458,13 +1458,51 @@ function QuotePage() {
             </div>
 
 
-            <div className="mt-4 border-2 border-foreground/20 bg-secondary/30 p-4 text-sm leading-relaxed">
-              <p className="font-bold uppercase tracking-wide text-foreground">Banking details</p>
-              <p className="mt-1 text-muted-foreground">
-                The Progress Group · Reference: {quoteNo || "your name"}
-              </p>
-              <p className="mt-1 font-mono font-bold text-foreground">
-                {cartTotalLabel ?? "—"} due
+            <div className="mt-4 space-y-3">
+              <div className="border-2 border-foreground/20 bg-secondary/30 p-4 text-sm leading-relaxed">
+                <p className="font-bold uppercase tracking-wide text-foreground">
+                  Progress Group — product payment
+                </p>
+                <dl className="mt-2 grid grid-cols-[auto_1fr] gap-x-3 gap-y-0.5 text-muted-foreground">
+                  <dt className="font-semibold text-foreground">Account name</dt>
+                  <dd>Lava Fires</dd>
+                  <dt className="font-semibold text-foreground">Bank</dt>
+                  <dd>Nedbank</dd>
+                  <dt className="font-semibold text-foreground">Branch name</dt>
+                  <dd>Tygerberg Winelands</dd>
+                  <dt className="font-semibold text-foreground">Branch code</dt>
+                  <dd className="font-mono">118602</dd>
+                  <dt className="font-semibold text-foreground">Account no.</dt>
+                  <dd className="font-mono">1033186821</dd>
+                  <dt className="font-semibold text-foreground">Reference</dt>
+                  <dd>{quoteNo ? (quoteNo.startsWith("INV-") ? quoteNo : `INV-${quoteNo}`) : "Your invoice number"}</dd>
+                </dl>
+              </div>
+
+              {installationRequired && (
+                <div className="border-2 border-foreground/20 bg-secondary/30 p-4 text-sm leading-relaxed">
+                  <p className="font-bold uppercase tracking-wide text-foreground">
+                    Progress Installations — installation payment
+                  </p>
+                  <dl className="mt-2 grid grid-cols-[auto_1fr] gap-x-3 gap-y-0.5 text-muted-foreground">
+                    <dt className="font-semibold text-foreground">Account name</dt>
+                    <dd>Progress Installations (Pty) Ltd</dd>
+                    <dt className="font-semibold text-foreground">Bank</dt>
+                    <dd>FNB/RMB</dd>
+                    <dt className="font-semibold text-foreground">Account type</dt>
+                    <dd>Gold Business Account</dd>
+                    <dt className="font-semibold text-foreground">Account no.</dt>
+                    <dd className="font-mono">63158448770</dd>
+                    <dt className="font-semibold text-foreground">Branch code</dt>
+                    <dd className="font-mono">250655</dd>
+                    <dt className="font-semibold text-foreground">Reference</dt>
+                    <dd>{quoteNo || "Your quote number"}</dd>
+                  </dl>
+                </div>
+              )}
+
+              <p className="border-2 border-foreground bg-primary/10 px-4 py-2 font-mono text-sm font-bold text-foreground">
+                {cartTotalLabel ?? "—"} due in total
               </p>
             </div>
 
