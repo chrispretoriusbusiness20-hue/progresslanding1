@@ -103,7 +103,7 @@ export const bookConsultation = createServerFn({ method: "POST" })
       // pretending the slot was booked.
       return {
         success: false as const,
-        error: "We couldn't submit your request. Please email sales@progressgrp.co.za and we\u2019ll confirm your slot.",
+        error: "We couldn't submit your request. Please email sales@progressgrp.co.za and we’ll confirm your slot.",
       };
     }
   });
