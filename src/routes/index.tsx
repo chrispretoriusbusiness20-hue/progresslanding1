@@ -25,7 +25,9 @@ import { allInclusiveAddOns, isAllInclusiveProduct, specialDiscountFor } from "@
 
 const QUOTE_APP_URL = "https://fireplacequotes.co.za/";
 import { createStitchPaymentLink } from "@/lib/stitch.functions";
-const PRODUCT_LIST = productsData as { name: string; price: string }[];
+const PRODUCT_LIST = (productsData as { name: string; price: string }[]).filter(
+  (p) => p.name === "Magma 10kW Closed Combustion Fireplace incl Flue Kit SPECIAL",
+);
 const PRODUCT_NAMES = PRODUCT_LIST.map((p) => p.name);
 const PRODUCT_PRICE_MAP = new Map(PRODUCT_LIST.map((p) => [p.name, p.price]));
 
