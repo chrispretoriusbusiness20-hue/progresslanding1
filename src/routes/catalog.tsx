@@ -16,7 +16,11 @@ type Product = {
   subcategory: string;
 };
 
-const products = productsData as Product[];
+const allProducts = productsData as Product[];
+
+// Only the Magma 001 Special is available for quoting right now.
+const MAGMA_SPECIAL_ID = "magma-10kw-closed-combustion-fireplace-incl-flue-kit-special";
+const products = allProducts.filter((p) => p.id === MAGMA_SPECIAL_ID);
 
 // Build category list dynamically, sorted by item count desc for nicer UX.
 const CATEGORY_ORDER = (() => {
