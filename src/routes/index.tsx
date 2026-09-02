@@ -1298,13 +1298,14 @@ function QuotePage() {
               </button>
               <button
                 type="button"
-                onClick={() => void payWithStitch()}
-                disabled={stitchLoading}
-                className="inline-flex items-center justify-center gap-2 border-2 border-foreground bg-primary px-6 py-3 text-sm font-bold uppercase tracking-wider text-primary-foreground shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none disabled:cursor-not-allowed disabled:opacity-60"
+                onClick={() => setTermsOpen(true)}
+                aria-label="See installment options and pay it off over 6 payments"
+                className="inline-flex items-center justify-center gap-2 border-2 border-foreground bg-primary px-6 py-3 text-sm font-bold uppercase tracking-wider text-primary-foreground shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
               >
-                {stitchLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ShoppingCart className="h-4 w-4" />}
-                {stitchLoading ? "Preparing…" : "Pay it off"}
+                <ShoppingCart className="h-4 w-4" />
+                Pay it off · installments
               </button>
+
               <button
                 type="button"
                 onClick={() => void payWithStitch()}
