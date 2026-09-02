@@ -622,9 +622,9 @@ function QuotePage() {
     return `https://wa.me/27689560320?text=${encodeURIComponent(text)}`;
   }, [firstName, lastName, quoteNo, product, totalPriceNum, totalPriceLabel, estimatedTotal, submitted]);
 
-  const payWithStitch = async () => {
+  const payWithStitch = async (amountOverride?: number) => {
     if (stitchLoading) return;
-    const amountZar = totalPriceNum ?? estimatedTotal;
+    const amountZar = amountOverride ?? totalPriceNum ?? estimatedTotal;
     // The payment reference must be the invoice number (INV-...) so Stitch
     // payments reconcile against the invoice.
     const invoiceNo = quoteNo
@@ -810,10 +810,11 @@ function QuotePage() {
   const cartTotalLabel = totalPriceLabel ?? (estimatedTotal !== null ? formatRand(estimatedTotal) : null);
   const cartTotalNum = totalPriceNum ?? estimatedTotal;
   const INSTALMENT_MONTHS = 6;
-  const instalmentLabel =
+  const instalmentAmount =
     cartTotalNum !== null && cartTotalNum > 0
-      ? formatRand(Math.round((cartTotalNum / INSTALMENT_MONTHS) * 100) / 100)
+      ? Math.round((cartTotalNum / INSTALMENT_MONTHS) * 100) / 100
       : null;
+  const instalmentLabel = instalmentAmount !== null ? formatRand(instalmentAmount) : null;
 
 
 
@@ -1297,13 +1298,14 @@ function QuotePage() {
               </button>
               <button
                 type="button"
-                onClick={() => void payWithStitch()}
-                disabled={stitchLoading}
-                className="inline-flex items-center justify-center gap-2 border-2 border-foreground bg-primary px-6 py-3 text-sm font-bold uppercase tracking-wider text-primary-foreground shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none disabled:cursor-not-allowed disabled:opacity-60"
+                onClick={() => setTermsOpen(true)}
+                aria-label="See installment options and pay it off over 6 payments"
+                className="inline-flex items-center justify-center gap-2 border-2 border-foreground bg-primary px-6 py-3 text-sm font-bold uppercase tracking-wider text-primary-foreground shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
               >
-                {stitchLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ShoppingCart className="h-4 w-4" />}
-                {stitchLoading ? "Preparing…" : "Pay it off"}
+                <ShoppingCart className="h-4 w-4" />
+                Pay it off · installments
               </button>
+
               <button
                 type="button"
                 onClick={() => void payWithStitch()}
@@ -1370,14 +1372,17 @@ function QuotePage() {
                 type="button"
                 onClick={() => {
                   setTermsOpen(false);
-                  void payWithStitch();
+                  void payWithStitch(instalmentAmount ?? undefined);
                 }}
-                disabled={stitchLoading}
+                disabled={stitchLoading || instalmentAmount === null}
                 className="inline-flex items-center justify-center gap-2 border-2 border-foreground bg-primary px-5 py-3 text-sm font-bold uppercase tracking-wider text-primary-foreground shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {stitchLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ShoppingCart className="h-4 w-4" />}
-                {stitchLoading ? "Preparing payment…" : "Pay first installment"}
+                {stitchLoading
+                  ? "Preparing payment…"
+                  : `Pay first installment ${instalmentLabel ?? ""}`}
               </button>
+
               <button
                 type="button"
                 onClick={() => {
@@ -1420,7 +1425,7 @@ function QuotePage() {
 
             <button
               type="button"
-              onClick={payWithStitch}
+              onClick={() => void payWithStitch()}
               disabled={stitchLoading}
               className="mt-4 flex w-full items-center justify-center gap-2 border-2 border-foreground bg-primary px-5 py-3 text-sm font-bold uppercase tracking-wider text-primary-foreground shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none disabled:cursor-not-allowed disabled:opacity-60"
             >
