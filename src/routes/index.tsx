@@ -790,7 +790,7 @@ function QuotePage() {
           clientName: fullName,
           invoiceNo: quoteNo || undefined,
           productName: product,
-          amount: (totalPriceLabel ?? (estimatedTotal !== null ? formatRand(estimatedTotal) : null)) ?? undefined,
+          amount: cartTotalLabel ?? undefined,
         },
       })) as { ok: boolean; error: string | null };
       if (!notified.ok) throw new Error(notified.error || "Could not notify our team");
@@ -1186,10 +1186,10 @@ function QuotePage() {
                      />
                    )}
                 </ul>
-                {totalPriceLabel && (
-                  <div className="mt-3 flex items-baseline justify-between border-t-2 border-foreground pt-3">
-                    <span className="text-xs font-bold uppercase tracking-[0.24em] text-foreground">Estimated total</span>
-                    <span className="font-mono text-xl font-bold text-foreground">{totalPriceLabel}</span>
+                 {cartTotalLabel && (
+                   <div className="mt-3 flex items-baseline justify-between border-t-2 border-foreground pt-3">
+                     <span className="text-xs font-bold uppercase tracking-[0.24em] text-foreground">Estimated total</span>
+                     <span className="font-mono text-xl font-bold text-foreground">{cartTotalLabel}</span>
                   </div>
                 )}
               </div>
