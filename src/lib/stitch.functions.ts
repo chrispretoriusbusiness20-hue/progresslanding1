@@ -2,40 +2,34 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
 const STITCH_API_BASE = "https://express.stitch.money";
-const STITCH_TOKEN_URL = "https://secure.stitch.money/connect/token";
+const STITCH_TOKEN_URL = "https://express.stitch.money/api/v1/token";
 const LINK_TTL_MS = 1000 * 60 * 60 * 24 * 10; // 10 days, matching quote validity
 
 interface StitchTokenResponse {
-  access_token?: string;
-  error?: string;
-  error_description?: string;
+  success?: boolean;
+  data?: { accessToken?: string };
+  generalErrors?: string[];
 }
 
 /** Exchanges the Stitch Express client credentials for a short-lived access token. */
 async function getStitchAccessToken(clientId: string, clientSecret: string): Promise<string> {
-  const form = new URLSearchParams({
-    grant_type: "client_credentials",
-    client_id: clientId,
-    client_secret: clientSecret,
-    audience: STITCH_TOKEN_URL,
-    scope: "client_paymentrequest",
-  });
   const res = await fetch(STITCH_TOKEN_URL, {
     method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: form,
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ clientId, clientSecret }),
   });
   const text = await res.text();
   if (!res.ok) {
     throw new Error(`Stitch token ${res.status}: ${text.slice(0, 200)}`);
   }
   const body = JSON.parse(text) as StitchTokenResponse;
-  const token = body.access_token;
+  const token = body.data?.accessToken;
   if (!token) {
-    throw new Error(`Stitch token missing: ${body.error_description ?? body.error ?? text.slice(0, 200)}`);
+    throw new Error(`Stitch token missing: ${text.slice(0, 200)}`);
   }
   return token;
 }
+
 
 /**
  * Creates a Stitch Express payment preset with the customer's quote total
