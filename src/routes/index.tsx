@@ -551,11 +551,10 @@ function QuotePage() {
   const cornerInstallLabel = cornerInstallPrice !== null ? formatRand(cornerInstallPrice) : null;
   const transportLabel = transportPrice !== null ? formatRand(transportPrice) : null;
   const travelFeeLabel = travelFee !== null ? formatRand(travelFee) : null;
-  // With installation, transport is part of the installation estimate, not the main quote.
-  const installationEstimateTotal =
-    installationEstimate !== null
-      ? installationEstimate + (installationRequired && transportPrice !== null ? transportPrice : 0)
-      : null;
+  // Transport is always shown as its own line, so the installation estimate
+  // must not fold it in again (it would double-count against the total).
+  const installationEstimateTotal = installationEstimate;
+
   const installationEstimateLabel = installationEstimateTotal !== null ? formatRand(installationEstimateTotal) : null;
   const specialDiscountLabel = specialDiscount > 0 ? `- ${formatRand(specialDiscount)}` : null;
   const totalPriceLabel = totalPriceNum !== null ? formatRand(totalPriceNum) : null;
