@@ -622,9 +622,9 @@ function QuotePage() {
     return `https://wa.me/27689560320?text=${encodeURIComponent(text)}`;
   }, [firstName, lastName, quoteNo, product, totalPriceNum, totalPriceLabel, estimatedTotal, submitted]);
 
-  const payWithStitch = async () => {
+  const payWithStitch = async (amountOverride?: number) => {
     if (stitchLoading) return;
-    const amountZar = totalPriceNum ?? estimatedTotal;
+    const amountZar = amountOverride ?? totalPriceNum ?? estimatedTotal;
     // The payment reference must be the invoice number (INV-...) so Stitch
     // payments reconcile against the invoice.
     const invoiceNo = quoteNo
