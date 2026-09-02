@@ -1508,6 +1508,10 @@ function QuotePage() {
                   <dt className="font-semibold text-foreground">Reference</dt>
                   <dd>{quoteNo ? (quoteNo.startsWith("INV-") ? quoteNo : `INV-${quoteNo}`) : "Your invoice number"}</dd>
                 </dl>
+                <p className="mt-3 flex items-center justify-between border-t-2 border-foreground/10 pt-2 font-mono text-sm">
+                  <span className="font-bold uppercase tracking-wide text-foreground">Progress Group subtotal</span>
+                  <span className="font-bold text-foreground">{progressGroupLabel ?? "—"}</span>
+                </p>
               </div>
 
               {installationRequired && (
@@ -1529,6 +1533,10 @@ function QuotePage() {
                     <dt className="font-semibold text-foreground">Reference</dt>
                     <dd>{quoteNo || "Your quote number"}</dd>
                   </dl>
+                  <p className="mt-3 flex items-center justify-between border-t-2 border-foreground/10 pt-2 font-mono text-sm">
+                    <span className="font-bold uppercase tracking-wide text-foreground">Progress Installations total</span>
+                    <span className="font-bold text-foreground">{progressInstallationsLabel ?? "—"}</span>
+                  </p>
                 </div>
               )}
 
