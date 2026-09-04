@@ -1706,15 +1706,6 @@ function InstantQuote({
                   : "Single story",
           },
         ]),
-    ...(specialDiscount > 0
-      ? [
-          {
-            label: "Special promotion discount",
-            value: -specialDiscount as number | null,
-            hint: "Winter special — R1,000 off" as string,
-          },
-        ]
-      : []),
     ...(needsPlate
       ? [
           {
