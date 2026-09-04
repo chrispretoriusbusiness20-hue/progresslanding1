@@ -1199,9 +1199,6 @@ function QuotePage() {
                   {plateLabel && <BreakdownRow label={`${matched.plate?.type === "steel" ? "Black steel" : matched.plate?.type === "granite" ? "Granite" : "Glass"} plinth`} value={plateLabel} />}
                   {cornerInstallLabel && <BreakdownRow label="Corner installation" value={cornerInstallLabel} />}
                   {transportLabel && !installationRequired && <BreakdownRow label="Courier" value={transportLabel} hint={matched.transportZone ?? undefined} />}
-                  {specialDiscountLabel && (
-                    <BreakdownRow label="Special promotion discount" value={specialDiscountLabel} hint="Winter special — R1,000 off" />
-                  )}
                   {installationEstimateLabel && (
                     <BreakdownRow
                        label="Installation estimate"
@@ -1709,15 +1706,6 @@ function InstantQuote({
                   : "Single story",
           },
         ]),
-    ...(specialDiscount > 0
-      ? [
-          {
-            label: "Special promotion discount",
-            value: -specialDiscount as number | null,
-            hint: "Winter special — R1,000 off" as string,
-          },
-        ]
-      : []),
     ...(needsPlate
       ? [
           {
