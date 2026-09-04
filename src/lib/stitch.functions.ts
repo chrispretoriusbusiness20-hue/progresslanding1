@@ -11,11 +11,22 @@ interface StitchTokenResponse {
   generalErrors?: string[];
 }
 
+/**
+ * Stitch sits behind a WAF that rejects requests without a browser-like
+ * User-Agent/Accept pair with HTTP 403 "error code: 1010". Worker fetch sends
+ * no User-Agent by default, so we always set these headers explicitly.
+ */
+const STITCH_HEADERS = {
+  "Content-Type": "application/json",
+  Accept: "application/json",
+  "User-Agent": "ProgressGroup-Quotes/1.0 (+https://progressgrp.co.za)",
+};
+
 /** Exchanges the Stitch Express client credentials for a short-lived access token. */
 async function getStitchAccessToken(clientId: string, clientSecret: string): Promise<string> {
   const res = await fetch(STITCH_TOKEN_URL, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: STITCH_HEADERS,
     body: JSON.stringify({ clientId, clientSecret }),
   });
   const text = await res.text();
@@ -29,6 +40,7 @@ async function getStitchAccessToken(clientId: string, clientSecret: string): Pro
   }
   return token;
 }
+
 
 
 /**
