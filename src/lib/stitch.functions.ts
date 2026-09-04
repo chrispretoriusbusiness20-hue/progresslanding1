@@ -81,9 +81,10 @@ export const createStitchPaymentLink = createServerFn({ method: "POST" })
       const res = await fetch(`${STITCH_API_BASE}/api/v1/payment-links`, {
         method: "POST",
         headers: {
+          ...STITCH_HEADERS,
           Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
         },
+
         body: JSON.stringify({
           // Stitch Express expects the amount in cents.
           amount: Math.round(data.amountZar * 100),
