@@ -606,7 +606,7 @@ function QuotePage() {
     const needsPlate = !allInclusive && flooring.length > 0 && !/tile/i.test(flooring);
     const plate = needsPlate ? computePlatePrice(plateType, cornerInstall) : null;
     const corner = !allInclusive && installationRequired && cornerInstall ? 800 : null;
-    const install = allInclusive ? null : installationRequired ? 5995 + (storyType === "double" ? 1500 : 0) : null;
+    const install = allInclusive ? null : installationRequired ? 6000 + (storyType === "double" ? 1500 : 0) : null;
     const addOns = allInclusiveAddOns({ productName: product, storyType, cornerInstall, plateType, flooring, installationRequired });
     const hasAny = subtotal !== null || flueKit !== null || plate !== null || corner !== null || install !== null || addOns.total !== 0;
     const productTotal = (subtotal ?? 0) + (flueKit ?? 0) + (plate ?? 0) + (corner ?? 0) + addOns.total;
@@ -1239,7 +1239,7 @@ function QuotePage() {
                      <BreakdownRow
                        label="Transport"
                        value={transportLabel}
-                       hint="Part of installation estimate · first 100 km included in R495, R12/km thereafter"
+                       hint="Part of installation estimate · first 100 km included in R470, R12/km thereafter"
                      />
                    )}
                 </ul>
@@ -1713,7 +1713,7 @@ function InstantQuote({
   const installationEstimate = allInclusive
     ? null
     : installationRequired
-      ? 5995 + (storyType === "double" ? 1500 : 0)
+      ? 6000 + (storyType === "double" ? 1500 : 0)
       : null;
   const addOns = allInclusiveAddOns({ productName, storyType, cornerInstall, plateType, flooring, installationRequired });
   const specialDiscount = specialDiscountFor(productName, quantity);
@@ -1807,7 +1807,7 @@ function InstantQuote({
             <div>
               <p className="font-semibold text-foreground">Transport</p>
               <p className="text-xs text-muted-foreground">
-                First 100 km included in R495; R12/km thereafter (calculated on submit)
+                First 100 km included in R470; R12/km thereafter (calculated on submit)
               </p>
             </div>
             <span className="shrink-0 font-mono text-xs text-muted-foreground">on submit</span>

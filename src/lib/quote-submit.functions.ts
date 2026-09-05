@@ -341,11 +341,11 @@ function transportPriceForKm(km: number, installationRequired: boolean): { zone:
   };
 }
 
-const INSTALL_BASE = 5995;
+const INSTALL_BASE = 6000;
 const CORE_DRILL = 1500;
 const INCLUDED_KM = 100;
 const EXTRA_KM_RATE = 12;
-const BASE_TRANSPORT = 495;
+const BASE_TRANSPORT = 470;
 
 function installBaseForKm(_km: number | null): number {
   return INSTALL_BASE;

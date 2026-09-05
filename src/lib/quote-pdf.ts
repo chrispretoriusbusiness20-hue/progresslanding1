@@ -497,14 +497,14 @@ export async function generateQuotePDF(
     // --- Fee table ---
     const km = input.distanceKm ?? 0;
     const INCLUDED_KM = 100;
-    const BASE_TRANSPORT = 495;
+    const BASE_TRANSPORT = 470;
     const EXTRA_KM_RATE = 12;
     const installTransport = BASE_TRANSPORT + Math.max(0, km - INCLUDED_KM) * EXTRA_KM_RATE;
     const transportLabel = km <= INCLUDED_KM
       ? `Transport (R${BASE_TRANSPORT} — includes first ${INCLUDED_KM} km)`
       : `Transport (R${BASE_TRANSPORT} incl. first ${INCLUDED_KM} km + R${EXTRA_KM_RATE}/km thereafter)`;
     const coreDrill = input.storyType === "double" ? 1500 : 0;
-    const installFee = 5995;
+    const installFee = 6000;
     const installTotal = installFee + coreDrill + installTransport;
     autoTable(doc, {
       startY: py,
