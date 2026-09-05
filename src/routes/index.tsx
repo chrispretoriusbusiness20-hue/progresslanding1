@@ -884,11 +884,14 @@ function QuotePage() {
   // option inputs so the quoted configuration/amount cannot be altered.
   const optionsLocked = submitted;
   const INSTALMENT_MONTHS = 6;
-  // Pay it off: split the live cart total into 6 equal monthly payments.
+  // Magma special: advertised BNPL plan is fixed at 6 × R3,995 = R23,970,
+  // regardless of the cash cart total. Other products split their cart total.
+  const isSpecial = isSpecialProduct(product);
+  const bnplTotalNum =
+    cartTotalNum !== null && cartTotalNum > 0 ? (isSpecial ? 23970 : cartTotalNum) : null;
   const instalmentAmount =
-    cartTotalNum !== null && cartTotalNum > 0
-      ? Math.round((cartTotalNum / INSTALMENT_MONTHS) * 100) / 100
-      : null;
+    bnplTotalNum !== null ? Math.round((bnplTotalNum / INSTALMENT_MONTHS) * 100) / 100 : null;
+  const bnplTotalLabel = bnplTotalNum !== null ? formatRand(bnplTotalNum) : null;
   const instalmentLabel = instalmentAmount !== null ? formatRand(instalmentAmount) : null;
 
 
@@ -1423,8 +1426,8 @@ function QuotePage() {
               Buy now, pay later
             </h2>
             <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-              Split your purchase into {INSTALMENT_MONTHS} equal, interest-free monthly payments. The
-              total stays the same as paying in full — no extra fees.
+              Split your purchase into {INSTALMENT_MONTHS} equal, interest-free monthly payments —
+              no extra fees.
             </p>
 
             <div className="mt-4 border-2 border-foreground/20 bg-secondary/30 p-4 text-sm leading-relaxed">
@@ -1444,10 +1447,10 @@ function QuotePage() {
               </div>
               <div className="mt-2 flex items-baseline justify-between border-t border-foreground/15 pt-2">
                 <span className="text-xs font-bold uppercase tracking-[0.24em] text-muted-foreground">
-                  Total (same as cash)
+                  Total ({INSTALMENT_MONTHS} × {instalmentLabel ?? "—"})
                 </span>
                 <span className="font-mono font-bold text-foreground">
-                  {cartTotalLabel ?? "—"}
+                  {bnplTotalLabel ?? "—"}
                 </span>
               </div>
             </div>
