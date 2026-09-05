@@ -3,15 +3,14 @@ import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import {
   ArrowLeft,
-  CheckCircle2,
   ChevronDown,
   CreditCard,
   Landmark,
   Loader2,
   MessageCircle,
   ShoppingCart,
-  Sparkles,
 } from "lucide-react";
+
 import { toast } from "sonner";
 import { createStitchPaymentLink } from "@/lib/stitch.functions";
 
