@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { createStitchPaymentLink } from "@/lib/stitch.functions";
-import { isSpecialProduct } from "@/lib/special-discount";
+
 
 import progressLogo from "@/assets/progress-header-transparent.png.asset.json";
 
