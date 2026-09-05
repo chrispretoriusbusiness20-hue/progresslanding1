@@ -234,7 +234,7 @@ function CheckoutPage() {
               <div className="border-2 border-foreground bg-background p-6 shadow-brutal-sm">
                 <p className="flex items-center gap-2 font-bold uppercase tracking-wide text-foreground">
                   <CreditCard className="h-4 w-4" />
-                  Pay once off
+                  Pay now
                 </p>
                 <p className="mt-1 text-sm text-muted-foreground">
                   Secure card, EFT &amp; bank payments via Stitch. Reference:{" "}
@@ -253,7 +253,7 @@ function CheckoutPage() {
                   )}
                   {stitchLoading
                     ? "Preparing payment…"
-                    : `Pay ${formatRand(payload.cartTotalNum)} once off online`}
+                    : `Pay now — ${formatRand(payload.cartTotalNum)}`}
                 </button>
               </div>
 
