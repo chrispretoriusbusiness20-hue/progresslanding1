@@ -884,9 +884,13 @@ function QuotePage() {
   // option inputs so the quoted configuration/amount cannot be altered.
   const optionsLocked = submitted;
   const INSTALMENT_MONTHS = 6;
+  // Magma special: fixed R3,995/month (the advertised BNPL price); other
+  // products split their cart total into 6 equal monthly payments.
   const instalmentAmount =
     cartTotalNum !== null && cartTotalNum > 0
-      ? Math.round((cartTotalNum / INSTALMENT_MONTHS) * 100) / 100
+      ? isSpecialProduct(product)
+        ? 3995
+        : Math.round((cartTotalNum / INSTALMENT_MONTHS) * 100) / 100
       : null;
   const instalmentLabel = instalmentAmount !== null ? formatRand(instalmentAmount) : null;
 
