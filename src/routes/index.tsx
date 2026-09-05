@@ -624,9 +624,16 @@ function QuotePage() {
 
   // One unified total — the quote total IS the cart total. It recalculates
   // live from the current selection and adds transport once distance is known.
+  // First 100 km from Bellville are included in the base transport (R470); the
+  // R12/km surcharge beyond that is added once the address is resolved on
+  // submit. Until then we assume the base zone so the live total — and the
+  // BNPL monthly amount — matches the all-in R23,970 Magma special.
+  const BASE_TRANSPORT_DEFAULT = 470;
+  const effectiveTransport = transportPrice ?? BASE_TRANSPORT_DEFAULT;
+  const effectiveTransportLabel = formatRand(effectiveTransport);
   const cartTotalNum =
     estimatedTotal !== null
-      ? estimatedTotal + (transportPrice ?? 0) + (travelFee ?? 0)
+      ? estimatedTotal + effectiveTransport + (travelFee ?? 0)
       : totalPriceNum;
   const cartTotalLabel = cartTotalNum !== null ? formatRand(cartTotalNum) : null;
 
@@ -638,15 +645,15 @@ function QuotePage() {
     const prod = estimatedProductTotal !== null
       ? estimatedProductTotal
       : (productSubtotal ?? 0) + (flueKitPrice ?? 0) + (platePrice ?? 0) + (cornerInstallPrice ?? 0) - specialDiscount;
-    if (!installationRequired) return prod + (transportPrice ?? 0) + (travelFee ?? 0);
+    if (!installationRequired) return prod + effectiveTransport + (travelFee ?? 0);
     return prod;
-  }, [estimatedProductTotal, productSubtotal, flueKitPrice, platePrice, cornerInstallPrice, specialDiscount, installationRequired, transportPrice, travelFee]);
+  }, [estimatedProductTotal, productSubtotal, flueKitPrice, platePrice, cornerInstallPrice, specialDiscount, installationRequired, effectiveTransport, travelFee]);
 
   const progressInstallationsNum = useMemo(() => {
     if (!installationRequired) return 0;
     const inst = estimatedTotal !== null ? estimatedInstallTotal : (installationEstimate ?? 0);
-    return inst + (transportPrice ?? 0) + (travelFee ?? 0);
-  }, [installationRequired, estimatedTotal, estimatedInstallTotal, installationEstimate, transportPrice, travelFee]);
+    return inst + effectiveTransport + (travelFee ?? 0);
+  }, [installationRequired, estimatedTotal, estimatedInstallTotal, installationEstimate, effectiveTransport, travelFee]);
 
   const progressGroupLabel = progressGroupNum > 0 ? formatRand(progressGroupNum) : null;
   const progressInstallationsLabel = progressInstallationsNum > 0 ? formatRand(progressInstallationsNum) : null;
