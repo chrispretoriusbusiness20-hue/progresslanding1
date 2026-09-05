@@ -39,7 +39,6 @@ export const Route = createFileRoute("/checkout")({
   component: CheckoutPage,
 });
 
-const INSTALMENT_MONTHS = 6;
 
 interface CheckoutPayload {
   firstName: string;
