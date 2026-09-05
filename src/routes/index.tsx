@@ -245,7 +245,9 @@ function QuotePage() {
   const [roofType, setRoofType] = useState("");
   const [plateType, setPlateType] = useState<"steel" | "glass" | "granite">("glass");
   const [cornerInstall, setCornerInstall] = useState(false);
-  const [installationRequired, setInstallationRequired] = useState(false);
+  // "Supply & install" is the recommended option, so it's pre-selected — but
+  // the client can still switch to "Product only"; nothing is locked.
+  const [installationRequired, setInstallationRequired] = useState(true);
   const [address, setAddress] = useState("");
   
   const [extrasForAccount, setExtrasForAccount] = useState("");
