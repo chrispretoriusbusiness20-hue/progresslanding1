@@ -649,6 +649,31 @@ function QuotePage() {
   const progressGroupLabel = progressGroupNum > 0 ? formatRand(progressGroupNum) : null;
   const progressInstallationsLabel = progressInstallationsNum > 0 ? formatRand(progressInstallationsNum) : null;
 
+  // Hand the completed quote to the checkout page so the client can pay there.
+  useEffect(() => {
+    if (!submitted || !quoteNo || !quoteSession || cartTotalNum === null) return;
+    try {
+      sessionStorage.setItem(
+        "progress_checkout",
+        JSON.stringify({
+          firstName: firstName.trim(),
+          lastName: lastName.trim(),
+          email: email.trim(),
+          quoteNo,
+          quoteSession,
+          product,
+          quantity,
+          installationRequired,
+          cartTotalNum,
+          progressGroupNum,
+          progressInstallationsNum,
+        }),
+      );
+    } catch {
+      // Private browsing — checkout page will show its empty state.
+    }
+  }, [submitted, quoteNo, quoteSession, cartTotalNum, firstName, lastName, email, product, quantity, installationRequired, progressGroupNum, progressInstallationsNum]);
+
 
   const whatsappHref = useMemo(() => {
     const fullName = `${firstName.trim()} ${lastName.trim()}`.trim() || "Customer";
@@ -1288,6 +1313,15 @@ function QuotePage() {
                   <Landmark className="h-4 w-4" />
                   Pay by EFT
                 </button>
+
+                <Link
+                  to="/checkout"
+                  aria-label="Proceed to secure checkout"
+                  className="inline-flex items-center justify-center gap-2 border-2 border-foreground bg-foreground px-5 py-3 text-sm font-bold uppercase tracking-wider text-background shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
+                >
+                  <ShoppingCart className="h-4 w-4" />
+                  Proceed to checkout
+                </Link>
 
                 <a
                   href={whatsappHref}
