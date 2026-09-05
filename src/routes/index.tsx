@@ -660,29 +660,42 @@ function QuotePage() {
   const progressInstallationsLabel = progressInstallationsNum > 0 ? formatRand(progressInstallationsNum) : null;
 
   // Hand the completed quote to the checkout page so the client can pay there.
-  useEffect(() => {
-    if (!submitted || !quoteNo || !quoteSession || cartTotalNum === null) return;
-    try {
-      sessionStorage.setItem(
-        "progress_checkout",
-        JSON.stringify({
-          firstName: firstName.trim(),
-          lastName: lastName.trim(),
-          email: email.trim(),
-          quoteNo,
-          quoteSession,
-          product,
-          quantity,
-          installationRequired,
-          cartTotalNum,
-          progressGroupNum,
-          progressInstallationsNum,
-        }),
-      );
-    } catch {
-      // Private browsing — checkout page will show its empty state.
-    }
+  const checkoutPayload = useMemo(() => {
+    if (!submitted || cartTotalNum === null) return null;
+    return {
+      firstName: firstName.trim(),
+      lastName: lastName.trim(),
+      email: email.trim(),
+      quoteNo: quoteNo ?? "",
+      quoteSession,
+      product,
+      quantity,
+      installationRequired,
+      cartTotalNum,
+      progressGroupNum,
+      progressInstallationsNum,
+    };
   }, [submitted, quoteNo, quoteSession, cartTotalNum, firstName, lastName, email, product, quantity, installationRequired, progressGroupNum, progressInstallationsNum]);
+
+  const persistCheckout = () => {
+    if (!checkoutPayload) return;
+    const raw = JSON.stringify(checkoutPayload);
+    try {
+      sessionStorage.setItem("progress_checkout", raw);
+    } catch {
+      // Private browsing — fall through to localStorage.
+    }
+    try {
+      localStorage.setItem("progress_checkout", raw);
+    } catch {
+      // Nothing more we can do; checkout shows its empty state.
+    }
+  };
+
+  useEffect(() => {
+    persistCheckout();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [checkoutPayload]);
 
 
   const whatsappHref = useMemo(() => {
