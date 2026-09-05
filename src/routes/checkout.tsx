@@ -362,7 +362,7 @@ function CheckoutPage() {
                         <dt className="font-semibold text-foreground">Branch code</dt>
                         <dd className="font-mono">250655</dd>
                         <dt className="font-semibold text-foreground">Reference</dt>
-                        <dd>{payload.quoteNo}</dd>
+                        <dd className="font-mono">{payload.quoteNo.replace(/\s+/g, "")}</dd>
                       </dl>
                       <p className="mt-3 flex items-center justify-between border-t-2 border-foreground/10 pt-2 font-mono text-sm">
                         <span className="font-bold uppercase tracking-wide text-foreground">
