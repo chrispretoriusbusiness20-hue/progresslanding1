@@ -1109,7 +1109,6 @@ function QuotePage() {
               <select
                 value={roofType}
                 onChange={(e) => setRoofType(e.target.value)}
-                disabled={optionsLocked}
                 className="form-input"
               >
                 <option value="">Select…</option>
