@@ -85,9 +85,10 @@ function CheckoutPage() {
   }, []);
 
   const invoiceNo = payload
-    ? payload.quoteNo.startsWith("INV-")
-      ? payload.quoteNo
-      : `INV-${payload.quoteNo}`
+    ? (payload.quoteNo.startsWith("INV-")
+        ? payload.quoteNo
+        : `INV-${payload.quoteNo}`
+      ).replace(/\s+/g, "")
     : null;
 
 
@@ -137,7 +138,16 @@ function CheckoutPage() {
         }
       } else {
         closePayTab();
-        toast.error(res.error || "Could not open the payment page. Please try EFT below.");
+        const message = res.error || "";
+        if (/unauthor/i.test(message)) {
+          toast.error("This payment link has expired.", {
+            description:
+              "For your security, payment links are valid for 1 hour. Please go back to the quote form, resubmit your details, and pay right away.",
+            duration: 10000,
+          });
+        } else {
+          toast.error(message || "Could not open the payment page. Please try EFT below.");
+        }
       }
     } catch (err) {
       closePayTab();
