@@ -259,6 +259,10 @@ function CheckoutPage() {
                   Secure card, EFT &amp; bank payments via Stitch. Reference:{" "}
                   <span className="font-mono font-semibold text-foreground">{invoiceNo}</span>
                 </p>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  ⏱ For your security, this payment link is valid for 1 hour after your quote is
+                  submitted.
+                </p>
                 <button
                   type="button"
                   onClick={() => void payWithStitch()}
@@ -274,6 +278,10 @@ function CheckoutPage() {
                     ? "Preparing payment…"
                     : `Pay now — ${formatRand(payload.cartTotalNum)}`}
                 </button>
+                <p className="mt-3 text-center text-xs text-muted-foreground">
+                  🔒 Payments are processed securely by Stitch. You'll receive a confirmation
+                  email once your payment clears.
+                </p>
               </div>
 
 
