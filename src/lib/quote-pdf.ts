@@ -2,7 +2,7 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import progressLogo from "@/assets/progress-header-transparent.png.asset.json";
 import progressInstallationsLogo from "@/assets/progress-installations-logo.png.asset.json";
-import { allInclusiveAddOns, isAllInclusiveProduct, specialDiscountFor } from "@/lib/special-discount";
+import { allInclusiveAddOns, isAllInclusiveProduct, isSpecialProduct, specialDiscountFor } from "@/lib/special-discount";
 
 
 
@@ -131,8 +131,9 @@ export async function generateQuotePDF(
   }
 
   {
+    const isSpecial = isSpecialProduct(input.productName);
     const flooringLower = (input.flooring ?? "").toLowerCase();
-    const needsPlate = !allInclusive && flooringLower.length > 0 && !/tile/.test(flooringLower);
+    const needsPlate = !allInclusive && !isSpecial && flooringLower.length > 0 && !/tile/.test(flooringLower);
     if (needsPlate) {
       const plateType: "steel" | "glass" | "granite" =
         input.plateType === "granite" ? "granite" : input.plateType === "steel" ? "steel" : "glass";
@@ -152,7 +153,7 @@ export async function generateQuotePDF(
       });
     }
   }
-  if (input.cornerInstall && !allInclusive) {
+  if (input.cornerInstall && !allInclusive && !isSpecialProduct(input.productName)) {
     const nearby = input.distanceKm !== null && input.distanceKm !== undefined && input.distanceKm <= 50;
     items.push({
       quantity: 1,
@@ -497,14 +498,14 @@ export async function generateQuotePDF(
     // --- Fee table ---
     const km = input.distanceKm ?? 0;
     const INCLUDED_KM = 100;
-    const BASE_TRANSPORT = 495;
+    const BASE_TRANSPORT = 470;
     const EXTRA_KM_RATE = 12;
     const installTransport = BASE_TRANSPORT + Math.max(0, km - INCLUDED_KM) * EXTRA_KM_RATE;
     const transportLabel = km <= INCLUDED_KM
       ? `Transport (R${BASE_TRANSPORT} — includes first ${INCLUDED_KM} km)`
       : `Transport (R${BASE_TRANSPORT} incl. first ${INCLUDED_KM} km + R${EXTRA_KM_RATE}/km thereafter)`;
     const coreDrill = input.storyType === "double" ? 1500 : 0;
-    const installFee = 5995;
+    const installFee = 6000;
     const installTotal = installFee + coreDrill + installTransport;
     autoTable(doc, {
       startY: py,

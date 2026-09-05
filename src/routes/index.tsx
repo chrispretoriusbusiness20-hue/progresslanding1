@@ -19,7 +19,7 @@ import progressLogo from "@/assets/progress-header-transparent.png.asset.json";
 
 import { AddressAutocomplete } from "@/components/address-autocomplete";
 import { checkEmail } from "@/lib/email-typo";
-import { allInclusiveAddOns, isAllInclusiveProduct, specialDiscountFor } from "@/lib/special-discount";
+import { allInclusiveAddOns, isAllInclusiveProduct, isSpecialProduct, specialDiscountFor } from "@/lib/special-discount";
 
 
 
@@ -603,10 +603,11 @@ function QuotePage() {
     const allInclusive = isAllInclusiveProduct(product);
     const flueKitIncluded = allInclusive || /flue\s*kit/i.test(product);
     const flueKit = flueKitIncluded ? null : storyType === "double" ? 9650 : storyType === "single" ? 7650 : null;
-    const needsPlate = !allInclusive && flooring.length > 0 && !/tile/i.test(flooring);
+    const isSpecial = isSpecialProduct(product);
+    const needsPlate = !allInclusive && !isSpecial && flooring.length > 0 && !/tile/i.test(flooring);
     const plate = needsPlate ? computePlatePrice(plateType, cornerInstall) : null;
-    const corner = !allInclusive && installationRequired && cornerInstall ? 800 : null;
-    const install = allInclusive ? null : installationRequired ? 5995 + (storyType === "double" ? 1500 : 0) : null;
+    const corner = !allInclusive && !isSpecial && installationRequired && cornerInstall ? 800 : null;
+    const install = allInclusive ? null : installationRequired ? 6000 + (storyType === "double" ? 1500 : 0) : null;
     const addOns = allInclusiveAddOns({ productName: product, storyType, cornerInstall, plateType, flooring, installationRequired });
     const hasAny = subtotal !== null || flueKit !== null || plate !== null || corner !== null || install !== null || addOns.total !== 0;
     const productTotal = (subtotal ?? 0) + (flueKit ?? 0) + (plate ?? 0) + (corner ?? 0) + addOns.total;
@@ -624,9 +625,16 @@ function QuotePage() {
 
   // One unified total — the quote total IS the cart total. It recalculates
   // live from the current selection and adds transport once distance is known.
+  // First 100 km from Bellville are included in the base transport (R470); the
+  // R12/km surcharge beyond that is added once the address is resolved on
+  // submit. Until then we assume the base zone so the live total — and the
+  // BNPL monthly amount — matches the all-in R23,970 Magma special.
+  const BASE_TRANSPORT_DEFAULT = 470;
+  const effectiveTransport = transportPrice ?? BASE_TRANSPORT_DEFAULT;
+  const effectiveTransportLabel = formatRand(effectiveTransport);
   const cartTotalNum =
     estimatedTotal !== null
-      ? estimatedTotal + (transportPrice ?? 0) + (travelFee ?? 0)
+      ? estimatedTotal + effectiveTransport + (travelFee ?? 0)
       : totalPriceNum;
   const cartTotalLabel = cartTotalNum !== null ? formatRand(cartTotalNum) : null;
 
@@ -638,15 +646,15 @@ function QuotePage() {
     const prod = estimatedProductTotal !== null
       ? estimatedProductTotal
       : (productSubtotal ?? 0) + (flueKitPrice ?? 0) + (platePrice ?? 0) + (cornerInstallPrice ?? 0) - specialDiscount;
-    if (!installationRequired) return prod + (transportPrice ?? 0) + (travelFee ?? 0);
+    if (!installationRequired) return prod + effectiveTransport + (travelFee ?? 0);
     return prod;
-  }, [estimatedProductTotal, productSubtotal, flueKitPrice, platePrice, cornerInstallPrice, specialDiscount, installationRequired, transportPrice, travelFee]);
+  }, [estimatedProductTotal, productSubtotal, flueKitPrice, platePrice, cornerInstallPrice, specialDiscount, installationRequired, effectiveTransport, travelFee]);
 
   const progressInstallationsNum = useMemo(() => {
     if (!installationRequired) return 0;
     const inst = estimatedTotal !== null ? estimatedInstallTotal : (installationEstimate ?? 0);
-    return inst + (transportPrice ?? 0) + (travelFee ?? 0);
-  }, [installationRequired, estimatedTotal, estimatedInstallTotal, installationEstimate, transportPrice, travelFee]);
+    return inst + effectiveTransport + (travelFee ?? 0);
+  }, [installationRequired, estimatedTotal, estimatedInstallTotal, installationEstimate, effectiveTransport, travelFee]);
 
   const progressGroupLabel = progressGroupNum > 0 ? formatRand(progressGroupNum) : null;
   const progressInstallationsLabel = progressInstallationsNum > 0 ? formatRand(progressInstallationsNum) : null;
@@ -1225,7 +1233,7 @@ function QuotePage() {
                   {flueKitLabel && <BreakdownRow label="Flue kit" value={flueKitLabel} hint={matched.storyType === "double" ? "Double story" : "Single story"} />}
                   {plateLabel && <BreakdownRow label={`${matched.plate?.type === "steel" ? "Black steel" : matched.plate?.type === "granite" ? "Granite" : "Glass"} plinth`} value={plateLabel} />}
                   {cornerInstallLabel && <BreakdownRow label="Corner installation" value={cornerInstallLabel} />}
-                  {transportLabel && !installationRequired && <BreakdownRow label="Courier" value={transportLabel} hint={matched.transportZone ?? undefined} />}
+                  {!installationRequired && <BreakdownRow label="Courier" value={effectiveTransportLabel} hint={matched.transportZone ?? "Delivery within ±100 km of Bellville"} />}
                   {installationEstimateLabel && (
                     <BreakdownRow
                        label="Installation estimate"
@@ -1235,13 +1243,13 @@ function QuotePage() {
                          : "Within Cape Town (subject to site visit)"}
                      />
                    )}
-                   {transportLabel && installationRequired && (
-                     <BreakdownRow
-                       label="Transport"
-                       value={transportLabel}
-                       hint="Part of installation estimate · first 100 km included in R495, R12/km thereafter"
-                     />
-                   )}
+                    {installationRequired && (
+                      <BreakdownRow
+                        label="Transport"
+                        value={effectiveTransportLabel}
+                        hint="Part of installation estimate · first 100 km included in R470, R12/km thereafter"
+                      />
+                    )}
                 </ul>
                  {cartTotalLabel && (
                    <div className="mt-3 flex items-baseline justify-between border-t-2 border-foreground pt-3">
@@ -1707,19 +1715,21 @@ function InstantQuote({
   const flueKit = flueKitIncluded
     ? null
     : storyType === "double" ? 9650 : storyType === "single" ? 7650 : null;
-  const needsPlate = !allInclusive && flooring.length > 0 && !/tile/i.test(flooring);
+  const isSpecial = isSpecialProduct(productName);
+  const needsPlate = !allInclusive && !isSpecial && flooring.length > 0 && !/tile/i.test(flooring);
   const plate = needsPlate ? computePlatePrice(plateType, cornerInstall) : null;
-  const corner = allInclusive ? null : cornerInstall ? 800 : null;
+  const corner = allInclusive || isSpecial ? null : cornerInstall ? 800 : null;
   const installationEstimate = allInclusive
     ? null
     : installationRequired
-      ? 5995 + (storyType === "double" ? 1500 : 0)
+      ? 6000 + (storyType === "double" ? 1500 : 0)
       : null;
   const addOns = allInclusiveAddOns({ productName, storyType, cornerInstall, plateType, flooring, installationRequired });
   const specialDiscount = specialDiscountFor(productName, quantity);
+  const BASE_TRANSPORT_DEFAULT = 470;
   const total =
     subtotal !== null || flueKit !== null || plate !== null || corner !== null || installationEstimate !== null
-      ? (subtotal ?? 0) + (flueKit ?? 0) + (plate ?? 0) + (corner ?? 0) + (installationEstimate ?? 0) + addOns.total - specialDiscount
+      ? (subtotal ?? 0) + (flueKit ?? 0) + (plate ?? 0) + (corner ?? 0) + (installationEstimate ?? 0) + addOns.total - specialDiscount + BASE_TRANSPORT_DEFAULT
       : null;
 
   const rows: { label: string; value: number | null; hint?: string }[] = [
@@ -1807,10 +1817,10 @@ function InstantQuote({
             <div>
               <p className="font-semibold text-foreground">Transport</p>
               <p className="text-xs text-muted-foreground">
-                First 100 km included in R495; R12/km thereafter (calculated on submit)
+                First 100 km included in R470; R12/km thereafter (calculated on submit)
               </p>
             </div>
-            <span className="shrink-0 font-mono text-xs text-muted-foreground">on submit</span>
+            <span className="shrink-0 font-mono text-sm font-semibold text-foreground">{formatRand(470)}</span>
           </li>
         )}
         {!installationRequired && (
@@ -1818,10 +1828,10 @@ function InstantQuote({
             <div>
               <p className="font-semibold text-foreground">Courier</p>
               <p className="text-xs text-muted-foreground">
-                Calculated from your address on submit
+                Delivery within ±100 km of Bellville (calculated on submit)
               </p>
             </div>
-            <span className="shrink-0 font-mono text-xs text-muted-foreground">on submit</span>
+            <span className="shrink-0 font-mono text-sm font-semibold text-foreground">{formatRand(470)}</span>
           </li>
         )}
       </ul>
@@ -1835,8 +1845,8 @@ function InstantQuote({
       </div>
       <p className="mt-2 text-[11px] text-muted-foreground">
         {installationRequired
-          ? "Transport included in installation estimate. Final quote confirmed after we calculate distance from Bellville to your address."
-          : "Excludes courier. Final quote confirmed after we calculate distance from Bellville to your address."}
+          ? "R470 base transport covers the first 100 km from Bellville; R12/km applies beyond that. Final quote confirmed on submit."
+          : "R470 courier within ±100 km of Bellville; further distances quoted on submit."}
       </p>
     </div>
   );
