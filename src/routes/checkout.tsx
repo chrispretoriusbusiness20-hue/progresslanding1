@@ -378,6 +378,13 @@ function CheckoutPage() {
                   <p className="border-2 border-foreground bg-primary/10 px-4 py-2 font-mono text-sm font-bold text-foreground">
                     {formatRand(payload.cartTotalNum)} due in total
                   </p>
+
+                  {payload.installationRequired && payload.progressInstallationsNum > 0 && (
+                    <p className="border-2 border-amber-500 bg-amber-50 px-4 py-2 text-xs font-semibold text-amber-900">
+                      ⚠ Two separate EFT payments are required — one to Progress Group and one
+                      to Progress Installations. Please use the correct reference for each.
+                    </p>
+                  )}
                 </div>
                 </>
                 )}
@@ -390,7 +397,7 @@ function CheckoutPage() {
                 )}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-2 border-2 border-foreground bg-[#25D366] px-5 py-3 text-sm font-bold uppercase tracking-wider text-white shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
+                className="mb-20 inline-flex w-full items-center justify-center gap-2 border-2 border-foreground bg-[#25D366] px-5 py-3 text-sm font-bold uppercase tracking-wider text-white shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
               >
                 <MessageCircle className="h-4 w-4" />
                 Need help? WhatsApp us
