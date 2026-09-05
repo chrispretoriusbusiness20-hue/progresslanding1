@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { createStitchPaymentLink } from "@/lib/stitch.functions";
+import { isSpecialProduct } from "@/lib/special-discount";
 
 import progressLogo from "@/assets/progress-header-transparent.png.asset.json";
 
@@ -80,11 +81,16 @@ function CheckoutPage() {
       : `INV-${payload.quoteNo}`
     : null;
 
-  // Pay it off: split the quoted cart total into 6 equal monthly payments.
-  const instalmentAmount =
+  // Magma special: advertised BNPL plan is fixed at 6 × R3,995 = R23,970,
+  // regardless of the cash total. Other products split their cart total.
+  const bnplTotalNum =
     payload && payload.cartTotalNum > 0
-      ? Math.round((payload.cartTotalNum / INSTALMENT_MONTHS) * 100) / 100
+      ? isSpecialProduct(payload.product)
+        ? 23970
+        : payload.cartTotalNum
       : null;
+  const instalmentAmount =
+    bnplTotalNum !== null ? Math.round((bnplTotalNum / INSTALMENT_MONTHS) * 100) / 100 : null;
 
   const payWithStitch = async (amountOverride?: number) => {
     if (!payload || stitchLoading) return;
@@ -275,7 +281,8 @@ function CheckoutPage() {
                     </span>
                   </p>
                   <p className="mt-1 text-sm text-muted-foreground">
-                    The total stays {formatRand(payload.cartTotalNum)} — you just split it.
+                    {INSTALMENT_MONTHS} payments of {formatRand(instalmentAmount)} ={" "}
+                    {formatRand(bnplTotalNum ?? 0)} total.
                   </p>
                   <button
                     type="button"
