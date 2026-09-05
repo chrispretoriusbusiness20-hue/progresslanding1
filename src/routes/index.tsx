@@ -1426,8 +1426,8 @@ function QuotePage() {
               Buy now, pay later
             </h2>
             <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-              Split your purchase into {INSTALMENT_MONTHS} equal, interest-free monthly payments. The
-              total stays the same as paying in full — no extra fees.
+              Split your purchase into {INSTALMENT_MONTHS} equal, interest-free monthly payments —
+              no extra fees.
             </p>
 
             <div className="mt-4 border-2 border-foreground/20 bg-secondary/30 p-4 text-sm leading-relaxed">
