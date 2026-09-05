@@ -333,7 +333,7 @@ function transportPriceForKm(km: number, installationRequired: boolean): { zone:
     return { zone: "Courier 300 km+ (estimate — sales to confirm)", price: 1750 };
   }
   // With installation, transport is billed as its own line item (never bundled
-  // into the installation estimate): R495 includes the first 100 km, then
+  // into the installation estimate): R470 includes the first 100 km, then
   // R12/km thereafter.
   return {
     zone: `Transport (R${BASE_TRANSPORT} incl. first ${INCLUDED_KM} km · R${EXTRA_KM_RATE}/km thereafter)`,
