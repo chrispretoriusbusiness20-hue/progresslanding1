@@ -1,8 +1,7 @@
 import { createHmac, timingSafeEqual } from "crypto";
 
-// 10 days — matches quote/payment-link validity so clients can pay later
-// from the checkout or emailed link without hitting "Unauthorized".
-const SESSION_TTL_MS = 10 * 24 * 60 * 60 * 1000;
+// 1 hour — short-lived session for quote checkout actions.
+const SESSION_TTL_MS = 60 * 60 * 1000;
 
 function getSecret(): string {
   return (
