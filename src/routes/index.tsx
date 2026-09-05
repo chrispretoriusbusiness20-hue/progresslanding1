@@ -258,7 +258,7 @@ function QuotePage() {
   const [popFile, setPopFile] = useState<File | null>(null);
   const [popSending, setPopSending] = useState(false);
   const [popDone, setPopDone] = useState(false);
-  const [termsOpen, setTermsOpen] = useState(false);
+  
   const [lookup, setLookup] = useState<LookupResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
