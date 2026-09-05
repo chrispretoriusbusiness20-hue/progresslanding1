@@ -649,6 +649,31 @@ function QuotePage() {
   const progressGroupLabel = progressGroupNum > 0 ? formatRand(progressGroupNum) : null;
   const progressInstallationsLabel = progressInstallationsNum > 0 ? formatRand(progressInstallationsNum) : null;
 
+  // Hand the completed quote to the checkout page so the client can pay there.
+  useEffect(() => {
+    if (!submitted || !quoteNo || !quoteSession || cartTotalNum === null) return;
+    try {
+      sessionStorage.setItem(
+        "progress_checkout",
+        JSON.stringify({
+          firstName: firstName.trim(),
+          lastName: lastName.trim(),
+          email: email.trim(),
+          quoteNo,
+          quoteSession,
+          product,
+          quantity,
+          installationRequired,
+          cartTotalNum,
+          progressGroupNum,
+          progressInstallationsNum,
+        }),
+      );
+    } catch {
+      // Private browsing — checkout page will show its empty state.
+    }
+  }, [submitted, quoteNo, quoteSession, cartTotalNum, firstName, lastName, email, product, quantity, installationRequired, progressGroupNum, progressInstallationsNum]);
+
 
   const whatsappHref = useMemo(() => {
     const fullName = `${firstName.trim()} ${lastName.trim()}`.trim() || "Customer";
