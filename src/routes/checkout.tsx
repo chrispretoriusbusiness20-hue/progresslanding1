@@ -4,6 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import {
   ArrowLeft,
   CheckCircle2,
+  ChevronDown,
   CreditCard,
   Landmark,
   Loader2,
@@ -62,6 +63,7 @@ function CheckoutPage() {
   const [payload, setPayload] = useState<CheckoutPayload | null>(null);
   const [loaded, setLoaded] = useState(false);
   const [stitchLoading, setStitchLoading] = useState(false);
+  const [eftOpen, setEftOpen] = useState(false);
   const stitchFn = useServerFn(createStitchPaymentLink);
 
   // sessionStorage is browser-only — read after hydration to avoid SSR mismatch.
@@ -297,12 +299,28 @@ function CheckoutPage() {
                 </div>
               )}
 
-              {/* EFT */}
+              {/* EFT — collapsed until the client chooses this option */}
               <div className="border-2 border-foreground bg-background p-6 shadow-brutal-sm">
-                <p className="flex items-center gap-2 font-bold uppercase tracking-wide text-foreground">
-                  <Landmark className="h-4 w-4" />
-                  Pay by EFT
-                </p>
+                <button
+                  type="button"
+                  onClick={() => setEftOpen((open) => !open)}
+                  aria-expanded={eftOpen}
+                  className="flex w-full items-center justify-between gap-2 text-left"
+                >
+                  <span className="flex items-center gap-2 font-bold uppercase tracking-wide text-foreground">
+                    <Landmark className="h-4 w-4" />
+                    Pay by EFT
+                  </span>
+                  <span className="flex items-center gap-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                    {eftOpen ? "Hide banking details" : "Show banking details"}
+                    <ChevronDown
+                      className={`h-4 w-4 transition-transform ${eftOpen ? "rotate-180" : ""}`}
+                    />
+                  </span>
+                </button>
+
+                {eftOpen && (
+                <>
                 <p className="mt-1 text-sm text-muted-foreground">
                   Use your invoice number as the payment reference and email your proof of
                   payment to{" "}
@@ -375,6 +393,8 @@ function CheckoutPage() {
                     {formatRand(payload.cartTotalNum)} due in total
                   </p>
                 </div>
+                </>
+                )}
               </div>
 
               {/* WhatsApp help */}
