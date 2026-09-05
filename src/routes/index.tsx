@@ -1232,7 +1232,7 @@ function QuotePage() {
                   {flueKitLabel && <BreakdownRow label="Flue kit" value={flueKitLabel} hint={matched.storyType === "double" ? "Double story" : "Single story"} />}
                   {plateLabel && <BreakdownRow label={`${matched.plate?.type === "steel" ? "Black steel" : matched.plate?.type === "granite" ? "Granite" : "Glass"} plinth`} value={plateLabel} />}
                   {cornerInstallLabel && <BreakdownRow label="Corner installation" value={cornerInstallLabel} />}
-                  {transportLabel && !installationRequired && <BreakdownRow label="Courier" value={transportLabel} hint={matched.transportZone ?? undefined} />}
+                  {!installationRequired && <BreakdownRow label="Courier" value={effectiveTransportLabel} hint={matched.transportZone ?? "Delivery within ±100 km of Bellville"} />}
                   {installationEstimateLabel && (
                     <BreakdownRow
                        label="Installation estimate"
@@ -1242,13 +1242,13 @@ function QuotePage() {
                          : "Within Cape Town (subject to site visit)"}
                      />
                    )}
-                   {transportLabel && installationRequired && (
-                     <BreakdownRow
-                       label="Transport"
-                       value={transportLabel}
-                       hint="Part of installation estimate · first 100 km included in R470, R12/km thereafter"
-                     />
-                   )}
+                    {installationRequired && (
+                      <BreakdownRow
+                        label="Transport"
+                        value={effectiveTransportLabel}
+                        hint="Part of installation estimate · first 100 km included in R470, R12/km thereafter"
+                      />
+                    )}
                 </ul>
                  {cartTotalLabel && (
                    <div className="mt-3 flex items-baseline justify-between border-t-2 border-foreground pt-3">
@@ -1724,9 +1724,10 @@ function InstantQuote({
       : null;
   const addOns = allInclusiveAddOns({ productName, storyType, cornerInstall, plateType, flooring, installationRequired });
   const specialDiscount = specialDiscountFor(productName, quantity);
+  const BASE_TRANSPORT_DEFAULT = 470;
   const total =
     subtotal !== null || flueKit !== null || plate !== null || corner !== null || installationEstimate !== null
-      ? (subtotal ?? 0) + (flueKit ?? 0) + (plate ?? 0) + (corner ?? 0) + (installationEstimate ?? 0) + addOns.total - specialDiscount
+      ? (subtotal ?? 0) + (flueKit ?? 0) + (plate ?? 0) + (corner ?? 0) + (installationEstimate ?? 0) + addOns.total - specialDiscount + BASE_TRANSPORT_DEFAULT
       : null;
 
   const rows: { label: string; value: number | null; hint?: string }[] = [
@@ -1817,7 +1818,7 @@ function InstantQuote({
                 First 100 km included in R470; R12/km thereafter (calculated on submit)
               </p>
             </div>
-            <span className="shrink-0 font-mono text-xs text-muted-foreground">on submit</span>
+            <span className="shrink-0 font-mono text-sm font-semibold text-foreground">{formatRand(470)}</span>
           </li>
         )}
         {!installationRequired && (
@@ -1825,10 +1826,10 @@ function InstantQuote({
             <div>
               <p className="font-semibold text-foreground">Courier</p>
               <p className="text-xs text-muted-foreground">
-                Calculated from your address on submit
+                Delivery within ±100 km of Bellville (calculated on submit)
               </p>
             </div>
-            <span className="shrink-0 font-mono text-xs text-muted-foreground">on submit</span>
+            <span className="shrink-0 font-mono text-sm font-semibold text-foreground">{formatRand(470)}</span>
           </li>
         )}
       </ul>
@@ -1842,8 +1843,8 @@ function InstantQuote({
       </div>
       <p className="mt-2 text-[11px] text-muted-foreground">
         {installationRequired
-          ? "Transport included in installation estimate. Final quote confirmed after we calculate distance from Bellville to your address."
-          : "Excludes courier. Final quote confirmed after we calculate distance from Bellville to your address."}
+          ? "R470 base transport covers the first 100 km from Bellville; R12/km applies beyond that. Final quote confirmed on submit."
+          : "R470 courier within ±100 km of Bellville; further distances quoted on submit."}
       </p>
     </div>
   );
