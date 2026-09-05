@@ -1360,7 +1360,7 @@ function QuotePage() {
                   <p className="font-mono text-2xl font-bold leading-tight text-foreground sm:text-3xl">
                     {instalmentLabel}
                     <span className="ml-1 text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                      × {INSTALMENT_MONTHS} payments
+                      × {INSTALMENT_MONTHS} monthly payments
                     </span>
                   </p>
                 ) : (
@@ -1415,14 +1415,14 @@ function QuotePage() {
               Buy now, pay later
             </h2>
             <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-              Split your purchase into {INSTALMENT_MONTHS} equal, interest-free payments. The total
-              stays the same as paying in full — no extra fees.
+              Split your purchase into {INSTALMENT_MONTHS} equal, interest-free monthly payments. The
+              total stays the same as paying in full — no extra fees.
             </p>
 
             <div className="mt-4 border-2 border-foreground/20 bg-secondary/30 p-4 text-sm leading-relaxed">
               <div className="flex items-baseline justify-between">
                 <span className="text-xs font-bold uppercase tracking-[0.24em] text-muted-foreground">
-                  Per payment
+                  Per month
                 </span>
                 <span className="font-mono text-2xl font-bold text-foreground">
                   {instalmentLabel ?? "—"}
@@ -1430,7 +1430,7 @@ function QuotePage() {
               </div>
               <div className="mt-2 flex items-baseline justify-between">
                 <span className="text-xs font-bold uppercase tracking-[0.24em] text-muted-foreground">
-                  Number of payments
+                  Number of monthly payments
                 </span>
                 <span className="font-mono font-bold text-foreground">{INSTALMENT_MONTHS}</span>
               </div>
@@ -1461,7 +1461,7 @@ function QuotePage() {
                 {stitchLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ShoppingCart className="h-4 w-4" />}
                 {stitchLoading
                   ? "Preparing payment…"
-                  : `Pay first installment ${instalmentLabel ?? ""}`}
+                  : `Pay first month ${instalmentLabel ?? ""}`}
               </button>
 
               <button
