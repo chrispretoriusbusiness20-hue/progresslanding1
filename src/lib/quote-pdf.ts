@@ -2,7 +2,7 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import progressLogo from "@/assets/progress-header-transparent.png.asset.json";
 import progressInstallationsLogo from "@/assets/progress-installations-logo.png.asset.json";
-import { allInclusiveAddOns, isAllInclusiveProduct, specialDiscountFor } from "@/lib/special-discount";
+import { allInclusiveAddOns, isAllInclusiveProduct, isSpecialProduct, specialDiscountFor } from "@/lib/special-discount";
 
 
 
@@ -131,8 +131,9 @@ export async function generateQuotePDF(
   }
 
   {
+    const isSpecial = isSpecialProduct(input.productName);
     const flooringLower = (input.flooring ?? "").toLowerCase();
-    const needsPlate = !allInclusive && flooringLower.length > 0 && !/tile/.test(flooringLower);
+    const needsPlate = !allInclusive && !isSpecial && flooringLower.length > 0 && !/tile/.test(flooringLower);
     if (needsPlate) {
       const plateType: "steel" | "glass" | "granite" =
         input.plateType === "granite" ? "granite" : input.plateType === "steel" ? "steel" : "glass";
@@ -152,7 +153,7 @@ export async function generateQuotePDF(
       });
     }
   }
-  if (input.cornerInstall && !allInclusive) {
+  if (input.cornerInstall && !allInclusive && !isSpecialProduct(input.productName)) {
     const nearby = input.distanceKm !== null && input.distanceKm !== undefined && input.distanceKm <= 50;
     items.push({
       quantity: 1,

@@ -19,7 +19,7 @@ import progressLogo from "@/assets/progress-header-transparent.png.asset.json";
 
 import { AddressAutocomplete } from "@/components/address-autocomplete";
 import { checkEmail } from "@/lib/email-typo";
-import { allInclusiveAddOns, isAllInclusiveProduct, specialDiscountFor } from "@/lib/special-discount";
+import { allInclusiveAddOns, isAllInclusiveProduct, isSpecialProduct, specialDiscountFor } from "@/lib/special-discount";
 
 
 
@@ -603,9 +603,10 @@ function QuotePage() {
     const allInclusive = isAllInclusiveProduct(product);
     const flueKitIncluded = allInclusive || /flue\s*kit/i.test(product);
     const flueKit = flueKitIncluded ? null : storyType === "double" ? 9650 : storyType === "single" ? 7650 : null;
-    const needsPlate = !allInclusive && flooring.length > 0 && !/tile/i.test(flooring);
+    const isSpecial = isSpecialProduct(product);
+    const needsPlate = !allInclusive && !isSpecial && flooring.length > 0 && !/tile/i.test(flooring);
     const plate = needsPlate ? computePlatePrice(plateType, cornerInstall) : null;
-    const corner = !allInclusive && installationRequired && cornerInstall ? 800 : null;
+    const corner = !allInclusive && !isSpecial && installationRequired && cornerInstall ? 800 : null;
     const install = allInclusive ? null : installationRequired ? 6000 + (storyType === "double" ? 1500 : 0) : null;
     const addOns = allInclusiveAddOns({ productName: product, storyType, cornerInstall, plateType, flooring, installationRequired });
     const hasAny = subtotal !== null || flueKit !== null || plate !== null || corner !== null || install !== null || addOns.total !== 0;
@@ -1714,9 +1715,10 @@ function InstantQuote({
   const flueKit = flueKitIncluded
     ? null
     : storyType === "double" ? 9650 : storyType === "single" ? 7650 : null;
-  const needsPlate = !allInclusive && flooring.length > 0 && !/tile/i.test(flooring);
+  const isSpecial = isSpecialProduct(productName);
+  const needsPlate = !allInclusive && !isSpecial && flooring.length > 0 && !/tile/i.test(flooring);
   const plate = needsPlate ? computePlatePrice(plateType, cornerInstall) : null;
-  const corner = allInclusive ? null : cornerInstall ? 800 : null;
+  const corner = allInclusive || isSpecial ? null : cornerInstall ? 800 : null;
   const installationEstimate = allInclusive
     ? null
     : installationRequired

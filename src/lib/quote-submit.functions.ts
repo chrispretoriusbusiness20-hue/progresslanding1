@@ -2,7 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import productsData from "@/data/products.json";
 import productsFullData from "@/data/products-full.json";
-import { allInclusiveAddOns, isAllInclusiveProduct, specialDiscountFor } from "@/lib/special-discount";
+import { allInclusiveAddOns, isAllInclusiveProduct, isSpecialProduct, specialDiscountFor } from "@/lib/special-discount";
 
 const PRODUCT_IMAGE_MAP = new Map(
   (productsFullData as Array<{ name: string; image?: string }>).map((p) => [p.name, p.image ?? ""]),
@@ -439,8 +439,9 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
       ? null
       : data.storyType === "double" ? 9650 : data.storyType === "single" ? 7650 : null;
 
+    const isSpecial = isSpecialProduct(matched?.name ?? data.product);
     const flooringLower = (data.flooring ?? "").toLowerCase();
-    const needsPlate = !allInclusive && flooringLower.length > 0 && !/tile/.test(flooringLower);
+    const needsPlate = !allInclusive && !isSpecial && flooringLower.length > 0 && !/tile/.test(flooringLower);
     const plateType: "steel" | "glass" | "granite" = data.plateType === "granite" ? "granite" : data.plateType === "steel" ? "steel" : "glass";
     const corner = data.cornerInstall;
     const platePriceVal =
@@ -452,7 +453,7 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
 
     const transport = distanceKm !== null ? transportPriceForKm(distanceKm, data.installationRequired) : null;
 
-    const cornerInstallPrice = installEligible && !allInclusive && data.cornerInstall
+    const cornerInstallPrice = installEligible && !allInclusive && !isSpecial && data.cornerInstall
       ? 800 + (distanceKm !== null && distanceKm <= 50 ? 650 : 0)
       : null;
 
