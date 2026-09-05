@@ -660,29 +660,42 @@ function QuotePage() {
   const progressInstallationsLabel = progressInstallationsNum > 0 ? formatRand(progressInstallationsNum) : null;
 
   // Hand the completed quote to the checkout page so the client can pay there.
-  useEffect(() => {
-    if (!submitted || !quoteNo || !quoteSession || cartTotalNum === null) return;
-    try {
-      sessionStorage.setItem(
-        "progress_checkout",
-        JSON.stringify({
-          firstName: firstName.trim(),
-          lastName: lastName.trim(),
-          email: email.trim(),
-          quoteNo,
-          quoteSession,
-          product,
-          quantity,
-          installationRequired,
-          cartTotalNum,
-          progressGroupNum,
-          progressInstallationsNum,
-        }),
-      );
-    } catch {
-      // Private browsing — checkout page will show its empty state.
-    }
+  const checkoutPayload = useMemo(() => {
+    if (!submitted || cartTotalNum === null) return null;
+    return {
+      firstName: firstName.trim(),
+      lastName: lastName.trim(),
+      email: email.trim(),
+      quoteNo: quoteNo ?? "",
+      quoteSession,
+      product,
+      quantity,
+      installationRequired,
+      cartTotalNum,
+      progressGroupNum,
+      progressInstallationsNum,
+    };
   }, [submitted, quoteNo, quoteSession, cartTotalNum, firstName, lastName, email, product, quantity, installationRequired, progressGroupNum, progressInstallationsNum]);
+
+  const persistCheckout = () => {
+    if (!checkoutPayload) return;
+    const raw = JSON.stringify(checkoutPayload);
+    try {
+      sessionStorage.setItem("progress_checkout", raw);
+    } catch {
+      // Private browsing — fall through to localStorage.
+    }
+    try {
+      localStorage.setItem("progress_checkout", raw);
+    } catch {
+      // Nothing more we can do; checkout shows its empty state.
+    }
+  };
+
+  useEffect(() => {
+    persistCheckout();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [checkoutPayload]);
 
 
   const whatsappHref = useMemo(() => {
@@ -1319,6 +1332,7 @@ function QuotePage() {
 
                 <Link
                   to="/checkout"
+                  onClick={persistCheckout}
                   aria-label="Proceed to secure checkout"
                   className="inline-flex items-center justify-center gap-2 border-2 border-foreground bg-foreground px-5 py-3 text-sm font-bold uppercase tracking-wider text-background shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
                 >
