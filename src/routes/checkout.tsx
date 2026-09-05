@@ -3,15 +3,14 @@ import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import {
   ArrowLeft,
-  CheckCircle2,
   ChevronDown,
   CreditCard,
   Landmark,
   Loader2,
   MessageCircle,
   ShoppingCart,
-  Sparkles,
 } from "lucide-react";
+
 import { toast } from "sonner";
 import { createStitchPaymentLink } from "@/lib/stitch.functions";
 
@@ -40,7 +39,6 @@ export const Route = createFileRoute("/checkout")({
   component: CheckoutPage,
 });
 
-const INSTALMENT_MONTHS = 6;
 
 interface CheckoutPayload {
   firstName: string;
@@ -83,11 +81,6 @@ function CheckoutPage() {
       : `INV-${payload.quoteNo}`
     : null;
 
-  // BNPL plan totals the same as the cash cart total, split into 6 monthly payments.
-  const bnplTotalNum =
-    payload && payload.cartTotalNum > 0 ? payload.cartTotalNum : null;
-  const instalmentAmount =
-    bnplTotalNum !== null ? Math.round((bnplTotalNum / INSTALMENT_MONTHS) * 100) / 100 : null;
 
   const payWithStitch = async (amountOverride?: number) => {
     if (!payload || stitchLoading) return;
@@ -264,40 +257,6 @@ function CheckoutPage() {
                 </button>
               </div>
 
-              {/* Installments */}
-              {instalmentAmount !== null && (
-                <div className="border-2 border-foreground bg-primary/10 p-6 shadow-brutal-sm">
-                  <p className="flex items-center gap-2 font-bold uppercase tracking-wide text-foreground">
-                    <Sparkles className="h-4 w-4" />
-                    Pay it off
-                  </p>
-                  <p className="mt-2 font-display text-3xl font-bold text-foreground">
-                    {formatRand(instalmentAmount)}{" "}
-                    <span className="text-base font-semibold text-muted-foreground">
-                      × {INSTALMENT_MONTHS} interest-free monthly payments
-                    </span>
-                  </p>
-                  <p className="mt-1 text-sm text-muted-foreground">
-                    {INSTALMENT_MONTHS} payments of {formatRand(instalmentAmount)} ={" "}
-                    {formatRand(bnplTotalNum ?? 0)} total.
-                  </p>
-                  <button
-                    type="button"
-                    onClick={() => void payWithStitch(instalmentAmount)}
-                    disabled={stitchLoading}
-                    className="mt-4 inline-flex w-full items-center justify-center gap-2 border-2 border-foreground bg-foreground px-5 py-3 text-sm font-bold uppercase tracking-wider text-background shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none disabled:cursor-not-allowed disabled:opacity-60"
-                  >
-                    {stitchLoading ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : (
-                      <CheckCircle2 className="h-4 w-4" />
-                    )}
-                    {stitchLoading
-                      ? "Preparing payment…"
-                      : `Pay first month ${formatRand(instalmentAmount)}`}
-                  </button>
-                </div>
-              )}
 
               {/* EFT — collapsed until the client chooses this option */}
               <div className="border-2 border-foreground bg-background p-6 shadow-brutal-sm">

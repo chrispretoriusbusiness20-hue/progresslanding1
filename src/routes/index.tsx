@@ -258,7 +258,7 @@ function QuotePage() {
   const [popFile, setPopFile] = useState<File | null>(null);
   const [popSending, setPopSending] = useState(false);
   const [popDone, setPopDone] = useState(false);
-  const [termsOpen, setTermsOpen] = useState(false);
+  
   const [lookup, setLookup] = useState<LookupResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -883,14 +883,6 @@ function QuotePage() {
   // Once the quote is submitted, the client is in the payment step — lock all
   // option inputs so the quoted configuration/amount cannot be altered.
   const optionsLocked = submitted;
-  const INSTALMENT_MONTHS = 6;
-  // BNPL plan totals the same as the cash cart total, split into 6 monthly payments.
-  const bnplTotalNum =
-    cartTotalNum !== null && cartTotalNum > 0 ? cartTotalNum : null;
-  const instalmentAmount =
-    bnplTotalNum !== null ? Math.round((bnplTotalNum / INSTALMENT_MONTHS) * 100) / 100 : null;
-  const bnplTotalLabel = bnplTotalNum !== null ? formatRand(bnplTotalNum) : null;
-  const instalmentLabel = instalmentAmount !== null ? formatRand(instalmentAmount) : null;
 
 
 
@@ -1365,37 +1357,13 @@ function QuotePage() {
                 <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-muted-foreground">
                   Your cart · {cartTotalLabel ?? "—"} total
                 </p>
-                {instalmentLabel ? (
-                  <p className="font-mono text-2xl font-bold leading-tight text-foreground sm:text-3xl">
-                    {instalmentLabel}
-                    <span className="ml-1 text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                      × {INSTALMENT_MONTHS} monthly payments
-                    </span>
-                  </p>
-                ) : (
-                  <p className="font-mono text-2xl font-bold text-foreground">—</p>
-                )}
+                <p className="font-mono text-2xl font-bold leading-tight text-foreground sm:text-3xl">
+                  {cartTotalLabel ?? "—"}
+                </p>
+
               </div>
             </div>
             <div className="flex flex-wrap items-center gap-3">
-              <button
-                type="button"
-                onClick={() => setTermsOpen(true)}
-                className="inline-flex items-center justify-center gap-2 border-2 border-foreground bg-background px-5 py-3 text-sm font-bold uppercase tracking-wider text-foreground shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
-              >
-                <Sparkles className="h-4 w-4" />
-                Payment terms
-              </button>
-              <button
-                type="button"
-                onClick={() => setTermsOpen(true)}
-                aria-label="See installment options and pay it off over 6 payments"
-                className="inline-flex items-center justify-center gap-2 border-2 border-foreground bg-primary px-6 py-3 text-sm font-bold uppercase tracking-wider text-primary-foreground shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
-              >
-                <ShoppingCart className="h-4 w-4" />
-                Pay it off · installments
-              </button>
-
               <button
                 type="button"
                 onClick={() => void payWithStitch()}
@@ -1406,95 +1374,12 @@ function QuotePage() {
                 {stitchLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4" />}
                 {stitchLoading ? "Preparing…" : `Pay ${cartTotalLabel ?? ""} once off`}
               </button>
+
             </div>
           </div>
         </div>
       )}
 
-      {/* BNPL payment-terms dialog — explains the 6-payment plan, then routes to payment */}
-      {termsOpen && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="terms-title"
-          className="fixed inset-0 z-50 flex items-end justify-center bg-foreground/60 p-4 sm:items-center"
-        >
-          <div className="w-full max-w-lg border-2 border-foreground bg-background p-6 shadow-brutal-sm">
-            <h2 id="terms-title" className="text-lg font-bold uppercase tracking-wide text-foreground">
-              Buy now, pay later
-            </h2>
-            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-              Split your purchase into {INSTALMENT_MONTHS} equal, interest-free monthly payments —
-              no extra fees.
-            </p>
-
-            <div className="mt-4 border-2 border-foreground/20 bg-secondary/30 p-4 text-sm leading-relaxed">
-              <div className="flex items-baseline justify-between">
-                <span className="text-xs font-bold uppercase tracking-[0.24em] text-muted-foreground">
-                  Per month
-                </span>
-                <span className="font-mono text-2xl font-bold text-foreground">
-                  {instalmentLabel ?? "—"}
-                </span>
-              </div>
-              <div className="mt-2 flex items-baseline justify-between">
-                <span className="text-xs font-bold uppercase tracking-[0.24em] text-muted-foreground">
-                  Number of monthly payments
-                </span>
-                <span className="font-mono font-bold text-foreground">{INSTALMENT_MONTHS}</span>
-              </div>
-              <div className="mt-2 flex items-baseline justify-between border-t border-foreground/15 pt-2">
-                <span className="text-xs font-bold uppercase tracking-[0.24em] text-muted-foreground">
-                  Total ({INSTALMENT_MONTHS} × {instalmentLabel ?? "—"})
-                </span>
-                <span className="font-mono font-bold text-foreground">
-                  {bnplTotalLabel ?? "—"}
-                </span>
-              </div>
-            </div>
-
-            <p className="mt-3 text-xs text-muted-foreground">
-              Pay online with Stitch. We issue your invoice once the first payment is confirmed.
-            </p>
-
-            <div className="mt-5 flex flex-wrap gap-3">
-              <button
-                type="button"
-                onClick={() => {
-                  setTermsOpen(false);
-                  void payWithStitch(instalmentAmount ?? undefined);
-                }}
-                disabled={stitchLoading || instalmentAmount === null}
-                className="inline-flex items-center justify-center gap-2 border-2 border-foreground bg-primary px-5 py-3 text-sm font-bold uppercase tracking-wider text-primary-foreground shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                {stitchLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ShoppingCart className="h-4 w-4" />}
-                {stitchLoading
-                  ? "Preparing payment…"
-                  : `Pay first month ${instalmentLabel ?? ""}`}
-              </button>
-
-              <button
-                type="button"
-                onClick={() => {
-                  setTermsOpen(false);
-                  void payWithStitch();
-                }}
-                className="inline-flex items-center justify-center gap-2 border-2 border-foreground bg-foreground px-5 py-3 text-sm font-bold uppercase tracking-wider text-background shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
-              >
-                <CheckCircle2 className="h-4 w-4" />
-                Pay {cartTotalLabel ?? ""} once off
-              </button>
-              <button
-                type="button"
-                onClick={() => setTermsOpen(false)}
-                className="inline-flex items-center justify-center gap-2 px-5 py-3 text-sm font-bold uppercase tracking-wider text-muted-foreground transition hover:text-foreground"
-              >
-                Not now
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Proof of payment step — the invoice is only issued once payment is proven */}
       {popOpen && (
