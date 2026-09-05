@@ -24,7 +24,7 @@ export const Route = createFileRoute("/checkout")({
       {
         name: "description",
         content:
-          "Secure checkout for your Progress Group quote. Pay once off, in installments, or by EFT.",
+          "Secure checkout for your Progress Group quote. Pay now online or by EFT.",
       },
       { name: "robots", content: "noindex,nofollow" },
       { property: "og:title", content: "Checkout — The Progress Group" },
