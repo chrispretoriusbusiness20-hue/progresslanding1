@@ -4,6 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import {
   ArrowLeft,
   CheckCircle2,
+  ChevronDown,
   CreditCard,
   Landmark,
   Loader2,
@@ -62,6 +63,7 @@ function CheckoutPage() {
   const [payload, setPayload] = useState<CheckoutPayload | null>(null);
   const [loaded, setLoaded] = useState(false);
   const [stitchLoading, setStitchLoading] = useState(false);
+  const [eftOpen, setEftOpen] = useState(false);
   const stitchFn = useServerFn(createStitchPaymentLink);
 
   // sessionStorage is browser-only — read after hydration to avoid SSR mismatch.
