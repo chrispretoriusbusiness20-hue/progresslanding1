@@ -883,14 +883,6 @@ function QuotePage() {
   // Once the quote is submitted, the client is in the payment step — lock all
   // option inputs so the quoted configuration/amount cannot be altered.
   const optionsLocked = submitted;
-  const INSTALMENT_MONTHS = 6;
-  // BNPL plan totals the same as the cash cart total, split into 6 monthly payments.
-  const bnplTotalNum =
-    cartTotalNum !== null && cartTotalNum > 0 ? cartTotalNum : null;
-  const instalmentAmount =
-    bnplTotalNum !== null ? Math.round((bnplTotalNum / INSTALMENT_MONTHS) * 100) / 100 : null;
-  const bnplTotalLabel = bnplTotalNum !== null ? formatRand(bnplTotalNum) : null;
-  const instalmentLabel = instalmentAmount !== null ? formatRand(instalmentAmount) : null;
 
 
 
