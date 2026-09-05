@@ -884,11 +884,9 @@ function QuotePage() {
   // option inputs so the quoted configuration/amount cannot be altered.
   const optionsLocked = submitted;
   const INSTALMENT_MONTHS = 6;
-  // Magma special: advertised BNPL plan is fixed at 6 × R3,995 = R23,970,
-  // regardless of the cash cart total. Other products split their cart total.
-  const isSpecial = isSpecialProduct(product);
+  // BNPL plan totals the same as the cash cart total, split into 6 monthly payments.
   const bnplTotalNum =
-    cartTotalNum !== null && cartTotalNum > 0 ? (isSpecial ? 23970 : cartTotalNum) : null;
+    cartTotalNum !== null && cartTotalNum > 0 ? cartTotalNum : null;
   const instalmentAmount =
     bnplTotalNum !== null ? Math.round((bnplTotalNum / INSTALMENT_MONTHS) * 100) / 100 : null;
   const bnplTotalLabel = bnplTotalNum !== null ? formatRand(bnplTotalNum) : null;
