@@ -269,7 +269,7 @@ function CheckoutPage() {
                   <p className="mt-2 font-display text-3xl font-bold text-foreground">
                     {formatRand(instalmentAmount)}{" "}
                     <span className="text-base font-semibold text-muted-foreground">
-                      × {INSTALMENT_MONTHS} interest-free payments
+                      × {INSTALMENT_MONTHS} interest-free monthly payments
                     </span>
                   </p>
                   <p className="mt-1 text-sm text-muted-foreground">
@@ -288,7 +288,7 @@ function CheckoutPage() {
                     )}
                     {stitchLoading
                       ? "Preparing payment…"
-                      : `Pay first installment ${formatRand(instalmentAmount)}`}
+                      : `Pay first month ${formatRand(instalmentAmount)}`}
                   </button>
                 </div>
               )}
