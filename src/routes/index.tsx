@@ -1314,6 +1314,15 @@ function QuotePage() {
                   Pay by EFT
                 </button>
 
+                <Link
+                  to="/checkout"
+                  aria-label="Proceed to secure checkout"
+                  className="inline-flex items-center justify-center gap-2 border-2 border-foreground bg-foreground px-5 py-3 text-sm font-bold uppercase tracking-wider text-background shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
+                >
+                  <ShoppingCart className="h-4 w-4" />
+                  Proceed to checkout
+                </Link>
+
                 <a
                   href={whatsappHref}
                   target="_blank"
