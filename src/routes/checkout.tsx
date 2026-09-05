@@ -66,11 +66,20 @@ function CheckoutPage() {
 
   // sessionStorage is browser-only — read after hydration to avoid SSR mismatch.
   useEffect(() => {
-    try {
-      const raw = sessionStorage.getItem("progress_checkout");
-      if (raw) setPayload(JSON.parse(raw) as CheckoutPayload);
-    } catch {
-      // Private browsing or corrupt payload — fall through to empty state.
+    const read = (store: Storage | undefined) => {
+      try {
+        return store?.getItem("progress_checkout") ?? null;
+      } catch {
+        return null;
+      }
+    };
+    const raw = read(window.sessionStorage) ?? read(window.localStorage);
+    if (raw) {
+      try {
+        setPayload(JSON.parse(raw) as CheckoutPayload);
+      } catch {
+        // Corrupt payload — fall through to empty state.
+      }
     }
     setLoaded(true);
   }, []);
