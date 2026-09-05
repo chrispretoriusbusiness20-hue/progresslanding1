@@ -85,9 +85,10 @@ function CheckoutPage() {
   }, []);
 
   const invoiceNo = payload
-    ? payload.quoteNo.startsWith("INV-")
-      ? payload.quoteNo
-      : `INV-${payload.quoteNo}`
+    ? (payload.quoteNo.startsWith("INV-")
+        ? payload.quoteNo
+        : `INV-${payload.quoteNo}`
+      ).replace(/\s+/g, "")
     : null;
 
 
@@ -137,7 +138,16 @@ function CheckoutPage() {
         }
       } else {
         closePayTab();
-        toast.error(res.error || "Could not open the payment page. Please try EFT below.");
+        const message = res.error || "";
+        if (/unauthor/i.test(message)) {
+          toast.error("This payment link has expired.", {
+            description:
+              "For your security, payment links are valid for 1 hour. Please go back to the quote form, resubmit your details, and pay right away.",
+            duration: 10000,
+          });
+        } else {
+          toast.error(message || "Could not open the payment page. Please try EFT below.");
+        }
       }
     } catch (err) {
       closePayTab();
@@ -249,6 +259,10 @@ function CheckoutPage() {
                   Secure card, EFT &amp; bank payments via Stitch. Reference:{" "}
                   <span className="font-mono font-semibold text-foreground">{invoiceNo}</span>
                 </p>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  ⏱ For your security, this payment link is valid for 1 hour after your quote is
+                  submitted.
+                </p>
                 <button
                   type="button"
                   onClick={() => void payWithStitch()}
@@ -264,6 +278,10 @@ function CheckoutPage() {
                     ? "Preparing payment…"
                     : `Pay now — ${formatRand(payload.cartTotalNum)}`}
                 </button>
+                <p className="mt-3 text-center text-xs text-muted-foreground">
+                  🔒 Payments are processed securely by Stitch. You'll receive a confirmation
+                  email once your payment clears.
+                </p>
               </div>
 
 
@@ -344,7 +362,7 @@ function CheckoutPage() {
                         <dt className="font-semibold text-foreground">Branch code</dt>
                         <dd className="font-mono">250655</dd>
                         <dt className="font-semibold text-foreground">Reference</dt>
-                        <dd>{payload.quoteNo}</dd>
+                        <dd className="font-mono">{payload.quoteNo.replace(/\s+/g, "")}</dd>
                       </dl>
                       <p className="mt-3 flex items-center justify-between border-t-2 border-foreground/10 pt-2 font-mono text-sm">
                         <span className="font-bold uppercase tracking-wide text-foreground">
@@ -360,6 +378,13 @@ function CheckoutPage() {
                   <p className="border-2 border-foreground bg-primary/10 px-4 py-2 font-mono text-sm font-bold text-foreground">
                     {formatRand(payload.cartTotalNum)} due in total
                   </p>
+
+                  {payload.installationRequired && payload.progressInstallationsNum > 0 && (
+                    <p className="border-2 border-amber-500 bg-amber-50 px-4 py-2 text-xs font-semibold text-amber-900">
+                      ⚠ Two separate EFT payments are required — one to Progress Group and one
+                      to Progress Installations. Please use the correct reference for each.
+                    </p>
+                  )}
                 </div>
                 </>
                 )}
@@ -372,7 +397,7 @@ function CheckoutPage() {
                 )}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-2 border-2 border-foreground bg-[#25D366] px-5 py-3 text-sm font-bold uppercase tracking-wider text-white shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
+                className="mb-20 inline-flex w-full items-center justify-center gap-2 border-2 border-foreground bg-[#25D366] px-5 py-3 text-sm font-bold uppercase tracking-wider text-white shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
               >
                 <MessageCircle className="h-4 w-4" />
                 Need help? WhatsApp us
