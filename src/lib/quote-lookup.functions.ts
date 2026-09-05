@@ -8,10 +8,10 @@ const GATEWAY = "https://connector-gateway.lovable.dev/google_sheets/v4";
 const MAPS_GATEWAY = "https://connector-gateway.lovable.dev/google_maps";
 const ORIGIN_ADDRESS = "189 Durban Road, Bellville, Cape Town, 7530, South Africa";
 
-// Transport: R495 base includes the first 100 km from 189 Durban Road,
+// Transport: R470 base includes the first 100 km from 189 Durban Road,
 // Bellville; R12/km thereafter (calculated on submit).
 function transportPriceForKm(km: number, _destination: string): { zone: string; price: number } {
-  const BASE_TRANSPORT = 495;
+  const BASE_TRANSPORT = 470;
   const INCLUDED_KM = 100;
   const EXTRA_KM_RATE = 12;
   const price = BASE_TRANSPORT + Math.max(0, km - INCLUDED_KM) * EXTRA_KM_RATE;
