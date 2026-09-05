@@ -79,9 +79,13 @@ function CheckoutPage() {
       : `INV-${payload.quoteNo}`
     : null;
 
+  // Magma special: fixed R3,995/month (the advertised BNPL price); other
+  // products split their cart total into 6 equal monthly payments.
   const instalmentAmount =
     payload && payload.cartTotalNum > 0
-      ? Math.round((payload.cartTotalNum / INSTALMENT_MONTHS) * 100) / 100
+      ? isSpecialProduct(payload.product)
+        ? 3995
+        : Math.round((payload.cartTotalNum / INSTALMENT_MONTHS) * 100) / 100
       : null;
 
   const payWithStitch = async (amountOverride?: number) => {
