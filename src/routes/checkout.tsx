@@ -393,6 +393,8 @@ function CheckoutPage() {
                     {formatRand(payload.cartTotalNum)} due in total
                   </p>
                 </div>
+                </>
+                )}
               </div>
 
               {/* WhatsApp help */}
