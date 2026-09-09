@@ -250,7 +250,7 @@ function CheckoutPage() {
               </h2>
 
               {/* Once off */}
-              <div className="border-2 border-foreground bg-background p-6 shadow-brutal-sm">
+              <div id="pay-now" className="border-2 border-foreground bg-background p-6 shadow-brutal-sm">
                 <p className="flex items-center gap-2 font-bold uppercase tracking-wide text-foreground">
                   <CreditCard className="h-4 w-4" />
                   Pay now
