@@ -1316,7 +1316,6 @@ function QuotePage() {
                   Pay by EFT
                 </button>
 
-                </Link>
 
                 <a
                   href={whatsappHref}
