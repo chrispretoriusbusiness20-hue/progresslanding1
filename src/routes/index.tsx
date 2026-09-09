@@ -1353,19 +1353,6 @@ function QuotePage() {
 
               </div>
             </div>
-            <div className="flex flex-wrap items-center gap-3">
-              <button
-                type="button"
-                onClick={() => void payWithStitch()}
-                disabled={stitchLoading || !quoteSession}
-                aria-label={`Pay now ${cartTotalLabel ?? "the full amount"}`}
-                className="inline-flex items-center justify-center gap-2 border-2 border-foreground bg-foreground px-6 py-3 text-sm font-bold uppercase tracking-wider text-background shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                {stitchLoading || !quoteSession ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4" />}
-                {stitchLoading || !quoteSession ? "Preparing…" : `Pay now — ${cartTotalLabel ?? ""}`}
-              </button>
-
-            </div>
           </div>
         </div>
       )}
