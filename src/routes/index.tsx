@@ -1317,15 +1317,6 @@ function QuotePage() {
                 </button>
 
 
-                <a
-                  href={whatsappHref}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center gap-2 border-2 border-foreground bg-[#25D366] px-5 py-3 text-sm font-bold uppercase tracking-wider text-white shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
-                >
-                  <MessageCircle className="h-4 w-4" />
-                  ACCEPT MY QUOTE & CONTINUE ON WHATSAPP
-                </a>
               </div>
             </div>
 
