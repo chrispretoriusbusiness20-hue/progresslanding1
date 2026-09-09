@@ -388,6 +388,21 @@ function CheckoutPage() {
                 </div>
                 </>
                 )}
+
+                {/* Exit EFT — switch back to card payment */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEftOpen(false);
+                    document
+                      .getElementById("pay-now")
+                      ?.scrollIntoView({ behavior: "smooth", block: "center" });
+                  }}
+                  className="mt-3 inline-flex w-full items-center justify-center gap-2 border-2 border-foreground bg-background px-5 py-3 text-sm font-bold uppercase tracking-wider text-foreground shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
+                >
+                  <CreditCard className="h-4 w-4" />
+                  Exit — pay by card
+                </button>
               </div>
 
               {/* WhatsApp help */}
