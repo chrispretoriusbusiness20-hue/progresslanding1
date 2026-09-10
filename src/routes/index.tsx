@@ -1449,6 +1449,13 @@ function QuotePage() {
               <p className="border-2 border-foreground bg-primary/10 px-4 py-2 font-mono text-sm font-bold text-foreground">
                 {cartTotalLabel ?? "—"} due in total
               </p>
+
+              {installationRequired && (
+                <p className="border-2 border-amber-500 bg-amber-50 px-4 py-2 text-xs font-semibold text-amber-900">
+                  ⚠ Two separate EFT payments are required — one to Progress Group and one to
+                  Progress Installations. Please use the correct reference for each.
+                </p>
+              )}
             </div>
 
             <label htmlFor="pop-file" className="mt-5 block text-xs font-bold uppercase tracking-wider text-foreground">
