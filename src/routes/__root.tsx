@@ -171,6 +171,7 @@ function RootComponent() {
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <Outlet />
       <ChatWidget />
+      <StitchPayLink />
       <Toaster position="top-center" richColors closeButton />
     </QueryClientProvider>
   );
