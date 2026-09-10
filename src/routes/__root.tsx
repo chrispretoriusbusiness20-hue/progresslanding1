@@ -12,6 +12,7 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { ChatWidget } from "@/components/chat-widget";
+import { StitchPayLink } from "@/components/stitch-pay-link";
 import { Toaster } from "@/components/ui/sonner";
 
 /** Meta Pixel IDs tracked on every page. Add extra IDs here. */
