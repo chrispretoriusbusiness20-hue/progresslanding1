@@ -1366,8 +1366,16 @@ function QuotePage() {
           aria-labelledby="pop-title"
           className="fixed inset-0 z-50 flex items-end justify-center bg-foreground/60 p-4 sm:items-center"
         >
-          <div className="w-full max-w-lg border-2 border-foreground bg-background p-6 shadow-brutal-sm">
-            <h2 id="pop-title" className="text-lg font-bold uppercase tracking-wide text-foreground">
+          <div className="relative w-full max-w-lg border-2 border-foreground bg-background p-6 shadow-brutal-sm">
+            <button
+              type="button"
+              onClick={() => setPopOpen(false)}
+              aria-label="Close"
+              className="absolute right-3 top-3 inline-flex h-9 w-9 items-center justify-center border-2 border-foreground/30 bg-background text-foreground transition hover:border-foreground hover:bg-secondary"
+            >
+              <X className="h-4 w-4" />
+            </button>
+            <h2 id="pop-title" className="pr-10 text-lg font-bold uppercase tracking-wide text-foreground">
               Pay &amp; get your invoice
             </h2>
             <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
