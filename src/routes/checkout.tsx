@@ -169,13 +169,22 @@ function CheckoutPage() {
               className="h-10 w-auto sm:h-12"
             />
           </Link>
-          <Link
-            to="/"
-            className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-muted-foreground transition hover:text-foreground"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Back to quote
-          </Link>
+          <div className="flex items-center gap-3">
+            <Link
+              to="/"
+              className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-muted-foreground transition hover:text-foreground"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Back to quote
+            </Link>
+            <Link
+              to="/"
+              aria-label="Close checkout"
+              className="inline-flex h-9 w-9 items-center justify-center border-2 border-foreground text-foreground shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
+            >
+              <X className="h-4 w-4" />
+            </Link>
+          </div>
         </div>
       </header>
 
