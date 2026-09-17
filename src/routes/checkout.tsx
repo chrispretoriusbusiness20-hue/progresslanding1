@@ -9,6 +9,7 @@ import {
   Loader2,
   MessageCircle,
   ShoppingCart,
+  X,
 } from "lucide-react";
 
 import { toast } from "sonner";
