@@ -1325,14 +1325,27 @@ function QuotePage() {
                   {stitchLoading || !quoteSession ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4" />}
                   {stitchLoading || !quoteSession ? "Preparing…" : `Pay now — ${cartTotalLabel ?? ""}`}
                 </button>
-                <Link
-                  to="/checkout"
-                  aria-label="Proceed to the secure checkout page"
-                  className="inline-flex items-center justify-center gap-2 border-2 border-foreground bg-primary px-5 py-3 text-sm font-bold uppercase tracking-wider text-primary-foreground shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
-                >
-                  <ShoppingCart className="h-4 w-4" />
-                  Proceed to checkout
-                </Link>
+                {quoteSession ? (
+                  <Link
+                    to="/checkout"
+                    aria-label="Proceed to the secure checkout page"
+                    onClick={persistCheckout}
+                    className="inline-flex items-center justify-center gap-2 border-2 border-foreground bg-primary px-5 py-3 text-sm font-bold uppercase tracking-wider text-primary-foreground shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
+                  >
+                    <ShoppingCart className="h-4 w-4" />
+                    Proceed to checkout
+                  </Link>
+                ) : (
+                  <button
+                    type="button"
+                    disabled
+                    aria-label="Preparing checkout"
+                    className="inline-flex items-center justify-center gap-2 border-2 border-foreground bg-primary px-5 py-3 text-sm font-bold uppercase tracking-wider text-primary-foreground shadow-brutal-sm disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Preparing…
+                  </button>
+                )}
               </div>
             </div>
 
