@@ -1,4 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
+import { getRequest } from "@tanstack/react-start/server";
+import { metaAttributionSchema } from "./meta-capi.functions";
+import { requestClientInfo, sendCapiLead } from "./meta-capi.server";
 import { z } from "zod";
 import productsData from "@/data/products.json";
 import productsFullData from "@/data/products-full.json";
@@ -416,6 +419,7 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
       utmSource: z.string().trim().max(100).optional(),
       utmMedium: z.string().trim().max(100).optional(),
       utmCampaign: z.string().trim().max(200).optional(),
+      meta: metaAttributionSchema.optional(),
     }),
   )
   .handler(async ({ data }) => {
@@ -516,6 +520,10 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
         utm_source: data.utmSource ?? null,
         utm_medium: data.utmMedium ?? null,
         utm_campaign: data.utmCampaign ?? null,
+        fbp: data.meta?.fbp ?? null,
+        fbc: data.meta?.fbc ?? null,
+        fbclid: data.meta?.fbclid ?? null,
+        meta_event_id: data.meta?.eventId ?? null,
         status: "approved",
         decided_by: "system:auto-approve",
         decided_at: new Date().toISOString(),
@@ -527,6 +535,23 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
 
     if (insertError) {
       console.error("[quote-submit] insert failed", insertError);
+    }
+
+    if (insertedQuote && data.meta) {
+      const { clientIp, userAgent } = requestClientInfo(getRequest().headers);
+      await sendCapiLead({
+        eventId: data.meta.eventId,
+        email: data.email,
+        phone: data.phone,
+        firstName: data.firstName,
+        lastName: data.lastName,
+        clientIp,
+        userAgent,
+        eventSourceUrl: data.meta.eventSourceUrl,
+        fbp: data.meta.fbp,
+        fbc: data.meta.fbc,
+        value: totalPriceNum,
+      });
     }
 
     // Belt-and-suspenders: if the row didn't land as 'approved' (e.g. stale
