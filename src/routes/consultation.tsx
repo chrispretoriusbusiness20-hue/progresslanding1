@@ -4,6 +4,8 @@ import { useMemo, useState, type FormEvent } from "react";
 import { toast } from "sonner";
 
 import { bookConsultation } from "@/lib/email/consultation.functions";
+import { sendMetaLead } from "@/lib/meta-capi.functions";
+import { getMetaAttribution, newEventId, trackLead } from "@/lib/meta-pixel";
 
 const TIME_SLOTS = [
   "09:00",
@@ -64,6 +66,7 @@ export const Route = createFileRoute("/consultation")({
 
 function ConsultationPage() {
   const submit = useServerFn(bookConsultation);
+  const sendLead = useServerFn(sendMetaLead);
 
   const minDate = useMemo(() => {
     const d = new Date();
@@ -131,6 +134,11 @@ function ConsultationPage() {
         data: { name: n, email: em, phone: ph, date, timeSlot, topic: topic.trim(), notes: notes.trim(), customerType },
       });
       if (result.success) {
+        const eventId = newEventId();
+        trackLead(eventId, { content_name: "consultation" });
+        void sendLead({
+          data: { eventId, ...getMetaAttribution(), email: em, phone: ph, name: n },
+        }).catch(() => undefined);
         setDone({ date, timeSlot });
         toast.success("Your slot has been requested");
       } else {

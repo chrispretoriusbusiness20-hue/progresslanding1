@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { CheckCircle2, FileDown, Landmark, Loader2, MessageCircle, ShoppingCart, Sparkles, X } from "lucide-react";
 import { toast } from "sonner";
+import { getMetaAttribution, newEventId, trackLead } from "@/lib/meta-pixel";
 import { submitQuoteRequest, createQuoteUploadUrl, emailQuoteFromPath } from "@/lib/quote-submit.functions";
 import { createPopUploadUrl, notifyProofOfPayment } from "@/lib/pop.functions";
 const generateQuotePDF = async (
@@ -366,8 +367,10 @@ function QuotePage() {
     setEmailConfirmed(null);
     const warnings: string[] = [];
     try {
+      const leadEventId = newEventId();
       const result = (await submitFn({
         data: {
+          meta: { eventId: leadEventId, ...getMetaAttribution() },
           firstName: firstName.trim(),
           lastName: lastName.trim(),
           email: email.trim(),
@@ -388,6 +391,7 @@ function QuotePage() {
       })) as LookupResult;
       setLookup(result);
       setSubmitted(true);
+      trackLead(leadEventId, { content_name: product.trim(), currency: "ZAR" });
       if (result.match && result.teamNotificationOk === false) {
         warnings.push(
           `Team notification email failed${result.teamNotificationError ? `: ${result.teamNotificationError}` : ""}`,

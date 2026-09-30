@@ -4,6 +4,8 @@ import { useEffect, useState, type FormEvent } from "react";
 import { toast } from "sonner";
 
 import { submitContactForm } from "@/lib/email/contact.functions";
+import { sendMetaLead } from "@/lib/meta-capi.functions";
+import { getMetaAttribution, newEventId, trackLead } from "@/lib/meta-pixel";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
@@ -46,6 +48,7 @@ export const Route = createFileRoute("/contact")({
 
 function ContactPage() {
   const sendContact = useServerFn(submitContactForm);
+  const sendLead = useServerFn(sendMetaLead);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
@@ -86,6 +89,11 @@ function ContactPage() {
       });
 
       if (result.success) {
+        const eventId = newEventId();
+        trackLead(eventId, { content_name: "contact_form" });
+        void sendLead({
+          data: { eventId, ...getMetaAttribution(), email: trimmedEmail, name: trimmedName },
+        }).catch(() => undefined);
         setSent(true);
         setName("");
         setEmail("");
