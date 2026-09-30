@@ -249,6 +249,9 @@ export type Database = {
           decided_by: string | null
           distance_km: number | null
           email: string
+          fbc: string | null
+          fbclid: string | null
+          fbp: string | null
           first_name: string
           flooring: string | null
           follow_up_sent_at: string | null
@@ -257,6 +260,7 @@ export type Database = {
           last_name: string
           matched_product: string | null
           message: string | null
+          meta_event_id: string | null
           paid_at: string | null
           payment_amount_zar: number | null
           payment_reference: string | null
@@ -287,6 +291,9 @@ export type Database = {
           decided_by?: string | null
           distance_km?: number | null
           email: string
+          fbc?: string | null
+          fbclid?: string | null
+          fbp?: string | null
           first_name: string
           flooring?: string | null
           follow_up_sent_at?: string | null
@@ -295,6 +302,7 @@ export type Database = {
           last_name: string
           matched_product?: string | null
           message?: string | null
+          meta_event_id?: string | null
           paid_at?: string | null
           payment_amount_zar?: number | null
           payment_reference?: string | null
@@ -325,6 +333,9 @@ export type Database = {
           decided_by?: string | null
           distance_km?: number | null
           email?: string
+          fbc?: string | null
+          fbclid?: string | null
+          fbp?: string | null
           first_name?: string
           flooring?: string | null
           follow_up_sent_at?: string | null
@@ -333,6 +344,7 @@ export type Database = {
           last_name?: string
           matched_product?: string | null
           message?: string | null
+          meta_event_id?: string | null
           paid_at?: string | null
           payment_amount_zar?: number | null
           payment_reference?: string | null

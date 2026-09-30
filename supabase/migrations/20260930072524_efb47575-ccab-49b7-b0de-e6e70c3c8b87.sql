@@ -1,0 +1,1 @@
+ALTER TABLE public.quote_requests ADD COLUMN IF NOT EXISTS fbp text, ADD COLUMN IF NOT EXISTS fbc text, ADD COLUMN IF NOT EXISTS fbclid text, ADD COLUMN IF NOT EXISTS meta_event_id text;
