@@ -14,9 +14,18 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { ChatWidget } from "@/components/chat-widget";
 import { StitchPayLink } from "@/components/stitch-pay-link";
 import { Toaster } from "@/components/ui/sonner";
+import { META_PIXEL_ID, captureFbclid, trackContact, trackPageView } from "@/lib/meta-pixel";
 
-/** Meta Pixel IDs tracked on every page. Add extra IDs here. */
-const META_PIXEL_IDS = ["2169427620464385"];
+/** Loads the Meta Pixel once, after the page has painted, then fires the first PageView. */
+function loadMetaPixel() {
+  const w = window as unknown as { fbq?: unknown; __metaPixelLoaded?: boolean };
+  if (w.__metaPixelLoaded) return;
+  w.__metaPixelLoaded = true;
+  const snippet = `!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init','${META_PIXEL_ID}');fbq('track','PageView');`;
+  const el = document.createElement("script");
+  el.text = snippet;
+  document.head.appendChild(el);
+}
 
 
 function NotFoundComponent() {
@@ -108,13 +117,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/5xv0qmivVVhv9FE5bA4bTElDxzo2/social-images/social-1782992808210-ChatGPT_Image_Jul_2,_2026,_01_45_19_PM.webp" },
       { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/5xv0qmivVVhv9FE5bA4bTElDxzo2/social-images/social-1782992808210-ChatGPT_Image_Jul_2,_2026,_01_45_19_PM.webp" },
     ],
-    scripts: [
-      {
-        type: "text/javascript",
-        children: `!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');window.__METAPIXELS__=${JSON.stringify(META_PIXEL_IDS)};window.__METAPIXELS__.forEach(function(id){fbq('init',id)});fbq('track','PageView');`,
-      },
-    ],
-
     links: [
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
@@ -153,6 +155,28 @@ function RootComponent() {
   const router = useRouter();
 
   useEffect(() => {
+    captureFbclid();
+    const start = () => loadMetaPixel();
+    const idle = (window as unknown as { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => void }).requestIdleCallback;
+    if (document.readyState === "complete") {
+      if (idle) idle(start, { timeout: 2000 });
+      else setTimeout(start, 1);
+    } else {
+      window.addEventListener("load", () => (idle ? idle(start, { timeout: 2000 }) : setTimeout(start, 1)), { once: true });
+    }
+
+    // Contact event for WhatsApp / phone links anywhere on the site.
+    const onClick = (e: MouseEvent) => {
+      const link = (e.target as Element | null)?.closest?.("a[href]");
+      const href = link?.getAttribute("href") ?? "";
+      if (/^tel:/i.test(href)) trackContact("phone");
+      else if (/wa\.me|whatsapp\.com/i.test(href)) trackContact("whatsapp");
+    };
+    document.addEventListener("click", onClick, true);
+    return () => document.removeEventListener("click", onClick, true);
+  }, []);
+
+  useEffect(() => {
     // Fire Meta Pixel PageView on every client-side navigation.
     // The initial PageView is sent by the base pixel snippet in <head>.
     let lastPath = typeof window !== "undefined" ? window.location.pathname + window.location.search : "";
@@ -161,8 +185,7 @@ function RootComponent() {
       const current = window.location.pathname + window.location.search;
       if (current === lastPath) return;
       lastPath = current;
-      const fbq = (window as unknown as { fbq?: (...a: unknown[]) => void }).fbq;
-      if (typeof fbq === "function") fbq("track", "PageView");
+      trackPageView();
     });
     return () => unsub();
   }, [router]);
