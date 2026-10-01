@@ -159,13 +159,19 @@ function CatalogPage() {
       {/* Header */}
       <header className="sticky top-0 z-50 border-b-2 border-foreground bg-background/85 backdrop-blur-md">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-          <Link to="/" className="block group">
+          <a
+            href="https://progressgroup.co.za/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block group"
+            aria-label="Progress Group — visit progressgroup.co.za"
+          >
             <img
               src={progressLogo.url}
               alt="Progress — Lighting, Fireplaces, Braais, Aircons"
               className="h-10 w-auto transition-transform group-hover:-translate-y-0.5"
             />
-          </Link>
+          </a>
           <Link
             to="/"
             className="inline-flex items-center gap-1 text-xs font-bold uppercase tracking-widest text-foreground/70 hover:text-foreground"

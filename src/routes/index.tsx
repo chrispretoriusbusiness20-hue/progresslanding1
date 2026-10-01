@@ -1543,11 +1543,19 @@ function QuotePage() {
       <footer className="border-t border-foreground/15 bg-background">
         <div className="mx-auto grid max-w-6xl gap-12 px-6 py-16 md:grid-cols-[1.4fr_1fr_1fr]">
           <div>
-            <img
-              src={progressLogo.url}
-              alt="Progress — Lighting, Fireplaces, Braais, Aircons"
-              className="h-12 w-auto sm:h-14"
-            />
+            <a
+              href="https://progressgroup.co.za/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block"
+              aria-label="Progress Group — visit progressgroup.co.za"
+            >
+              <img
+                src={progressLogo.url}
+                alt="Progress — Lighting, Fireplaces, Braais, Aircons"
+                className="h-12 w-auto sm:h-14"
+              />
+            </a>
           </div>
           <div>
             <p className="font-display text-[10px] uppercase tracking-[0.36em] text-primary">Contact</p>
