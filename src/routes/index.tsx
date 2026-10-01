@@ -919,11 +919,19 @@ function QuotePage() {
         }`}
       >
         <div className="mx-auto max-w-6xl px-6 py-5">
-          <img
-            src={progressLogo.url}
-            alt="Progress — Lighting, Fireplaces, Braais, Aircons"
-            className="w-1/2 h-auto mx-auto"
-          />
+          <a
+            href="https://progressgroup.co.za/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block mx-auto w-1/2"
+            aria-label="Progress Group — visit progressgroup.co.za"
+          >
+            <img
+              src={progressLogo.url}
+              alt="Progress — Lighting, Fireplaces, Braais, Aircons"
+              className="w-full h-auto"
+            />
+          </a>
           <div className="mt-3 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs font-semibold tracking-wide text-foreground/80">
             <a href="tel:+27875500413" className="hover:text-primary transition-colors">
               Installations: 087 550 0413
