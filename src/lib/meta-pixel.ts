@@ -1,5 +1,6 @@
 /** Browser-side Meta Pixel helpers. Dataset / pixel ID lives here only. */
 export const META_PIXEL_ID = "2169427620464385";
+export const META_PIXEL_ID_2 = "2184254568792048";
 
 type Fbq = (...args: unknown[]) => void;
 
