@@ -163,13 +163,18 @@ function CheckoutPage() {
     <div className="min-h-screen bg-background">
       <header className="border-b border-foreground/15 bg-background">
         <div className="mx-auto flex max-w-4xl items-center justify-between px-6 py-5">
-          <Link to="/" aria-label="Back to quote form">
+          <a
+            href="https://progressgroup.co.za/"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Progress Group — visit progressgroup.co.za"
+          >
             <img
               src={progressLogo.url}
               alt="Progress — Lighting, Fireplaces, Braais, Aircons"
               className="h-10 w-auto sm:h-12"
             />
-          </Link>
+          </a>
           <div className="flex items-center gap-3">
             <Link
               to="/"

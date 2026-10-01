@@ -24,12 +24,14 @@ export const Route = createFileRoute("/contact")({
       },
     ],
   }),
-  errorComponent: ({ error, reset }) => {
+  errorComponent: ({ error, reset }: { error: unknown; reset: () => void }) => {
     const router = useRouter();
     return (
       <div className="mx-auto max-w-xl px-6 py-24 text-center">
         <h1 className="text-xl font-semibold">Something went wrong</h1>
-        <p className="mt-2 text-sm text-muted-foreground">{error.message}</p>
+        <p className="mt-2 text-sm text-muted-foreground">
+          {error instanceof Error ? error.message : "Unexpected error"}
+        </p>
         <button
           onClick={() => {
             router.invalidate();
