@@ -13,8 +13,10 @@ export const Route = createFileRoute("/dashboard")({
     ],
   }),
   component: DashboardPage,
-  errorComponent: ({ error }) => (
-    <div className="p-8 text-sm text-red-600">Failed to load: {error.message}</div>
+  errorComponent: ({ error }: { error: unknown }) => (
+    <div className="p-8 text-sm text-red-600">
+      {error instanceof Error ? error.message : "Failed to load."}
+    </div>
   ),
   notFoundComponent: () => <div className="p-8">Not found.</div>,
 });
