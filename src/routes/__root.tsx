@@ -14,14 +14,14 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { ChatWidget } from "@/components/chat-widget";
 import { StitchPayLink } from "@/components/stitch-pay-link";
 import { Toaster } from "@/components/ui/sonner";
-import { META_PIXEL_ID, captureFbclid, trackContact, trackPageView } from "@/lib/meta-pixel";
+import { META_PIXEL_ID, META_PIXEL_ID_2, captureFbclid, trackContact, trackPageView } from "@/lib/meta-pixel";
 
 /** Loads the Meta Pixel once, after the page has painted, then fires the first PageView. */
 function loadMetaPixel() {
   const w = window as unknown as { fbq?: unknown; __metaPixelLoaded?: boolean };
   if (w.__metaPixelLoaded) return;
   w.__metaPixelLoaded = true;
-  const snippet = `!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init','${META_PIXEL_ID}');fbq('track','PageView');`;
+  const snippet = `!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init','${META_PIXEL_ID}');fbq('init','${META_PIXEL_ID_2}');fbq('track','PageView');`;
   const el = document.createElement("script");
   el.text = snippet;
   document.head.appendChild(el);

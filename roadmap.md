@@ -13,3 +13,5 @@
 - [x] Unify quote total with live cart total everywhere
 - [x] Visible "Pay by EFT" button on quote panel
 - [x] "Exit — pay & get your invoice later" option in payment modal
+
+- [x] Add second Meta pixel 2184254568792048 (one base snippet, two inits)
