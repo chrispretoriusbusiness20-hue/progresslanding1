@@ -16,15 +16,43 @@ import { StitchPayLink } from "@/components/stitch-pay-link";
 import { Toaster } from "@/components/ui/sonner";
 import { META_PIXEL_ID, META_PIXEL_ID_2, captureFbclid, trackContact, trackPageView } from "@/lib/meta-pixel";
 
-/** Loads the Meta Pixel once, after the page has painted, then fires the first PageView. */
+type FbqWindow = Window & {
+  fbq?: ((...args: unknown[]) => void) & { queue?: unknown[]; loaded?: boolean; version?: string; push?: unknown };
+  _fbq?: unknown;
+  __metaPixelLoaded?: boolean;
+};
+
+/** Installs the lightweight fbq queue stub immediately so early events
+ *  (Contact clicks, route-change PageViews) are queued, not dropped, while
+ *  the fbevents.js script itself still loads deferred. */
+function ensureFbqStub() {
+  const w = window as unknown as FbqWindow;
+  if (w.fbq) return;
+  const n = ((...args: unknown[]) => {
+    n.queue!.push(args);
+  }) as NonNullable<FbqWindow["fbq"]>;
+  n.queue = [];
+  n.loaded = false;
+  n.version = "2.0";
+  n.push = n;
+  w.fbq = n;
+  w._fbq = n;
+}
+
+/** Loads the Meta Pixel script once, after the page has painted, then fires the first PageView. */
 function loadMetaPixel() {
-  const w = window as unknown as { fbq?: unknown; __metaPixelLoaded?: boolean };
+  const w = window as unknown as FbqWindow;
   if (w.__metaPixelLoaded) return;
   w.__metaPixelLoaded = true;
-  const snippet = `!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init','${META_PIXEL_ID}');fbq('init','${META_PIXEL_ID_2}');fbq('track','PageView');`;
-  const el = document.createElement("script");
-  el.text = snippet;
-  document.head.appendChild(el);
+  ensureFbqStub();
+  const t = document.createElement("script");
+  t.async = true;
+  t.src = "https://connect.facebook.net/en_US/fbevents.js";
+  const s = document.getElementsByTagName("script")[0];
+  s?.parentNode?.insertBefore(t, s);
+  w.fbq!("init", META_PIXEL_ID);
+  w.fbq!("init", META_PIXEL_ID_2);
+  w.fbq!("track", "PageView");
 }
 
 
@@ -157,6 +185,7 @@ function RootComponent() {
 
   useEffect(() => {
     captureFbclid();
+    ensureFbqStub();
     const start = () => loadMetaPixel();
     const idle = (window as unknown as { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => void }).requestIdleCallback;
     if (document.readyState === "complete") {
