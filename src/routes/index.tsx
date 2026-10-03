@@ -268,6 +268,22 @@ function QuotePage() {
   const [headerHidden, setHeaderHidden] = useState(false);
   const [quoteNo, setQuoteNo] = useState<string | null>(null);
 
+  // Pick up a product added from the catalogue ("Add on") and prefill the
+  // quote form directly — no copy/paste or quoting modal needed.
+  useEffect(() => {
+    try {
+      const selected = sessionStorage.getItem("selectedProduct");
+      if (selected) {
+        setProduct(selected);
+        sessionStorage.removeItem("selectedProduct");
+        sessionStorage.removeItem("selectedProductPrice");
+      }
+    } catch {
+      /* sessionStorage unavailable */
+    }
+  }, []);
+
+
 
   useEffect(() => {
     let lastScrollY = window.scrollY;
