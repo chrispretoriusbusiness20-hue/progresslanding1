@@ -40,12 +40,14 @@ const QUOTE_PRODUCT_IDS = [
   "boma-braai",
   "boma-fire-pits-mosaic",
 ];
+type QuoteProduct = { id: string; name: string; price: string; image: string };
 const PRODUCT_LIST = QUOTE_PRODUCT_IDS.map((id) =>
-  (productsFull as { id: string; name: string; price: string }[]).find((p) => p.id === id),
-).filter((p): p is { id: string; name: string; price: string } => Boolean(p));
+  (productsFull as { id: string; name: string; price: string; image: string }[]).find((p) => p.id === id),
+).filter((p): p is QuoteProduct => Boolean(p));
 void productsData;
 const PRODUCT_NAMES = PRODUCT_LIST.map((p) => p.name);
 const PRODUCT_PRICE_MAP = new Map(PRODUCT_LIST.map((p) => [p.name, p.price]));
+const PRODUCT_IMAGE_MAP = new Map(PRODUCT_LIST.map((p) => [p.name, p.image]));
 
 export const Route = createFileRoute("/")({
   head: () => ({
