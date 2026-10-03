@@ -19,6 +19,7 @@ import progressLogo from "@/assets/progress-header-transparent.png.asset.json";
 
 
 import { AddressAutocomplete } from "@/components/address-autocomplete";
+import { LandingSections } from "@/components/landing-sections";
 import { checkEmail } from "@/lib/email-typo";
 import { allInclusiveAddOns, isAllInclusiveProduct, isSpecialProduct, specialDiscountFor } from "@/lib/special-discount";
 
@@ -1587,6 +1588,8 @@ function QuotePage() {
         </div>
       )}
 
+
+      <LandingSections />
 
       {/* Footer */}
       <footer className="border-t border-foreground/15 bg-background">
