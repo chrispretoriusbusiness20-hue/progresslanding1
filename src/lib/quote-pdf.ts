@@ -22,6 +22,7 @@ export type QuoteInput = {
   quantity: number;
   unitPrice: number | null;
   storyType: "single" | "double" | "";
+  flueKitAddOn?: boolean;
   flooring?: string;
   plateType?: "steel" | "glass" | "granite" | "";
   cornerInstall: boolean;
@@ -121,7 +122,7 @@ export async function generateQuotePDF(
   // Skip the flue kit line when the product already bundles one (e.g. the SPECIAL Magma).
   const allInclusive = isAllInclusiveProduct(input.productName);
   const flueKitIncludedInProduct = allInclusive || /flue\s*kit/i.test(input.productName);
-  if (input.storyType && !flueKitIncludedInProduct) {
+  if (input.storyType && !flueKitIncludedInProduct && input.flueKitAddOn !== false) {
     const flueUnit = input.storyType === "double" ? 9650 : 7650;
     items.push({
       quantity: 1,
