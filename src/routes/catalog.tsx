@@ -120,12 +120,7 @@ function CatalogPage() {
 
   const totalShown = grouped.reduce((n, g) => n + g.items.length, 0);
 
-  const handleSelect = async (p: Product) => {
-    try {
-      await navigator.clipboard.writeText(p.name);
-    } catch {
-      /* clipboard unavailable */
-    }
+  const handleSelect = (p: Product) => {
     setCopiedId(p.id);
     try {
       sessionStorage.setItem("selectedProduct", p.name);
