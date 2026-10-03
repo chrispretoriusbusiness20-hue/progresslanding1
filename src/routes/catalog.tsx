@@ -203,8 +203,8 @@ function CatalogPage() {
             </span>
           </h1>
           <p className="mt-6 max-w-2xl text-base text-foreground/75 sm:text-lg">
-            Browse our best sellers — fireplaces, braais, gas, pellet and more.
-            Tap any product to copy its name, then paste it into the quote form.
+            Browse our best sellers — fireplaces and braais.
+            Tap "Add on" on any product and it will be pre-filled in the quote form.
           </p>
 
           <p className="mt-8 text-xs uppercase tracking-widest text-muted-foreground">
