@@ -185,6 +185,7 @@ function RootComponent() {
 
   useEffect(() => {
     captureFbclid();
+    ensureFbqStub();
     const start = () => loadMetaPixel();
     const idle = (window as unknown as { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => void }).requestIdleCallback;
     if (document.readyState === "complete") {

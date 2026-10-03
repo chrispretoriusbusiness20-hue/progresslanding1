@@ -1356,7 +1356,7 @@ function QuotePage() {
                   <Landmark className="h-4 w-4" />
                   Pay by EFT
                 </button>
-                {quoteSession ? (
+                {quoteSession || checkoutFallback ? (
                   <Link
                     to="/checkout"
                     aria-label="Proceed to the secure checkout page"
