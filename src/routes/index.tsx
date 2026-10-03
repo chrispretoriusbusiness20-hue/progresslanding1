@@ -14,6 +14,7 @@ const generateQuotePDF = async (
 };
 
 import productsData from "@/data/products.json";
+import productsFull from "@/data/products-full.json";
 import progressLogo from "@/assets/progress-header-transparent.png.asset.json";
 
 
@@ -27,9 +28,22 @@ import { allInclusiveAddOns, isAllInclusiveProduct, isSpecialProduct, specialDis
 
 const QUOTE_APP_URL = "https://fireplacequotes.co.za/";
 import { createStitchPaymentLink } from "@/lib/stitch.functions";
-const PRODUCT_LIST = (productsData as { name: string; price: string }[]).filter(
-  (p) => p.name === "Magma 10kW Closed Combustion Fireplace incl Flue Kit SPECIAL",
-);
+// Quote dropdown mirrors the curated catalogue so every catalogue item is selectable.
+const QUOTE_PRODUCT_IDS = [
+  "magma-10kw-closed-combustion-fireplace-incl-flue-kit-special",
+  "magma-001-freestanding-fireplace-10kw-progress-group",
+  "a2-magma-002-freestanding-fireplace-10kw",
+  "cubo-700-insert-fireplace-12-5kw",
+  "800-de-lux-304-stainless-steel",
+  "1000-de-lux-braai-mild-steel",
+  "1500-de-lux-braai-mild-steel",
+  "boma-braai",
+  "boma-fire-pits-mosaic",
+];
+const PRODUCT_LIST = QUOTE_PRODUCT_IDS.map((id) =>
+  (productsFull as { id: string; name: string; price: string }[]).find((p) => p.id === id),
+).filter((p): p is { id: string; name: string; price: string } => Boolean(p));
+void productsData;
 const PRODUCT_NAMES = PRODUCT_LIST.map((p) => p.name);
 const PRODUCT_PRICE_MAP = new Map(PRODUCT_LIST.map((p) => [p.name, p.price]));
 
