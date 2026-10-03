@@ -1053,7 +1053,7 @@ function QuotePage() {
             <div className="grid gap-4 sm:grid-cols-[2fr_1fr]">
               <Field label="Product of interest *">
                 <select
-                  value={PRODUCT_NAMES.includes(product) ? product : ""}
+                  value={product}
                   onChange={(e) => setProduct(e.target.value)}
                   required
                   className="form-input"
@@ -1061,6 +1061,9 @@ function QuotePage() {
                   <option value="" disabled>
                     Select a product…
                   </option>
+                  {product && !PRODUCT_NAMES.includes(product) && (
+                    <option value={product}>{product}</option>
+                  )}
                   {PRODUCT_NAMES.map((n) => (
                     <option key={n} value={n}>
                       {n}
