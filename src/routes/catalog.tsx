@@ -47,7 +47,7 @@ export const Route = createFileRoute("/catalog")({
       {
         name: "description",
         content:
-          "Browse all 700+ Progress Group products — fireplaces, braais, air conditioners, lighting, biomass and flue accessories. Pick a product and request an instant quote.",
+          "Browse our featured Progress Group best sellers — fireplaces and braais. Pick a product and request an instant quote.",
       },
       { property: "og:title", content: "Full Catalog — The Progress Group" },
       {
