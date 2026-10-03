@@ -18,9 +18,11 @@ type Product = {
 
 const allProducts = productsData as Product[];
 
-// Only the Magma 001 Special is available for quoting right now.
+// Full catalogue — the Magma 001 Special is pinned first as the featured special.
 const MAGMA_SPECIAL_ID = "magma-10kw-closed-combustion-fireplace-incl-flue-kit-special";
-const products = allProducts.filter((p) => p.id === MAGMA_SPECIAL_ID);
+const products = [...allProducts].sort((a, b) =>
+  a.id === MAGMA_SPECIAL_ID ? -1 : b.id === MAGMA_SPECIAL_ID ? 1 : 0,
+);
 
 // Build category list dynamically, sorted by item count desc for nicer UX.
 const CATEGORY_ORDER = (() => {
@@ -197,13 +199,12 @@ function CatalogPage() {
             </span>
           </h1>
           <p className="mt-6 max-w-2xl text-base text-foreground/75 sm:text-lg">
-            The Magma 001 — a 10kW closed-combustion fireplace with flue kit,
-            available as a special including VAT. Tap the product to copy its
-            name, then paste it into the quote form.
+            Browse our best sellers — fireplaces, braais, gas, pellet and more.
+            Tap any product to copy its name, then paste it into the quote form.
           </p>
 
           <p className="mt-8 text-xs uppercase tracking-widest text-muted-foreground">
-            Showing 1 featured product
+            Showing {products.length} products
           </p>
         </div>
       </section>
