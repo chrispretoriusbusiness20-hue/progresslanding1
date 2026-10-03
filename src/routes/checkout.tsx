@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import {
+  AlertTriangle,
   ArrowLeft,
   Check,
   ChevronDown,
@@ -399,7 +400,7 @@ function CheckoutPage() {
 
 
               {/* EFT — collapsed until the client chooses this option */}
-              <div className="border-2 border-foreground bg-background p-6 shadow-brutal-sm">
+              <div id="pay-by-eft" className="border-2 border-foreground bg-background p-6 shadow-brutal-sm">
                 <button
                   type="button"
                   onClick={() => setEftOpen((open) => !open)}
