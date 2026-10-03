@@ -268,6 +268,22 @@ function QuotePage() {
   const [headerHidden, setHeaderHidden] = useState(false);
   const [quoteNo, setQuoteNo] = useState<string | null>(null);
 
+  // Pick up a product added from the catalogue ("Add on") and prefill the
+  // quote form directly — no copy/paste or quoting modal needed.
+  useEffect(() => {
+    try {
+      const selected = sessionStorage.getItem("selectedProduct");
+      if (selected) {
+        setProduct(selected);
+        sessionStorage.removeItem("selectedProduct");
+        sessionStorage.removeItem("selectedProductPrice");
+      }
+    } catch {
+      /* sessionStorage unavailable */
+    }
+  }, []);
+
+
 
   useEffect(() => {
     let lastScrollY = window.scrollY;
@@ -1037,7 +1053,7 @@ function QuotePage() {
             <div className="grid gap-4 sm:grid-cols-[2fr_1fr]">
               <Field label="Product of interest *">
                 <select
-                  value={PRODUCT_NAMES.includes(product) ? product : ""}
+                  value={product}
                   onChange={(e) => setProduct(e.target.value)}
                   required
                   className="form-input"
@@ -1045,6 +1061,9 @@ function QuotePage() {
                   <option value="" disabled>
                     Select a product…
                   </option>
+                  {product && !PRODUCT_NAMES.includes(product) && (
+                    <option value={product}>{product}</option>
+                  )}
                   {PRODUCT_NAMES.map((n) => (
                     <option key={n} value={n}>
                       {n}

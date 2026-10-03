@@ -120,12 +120,7 @@ function CatalogPage() {
 
   const totalShown = grouped.reduce((n, g) => n + g.items.length, 0);
 
-  const handleSelect = async (p: Product) => {
-    try {
-      await navigator.clipboard.writeText(p.name);
-    } catch {
-      /* clipboard unavailable */
-    }
+  const handleSelect = (p: Product) => {
     setCopiedId(p.id);
     try {
       sessionStorage.setItem("selectedProduct", p.name);
@@ -467,10 +462,10 @@ function ProductCard({
           >
             {isCopied ? (
               <>
-                <Check className="h-3.5 w-3.5" /> Copied — go to form
+                <Check className="h-3.5 w-3.5" /> Added — go to quote
               </>
             ) : (
-              <>Get quote</>
+              <>Add on</>
             )}
           </Link>
           <a
