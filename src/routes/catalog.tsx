@@ -199,13 +199,12 @@ function CatalogPage() {
             </span>
           </h1>
           <p className="mt-6 max-w-2xl text-base text-foreground/75 sm:text-lg">
-            The Magma 001 — a 10kW closed-combustion fireplace with flue kit,
-            available as a special including VAT. Tap the product to copy its
-            name, then paste it into the quote form.
+            Browse our best sellers — fireplaces, braais, gas, pellet and more.
+            Tap any product to copy its name, then paste it into the quote form.
           </p>
 
           <p className="mt-8 text-xs uppercase tracking-widest text-muted-foreground">
-            Showing 1 featured product
+            Showing {products.length} products
           </p>
         </div>
       </section>
