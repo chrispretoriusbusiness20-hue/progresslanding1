@@ -1,3 +1,2 @@
-- [x] Catalogue: only 5 featured products + Magma special
-- [ ] Rename "Winter Special" badge to "Summer Special" (index.tsx ~936)
-- [ ] Verify both in browser + build log
+- [x] Catalogue: only 5 featured products + Magma special (images fixed)
+- [x] Rename "Winter Special" badge to "Summer Special"
