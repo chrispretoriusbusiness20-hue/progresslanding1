@@ -40,12 +40,14 @@ const QUOTE_PRODUCT_IDS = [
   "boma-braai",
   "boma-fire-pits-mosaic",
 ];
+type QuoteProduct = { id: string; name: string; price: string; image: string };
 const PRODUCT_LIST = QUOTE_PRODUCT_IDS.map((id) =>
-  (productsFull as { id: string; name: string; price: string }[]).find((p) => p.id === id),
-).filter((p): p is { id: string; name: string; price: string } => Boolean(p));
+  (productsFull as { id: string; name: string; price: string; image: string }[]).find((p) => p.id === id),
+).filter((p): p is QuoteProduct => Boolean(p));
 void productsData;
 const PRODUCT_NAMES = PRODUCT_LIST.map((p) => p.name);
 const PRODUCT_PRICE_MAP = new Map(PRODUCT_LIST.map((p) => [p.name, p.price]));
+const PRODUCT_IMAGE_MAP = new Map(PRODUCT_LIST.map((p) => [p.name, p.image]));
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -1111,6 +1113,31 @@ function QuotePage() {
                 />
               </Field>
             </div>
+
+            {/* Selected product photo — straight from progressgroup.co.za */}
+            {product && PRODUCT_IMAGE_MAP.get(product) && (
+              <div className="flex items-center gap-4 border-2 border-border bg-card p-3">
+                <img
+                  src={PRODUCT_IMAGE_MAP.get(product)!}
+                  alt={product}
+                  className="h-24 w-24 shrink-0 border border-border object-cover sm:h-28 sm:w-28"
+                  loading="lazy"
+                  width={112}
+                  height={112}
+                />
+                <div className="min-w-0">
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                    Selected product
+                  </p>
+                  <p className="truncate text-sm font-bold">{product}</p>
+                  {PRODUCT_PRICE_MAP.get(product) && (
+                    <p className="mt-1 text-sm font-semibold text-primary">
+                      {PRODUCT_PRICE_MAP.get(product)}
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
 
             <Field label="Does the client need installation?">
               <div className="flex gap-4 text-sm text-foreground">
