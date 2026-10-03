@@ -126,6 +126,7 @@ function CheckoutPage() {
         // Cross-origin — the tab will navigate once we have the URL.
       }
     }
+    setStitchError(null);
     setStitchLoading(true);
     try {
       const res = await stitchFn({
@@ -147,19 +148,33 @@ function CheckoutPage() {
         closePayTab();
         const message = res.error || "";
         if (/unauthor/i.test(message)) {
-          toast.error("This payment link has expired.", {
-            description:
-              "For your security, payment links are valid for 1 hour. Please go back to the quote form, resubmit your details, and pay right away.",
-            duration: 10000,
+          setStitchError({
+            title: "This payment link has expired",
+            detail:
+              "For your security, payment links are valid for 1 hour. Go back to the quote form, resubmit your details, and pay right away — or pay by EFT below.",
+          });
+        } else if (/credentials|not configured/i.test(message)) {
+          setStitchError({
+            title: "Online payments are temporarily unavailable",
+            detail:
+              "We're aware of the issue. Please pay by EFT below — your invoice number is the reference — or WhatsApp us and we'll help you complete payment.",
           });
         } else {
-          toast.error(message || "Could not open the payment page. Please try EFT below.");
+          setStitchError({
+            title: "We couldn't open the payment page",
+            detail:
+              "This is usually temporary. Tap Pay now to try again, or pay by EFT below using your invoice number as the reference.",
+          });
         }
       }
     } catch (err) {
       closePayTab();
       console.error("Stitch checkout failed", err);
-      toast.error("Could not open the payment page. Please try EFT below.");
+      setStitchError({
+        title: "We couldn't reach the payment service",
+        detail:
+          "Please check your internet connection and tap Pay now to try again, or pay by EFT below using your invoice number as the reference.",
+      });
     } finally {
       setStitchLoading(false);
     }
