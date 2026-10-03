@@ -353,8 +353,44 @@ function CheckoutPage() {
                   )}
                   {stitchLoading
                     ? "Preparing payment…"
-                    : `Pay now — ${formatRand(payload.cartTotalNum)}`}
+                    : stitchError
+                      ? "Try again"
+                      : `Pay now — ${formatRand(payload.cartTotalNum)}`}
                 </button>
+                {stitchError && (
+                  <div
+                    role="alert"
+                    className="mt-4 border-2 border-destructive bg-destructive/10 p-4"
+                  >
+                    <p className="flex items-center gap-2 text-sm font-bold text-foreground">
+                      <AlertTriangle className="h-4 w-4 shrink-0 text-destructive" />
+                      {stitchError.title}
+                    </p>
+                    <p className="mt-1 text-sm text-muted-foreground">{stitchError.detail}</p>
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      <button
+                        type="button"
+                        onClick={() => void payWithStitch()}
+                        disabled={stitchLoading}
+                        className="border-2 border-foreground bg-background px-3 py-1.5 text-xs font-bold uppercase tracking-wider shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none disabled:opacity-60"
+                      >
+                        Retry payment
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setEftOpen(true);
+                          document
+                            .getElementById("pay-by-eft")
+                            ?.scrollIntoView({ behavior: "smooth", block: "start" });
+                        }}
+                        className="border-2 border-foreground bg-background px-3 py-1.5 text-xs font-bold uppercase tracking-wider shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
+                      >
+                        Pay by EFT instead
+                      </button>
+                    </div>
+                  </div>
+                )}
                 <p className="mt-3 text-center text-xs text-muted-foreground">
                   🔒 Payments are processed securely by Stitch. You'll receive a confirmation
                   email once your payment clears.
