@@ -3,12 +3,17 @@ import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import {
   ArrowLeft,
+  Check,
   ChevronDown,
   CreditCard,
   Landmark,
   Loader2,
+  Lock,
   MessageCircle,
+  ShieldCheck,
   ShoppingCart,
+  Truck,
+  Wrench,
   X,
 } from "lucide-react";
 
@@ -162,7 +167,7 @@ function CheckoutPage() {
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b border-foreground/15 bg-background">
-        <div className="mx-auto flex max-w-4xl items-center justify-between px-6 py-5">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
           <a
             href="https://progressgroup.co.za/"
             target="_blank"
@@ -194,7 +199,17 @@ function CheckoutPage() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-4xl px-6 py-10 sm:py-14">
+      {/* Trust strip */}
+      <div className="border-b border-foreground/15 bg-secondary/40">
+        <ul className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-x-6 gap-y-1 px-6 py-2 text-[11px] font-bold uppercase tracking-wider text-foreground">
+          <li className="flex items-center gap-1.5"><Truck className="h-3.5 w-3.5" />Delivery included</li>
+          <li className="flex items-center gap-1.5"><Wrench className="h-3.5 w-3.5" />Expert installation</li>
+          <li className="flex items-center gap-1.5"><ShieldCheck className="h-3.5 w-3.5" />Prices incl. VAT</li>
+          <li className="flex items-center gap-1.5"><Lock className="h-3.5 w-3.5" />Secure payment</li>
+        </ul>
+      </div>
+
+      <main className="mx-auto max-w-6xl px-6 py-10 sm:py-14">
         {!loaded ? null : !payload ? (
           <div className="border-2 border-foreground bg-background p-8 text-center shadow-brutal-sm">
             <h1 className="font-display text-2xl font-bold uppercase tracking-wide text-foreground">
@@ -221,10 +236,34 @@ function CheckoutPage() {
               {payload.firstName} {payload.lastName}
             </p>
 
+            {/* Checkout steps */}
+            <ol aria-label="Checkout progress" className="mt-6 grid grid-cols-3 gap-2 text-xs font-bold uppercase tracking-wider">
+              {[
+                { label: "Quote", done: true },
+                { label: "Details", done: true },
+                { label: "Payment", done: false },
+              ].map((step, i) => (
+                <li
+                  key={step.label}
+                  aria-current={step.done ? undefined : "step"}
+                  className={`flex items-center gap-2 border-b-4 pb-2 ${step.done ? "border-foreground/40 text-muted-foreground" : "border-primary text-foreground"}`}
+                >
+                  <span
+                    className={`inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[11px] ${step.done ? "bg-foreground/15 text-foreground" : "bg-primary text-primary-foreground"}`}
+                  >
+                    {step.done ? <Check className="h-3.5 w-3.5" /> : i + 1}
+                  </span>
+                  {step.label}
+                </li>
+              ))}
+            </ol>
+
+            <div className="mt-8 grid gap-8 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-start">
             {/* Order summary */}
+            <aside className="lg:order-2 lg:sticky lg:top-6">
             <section
               aria-label="Order summary"
-              className="mt-8 border-2 border-foreground bg-background p-6 shadow-brutal-sm"
+              className="border-2 border-foreground bg-background p-6 shadow-brutal-sm"
             >
               <h2 className="text-sm font-bold uppercase tracking-wider text-foreground">
                 Order summary
@@ -256,10 +295,17 @@ function CheckoutPage() {
                   </dd>
                 </div>
               </dl>
+              <p className="mt-2 text-xs text-muted-foreground">All prices include VAT.</p>
+              <ul className="mt-5 space-y-2 border-t-2 border-foreground/10 pt-4 text-xs text-muted-foreground">
+                <li className="flex items-center gap-2"><Lock className="h-4 w-4 text-foreground" />Secure payment via Stitch</li>
+                <li className="flex items-center gap-2"><Truck className="h-4 w-4 text-foreground" />Delivery from Bellville, Cape Town</li>
+                <li className="flex items-center gap-2"><Wrench className="h-4 w-4 text-foreground" />Expert installation by Progress Installations</li>
+              </ul>
             </section>
+            </aside>
 
             {/* Payment options */}
-            <section aria-label="Payment options" className="mt-8 space-y-6">
+            <section aria-label="Payment options" className="space-y-6 lg:order-1">
               <h2 className="text-sm font-bold uppercase tracking-wider text-foreground">
                 Choose how to pay
               </h2>
@@ -433,6 +479,7 @@ function CheckoutPage() {
                 Need help? WhatsApp us
               </a>
             </section>
+            </div>
           </>
         )}
       </main>
