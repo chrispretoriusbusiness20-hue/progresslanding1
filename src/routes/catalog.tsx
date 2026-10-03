@@ -462,10 +462,10 @@ function ProductCard({
           >
             {isCopied ? (
               <>
-                <Check className="h-3.5 w-3.5" /> Copied — go to form
+                <Check className="h-3.5 w-3.5" /> Added — go to quote
               </>
             ) : (
-              <>Get quote</>
+              <>Add on</>
             )}
           </Link>
           <a
