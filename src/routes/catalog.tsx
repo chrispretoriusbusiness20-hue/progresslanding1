@@ -18,10 +18,19 @@ type Product = {
 
 const allProducts = productsData as Product[];
 
-// Full catalogue — the Magma 001 Special is pinned first as the featured special.
+// Curated catalogue — the Magma 001 Special is pinned first as the featured special,
+// followed by the five featured best sellers.
 const MAGMA_SPECIAL_ID = "magma-10kw-closed-combustion-fireplace-incl-flue-kit-special";
-const products = [...allProducts].sort((a, b) =>
-  a.id === MAGMA_SPECIAL_ID ? -1 : b.id === MAGMA_SPECIAL_ID ? 1 : 0,
+const FEATURED_IDS = [
+  MAGMA_SPECIAL_ID,
+  "magma-001-freestanding-fireplace-10kw-progress-group",
+  "a2-magma-002-freestanding-fireplace-10kw",
+  "cubo-700-insert-fireplace-12-5kw",
+  "800-de-lux-304-stainless-steel",
+  "1000-de-lux-braai-mild-steel",
+];
+const products = FEATURED_IDS.map((id) => allProducts.find((p) => p.id === id)).filter(
+  (p): p is Product => Boolean(p),
 );
 
 // Build category list dynamically, sorted by item count desc for nicer UX.
