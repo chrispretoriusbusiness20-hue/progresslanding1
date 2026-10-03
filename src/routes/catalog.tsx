@@ -18,10 +18,19 @@ type Product = {
 
 const allProducts = productsData as Product[];
 
-// Full catalogue — the Magma 001 Special is pinned first as the featured special.
+// Curated catalogue — the Magma 001 Special is pinned first as the featured special,
+// followed by the five featured best sellers.
 const MAGMA_SPECIAL_ID = "magma-10kw-closed-combustion-fireplace-incl-flue-kit-special";
-const products = [...allProducts].sort((a, b) =>
-  a.id === MAGMA_SPECIAL_ID ? -1 : b.id === MAGMA_SPECIAL_ID ? 1 : 0,
+const FEATURED_IDS = [
+  MAGMA_SPECIAL_ID,
+  "magma-001-freestanding-fireplace-10kw-progress-group",
+  "a2-magma-002-freestanding-fireplace-10kw",
+  "cubo-700-insert-fireplace-12-5kw",
+  "800-de-lux-304-stainless-steel",
+  "1000-de-lux-braai-mild-steel",
+];
+const products = FEATURED_IDS.map((id) => allProducts.find((p) => p.id === id)).filter(
+  (p): p is Product => Boolean(p),
 );
 
 // Build category list dynamically, sorted by item count desc for nicer UX.
@@ -38,7 +47,7 @@ export const Route = createFileRoute("/catalog")({
       {
         name: "description",
         content:
-          "Browse all 700+ Progress Group products — fireplaces, braais, air conditioners, lighting, biomass and flue accessories. Pick a product and request an instant quote.",
+          "Browse our featured Progress Group best sellers — fireplaces and braais. Pick a product and request an instant quote.",
       },
       { property: "og:title", content: "Full Catalog — The Progress Group" },
       {
@@ -194,8 +203,8 @@ function CatalogPage() {
             </span>
           </h1>
           <p className="mt-6 max-w-2xl text-base text-foreground/75 sm:text-lg">
-            Browse our best sellers — fireplaces, braais, gas, pellet and more.
-            Tap any product to copy its name, then paste it into the quote form.
+            Browse our best sellers — fireplaces and braais.
+            Tap "Add on" on any product and it will be pre-filled in the quote form.
           </p>
 
           <p className="mt-8 text-xs uppercase tracking-widest text-muted-foreground">
