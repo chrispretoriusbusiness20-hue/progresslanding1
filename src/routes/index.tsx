@@ -913,6 +913,16 @@ function QuotePage() {
   };
 
   const showQuote = (submitted && lookup?.match) || canContinue;
+
+  // Fallback: if the quote session never arrives (e.g. PDF generation failed
+  // in the background), still let the client reach checkout — the checkout
+  // page reads the persisted progress_checkout payload independently.
+  const [checkoutFallback, setCheckoutFallback] = useState(false);
+  useEffect(() => {
+    if (quoteSession || !showQuote) return;
+    const t = setTimeout(() => setCheckoutFallback(true), 8000);
+    return () => clearTimeout(t);
+  }, [quoteSession, showQuote]);
   // Once the quote is submitted, the client is in the payment step — lock all
   // option inputs so the quoted configuration/amount cannot be altered.
   const optionsLocked = submitted;
