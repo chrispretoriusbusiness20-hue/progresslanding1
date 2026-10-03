@@ -1114,6 +1114,31 @@ function QuotePage() {
               </Field>
             </div>
 
+            {/* Selected product photo — straight from progressgroup.co.za */}
+            {product && PRODUCT_IMAGE_MAP.get(product) && (
+              <div className="flex items-center gap-4 border-2 border-border bg-card p-3">
+                <img
+                  src={PRODUCT_IMAGE_MAP.get(product)!}
+                  alt={product}
+                  className="h-24 w-24 shrink-0 border border-border object-cover sm:h-28 sm:w-28"
+                  loading="lazy"
+                  width={112}
+                  height={112}
+                />
+                <div className="min-w-0">
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                    Selected product
+                  </p>
+                  <p className="truncate text-sm font-bold">{product}</p>
+                  {PRODUCT_PRICE_MAP.get(product) && (
+                    <p className="mt-1 text-sm font-semibold text-primary">
+                      {PRODUCT_PRICE_MAP.get(product)}
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
+
             <Field label="Does the client need installation?">
               <div className="flex gap-4 text-sm text-foreground">
                 <label className="flex items-center gap-2">
