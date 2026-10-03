@@ -1588,6 +1588,8 @@ function QuotePage() {
       )}
 
 
+      <LandingSections />
+
       {/* Footer */}
       <footer className="border-t border-foreground/15 bg-background">
         <div className="mx-auto grid max-w-6xl gap-12 px-6 py-16 md:grid-cols-[1.4fr_1fr_1fr]">
