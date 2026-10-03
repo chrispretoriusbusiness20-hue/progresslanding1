@@ -1657,7 +1657,6 @@ function InstantQuote({
   productName,
   quantity,
   storyType,
-  flueKitAddOn: flueKitAddOn && flueKitApplies(product),
   flooring,
   plateType,
   cornerInstall,
