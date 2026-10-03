@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import {
+  AlertTriangle,
   ArrowLeft,
   Check,
   ChevronDown,
@@ -67,6 +68,7 @@ function CheckoutPage() {
   const [payload, setPayload] = useState<CheckoutPayload | null>(null);
   const [loaded, setLoaded] = useState(false);
   const [stitchLoading, setStitchLoading] = useState(false);
+  const [stitchError, setStitchError] = useState<{ title: string; detail: string } | null>(null);
   const [eftOpen, setEftOpen] = useState(false);
   const stitchFn = useServerFn(createStitchPaymentLink);
 
@@ -125,6 +127,7 @@ function CheckoutPage() {
         // Cross-origin — the tab will navigate once we have the URL.
       }
     }
+    setStitchError(null);
     setStitchLoading(true);
     try {
       const res = await stitchFn({
@@ -146,19 +149,33 @@ function CheckoutPage() {
         closePayTab();
         const message = res.error || "";
         if (/unauthor/i.test(message)) {
-          toast.error("This payment link has expired.", {
-            description:
-              "For your security, payment links are valid for 1 hour. Please go back to the quote form, resubmit your details, and pay right away.",
-            duration: 10000,
+          setStitchError({
+            title: "This payment link has expired",
+            detail:
+              "For your security, payment links are valid for 1 hour. Go back to the quote form, resubmit your details, and pay right away — or pay by EFT below.",
+          });
+        } else if (/credentials|not configured/i.test(message)) {
+          setStitchError({
+            title: "Online payments are temporarily unavailable",
+            detail:
+              "We're aware of the issue. Please pay by EFT below — your invoice number is the reference — or WhatsApp us and we'll help you complete payment.",
           });
         } else {
-          toast.error(message || "Could not open the payment page. Please try EFT below.");
+          setStitchError({
+            title: "We couldn't open the payment page",
+            detail:
+              "This is usually temporary. Tap Pay now to try again, or pay by EFT below using your invoice number as the reference.",
+          });
         }
       }
     } catch (err) {
       closePayTab();
       console.error("Stitch checkout failed", err);
-      toast.error("Could not open the payment page. Please try EFT below.");
+      setStitchError({
+        title: "We couldn't reach the payment service",
+        detail:
+          "Please check your internet connection and tap Pay now to try again, or pay by EFT below using your invoice number as the reference.",
+      });
     } finally {
       setStitchLoading(false);
     }
@@ -337,8 +354,44 @@ function CheckoutPage() {
                   )}
                   {stitchLoading
                     ? "Preparing payment…"
-                    : `Pay now — ${formatRand(payload.cartTotalNum)}`}
+                    : stitchError
+                      ? "Try again"
+                      : `Pay now — ${formatRand(payload.cartTotalNum)}`}
                 </button>
+                {stitchError && (
+                  <div
+                    role="alert"
+                    className="mt-4 border-2 border-destructive bg-destructive/10 p-4"
+                  >
+                    <p className="flex items-center gap-2 text-sm font-bold text-foreground">
+                      <AlertTriangle className="h-4 w-4 shrink-0 text-destructive" />
+                      {stitchError.title}
+                    </p>
+                    <p className="mt-1 text-sm text-muted-foreground">{stitchError.detail}</p>
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      <button
+                        type="button"
+                        onClick={() => void payWithStitch()}
+                        disabled={stitchLoading}
+                        className="border-2 border-foreground bg-background px-3 py-1.5 text-xs font-bold uppercase tracking-wider shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none disabled:opacity-60"
+                      >
+                        Retry payment
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setEftOpen(true);
+                          document
+                            .getElementById("pay-by-eft")
+                            ?.scrollIntoView({ behavior: "smooth", block: "start" });
+                        }}
+                        className="border-2 border-foreground bg-background px-3 py-1.5 text-xs font-bold uppercase tracking-wider shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
+                      >
+                        Pay by EFT instead
+                      </button>
+                    </div>
+                  </div>
+                )}
                 <p className="mt-3 text-center text-xs text-muted-foreground">
                   🔒 Payments are processed securely by Stitch. You'll receive a confirmation
                   email once your payment clears.
@@ -347,7 +400,7 @@ function CheckoutPage() {
 
 
               {/* EFT — collapsed until the client chooses this option */}
-              <div className="border-2 border-foreground bg-background p-6 shadow-brutal-sm">
+              <div id="pay-by-eft" className="border-2 border-foreground bg-background p-6 shadow-brutal-sm">
                 <button
                   type="button"
                   onClick={() => setEftOpen((open) => !open)}
