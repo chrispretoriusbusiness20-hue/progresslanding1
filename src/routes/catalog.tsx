@@ -28,6 +28,8 @@ const FEATURED_IDS = [
   "cubo-700-insert-fireplace-12-5kw",
   "800-de-lux-304-stainless-steel",
   "1000-de-lux-braai-mild-steel",
+  "boma-braai",
+  "boma-fire-pits-mosaic",
 ];
 const products = FEATURED_IDS.map((id) => allProducts.find((p) => p.id === id)).filter(
   (p): p is Product => Boolean(p),
