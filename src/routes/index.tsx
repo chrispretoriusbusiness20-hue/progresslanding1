@@ -242,6 +242,7 @@ function QuotePage() {
   const [product, setProduct] = useState("Magma 10kW Closed Combustion Fireplace incl Flue Kit SPECIAL");
   const [quantity, setQuantity] = useState(1);
   const [storyType, setStoryType] = useState<"single" | "double" | "">("single");
+  const [flueKitAddOn, setFlueKitAddOn] = useState(true);
   const [flooring, setFlooring] = useState("");
   const [roofType, setRoofType] = useState("");
   const [plateType, setPlateType] = useState<"steel" | "glass" | "granite">("glass");
@@ -394,6 +395,7 @@ function QuotePage() {
           product: product.trim(),
           quantity,
           storyType: storyType === "" ? null : storyType,
+          flueKitAddOn: flueKitAddOn && flueKitApplies(product),
           flooring: flooring || undefined,
           roofType: roofType || undefined,
           plateType: flooring && !/tile/i.test(flooring) ? plateType : undefined,
@@ -431,6 +433,7 @@ function QuotePage() {
             quantity,
             unitPrice,
             storyType,
+            flueKitAddOn: flueKitAddOn && flueKitApplies(product),
             flooring,
             plateType,
             cornerInstall,
@@ -555,7 +558,7 @@ function QuotePage() {
   const unitPriceNum = matched?.catalog ? parseRand(matched.catalog.unitPrice) : null;
   const productSubtotal =
     unitPriceNum !== null && matched ? unitPriceNum * matched.quantity : null;
-  const flueKitPrice = matched?.flueKitPrice ?? null;
+  const flueKitPrice = flueKitAddOn && flueKitApplies(product) ? matched?.flueKitPrice ?? null : null;
   const platePrice = matched?.plate?.price ?? null;
   const cornerInstallPrice = matched?.cornerInstallPrice ?? null;
   const transportPrice = matched?.transportPrice ?? null;
@@ -621,8 +624,7 @@ function QuotePage() {
     const unitPrice = priceStr ? parseRand(priceStr) : null;
     const subtotal = unitPrice !== null ? unitPrice * quantity : null;
     const allInclusive = isAllInclusiveProduct(product);
-    const flueKitIncluded = allInclusive || /flue\s*kit/i.test(product);
-    const flueKit = flueKitIncluded ? null : storyType === "double" ? 9650 : storyType === "single" ? 7650 : null;
+    const flueKit = !(flueKitAddOn && flueKitApplies(product)) ? null : storyType === "double" ? 9650 : storyType === "single" ? 7650 : null;
     const isSpecial = isSpecialProduct(product);
     const needsPlate = !allInclusive && !isSpecial && flooring.length > 0 && !/tile/i.test(flooring);
     const plate = needsPlate ? computePlatePrice(plateType, cornerInstall) : null;
@@ -637,7 +639,7 @@ function QuotePage() {
       productTotal: hasAny ? productTotal : null,
       installTotal,
     };
-  }, [product, quantity, storyType, flooring, plateType, cornerInstall, installationRequired]);
+  }, [product, quantity, storyType, flooring, plateType, cornerInstall, installationRequired, flueKitAddOn]);
 
   const estimatedTotal = estimatedBreakdown.total;
   const estimatedProductTotal = estimatedBreakdown.productTotal;
@@ -823,6 +825,7 @@ function QuotePage() {
       quantity,
       unitPrice,
       storyType,
+      flueKitAddOn: flueKitAddOn && flueKitApplies(product),
       flooring,
       plateType,
       cornerInstall,
@@ -1212,6 +1215,21 @@ function QuotePage() {
             )}
 
 
+            {flueKitApplies(product) && (
+              <label className="flex min-h-11 items-center gap-3 border-2 border-border bg-card px-3 py-2 text-sm">
+                <input
+                  type="checkbox"
+                  checked={flueKitAddOn}
+                  onChange={(e) => setFlueKitAddOn(e.target.checked)}
+                  disabled={optionsLocked}
+                  className="h-4 w-4 accent-primary"
+                />
+                <span>
+                  Add flue kit ({storyType === "double" ? "double story +R9 650" : "single story +R7 650"})
+                </span>
+              </label>
+            )}
+
             {/* Instant quote breakdown — live, no submission required */}
             <InstantQuote
               productName={product}
@@ -1221,6 +1239,7 @@ function QuotePage() {
               plateType={plateType}
               cornerInstall={cornerInstall}
               installationRequired={installationRequired}
+              flueKitAddOn={flueKitAddOn}
             />
 
 
@@ -1328,6 +1347,7 @@ function QuotePage() {
                         quantity,
                         unitPrice,
                         storyType,
+                        flueKitAddOn: flueKitAddOn && flueKitApplies(product),
                         flooring,
                         plateType,
                         cornerInstall,
@@ -1628,6 +1648,11 @@ function BreakdownRow({ label, value, hint }: { label: string; value: string; hi
   );
 }
 
+function flueKitApplies(name: string): boolean {
+  if (isAllInclusiveProduct(name) || /flue\s*kit/i.test(name)) return false;
+  return /fireplace|braai|combustion|insert|stove|grate/i.test(name);
+}
+
 function InstantQuote({
   productName,
   quantity,
@@ -1636,6 +1661,7 @@ function InstantQuote({
   plateType,
   cornerInstall,
   installationRequired,
+  flueKitAddOn,
 }: {
   productName: string;
   quantity: number;
@@ -1644,13 +1670,14 @@ function InstantQuote({
   plateType: "steel" | "glass" | "granite";
   cornerInstall: boolean;
   installationRequired: boolean;
+  flueKitAddOn: boolean;
 }) {
   const priceStr = PRODUCT_PRICE_MAP.get(productName) ?? null;
   const unitPrice = priceStr ? parseRand(priceStr) : null;
   const subtotal = unitPrice !== null ? unitPrice * quantity : null;
   const allInclusive = isAllInclusiveProduct(productName);
   const flueKitIncluded = allInclusive || /flue\s*kit/i.test(productName);
-  const flueKit = flueKitIncluded
+  const flueKit = flueKitIncluded || !flueKitAddOn || !flueKitApplies(productName)
     ? null
     : storyType === "double" ? 9650 : storyType === "single" ? 7650 : null;
   const isSpecial = isSpecialProduct(productName);

@@ -406,6 +406,7 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
       product: z.string().trim().min(1).max(200),
       quantity: z.number().int().min(1).max(50).default(1),
       storyType: z.enum(["single", "double"]).nullable(),
+      flueKitAddOn: z.boolean().optional(),
       flooring: z.string().trim().max(80).optional(),
       roofType: z.string().trim().max(80).optional(),
       plateType: z.enum(["steel", "glass", "granite"]).optional(),
@@ -439,7 +440,7 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
 
     const allInclusive = isAllInclusiveProduct(matched?.name ?? data.product);
     const flueKitIncluded = allInclusive || /flue\s*kit/i.test(matched?.name ?? "") || /flue\s*kit/i.test(data.product);
-    const flueKitPrice = flueKitIncluded
+    const flueKitPrice = flueKitIncluded || data.flueKitAddOn === false
       ? null
       : data.storyType === "double" ? 9650 : data.storyType === "single" ? 7650 : null;
 
