@@ -323,6 +323,9 @@ function tokens(s: string) {
 }
 
 function matchProduct(query: string): Product | null {
+  const exact = normName(query);
+  const exactHit = PRODUCTS.find((p) => normName(p.name) === exact);
+  if (exactHit) return exactHit;
   const q = tokens(query);
   if (q.length === 0) return null;
   const qSet = new Set(q);
