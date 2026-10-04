@@ -304,7 +304,15 @@ async function appendToQuoteSheet(row: (string | number | null)[]): Promise<void
 }
 
 type Product = { name: string; price: string; url: string; category: string };
-const PRODUCTS = productsData as Product[];
+// Price from the full catalogue (same source the quote form uses), with the
+// curated list taking precedence where names overlap (e.g. the Magma SPECIAL).
+const FULL_PRODUCTS = productsFullData as Product[];
+const normName = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+const curatedByName = new Map((productsData as Product[]).map((p) => [normName(p.name), p]));
+const PRODUCTS: Product[] = [
+  ...(productsData as Product[]),
+  ...FULL_PRODUCTS.filter((p) => !curatedByName.has(normName(p.name))),
+];
 
 function tokens(s: string) {
   return s
@@ -315,6 +323,9 @@ function tokens(s: string) {
 }
 
 function matchProduct(query: string): Product | null {
+  const exact = normName(query);
+  const exactHit = PRODUCTS.find((p) => normName(p.name) === exact);
+  if (exactHit) return exactHit;
   const q = tokens(query);
   if (q.length === 0) return null;
   const qSet = new Set(q);
