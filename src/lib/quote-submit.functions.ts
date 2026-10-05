@@ -303,7 +303,7 @@ async function appendToQuoteSheet(row: (string | number | null)[]): Promise<void
   }
 }
 
-type Product = { name: string; price: string; url: string; category: string };
+type Product = { name: string; price: string | null; url: string; category: string };
 // Price from the full catalogue (same source the quote form uses), with the
 // curated list taking precedence where names overlap (e.g. the Magma SPECIAL).
 const FULL_PRODUCTS = productsFullData as Product[];
@@ -400,7 +400,8 @@ async function computeDistanceKm(destination: string): Promise<number | null> {
   }
 }
 
-function parseRand(price: string): number | null {
+function parseRand(price: string | null | undefined): number | null {
+  if (!price) return null;
   const cleaned = price.replace(/[^0-9.,]/g, "").replace(/\s/g, "");
   const normalized = cleaned.replace(/\.(?=\d{3}(\D|$))/g, "").replace(",", ".");
   const n = Number.parseFloat(normalized);
@@ -768,7 +769,7 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
       catalog: matched
         ? {
             name: matched.name,
-            unitPrice: matched.price,
+            unitPrice: matched.price ?? "",
             url: matched.url,
             category: matched.category,
           }
