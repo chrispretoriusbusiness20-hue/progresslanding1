@@ -324,12 +324,19 @@ function CartPage() {
                 </div>
                 <p className="mt-1 text-xs text-muted-foreground">All prices include VAT.</p>
                 {hasPriceOnRequest && (
-                  <p className="mt-3 text-xs text-muted-foreground">Items marked "price on request" are excluded — our sales team will confirm their price.</p>
+                  <p className="mt-3 border-2 border-foreground/40 bg-muted p-3 text-xs">
+                    Your cart contains items marked "price on request". These can't be checked out online — our sales team will confirm the price first. Remove them to pay for the rest, or request a quote and we'll price everything together.
+                  </p>
                 )}
-                {step === "cart" && (
+                {step === "cart" && !hasPriceOnRequest && (
                   <button type="button" onClick={() => setStep("details")} className="mt-5 inline-flex min-h-11 w-full items-center justify-center border-2 border-foreground bg-primary px-6 text-xs font-bold uppercase tracking-wider text-primary-foreground shadow-brutal-sm">
                     Proceed to checkout
                   </button>
+                )}
+                {step === "cart" && hasPriceOnRequest && (
+                  <a href="/#form" className="mt-5 inline-flex min-h-11 w-full items-center justify-center border-2 border-foreground bg-primary px-6 text-xs font-bold uppercase tracking-wider text-primary-foreground shadow-brutal-sm">
+                    Request a quote instead
+                  </a>
                 )}
                 <p className="mt-4 flex items-center gap-2 text-xs text-muted-foreground"><ShieldCheck className="size-4" /> Secure payment by card or EFT</p>
               </div>
