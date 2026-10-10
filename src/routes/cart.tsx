@@ -269,9 +269,9 @@ function CartPage() {
                     <Field label="Phone" id="phone" type="tel" value={details.phone} error={errors.phone} autoComplete="tel" onChange={(v) => update("phone", v)} />
                   </div>
                   <div className="mt-4">
-                    <label htmlFor="address" className="text-xs font-bold uppercase tracking-widest">Delivery address</label>
+                    <label className="text-xs font-bold uppercase tracking-widest">Delivery address</label>
                     <div className="mt-1">
-                      <AddressAutocomplete id="address" value={details.address} onChange={(v: string) => update("address", v)} />
+                      <AddressAutocomplete value={details.address} onChange={(v: string) => update("address", v)} placeholder="Start typing your address" />
                     </div>
                     {errors.address && <p className="mt-1 text-sm text-destructive">{errors.address}</p>}
                   </div>

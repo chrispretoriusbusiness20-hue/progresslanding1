@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { ArrowLeft, Check, ImageOff, Heart, Sparkles, Trash2 } from "lucide-react";
+import { ArrowLeft, Check, ImageOff, Heart, ShoppingCart, Sparkles, Trash2 } from "lucide-react";
+import { useCart } from "@/hooks/use-cart";
 import productsData from "@/data/products-full.json";
 import { useFavorites } from "@/hooks/use-favorites";
 import progressLogo from "@/assets/progress-logo.jpeg.asset.json";
@@ -181,12 +182,15 @@ function CatalogPage() {
               className="h-10 w-auto transition-transform group-hover:-translate-y-0.5"
             />
           </a>
-          <Link
-            to="/"
-            className="inline-flex items-center gap-1 text-xs font-bold uppercase tracking-widest text-foreground/70 hover:text-foreground"
-          >
-            <ArrowLeft className="h-3 w-3" /> Back to quote
-          </Link>
+          <div className="flex items-center gap-4">
+            <Link
+              to="/"
+              className="inline-flex items-center gap-1 text-xs font-bold uppercase tracking-widest text-foreground/70 hover:text-foreground"
+            >
+              <ArrowLeft className="h-3 w-3" /> Back to quote
+            </Link>
+            <CartLink />
+          </div>
         </div>
       </header>
 
@@ -207,7 +211,7 @@ function CatalogPage() {
           </h1>
           <p className="mt-6 max-w-2xl text-base text-foreground/75 sm:text-lg">
             Browse our best sellers — fireplaces and braais.
-            Tap "Add on" on any product and it will be pre-filled in the quote form.
+            Add products to your cart and check out, or tap "Quote this product" for an instant quote.
           </p>
 
           <p className="mt-8 text-xs uppercase tracking-widest text-muted-foreground">
@@ -466,18 +470,19 @@ function ProductCard({
         )}
 
         <div className="mt-auto flex flex-col gap-2 pt-4">
+          <AddToCartButton p={p} />
           <Link
             to="/"
             hash="form"
             onClick={() => onSelect(p)}
-            className="inline-flex items-center justify-center gap-2 border-2 border-foreground bg-primary px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-primary-foreground shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
+            className="inline-flex min-h-11 items-center justify-center gap-2 border-2 border-foreground bg-background px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-foreground transition hover:bg-secondary"
           >
             {isCopied ? (
               <>
                 <Check className="h-3.5 w-3.5" /> Added — go to quote
               </>
             ) : (
-              <>Add on</>
+              <>Quote this product</>
             )}
           </Link>
           <a
@@ -494,3 +499,45 @@ function ProductCard({
   );
 }
 
+
+function CartLink() {
+  const { count } = useCart();
+  return (
+    <Link
+      to="/cart"
+      aria-label={`Cart, ${count} item${count === 1 ? "" : "s"}`}
+      className="relative grid size-11 place-items-center border-2 border-foreground bg-background"
+    >
+      <ShoppingCart className="size-5" />
+      {count > 0 && (
+        <span className="absolute -right-2 -top-2 grid min-w-5 place-items-center rounded-full bg-primary px-1 text-[10px] font-bold text-primary-foreground">
+          {count}
+        </span>
+      )}
+    </Link>
+  );
+}
+
+function AddToCartButton({ p }: { p: Product }) {
+  const { items, add } = useCart();
+  const inCart = items.some((i) => i.id === p.id);
+  if (inCart) {
+    return (
+      <Link
+        to="/cart"
+        className="inline-flex min-h-11 items-center justify-center gap-2 border-2 border-foreground bg-foreground px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-background"
+      >
+        <Check className="h-3.5 w-3.5" /> In cart — view cart
+      </Link>
+    );
+  }
+  return (
+    <button
+      type="button"
+      onClick={() => add({ id: p.id, name: p.name, price: p.price, image: p.image })}
+      className="inline-flex min-h-11 items-center justify-center gap-2 border-2 border-foreground bg-primary px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-primary-foreground shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
+    >
+      <ShoppingCart className="h-3.5 w-3.5" /> Add to cart
+    </button>
+  );
+}
