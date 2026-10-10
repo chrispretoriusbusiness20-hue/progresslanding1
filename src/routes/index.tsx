@@ -645,8 +645,10 @@ function QuotePage() {
     const isSpecial = isSpecialProduct(product);
     const needsPlate = !allInclusive && !isSpecial && flooring.length > 0 && !/tile/i.test(flooring);
     const plate = needsPlate ? computePlatePrice(plateType, cornerInstall) : null;
-    const corner = !allInclusive && !isSpecial && installationRequired && cornerInstall ? 800 : null;
-    const install = allInclusive ? null : installationRequired ? 6000 + (storyType === "double" ? 1500 : 0) : null;
+    // Catalogue products: installation is quoted on request, so no fixed
+    // corner/installation amounts are added to the estimate.
+    const corner = null;
+    const install = null;
     const addOns = allInclusiveAddOns({ productName: product, storyType, cornerInstall, plateType, flooring, installationRequired });
     const hasAny = subtotal !== null || flueKit !== null || plate !== null || corner !== null || install !== null || addOns.total !== 0;
     const productTotal = (subtotal ?? 0) + (flueKit ?? 0) + (plate ?? 0) + (corner ?? 0) + addOns.total;
@@ -1727,12 +1729,10 @@ function InstantQuote({
   const isSpecial = isSpecialProduct(productName);
   const needsPlate = !allInclusive && !isSpecial && flooring.length > 0 && !/tile/i.test(flooring);
   const plate = needsPlate ? computePlatePrice(plateType, cornerInstall) : null;
-  const corner = allInclusive || isSpecial ? null : cornerInstall ? 800 : null;
-  const installationEstimate = allInclusive
-    ? null
-    : installationRequired
-      ? 6000 + (storyType === "double" ? 1500 : 0)
-      : null;
+  // Installation for catalogue products is quoted on request — no fixed
+  // estimate. Only the all-inclusive special carries installation pricing.
+  const corner = null;
+  const installationEstimate = null;
   const addOns = allInclusiveAddOns({ productName, storyType, cornerInstall, plateType, flooring, installationRequired });
   const specialDiscount = specialDiscountFor(productName, quantity);
   const BASE_TRANSPORT_DEFAULT = 470;
@@ -1770,7 +1770,7 @@ function InstantQuote({
           },
         ]
       : []),
-    ...(allInclusive ? [] : [{ label: "Corner installation", value: corner, hint: cornerInstall ? "+R800 (+R650 if ≤50 km)" : "Standard wall" }]),
+    ...(allInclusive ? [] : [{ label: "Corner installation", value: corner, hint: cornerInstall ? "Quoted on request" : "Standard wall" }]),
     ...(allInclusive
       ? [{ label: "Installation, flue kit & plinth (single story, basic)", value: 0 as number | null, hint: "Included in the special price" as string }]
       : []),
@@ -1786,13 +1786,9 @@ function InstantQuote({
     ...(!allInclusive && installationRequired
       ? [
           {
-            label: "Installation estimate",
+            label: "Installation",
             value: installationEstimate,
-            hint: storyType === "double"
-              ? "Double story: R5,995 + R1,500 core drilling · within Cape Town (subject to site visit) · transport billed separately"
-              : storyType === "single"
-                ? "Single story: R5,995 · within Cape Town (subject to site visit) · transport billed separately"
-                : "Single R5,995 · Double R7,495 (incl. core drilling) · within Cape Town (subject to site visit) · transport billed separately",
+            hint: "Installation on request — Progress Installations will quote after a site assessment",
           },
 
         ]
