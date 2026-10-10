@@ -470,16 +470,12 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
 
     const transport = distanceKm !== null ? transportPriceForKm(distanceKm, data.installationRequired) : null;
 
-    const cornerInstallPrice = installEligible && !allInclusive && !isSpecial && data.cornerInstall
-      ? 800 + (distanceKm !== null && distanceKm <= 50 ? 650 : 0)
-      : null;
+    // Installation for catalogue products is quoted on request — no fixed
+    // corner or installation amounts are charged on the quote. Only the
+    // all-inclusive special carries installation pricing (via add-ons).
+    const cornerInstallPrice = null;
 
-    // Installation estimate (within Cape Town) — base fee + core drilling for
-    // double-story flues. Transport is billed as its own line item, never here.
-    // Subject to site visit; mirrors the "Installation Estimate" page on the PDF.
-    const installationEstimate = installEligible && !allInclusive
-      ? installBaseForKm(distanceKm) + (data.storyType === "double" ? CORE_DRILL : 0)
-      : null;
+    const installationEstimate = null;
 
     // All-inclusive SPECIAL: base price covers single-story basic install only;
     // add-ons (double story, corner, granite upgrade) are charged on top.
