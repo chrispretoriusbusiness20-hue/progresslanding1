@@ -18,14 +18,15 @@ export function LandingHero() {
       <div className="mx-auto grid max-w-6xl gap-10 px-6 py-12 sm:py-16 lg:grid-cols-[1.2fr_1fr] lg:items-center">
         <div>
           <p className="inline-flex items-center gap-2 border-2 border-foreground bg-accent px-3 py-1 text-[11px] font-bold uppercase tracking-wider">
-            <Flame className="h-3.5 w-3.5" /> Special — one all-in price
+            <Flame className="h-3.5 w-3.5" /> Factory-direct special — one all-in price
           </p>
           <h1 className="mt-5 text-4xl leading-[1.05] sm:text-5xl lg:text-6xl">
-            A warm home this winter — fireplace supplied & installed.
+            Fireplaces at factory prices — supplied & installed.
           </h1>
           <p className="mt-4 max-w-xl text-base text-muted-foreground">
-            Get the Magma 10 kW closed-combustion fireplace, flue kit, delivery and professional
-            installation for one all-in price. Build your quote now and pay securely online.
+            Order direct from the factory and skip the showroom markup. Get the Magma 10 kW
+            closed-combustion fireplace, flue kit, delivery and professional installation for one
+            all-in price. Build your quote now and pay securely online.
           </p>
           <ul className="mt-6 space-y-2">
             {PROMISES.map((p) => (
