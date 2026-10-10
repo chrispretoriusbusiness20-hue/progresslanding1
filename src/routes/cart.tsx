@@ -76,6 +76,7 @@ function CartPage() {
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const submitFn = useServerFn(submitQuoteRequest);
+  const sendOrderFn = useServerFn(sendCartOrderEmail);
   const navigate = useNavigate();
 
   const subtotal = cartSubtotal(items);
