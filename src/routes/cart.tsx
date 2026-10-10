@@ -17,6 +17,7 @@ import {
 
 import { cartSubtotal, parseZar, useCart } from "@/hooks/use-cart";
 import { submitQuoteRequest } from "@/lib/quote-submit.functions";
+import { sendCartOrderEmail } from "@/lib/cart-order.functions";
 import { generateQuoteNumber } from "@/lib/quote-pdf";
 import { AddressAutocomplete } from "@/components/address-autocomplete";
 import progressLogo from "@/assets/progress-header-transparent.png.asset.json";
