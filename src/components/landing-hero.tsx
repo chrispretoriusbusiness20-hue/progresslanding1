@@ -1,15 +1,15 @@
-import { Check, Flame, MessageCircle, ShieldCheck, Star, Truck } from "lucide-react";
+import { Check, Factory, Flame, MessageCircle, ShieldCheck, Truck } from "lucide-react";
 
 const PROMISES = [
+  "Factory-direct prices — no middleman markups",
   "Instant quote in under 60 seconds",
-  "Supplied and installed by our own team",
   "All prices include VAT — no hidden costs",
 ];
 
 const STATS = [
+  { icon: Factory, label: "Order direct from the factory" },
   { icon: ShieldCheck, label: "Certified installers" },
   { icon: Truck, label: "Delivery across the Western Cape" },
-  { icon: Star, label: "Trusted by Cape Town homes" },
 ];
 
 export function LandingHero() {
