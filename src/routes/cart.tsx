@@ -17,6 +17,7 @@ import {
 
 import { cartSubtotal, parseZar, useCart } from "@/hooks/use-cart";
 import { submitQuoteRequest } from "@/lib/quote-submit.functions";
+import { sendCartOrderEmail } from "@/lib/cart-order.functions";
 import { generateQuoteNumber } from "@/lib/quote-pdf";
 import { AddressAutocomplete } from "@/components/address-autocomplete";
 import progressLogo from "@/assets/progress-header-transparent.png.asset.json";
@@ -75,6 +76,7 @@ function CartPage() {
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const submitFn = useServerFn(submitQuoteRequest);
+  const sendOrderFn = useServerFn(sendCartOrderEmail);
   const navigate = useNavigate();
 
   const subtotal = cartSubtotal(items);
@@ -125,6 +127,30 @@ function CartPage() {
       }
       const quoteNo = generateQuoteNumber("Q", details.firstName, details.lastName);
       const total = subtotal + delivery;
+      // One consolidated order email to the sales team. Best-effort: a send
+      // failure must not block checkout (per-line team emails already sent).
+      try {
+        await sendOrderFn({
+          data: {
+            firstName: details.firstName.trim(),
+            lastName: details.lastName.trim(),
+            email: details.email.trim(),
+            phone: details.phone.trim(),
+            address: details.address.trim(),
+            installation: details.installation,
+            notes: details.notes.trim() || undefined,
+            quoteNo,
+            delivery,
+            items: items.map((i) => ({
+              name: i.name,
+              quantity: i.quantity,
+              unitPrice: parseZar(i.price),
+            })),
+          },
+        });
+      } catch (err) {
+        console.error("Order email failed", err);
+      }
       const payload = {
         firstName: details.firstName.trim(),
         lastName: details.lastName.trim(),
