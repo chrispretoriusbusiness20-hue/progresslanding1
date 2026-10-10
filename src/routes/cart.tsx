@@ -126,6 +126,30 @@ function CartPage() {
       }
       const quoteNo = generateQuoteNumber("Q", details.firstName, details.lastName);
       const total = subtotal + delivery;
+      // One consolidated order email to the sales team. Best-effort: a send
+      // failure must not block checkout (per-line team emails already sent).
+      try {
+        await sendOrderFn({
+          data: {
+            firstName: details.firstName.trim(),
+            lastName: details.lastName.trim(),
+            email: details.email.trim(),
+            phone: details.phone.trim(),
+            address: details.address.trim(),
+            installation: details.installation,
+            notes: details.notes.trim() || undefined,
+            quoteNo,
+            delivery,
+            items: items.map((i) => ({
+              name: i.name,
+              quantity: i.quantity,
+              unitPrice: parseZar(i.price),
+            })),
+          },
+        });
+      } catch (err) {
+        console.error("Order email failed", err);
+      }
       const payload = {
         firstName: details.firstName.trim(),
         lastName: details.lastName.trim(),
