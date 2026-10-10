@@ -55,10 +55,10 @@ export function LandingHero() {
 
         <div className="border-2 border-foreground bg-card p-6 shadow-brutal-sm sm:p-8">
           <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-            Magma 001 Special — all in
+            Magma 001 Special — factory-direct, all in
           </p>
           <p className="mt-2 text-5xl font-bold">R23 970</p>
-          <p className="mt-1 text-sm text-muted-foreground">Incl. VAT, flue kit, delivery & installation</p>
+          <p className="mt-1 text-sm text-muted-foreground">Incl. VAT, flue kit, delivery & installation — no middleman markup</p>
           <ul className="mt-6 space-y-2 border-t border-border pt-5 text-sm">
             <li className="flex justify-between"><span>Magma 10 kW fireplace + flue kit</span><span>R17 500</span></li>
             <li className="flex justify-between"><span>Professional installation</span><span>R6 000</span></li>
