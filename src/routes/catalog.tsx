@@ -470,19 +470,18 @@ function ProductCard({
         )}
 
         <div className="mt-auto flex flex-col gap-2 pt-4">
-          <AddToCartButton p={p} />
           <Link
             to="/"
             hash="form"
             onClick={() => onSelect(p)}
-            className="inline-flex min-h-11 items-center justify-center gap-2 border-2 border-foreground bg-background px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-foreground transition hover:bg-secondary"
+            className="inline-flex min-h-11 items-center justify-center gap-2 border-2 border-foreground bg-primary px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-primary-foreground shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
           >
             {isCopied ? (
               <>
                 <Check className="h-3.5 w-3.5" /> Added — go to quote
               </>
             ) : (
-              <>Quote this product</>
+              <>Add on</>
             )}
           </Link>
           <a
