@@ -12,7 +12,6 @@ import { lazy, useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { ChatWidget } from "@/components/chat-widget";
-import { StitchPayLink } from "@/components/stitch-pay-link";
 import { Toaster } from "@/components/ui/sonner";
 import { META_PIXEL_ID, META_PIXEL_ID_2, captureFbclid, trackContact, trackPageView } from "@/lib/meta-pixel";
 
@@ -225,7 +224,6 @@ function RootComponent() {
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <Outlet />
       <ChatWidget />
-      <StitchPayLink />
       <Toaster position="top-center" richColors closeButton />
     </QueryClientProvider>
   );
