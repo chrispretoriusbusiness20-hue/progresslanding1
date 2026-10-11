@@ -253,27 +253,6 @@ function CheckoutPage() {
               {payload.firstName} {payload.lastName}
             </p>
 
-            {/* Checkout steps */}
-            <ol aria-label="Checkout progress" className="mt-6 grid grid-cols-3 gap-2 text-xs font-bold uppercase tracking-wider">
-              {[
-                { label: "Quote", done: true },
-                { label: "Details", done: true },
-                { label: "Payment", done: false },
-              ].map((step, i) => (
-                <li
-                  key={step.label}
-                  aria-current={step.done ? undefined : "step"}
-                  className={`flex items-center gap-2 border-b-4 pb-2 ${step.done ? "border-foreground/40 text-muted-foreground" : "border-primary text-foreground"}`}
-                >
-                  <span
-                    className={`inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[11px] ${step.done ? "bg-foreground/15 text-foreground" : "bg-primary text-primary-foreground"}`}
-                  >
-                    {step.done ? <Check className="h-3.5 w-3.5" /> : i + 1}
-                  </span>
-                  {step.label}
-                </li>
-              ))}
-            </ol>
 
             <div className="mt-8 grid gap-8 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-start">
             {/* Order summary */}
@@ -322,105 +301,49 @@ function CheckoutPage() {
             </aside>
 
             {/* Payment options */}
-            <section aria-label="Payment options" className="space-y-6 lg:order-1">
+            <section aria-label="Payment method" className="space-y-4 lg:order-1">
               <h2 className="text-sm font-bold uppercase tracking-wider text-foreground">
-                Choose how to pay
+                Payment method
               </h2>
-
-              {/* Once off */}
-              <div id="pay-now" className="border-2 border-foreground bg-background p-6 shadow-brutal-sm">
-                <p className="flex items-center gap-2 font-bold uppercase tracking-wide text-foreground">
-                  <CreditCard className="h-4 w-4" />
-                  Pay now
-                </p>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  Secure card, EFT &amp; bank payments via Stitch. Reference:{" "}
-                  <span className="font-mono font-semibold text-foreground">{invoiceNo}</span>
-                </p>
-                <p className="mt-1 text-xs text-muted-foreground">
-                  ⏱ For your security, this payment link is valid for 1 hour after your quote is
-                  submitted.
-                </p>
-                <button
-                  type="button"
-                  onClick={() => void payWithStitch()}
-                  disabled={stitchLoading}
-                  className="mt-4 inline-flex w-full items-center justify-center gap-2 border-2 border-foreground bg-primary px-5 py-3 text-sm font-bold uppercase tracking-wider text-primary-foreground shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none disabled:cursor-not-allowed disabled:opacity-60"
-                >
-                  {stitchLoading ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <ShoppingCart className="h-4 w-4" />
-                  )}
-                  {stitchLoading
-                    ? "Preparing payment…"
-                    : stitchError
-                      ? "Try again"
-                      : `Pay now — ${formatRand(payload.cartTotalNum)}`}
-                </button>
-                {stitchError && (
-                  <div
-                    role="alert"
-                    className="mt-4 border-2 border-destructive bg-destructive/10 p-4"
-                  >
-                    <p className="flex items-center gap-2 text-sm font-bold text-foreground">
-                      <AlertTriangle className="h-4 w-4 shrink-0 text-destructive" />
-                      {stitchError.title}
-                    </p>
-                    <p className="mt-1 text-sm text-muted-foreground">{stitchError.detail}</p>
-                    <div className="mt-3 flex flex-wrap gap-2">
-                      <button
-                        type="button"
-                        onClick={() => void payWithStitch()}
-                        disabled={stitchLoading}
-                        className="border-2 border-foreground bg-background px-3 py-1.5 text-xs font-bold uppercase tracking-wider shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none disabled:opacity-60"
-                      >
-                        Retry payment
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setEftOpen(true);
-                          document
-                            .getElementById("pay-by-eft")
-                            ?.scrollIntoView({ behavior: "smooth", block: "start" });
-                        }}
-                        className="border-2 border-foreground bg-background px-3 py-1.5 text-xs font-bold uppercase tracking-wider shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
-                      >
-                        Pay by EFT instead
-                      </button>
-                    </div>
-                  </div>
-                )}
-                <p className="mt-3 text-center text-xs text-muted-foreground">
-                  🔒 Payments are processed securely by Stitch. You'll receive a confirmation
-                  email once your payment clears.
-                </p>
-              </div>
-
-
-              {/* EFT — collapsed until the client chooses this option */}
-              <div id="pay-by-eft" className="border-2 border-foreground bg-background p-6 shadow-brutal-sm">
-                <button
-                  type="button"
-                  onClick={() => setEftOpen((open) => !open)}
-                  aria-expanded={eftOpen}
-                  className="flex w-full items-center justify-between gap-2 text-left"
-                >
-                  <span className="flex items-center gap-2 font-bold uppercase tracking-wide text-foreground">
-                    <Landmark className="h-4 w-4" />
-                    Pay by EFT
+              <div className="divide-y-2 divide-foreground/10 border-2 border-foreground bg-background shadow-brutal-sm">
+                <label id="pay-now" className="flex cursor-pointer items-start gap-3 p-5">
+                  <input
+                    type="radio"
+                    name="pay-method"
+                    checked={!eftOpen}
+                    onChange={() => setEftOpen(false)}
+                    className="mt-1 h-4 w-4 accent-primary"
+                  />
+                  <span>
+                    <span className="flex items-center gap-2 font-bold text-foreground">
+                      <CreditCard className="h-4 w-4" />
+                      Card or instant EFT
+                    </span>
+                    <span className="mt-0.5 block text-xs text-muted-foreground">
+                      Pay securely via Stitch. Link valid for 1 hour.
+                    </span>
                   </span>
-                  <span className="flex items-center gap-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                    {eftOpen ? "Hide banking details" : "Show banking details"}
-                    <ChevronDown
-                      className={`h-4 w-4 transition-transform ${eftOpen ? "rotate-180" : ""}`}
-                    />
+                </label>
+                <label id="pay-by-eft" className="flex cursor-pointer items-start gap-3 p-5">
+                  <input
+                    type="radio"
+                    name="pay-method"
+                    checked={eftOpen}
+                    onChange={() => setEftOpen(true)}
+                    className="mt-1 h-4 w-4 accent-primary"
+                  />
+                  <span>
+                    <span className="flex items-center gap-2 font-bold text-foreground">
+                      <Landmark className="h-4 w-4" />
+                      Bank transfer (EFT)
+                    </span>
+                    <span className="mt-0.5 block text-xs text-muted-foreground">
+                      Pay from your banking app using your invoice number as reference.
+                    </span>
                   </span>
-                </button>
-
+                </label>
                 {eftOpen && (
-                <>
+                  <div className="p-5">
                 <p className="mt-1 text-sm text-muted-foreground">
                   Use your invoice number as the payment reference and email your proof of
                   payment to{" "}
@@ -500,24 +423,70 @@ function CheckoutPage() {
                     </p>
                   )}
                 </div>
-                </>
+                  </div>
                 )}
+              </div>
 
-                {/* Exit EFT — switch back to card payment */}
+              {!eftOpen && (
+                <div>
                 <button
                   type="button"
-                  onClick={() => {
-                    setEftOpen(false);
-                    document
-                      .getElementById("pay-now")
-                      ?.scrollIntoView({ behavior: "smooth", block: "center" });
-                  }}
-                  className="mt-3 inline-flex w-full items-center justify-center gap-2 border-2 border-foreground bg-background px-5 py-3 text-sm font-bold uppercase tracking-wider text-foreground shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
+                  onClick={() => void payWithStitch()}
+                  disabled={stitchLoading}
+                  className="mt-4 inline-flex w-full items-center justify-center gap-2 border-2 border-foreground bg-primary px-5 py-3 text-sm font-bold uppercase tracking-wider text-primary-foreground shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none disabled:cursor-not-allowed disabled:opacity-60"
                 >
-                  <CreditCard className="h-4 w-4" />
-                  Exit — pay by card
+                  {stitchLoading ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <ShoppingCart className="h-4 w-4" />
+                  )}
+                  {stitchLoading
+                    ? "Preparing payment…"
+                    : stitchError
+                      ? "Try again"
+                      : `Pay now — ${formatRand(payload.cartTotalNum)}`}
                 </button>
-              </div>
+                {stitchError && (
+                  <div
+                    role="alert"
+                    className="mt-4 border-2 border-destructive bg-destructive/10 p-4"
+                  >
+                    <p className="flex items-center gap-2 text-sm font-bold text-foreground">
+                      <AlertTriangle className="h-4 w-4 shrink-0 text-destructive" />
+                      {stitchError.title}
+                    </p>
+                    <p className="mt-1 text-sm text-muted-foreground">{stitchError.detail}</p>
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      <button
+                        type="button"
+                        onClick={() => void payWithStitch()}
+                        disabled={stitchLoading}
+                        className="border-2 border-foreground bg-background px-3 py-1.5 text-xs font-bold uppercase tracking-wider shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none disabled:opacity-60"
+                      >
+                        Retry payment
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setEftOpen(true);
+                          document
+                            .getElementById("pay-by-eft")
+                            ?.scrollIntoView({ behavior: "smooth", block: "start" });
+                        }}
+                        className="border-2 border-foreground bg-background px-3 py-1.5 text-xs font-bold uppercase tracking-wider shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
+                      >
+                        Pay by EFT instead
+                      </button>
+                    </div>
+                  </div>
+                )}
+                </div>
+              )}
+
+              <p className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
+                <Lock className="h-3.5 w-3.5" /> Secure checkout · Ref{" "}
+                <span className="font-mono font-semibold text-foreground">{invoiceNo}</span>
+              </p>
 
               {/* WhatsApp help */}
               <a
