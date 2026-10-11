@@ -1,7 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { ArrowLeft, Check, ImageOff, Heart, ShoppingCart, Sparkles, Trash2 } from "lucide-react";
-import { useCart } from "@/hooks/use-cart";
+import { ArrowLeft, Check, ImageOff, Heart, Sparkles, Trash2 } from "lucide-react";
 import productsData from "@/data/products-full.json";
 import { useFavorites } from "@/hooks/use-favorites";
 import progressLogo from "@/assets/progress-logo.jpeg.asset.json";
