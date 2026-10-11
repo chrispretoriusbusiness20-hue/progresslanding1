@@ -189,7 +189,6 @@ function CatalogPage() {
             >
               <ArrowLeft className="h-3 w-3" /> Back to quote
             </Link>
-            <CartLink />
           </div>
         </div>
       </header>
@@ -211,7 +210,7 @@ function CatalogPage() {
           </h1>
           <p className="mt-6 max-w-2xl text-base text-foreground/75 sm:text-lg">
             Browse our best sellers — fireplaces and braais.
-            Add products to your cart and check out, or tap "Quote this product" for an instant quote.
+            Tap "Add on" on any product and it will be pre-filled in the quote form.
           </p>
 
           <p className="mt-8 text-xs uppercase tracking-widest text-muted-foreground">
@@ -499,44 +498,3 @@ function ProductCard({
 }
 
 
-function CartLink() {
-  const { count } = useCart();
-  return (
-    <Link
-      to="/cart"
-      aria-label={`Cart, ${count} item${count === 1 ? "" : "s"}`}
-      className="relative grid size-11 place-items-center border-2 border-foreground bg-background"
-    >
-      <ShoppingCart className="size-5" />
-      {count > 0 && (
-        <span className="absolute -right-2 -top-2 grid min-w-5 place-items-center rounded-full bg-primary px-1 text-[10px] font-bold text-primary-foreground">
-          {count}
-        </span>
-      )}
-    </Link>
-  );
-}
-
-function AddToCartButton({ p }: { p: Product }) {
-  const { items, add } = useCart();
-  const inCart = items.some((i) => i.id === p.id);
-  if (inCart) {
-    return (
-      <Link
-        to="/cart"
-        className="inline-flex min-h-11 items-center justify-center gap-2 border-2 border-foreground bg-foreground px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-background"
-      >
-        <Check className="h-3.5 w-3.5" /> In cart — view cart
-      </Link>
-    );
-  }
-  return (
-    <button
-      type="button"
-      onClick={() => add({ id: p.id, name: p.name, price: p.price, image: p.image })}
-      className="inline-flex min-h-11 items-center justify-center gap-2 border-2 border-foreground bg-primary px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-primary-foreground shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
-    >
-      <ShoppingCart className="h-3.5 w-3.5" /> Add to cart
-    </button>
-  );
-}
