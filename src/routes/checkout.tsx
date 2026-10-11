@@ -4,8 +4,6 @@ import { useServerFn } from "@tanstack/react-start";
 import {
   AlertTriangle,
   ArrowLeft,
-  Check,
-  ChevronDown,
   CreditCard,
   Landmark,
   Loader2,
