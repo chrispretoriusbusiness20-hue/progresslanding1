@@ -53,10 +53,14 @@ export function LandingHero() {
           </div>
         </div>
 
-        <div className="border-2 border-foreground bg-card p-6 shadow-brutal-sm sm:p-8">
-          <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-            Magma 001 Special — factory-direct, all in
-          </p>
+        <div className="overflow-hidden border-2 border-primary bg-card shadow-brutal-sm">
+          <div className="flex items-center justify-center gap-2 bg-primary px-6 py-4 text-primary-foreground">
+            <Flame className="h-6 w-6 shrink-0" aria-hidden="true" />
+            <p className="text-2xl font-bold uppercase sm:text-3xl">Factory-direct special</p>
+          </div>
+          <div className="p-6 sm:p-8">
+          <h2 className="text-3xl leading-tight">Magma 001 Special</h2>
+          <p className="mt-4 text-xs font-bold uppercase tracking-wider text-muted-foreground">One all-in special price</p>
           <p className="mt-2 text-5xl font-bold">R23 970</p>
           <p className="mt-1 text-sm text-muted-foreground">Incl. VAT, flue kit, delivery & installation — no middleman markup</p>
           <ul className="mt-6 space-y-2 border-t border-border pt-5 text-sm">
@@ -66,10 +70,11 @@ export function LandingHero() {
           </ul>
           <a
             href="#form"
-            className="mt-6 flex min-h-12 items-center justify-center border-2 border-foreground bg-foreground px-6 py-3 text-sm font-bold uppercase tracking-wider text-background transition hover:opacity-90"
+            className="mt-6 flex min-h-12 items-center justify-center gap-2 border-2 border-foreground bg-primary px-6 py-3 text-sm font-bold uppercase tracking-wider text-primary-foreground transition hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
-            Claim this special
+            <Flame className="h-4 w-4 shrink-0" aria-hidden="true" /> Claim this special
           </a>
+          </div>
         </div>
       </div>
       <div className="border-t-2 border-foreground bg-muted">
