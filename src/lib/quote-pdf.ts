@@ -443,9 +443,9 @@ export async function generateQuotePDF(
   }
 
   // ---------- Page 2: Installation estimate ----------
-  // Excluded when the site is further than 100 km from Cape Town
-  // (transport zones "100–200 km" or "200 km+").
-  const farFromCT = /100\s*[–-]\s*200|200\s*km\s*\+/i.test(input.transportZone ?? "");
+  // Excluded when the site is further than 300 km from our Bellville workshop
+  // (transport zone "Courier 300 km+").
+  const farFromCT = /300\s*km\s*\+/i.test(input.transportZone ?? "");
   const includeInstallEstimate = input.installationRequired !== false && !farFromCT && !allInclusive;
   if (includeInstallEstimate) {
 
