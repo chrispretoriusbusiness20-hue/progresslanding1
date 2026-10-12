@@ -21,6 +21,8 @@ const allProducts = productsData as Product[];
 // Curated catalogue — the Magma 001 Special is pinned first as the featured special,
 // followed by the five featured best sellers.
 const MAGMA_SPECIAL_ID = "magma-10kw-closed-combustion-fireplace-incl-flue-kit-special";
+// 1200 De Lux Braai Mild Steel is promoted as the Summer Special at R8 275 (VAT incl.).
+const SUMMER_SPECIAL_ID = "1200-de-lux-braai-mild-steel";
 const FEATURED_IDS = [
   MAGMA_SPECIAL_ID,
   SUMMER_SPECIAL_ID,
