@@ -32,6 +32,7 @@ import { createStitchPaymentLink } from "@/lib/stitch.functions";
 // Quote dropdown mirrors the curated catalogue so every catalogue item is selectable.
 const QUOTE_PRODUCT_IDS = [
   "magma-10kw-closed-combustion-fireplace-incl-flue-kit-special",
+  "1200-de-lux-braai-mild-steel",
   "magma-001-freestanding-fireplace-10kw-progress-group",
   "a2-magma-002-freestanding-fireplace-10kw",
   "cubo-700-insert-fireplace-12-5kw",

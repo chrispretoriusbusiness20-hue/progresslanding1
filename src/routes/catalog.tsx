@@ -23,6 +23,7 @@ const allProducts = productsData as Product[];
 const MAGMA_SPECIAL_ID = "magma-10kw-closed-combustion-fireplace-incl-flue-kit-special";
 const FEATURED_IDS = [
   MAGMA_SPECIAL_ID,
+  SUMMER_SPECIAL_ID,
   "magma-001-freestanding-fireplace-10kw-progress-group",
   "a2-magma-002-freestanding-fireplace-10kw",
   "cubo-700-insert-fireplace-12-5kw",
