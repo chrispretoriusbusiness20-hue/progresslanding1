@@ -649,7 +649,7 @@ function QuotePage() {
     // Catalogue products: installation is quoted on request, so no fixed
     // corner/installation amounts are added to the estimate.
     const corner = null;
-    const install = null;
+    const install = isSpecial && installationRequired ? 6000 * Math.max(quantity, 1) : null;
     const addOns = allInclusiveAddOns({ productName: product, storyType, cornerInstall, plateType, flooring, installationRequired });
     const hasAny = subtotal !== null || flueKit !== null || plate !== null || corner !== null || install !== null || addOns.total !== 0;
     const productTotal = (subtotal ?? 0) + (flueKit ?? 0) + (plate ?? 0) + (corner ?? 0) + addOns.total;
@@ -1734,7 +1734,7 @@ function InstantQuote({
   // Installation for catalogue products is quoted on request — no fixed
   // estimate. Only the all-inclusive special carries installation pricing.
   const corner = null;
-  const installationEstimate = null;
+  const installationEstimate = isSpecial && installationRequired ? 6000 * Math.max(quantity, 1) : null;
   const addOns = allInclusiveAddOns({ productName, storyType, cornerInstall, plateType, flooring, installationRequired });
   const specialDiscount = specialDiscountFor(productName, quantity);
   const BASE_TRANSPORT_DEFAULT = 470;
