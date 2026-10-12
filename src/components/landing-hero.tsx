@@ -1,4 +1,4 @@
-import { Check, Factory, Flame, MessageCircle, ShieldCheck, Truck } from "lucide-react";
+import { Check, Factory, Flame, MessageCircle, ShieldCheck, Sun, Truck } from "lucide-react";
 
 const PROMISES = [
   "Factory-direct prices — no middleman markups",
@@ -12,7 +12,17 @@ const STATS = [
   { icon: Truck, label: "Delivery across the Western Cape" },
 ];
 
-export function LandingHero() {
+// Summer Special: the 1200 De Lux built-in braai is promoted at R8 275, VAT included.
+const SUMMER_SPECIAL = {
+  name: "1200 De Lux Braai Mild Steel",
+  image: "/__l5e/assets-v1/3546c3ee-909c-4c92-aafc-e9c0b629dc95/1200-de-lux-braai.jpg",
+};
+
+export function LandingHero({
+  onSelectProduct,
+}: {
+  onSelectProduct?: (productName: string) => void;
+}) {
   return (
     <section className="border-b-2 border-foreground bg-background">
       <div className="mx-auto grid max-w-6xl gap-10 px-6 py-12 sm:py-16 lg:grid-cols-[1.2fr_1fr] lg:items-center">
@@ -53,34 +63,87 @@ export function LandingHero() {
           </div>
         </div>
 
-        <div className="overflow-hidden border-2 border-primary bg-card shadow-brutal-sm">
-          <div className="flex items-center justify-center gap-2 bg-primary px-6 py-4 text-primary-foreground">
-            <Flame className="h-6 w-6 shrink-0" aria-hidden="true" />
-            <p className="text-2xl font-bold uppercase sm:text-3xl">Factory-direct special</p>
+        <div className="flex flex-col gap-6">
+          <div className="overflow-hidden border-2 border-primary bg-card shadow-brutal-sm">
+            <div className="flex items-center justify-center gap-2 bg-primary px-6 py-4 text-primary-foreground">
+              <Flame className="h-6 w-6 shrink-0" aria-hidden="true" />
+              <p className="text-2xl font-bold uppercase sm:text-3xl">Factory-direct special</p>
+            </div>
+            <div className="p-6 sm:p-8">
+              <h2 className="text-3xl leading-tight">Magma 001 Special</h2>
+              <p className="mt-4 text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                One all-in special price
+              </p>
+              <p className="mt-2 text-5xl font-bold">R23 970</p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Incl. VAT, flue kit, delivery & installation — no middleman markup
+              </p>
+              <ul className="mt-6 space-y-2 border-t border-border pt-5 text-sm">
+                <li className="flex justify-between">
+                  <span>Magma 10 kW fireplace + flue kit</span>
+                  <span>R17 500</span>
+                </li>
+                <li className="flex justify-between">
+                  <span>Professional installation</span>
+                  <span>R6 000</span>
+                </li>
+                <li className="flex justify-between">
+                  <span>Delivery (±25 km of Bellville)</span>
+                  <span>R470</span>
+                </li>
+              </ul>
+              <a
+                href="#form"
+                className="mt-6 flex min-h-12 items-center justify-center gap-2 border-2 border-foreground bg-primary px-6 py-3 text-sm font-bold uppercase tracking-wider text-primary-foreground transition hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                <Flame className="h-4 w-4 shrink-0" aria-hidden="true" /> Claim this special
+              </a>
+            </div>
           </div>
-          <div className="p-6 sm:p-8">
-          <h2 className="text-3xl leading-tight">Magma 001 Special</h2>
-          <p className="mt-4 text-xs font-bold uppercase tracking-wider text-muted-foreground">One all-in special price</p>
-          <p className="mt-2 text-5xl font-bold">R23 970</p>
-          <p className="mt-1 text-sm text-muted-foreground">Incl. VAT, flue kit, delivery & installation — no middleman markup</p>
-          <ul className="mt-6 space-y-2 border-t border-border pt-5 text-sm">
-            <li className="flex justify-between"><span>Magma 10 kW fireplace + flue kit</span><span>R17 500</span></li>
-            <li className="flex justify-between"><span>Professional installation</span><span>R6 000</span></li>
-            <li className="flex justify-between"><span>Delivery (±25 km of Bellville)</span><span>R470</span></li>
-          </ul>
-          <a
-            href="#form"
-            className="mt-6 flex min-h-12 items-center justify-center gap-2 border-2 border-foreground bg-primary px-6 py-3 text-sm font-bold uppercase tracking-wider text-primary-foreground transition hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-          >
-            <Flame className="h-4 w-4 shrink-0" aria-hidden="true" /> Claim this special
-          </a>
+
+          <div className="overflow-hidden border-2 border-foreground bg-card shadow-brutal-sm">
+            <div className="flex items-center justify-between gap-2 border-b-2 border-foreground bg-accent px-5 py-2.5 text-accent-foreground">
+              <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest">
+                <Sun className="h-4 w-4 shrink-0" aria-hidden="true" /> Summer special
+              </p>
+              <span className="text-[10px] font-bold uppercase">VAT incl.</span>
+            </div>
+            <div className="flex items-center gap-4 p-5">
+              <img
+                src={SUMMER_SPECIAL.image}
+                alt="1200 De Lux built-in braai"
+                width={88}
+                height={88}
+                loading="lazy"
+                className="h-20 w-20 shrink-0 border-2 border-foreground object-cover"
+              />
+              <div className="min-w-0">
+                <h3 className="text-sm font-bold uppercase tracking-wide sm:text-base">
+                  1200 De Lux Braai
+                </h3>
+                <p className="mt-1 text-3xl font-bold text-primary">R8 275</p>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Mild steel built-in braai — installation on request
+                </p>
+              </div>
+            </div>
+            <a
+              href="#form"
+              onClick={() => onSelectProduct?.(SUMMER_SPECIAL.name)}
+              className="flex min-h-12 items-center justify-center gap-2 border-t-2 border-foreground bg-background px-5 py-3 text-xs font-bold uppercase tracking-wider transition hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              <Sun className="h-4 w-4 shrink-0" aria-hidden="true" /> Get this quote
+            </a>
           </div>
         </div>
       </div>
       <div className="border-t-2 border-foreground bg-muted">
         <ul className="mx-auto flex max-w-6xl flex-wrap justify-center gap-x-8 gap-y-2 px-6 py-3 text-xs font-semibold">
           {STATS.map(({ icon: Icon, label }) => (
-            <li key={label} className="flex items-center gap-2"><Icon className="h-4 w-4 text-primary" />{label}</li>
+            <li key={label} className="flex items-center gap-2">
+              <Icon className="h-4 w-4 text-primary" />
+              {label}
+            </li>
           ))}
         </ul>
       </div>
@@ -91,10 +154,16 @@ export function LandingHero() {
 export function MobileStickyCta() {
   return (
     <div className="fixed inset-x-0 bottom-0 z-40 flex gap-2 border-t-2 border-foreground bg-background p-3 sm:hidden">
-      <a href="#form" className="flex min-h-11 flex-1 items-center justify-center bg-primary text-xs font-bold uppercase tracking-wider text-primary-foreground">
+      <a
+        href="#form"
+        className="flex min-h-11 flex-1 items-center justify-center bg-primary text-xs font-bold uppercase tracking-wider text-primary-foreground"
+      >
         Get my quote
       </a>
-      <a href="tel:+27875500413" className="flex min-h-11 items-center justify-center border-2 border-foreground px-4 text-xs font-bold uppercase">
+      <a
+        href="tel:+27875500413"
+        className="flex min-h-11 items-center justify-center border-2 border-foreground px-4 text-xs font-bold uppercase"
+      >
         Call
       </a>
     </div>

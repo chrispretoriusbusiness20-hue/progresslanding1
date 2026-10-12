@@ -32,6 +32,7 @@ import { createStitchPaymentLink } from "@/lib/stitch.functions";
 // Quote dropdown mirrors the curated catalogue so every catalogue item is selectable.
 const QUOTE_PRODUCT_IDS = [
   "magma-10kw-closed-combustion-fireplace-incl-flue-kit-special",
+  "1200-de-lux-braai-mild-steel",
   "magma-001-freestanding-fireplace-10kw-progress-group",
   "a2-magma-002-freestanding-fireplace-10kw",
   "cubo-700-insert-fireplace-12-5kw",
@@ -957,7 +958,9 @@ function QuotePage() {
       {/* Promo strip */}
       <div className="border-b border-foreground/15 bg-foreground text-background">
         <div className="mx-auto flex max-w-6xl items-center justify-center px-6 py-2 text-[10px] font-semibold uppercase tracking-[0.32em]">
-          <span className="text-gradient-ember">Special</span>
+          <span className="text-gradient-ember">
+            Magma 001 Special R23 970 · Summer Special: 1200 De Lux Braai R8 275
+          </span>
         </div>
       </div>
 
@@ -993,7 +996,7 @@ function QuotePage() {
         </div>
       </header>
 
-      <LandingHero />
+      <LandingHero onSelectProduct={setProduct} />
       <MobileStickyCta />
       {/* Form */}
       <section id="form" className="bg-background">
