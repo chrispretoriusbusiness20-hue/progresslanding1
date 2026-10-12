@@ -1790,7 +1790,7 @@ function InstantQuote({
           {
             label: "Installation",
             value: installationEstimate,
-            hint: "Installation on request — Progress Installations will quote after a site assessment",
+            hint: installationEstimate !== null ? "Standard installation by Progress Installations" : "Installation on request — Progress Installations will quote after a site assessment",
           },
 
         ]
