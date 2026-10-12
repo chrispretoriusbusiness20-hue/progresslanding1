@@ -66,7 +66,7 @@ export function LandingHero() {
           <ul className="mt-6 space-y-2 border-t border-border pt-5 text-sm">
             <li className="flex justify-between"><span>Magma 10 kW fireplace + flue kit</span><span>R17 500</span></li>
             <li className="flex justify-between"><span>Professional installation</span><span>R6 000</span></li>
-            <li className="flex justify-between"><span>Delivery (±100 km of Bellville)</span><span>R470</span></li>
+            <li className="flex justify-between"><span>Delivery (±20 km of Bellville)</span><span>R470</span></li>
           </ul>
           <a
             href="#form"

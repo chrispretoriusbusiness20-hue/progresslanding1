@@ -498,7 +498,7 @@ export async function generateQuotePDF(
 
     // --- Fee table ---
     const km = input.distanceKm ?? 0;
-    const INCLUDED_KM = 100;
+    const INCLUDED_KM = 20;
     const BASE_TRANSPORT = 470;
     const EXTRA_KM_RATE = 12;
     const installTransport = BASE_TRANSPORT + Math.max(0, km - INCLUDED_KM) * EXTRA_KM_RATE;
