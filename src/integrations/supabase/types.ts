@@ -264,6 +264,7 @@ export type Database = {
           paid_at: string | null
           payment_amount_zar: number | null
           payment_reference: string | null
+          payment_reminder_sent_at: string | null
           payment_status: string
           pdf_path: string | null
           phone: string
@@ -306,6 +307,7 @@ export type Database = {
           paid_at?: string | null
           payment_amount_zar?: number | null
           payment_reference?: string | null
+          payment_reminder_sent_at?: string | null
           payment_status?: string
           pdf_path?: string | null
           phone: string
@@ -348,6 +350,7 @@ export type Database = {
           paid_at?: string | null
           payment_amount_zar?: number | null
           payment_reference?: string | null
+          payment_reminder_sent_at?: string | null
           payment_status?: string
           pdf_path?: string | null
           phone?: string
