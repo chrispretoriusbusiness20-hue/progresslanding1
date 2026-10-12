@@ -442,8 +442,20 @@ function ProductCard({
             <ImageOff className="size-8" />
           </div>
         )}
-        <span className="absolute left-2 top-2 border-2 border-foreground bg-background px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest text-foreground">
-          {p.subcategory || p.category}
+        <span
+          className={`absolute left-2 top-2 border-2 border-foreground px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest ${
+            p.id === SUMMER_SPECIAL_ID
+              ? "bg-accent text-accent-foreground"
+              : p.id === MAGMA_SPECIAL_ID
+                ? "bg-primary text-primary-foreground"
+                : "bg-background text-foreground"
+          }`}
+        >
+          {p.id === SUMMER_SPECIAL_ID
+            ? "Summer special"
+            : p.id === MAGMA_SPECIAL_ID
+              ? "Featured special"
+              : p.subcategory || p.category}
         </span>
         <button
           type="button"

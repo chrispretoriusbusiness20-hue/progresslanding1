@@ -115,7 +115,7 @@ export function LandingHero({
                 width={88}
                 height={88}
                 loading="lazy"
-                className="h-22 w-22 h-20 w-20 shrink-0 border-2 border-foreground object-cover"
+                className="h-20 w-20 shrink-0 border-2 border-foreground object-cover"
               />
               <div className="min-w-0">
                 <h3 className="text-sm font-bold uppercase tracking-wide sm:text-base">
