@@ -667,7 +667,7 @@ function QuotePage() {
 
   // One unified total — the quote total IS the cart total. It recalculates
   // live from the current selection and adds transport once distance is known.
-  // First 20 km from Bellville are included in the base transport (R470); the
+  // First 25 km from Bellville are included in the base transport (R470); the
   // R12/km surcharge beyond that is added once the address is resolved on
   // submit. Until then we assume the base zone so the live total — and the
   // BNPL monthly amount — matches the all-in R23,970 Magma special.
@@ -1345,7 +1345,7 @@ function QuotePage() {
                   {flueKitLabel && <BreakdownRow label="Flue kit" value={flueKitLabel} hint={matched.storyType === "double" ? "Double story" : "Single story"} />}
                   {plateLabel && <BreakdownRow label={`${matched.plate?.type === "steel" ? "Black steel" : matched.plate?.type === "granite" ? "Granite" : "Glass"} plinth`} value={plateLabel} />}
                   {cornerInstallLabel && <BreakdownRow label="Corner installation" value={cornerInstallLabel} />}
-                  {!installationRequired && <BreakdownRow label="Courier" value={effectiveTransportLabel} hint={matched.transportZone ?? "Delivery within ±20 km of Bellville"} />}
+                  {!installationRequired && <BreakdownRow label="Courier" value={effectiveTransportLabel} hint={matched.transportZone ?? "Delivery within ±25 km of Bellville"} />}
                   {installationEstimateLabel && (
                     <BreakdownRow
                        label="Installation estimate"
@@ -1359,7 +1359,7 @@ function QuotePage() {
                       <BreakdownRow
                         label="Transport"
                         value={effectiveTransportLabel}
-                        hint="Part of installation estimate · first 20 km included in R470, R12/km thereafter"
+                        hint="Part of installation estimate · first 25 km included in R470, R12/km thereafter"
                       />
                     )}
                 </ul>
@@ -1824,7 +1824,7 @@ function InstantQuote({
             <div>
               <p className="font-semibold text-foreground">Transport</p>
               <p className="text-xs text-muted-foreground">
-                First 20 km included in R470; R12/km thereafter (calculated on submit)
+                First 25 km included in R470; R12/km thereafter (calculated on submit)
               </p>
             </div>
             <span className="shrink-0 font-mono text-sm font-semibold text-foreground">{formatRand(470)}</span>
@@ -1835,7 +1835,7 @@ function InstantQuote({
             <div>
               <p className="font-semibold text-foreground">Courier</p>
               <p className="text-xs text-muted-foreground">
-                Delivery within ±20 km of Bellville (calculated on submit)
+                Delivery within ±25 km of Bellville (calculated on submit)
               </p>
             </div>
             <span className="shrink-0 font-mono text-sm font-semibold text-foreground">{formatRand(470)}</span>
@@ -1852,8 +1852,8 @@ function InstantQuote({
       </div>
       <p className="mt-2 text-[11px] text-muted-foreground">
         {installationRequired
-          ? "R470 base transport covers the first 20 km from Bellville; R12/km applies beyond that. Final quote confirmed on submit."
-          : "R470 courier within ±20 km of Bellville; further distances quoted on submit."}
+          ? "R470 base transport covers the first 25 km from Bellville; R12/km applies beyond that. Final quote confirmed on submit."
+          : "R470 courier within ±25 km of Bellville; further distances quoted on submit."}
       </p>
     </div>
   );
