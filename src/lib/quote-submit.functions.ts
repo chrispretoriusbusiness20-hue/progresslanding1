@@ -342,12 +342,12 @@ function matchProduct(query: string): Product | null {
 
 function transportPriceForKm(km: number, installationRequired: boolean): { zone: string; price: number } {
   if (!installationRequired) {
-    if (km <= 100) return { zone: "Delivery within ±100 km of Bellville", price: 470 };
-    if (km <= 300) return { zone: "Courier 101–300 km (estimate — sales to confirm)", price: 1100 };
+    if (km <= 20) return { zone: "Delivery within ±20 km of Bellville", price: 470 };
+    if (km <= 300) return { zone: "Courier 21–300 km (estimate — sales to confirm)", price: 1100 };
     return { zone: "Courier 300 km+ (estimate — sales to confirm)", price: 1750 };
   }
   // With installation, transport is billed as its own line item (never bundled
-  // into the installation estimate): R470 includes the first 100 km, then
+  // into the installation estimate): R470 includes the first 20 km, then
   // R12/km thereafter.
   return {
     zone: `Transport (R${BASE_TRANSPORT} incl. first ${INCLUDED_KM} km · R${EXTRA_KM_RATE}/km thereafter)`,
@@ -357,7 +357,7 @@ function transportPriceForKm(km: number, installationRequired: boolean): { zone:
 
 const INSTALL_BASE = 6000;
 const CORE_DRILL = 1500;
-const INCLUDED_KM = 100;
+const INCLUDED_KM = 20;
 const EXTRA_KM_RATE = 12;
 const BASE_TRANSPORT = 470;
 
