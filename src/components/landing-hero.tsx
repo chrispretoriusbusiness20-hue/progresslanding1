@@ -106,7 +106,7 @@ export function LandingHero({
               <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest">
                 <Sun className="h-4 w-4 shrink-0" aria-hidden="true" /> Summer special
               </p>
-              <span className="text-[10px] font-bold uppercase tracking-wider">VAT incl.</span>
+              <span className="text-[10px] font-bold uppercase">VAT incl.</span>
             </div>
             <div className="flex items-center gap-4 p-5">
               <img
