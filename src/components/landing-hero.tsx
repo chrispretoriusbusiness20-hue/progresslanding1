@@ -128,7 +128,7 @@ export function LandingHero({
                 </p>
               </div>
             </div>
-            <div className="border-t-2 border-foreground bg-foreground">
+            <div className="border-t-2 border-foreground bg-linear-to-b from-accent via-accent/40 to-background">
               <video
                 src={summerVideo.url}
                 poster={SUMMER_SPECIAL.image}
