@@ -266,12 +266,11 @@ function QuotePage() {
   const [roofType, setRoofType] = useState("");
   const [plateType, setPlateType] = useState<"steel" | "glass" | "granite">("glass");
   const [cornerInstall, setCornerInstall] = useState(false);
-  // "Supply & install" is the recommended option, so it's pre-selected — but
-  // the client can still switch to "Product only"; nothing is locked.
+  // Only the Magma Special is offered as a supply-and-install package; every
+  // other product is product-only and no installation choice is shown.
   const [installationRequired, setInstallationRequired] = useState(true);
-  // Braais are recommended as product only; switch the default when one is picked.
   useEffect(() => {
-    setInstallationRequired(!isBraaiProduct(product));
+    setInstallationRequired(isSpecialProduct(product));
   }, [product]);
   const [address, setAddress] = useState("");
   
@@ -1161,40 +1160,40 @@ function QuotePage() {
               </div>
             )}
 
-            <Field label="Does the client need installation?">
-              <div className="flex gap-4 text-sm text-foreground">
-                <label className="flex items-center gap-2">
-                  <input
-                    type="radio"
-                    name="installationRequired"
-                    checked={installationRequired}
-                    onChange={() => setInstallationRequired(true)}
-                    className="h-4 w-4 accent-primary"
-                  />
-                  Supply &amp; install{" "}
-                  {!isBraaiProduct(product) && (
+            {isSpecialProduct(product) ? (
+              <Field label="Does the client need installation?">
+                <div className="flex gap-4 text-sm text-foreground">
+                  <label className="flex items-center gap-2">
+                    <input
+                      type="radio"
+                      name="installationRequired"
+                      checked={installationRequired}
+                      onChange={() => setInstallationRequired(true)}
+                      className="h-4 w-4 accent-primary"
+                    />
+                    Supply & install{" "}
                     <span className="text-xs font-semibold text-primary">(recommended)</span>
-                  )}
-                </label>
-                <label className="flex items-center gap-2">
-                  <input
-                    type="radio"
-                    name="installationRequired"
-                    checked={!installationRequired}
-                    onChange={() => {
-                      setInstallationRequired(false);
-                      setCornerInstall(false);
-                    }}
-
-                    className="h-4 w-4 accent-primary"
-                  />
-                  Product only (no installation)
-                  {isBraaiProduct(product) && (
-                    <span className="text-xs font-semibold text-primary">(recommended)</span>
-                  )}
-                </label>
-              </div>
-            </Field>
+                  </label>
+                  <label className="flex items-center gap-2">
+                    <input
+                      type="radio"
+                      name="installationRequired"
+                      checked={!installationRequired}
+                      onChange={() => {
+                        setInstallationRequired(false);
+                        setCornerInstall(false);
+                      }}
+                      className="h-4 w-4 accent-primary"
+                    />
+                    Product only (no installation)
+                  </label>
+                </div>
+              </Field>
+            ) : (
+              <p className="text-sm text-muted-foreground">
+                Product only — installation is only available with the Magma 001 Special package (R23 970 all-in).
+              </p>
+            )}
 
             <div className="grid gap-4 sm:grid-cols-2">
               <Field label="Single or double story?">
