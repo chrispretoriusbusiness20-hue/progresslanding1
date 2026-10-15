@@ -28,7 +28,7 @@ import { allInclusiveAddOns, isAllInclusiveProduct, isSpecialProduct, specialDis
 
 
 const QUOTE_APP_URL = "https://fireplacequotes.co.za/";
-import { createStitchPaymentLink } from "@/lib/stitch.functions";
+import { STITCH_EXPRESS_URL } from "@/lib/stitch-express";
 // Quote dropdown mirrors the curated catalogue so every catalogue item is selectable.
 const QUOTE_PRODUCT_IDS = [
   "magma-10kw-closed-combustion-fireplace-incl-flue-kit-special",
@@ -357,8 +357,6 @@ function QuotePage() {
   const createUploadFn = useServerFn(createQuoteUploadUrl);
   const emailQuoteFn = useServerFn(emailQuoteFromPath);
   const createPopUploadFn = useServerFn(createPopUploadUrl);
-  const createStitchLinkFn = useServerFn(createStitchPaymentLink);
-  const [stitchLoading, setStitchLoading] = useState(false);
   const notifyPopFn = useServerFn(notifyProofOfPayment);
   const canContinue = useMemo(
     () =>
@@ -768,82 +766,6 @@ function QuotePage() {
     return `https://wa.me/27689560320?text=${encodeURIComponent(text)}`;
   }, [firstName, lastName, quoteNo, product, totalPriceNum, totalPriceLabel, estimatedTotal, submitted]);
 
-  const payWithStitch = async (amountOverride?: number) => {
-    if (stitchLoading) return;
-    const amountZar = amountOverride ?? cartTotalNum;
-    // The payment reference must be the invoice number (INV-...) so Stitch
-    // payments reconcile against the invoice.
-    const invoiceNo = quoteNo
-      ? quoteNo.startsWith("INV-")
-        ? quoteNo
-        : `INV-${quoteNo}`
-      : null;
-    // Open the tab synchronously inside the click gesture so pop-up blockers allow it.
-    // NOTE: Do NOT use "noopener" — the parent needs a handle to navigate the tab
-    // to the Stitch payment URL once the server function returns.
-    const payTab = window.open("", "_blank");
-    const closePayTab = () => {
-      if (payTab && !payTab.closed) payTab.close();
-    };
-    const sendTo = (url: string) => {
-      if (payTab && !payTab.closed) {
-        payTab.location.replace(url);
-      } else {
-        // Pop-up was blocked — navigate in the current tab instead.
-        window.location.assign(url);
-      }
-    };
-    // Without a session, amount or invoice number we can't create a locked
-    // payment link — don't send the client to the generic editable page.
-    if (!quoteSession || !amountZar || amountZar <= 0 || !invoiceNo) {
-      closePayTab();
-      toast.error("Please request your quote first so we can lock in your amount.");
-      return;
-    }
-    // Show a loading screen in the popup while the server creates the link.
-    if (payTab) {
-      try {
-        payTab.document.write(
-          '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Opening payment…</title>' +
-            '<style>body{font-family:system-ui,sans-serif;display:flex;align-items:center;justify-content:center;' +
-            "height:100vh;margin:0;background:#faf9f5;color:#4a3b2f}" +
-            '.spinner{width:40px;height:40px;border:4px solid #e0d6c8;border-top-color:#dd7400;' +
-            "border-radius:50%;animation:spin 1s linear infinite;margin-right:16px}" +
-            "@keyframes spin{to{transform:rotate(360deg)}}" +
-            "</style></head><body><div class=spinner></div>Opening your secure payment page…</body></html>",
-        );
-      } catch {
-        // Cross-origin restriction — ignore; the tab will navigate once we have the URL.
-      }
-    }
-    setStitchLoading(true);
-    try {
-      const res = await createStitchLinkFn({
-        data: {
-          email: email.trim(),
-          session: quoteSession,
-          amountZar,
-          reference: invoiceNo,
-          payerName: `${firstName.trim()} ${lastName.trim()}`.trim() || undefined,
-        },
-      });
-      if (!res.ok) {
-        // Never fall back to the generic page — its amount/reference fields
-        // are editable by the client.
-        console.error("Stitch link creation failed", res.error);
-        closePayTab();
-        toast.error("Couldn't open your secure payment page. Please try again or contact us.");
-        return;
-      }
-      sendTo(res.url);
-    } catch (err) {
-      console.error("Stitch link failed", err);
-      closePayTab();
-      toast.error("Couldn't open the payment page. Please try again.");
-    } finally {
-      setStitchLoading(false);
-    }
-  };
 
   const [converting, setConverting] = useState(false);
 
@@ -1524,15 +1446,15 @@ function QuotePage() {
               fastest option, or pay by EFT and send us your proof of payment below.
             </p>
 
-            <button
-              type="button"
-              onClick={() => void payWithStitch()}
-              disabled={stitchLoading}
-              className="mt-4 flex w-full items-center justify-center gap-2 border-2 border-foreground bg-primary px-5 py-3 text-sm font-bold uppercase tracking-wider text-primary-foreground shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none disabled:cursor-not-allowed disabled:opacity-60"
+            <a
+              href={STITCH_EXPRESS_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-4 flex w-full items-center justify-center gap-2 border-2 border-foreground bg-primary px-5 py-3 text-sm font-bold uppercase tracking-wider text-primary-foreground shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
             >
-              {stitchLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ShoppingCart className="h-4 w-4" />}
-              {stitchLoading ? "Preparing payment…" : `Pay ${cartTotalLabel ?? ""} with Stitch`}
-            </button>
+              <ShoppingCart className="h-4 w-4" />
+              Pay now{cartTotalLabel ? ` — ${cartTotalLabel}` : ""}
+            </a>
             <p className="mt-2 text-center text-xs text-muted-foreground">
               Secure card, EFT &amp; bank payments via Stitch
             </p>
