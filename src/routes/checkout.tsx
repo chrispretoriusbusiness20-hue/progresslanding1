@@ -1,12 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { useServerFn } from "@tanstack/react-start";
 import {
-  AlertTriangle,
   ArrowLeft,
   CreditCard,
   Landmark,
-  Loader2,
   Lock,
   MessageCircle,
   ShieldCheck,
@@ -15,8 +12,7 @@ import {
   X,
 } from "lucide-react";
 
-import { toast } from "sonner";
-import { createStitchPaymentLink } from "@/lib/stitch.functions";
+import { STITCH_EXPRESS_URL } from "@/lib/stitch-express";
 
 
 import progressLogo from "@/assets/progress-header-transparent.png.asset.json";
@@ -68,10 +64,7 @@ const isBraaiProduct = (name: string) => /braai/i.test(name);
 function CheckoutPage() {
   const [payload, setPayload] = useState<CheckoutPayload | null>(null);
   const [loaded, setLoaded] = useState(false);
-  const [stitchLoading, setStitchLoading] = useState(false);
-  const [stitchError, setStitchError] = useState<{ title: string; detail: string } | null>(null);
   const [eftOpen, setEftOpen] = useState(false);
-  const stitchFn = useServerFn(createStitchPaymentLink);
 
   const braaiOrder = !!payload && isBraaiProduct(payload.product);
 
@@ -103,86 +96,6 @@ function CheckoutPage() {
     : null;
 
 
-  const payWithStitch = async (amountOverride?: number) => {
-    if (!payload || stitchLoading) return;
-    const amountZar = amountOverride ?? payload.cartTotalNum;
-    const payTab = window.open("", "_blank");
-    const closePayTab = () => {
-      if (payTab && !payTab.closed) payTab.close();
-    };
-    if (!invoiceNo || amountZar <= 0) {
-      closePayTab();
-      toast.error("Your quote session is incomplete. Please request a new quote.");
-      return;
-    }
-    if (payTab) {
-      try {
-        payTab.document.write(
-          '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Opening payment…</title>' +
-            '<style>body{font-family:system-ui,sans-serif;display:flex;align-items:center;justify-content:center;' +
-            "height:100vh;margin:0;background:#faf9f5;color:#4a3b2f}" +
-            '.spinner{width:40px;height:40px;border:4px solid #e0d6c8;border-top-color:#dd7400;' +
-            "border-radius:50%;animation:spin 1s linear infinite;margin-right:16px}" +
-            "@keyframes spin{to{transform:rotate(360deg)}}" +
-            "</style></head><body><div class=spinner></div>Opening your secure payment page…</body></html>",
-        );
-      } catch {
-        // Cross-origin — the tab will navigate once we have the URL.
-      }
-    }
-    setStitchError(null);
-    setStitchLoading(true);
-    try {
-      const res = await stitchFn({
-        data: {
-          email: payload.email,
-          session: payload.quoteSession,
-          amountZar,
-          reference: invoiceNo,
-          payerName: `${payload.firstName} ${payload.lastName}`.trim() || payload.email,
-        },
-      });
-      if (res.ok && res.url) {
-        if (payTab && !payTab.closed) {
-          payTab.location.replace(res.url);
-        } else {
-          window.location.assign(res.url);
-        }
-      } else {
-        closePayTab();
-        const message = res.error || "";
-        if (/unauthor/i.test(message)) {
-          setStitchError({
-            title: "This payment link has expired",
-            detail:
-              "For your security, payment links are valid for 1 hour. Go back to the quote form, resubmit your details, and pay right away — or pay by EFT below.",
-          });
-        } else if (/credentials|not configured/i.test(message)) {
-          setStitchError({
-            title: "Online payments are temporarily unavailable",
-            detail:
-              "We're aware of the issue. Please pay by EFT below — your invoice number is the reference — or WhatsApp us and we'll help you complete payment.",
-          });
-        } else {
-          setStitchError({
-            title: "We couldn't open the payment page",
-            detail:
-              "This is usually temporary. Tap Pay now to try again, or pay by EFT below using your invoice number as the reference.",
-          });
-        }
-      }
-    } catch (err) {
-      closePayTab();
-      console.error("Stitch checkout failed", err);
-      setStitchError({
-        title: "We couldn't reach the payment service",
-        detail:
-          "Please check your internet connection and tap Pay now to try again, or pay by EFT below using your invoice number as the reference.",
-      });
-    } finally {
-      setStitchLoading(false);
-    }
-  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -311,25 +224,17 @@ function CheckoutPage() {
             <section aria-label="Payment" className="space-y-4 lg:order-1">
               {!eftOpen && (
                 <div id="pay-now">
-                  <button
-                    type="button"
-                    onClick={() => void payWithStitch()}
-                    disabled={stitchLoading}
-                    className="inline-flex w-full items-center justify-center gap-2 border-2 border-foreground bg-primary px-5 py-4 text-base font-bold uppercase tracking-wider text-primary-foreground shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none disabled:cursor-not-allowed disabled:opacity-60"
+                  <a
+                    href={STITCH_EXPRESS_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex w-full items-center justify-center gap-2 border-2 border-foreground bg-primary px-5 py-4 text-base font-bold uppercase tracking-wider text-primary-foreground shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
                   >
-                    {stitchLoading ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : (
-                      <CreditCard className="h-4 w-4" />
-                    )}
-                    {stitchLoading
-                      ? "Preparing payment…"
-                      : stitchError
-                        ? "Try again"
-                        : `Pay now — ${formatRand(payload.cartTotalNum)}`}
-                  </button>
+                    <CreditCard className="h-4 w-4" />
+                    Pay now — {formatRand(payload.cartTotalNum)}
+                  </a>
                   <p className="mt-2 text-center text-xs text-muted-foreground">
-                    Card or instant EFT via Stitch · Link valid for 1 hour
+                    Card or instant EFT via Stitch
                   </p>
                 </div>
               )}
@@ -440,40 +345,6 @@ function CheckoutPage() {
                 </div>
               )}
 
-              {stitchError && !eftOpen && (
-                  <div
-                    role="alert"
-                    className="mt-4 border-2 border-destructive bg-destructive/10 p-4"
-                  >
-                    <p className="flex items-center gap-2 text-sm font-bold text-foreground">
-                      <AlertTriangle className="h-4 w-4 shrink-0 text-destructive" />
-                      {stitchError.title}
-                    </p>
-                    <p className="mt-1 text-sm text-muted-foreground">{stitchError.detail}</p>
-                    <div className="mt-3 flex flex-wrap gap-2">
-                      <button
-                        type="button"
-                        onClick={() => void payWithStitch()}
-                        disabled={stitchLoading}
-                        className="border-2 border-foreground bg-background px-3 py-1.5 text-xs font-bold uppercase tracking-wider shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none disabled:opacity-60"
-                      >
-                        Retry payment
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setEftOpen(true);
-                          document
-                            .getElementById("pay-by-eft")
-                            ?.scrollIntoView({ behavior: "smooth", block: "start" });
-                        }}
-                        className="border-2 border-foreground bg-background px-3 py-1.5 text-xs font-bold uppercase tracking-wider shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
-                      >
-                        Pay by EFT instead
-                      </button>
-                    </div>
-                  </div>
-              )}
 
 
               <p className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
