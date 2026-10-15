@@ -129,6 +129,7 @@ export function LandingHero({
             </div>
             <a
               href="#form"
+              data-select-product={SUMMER_SPECIAL.name}
               onClick={() => onSelectProduct?.(SUMMER_SPECIAL.name)}
               className="flex min-h-12 items-center justify-center gap-2 border-t-2 border-foreground bg-background px-5 py-3 text-xs font-bold uppercase tracking-wider transition hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >

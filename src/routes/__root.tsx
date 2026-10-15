@@ -171,6 +171,13 @@ function RootShell({ children }: { children: ReactNode }) {
         <HeadContent />
       </head>
       <body>
+        {/* Runs before React hydrates: captures taps on product picker buttons
+            (e.g. "Get this quote") so the selection is never lost on slow loads. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `document.addEventListener('click',function(e){var t=e.target&&e.target.closest?e.target.closest('[data-select-product]'):null;if(!t)return;try{sessionStorage.setItem('selectedProduct',t.getAttribute('data-select-product'));window.dispatchEvent(new CustomEvent('select-product',{detail:t.getAttribute('data-select-product')}));}catch(err){}},true);`,
+          }}
+        />
         {children}
         <Scripts />
       </body>
