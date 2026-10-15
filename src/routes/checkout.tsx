@@ -299,49 +299,56 @@ function CheckoutPage() {
             </aside>
 
             {/* Payment options */}
-            <section aria-label="Payment method" className="space-y-4 lg:order-1">
-              <h2 className="text-sm font-bold uppercase tracking-wider text-foreground">
-                Payment method
-              </h2>
-              <div className="divide-y-2 divide-foreground/10 border-2 border-foreground bg-background shadow-brutal-sm">
-                <label id="pay-now" className="flex cursor-pointer items-start gap-3 p-5">
-                  <input
-                    type="radio"
-                    name="pay-method"
-                    checked={!eftOpen}
-                    onChange={() => setEftOpen(false)}
-                    className="mt-1 h-4 w-4 accent-primary"
-                  />
-                  <span>
-                    <span className="flex items-center gap-2 font-bold text-foreground">
+            <section aria-label="Payment" className="space-y-4 lg:order-1">
+              {!eftOpen && (
+                <div id="pay-now">
+                  <button
+                    type="button"
+                    onClick={() => void payWithStitch()}
+                    disabled={stitchLoading}
+                    className="inline-flex w-full items-center justify-center gap-2 border-2 border-foreground bg-primary px-5 py-4 text-base font-bold uppercase tracking-wider text-primary-foreground shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    {stitchLoading ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
                       <CreditCard className="h-4 w-4" />
-                      Card or instant EFT
-                    </span>
-                    <span className="mt-0.5 block text-xs text-muted-foreground">
-                      Pay securely via Stitch. Link valid for 1 hour.
-                    </span>
-                  </span>
-                </label>
-                <label id="pay-by-eft" className="flex cursor-pointer items-start gap-3 p-5">
-                  <input
-                    type="radio"
-                    name="pay-method"
-                    checked={eftOpen}
-                    onChange={() => setEftOpen(true)}
-                    className="mt-1 h-4 w-4 accent-primary"
-                  />
-                  <span>
-                    <span className="flex items-center gap-2 font-bold text-foreground">
+                    )}
+                    {stitchLoading
+                      ? "Preparing payment…"
+                      : stitchError
+                        ? "Try again"
+                        : `Pay now — ${formatRand(payload.cartTotalNum)}`}
+                  </button>
+                  <p className="mt-2 text-center text-xs text-muted-foreground">
+                    Card or instant EFT via Stitch · Link valid for 1 hour
+                  </p>
+                </div>
+              )}
+
+              {!eftOpen ? (
+                <button
+                  type="button"
+                  onClick={() => setEftOpen(true)}
+                  className="flex w-full items-center justify-center gap-2 text-xs font-semibold text-muted-foreground underline underline-offset-2 hover:text-foreground"
+                >
+                  <Landmark className="h-3.5 w-3.5" />
+                  Prefer to pay by bank transfer (EFT)?
+                </button>
+              ) : (
+                <div id="pay-by-eft" className="border-2 border-foreground bg-background p-5 shadow-brutal-sm">
+                  <div className="flex items-center justify-between gap-3">
+                    <h2 className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-foreground">
                       <Landmark className="h-4 w-4" />
                       Bank transfer (EFT)
-                    </span>
-                    <span className="mt-0.5 block text-xs text-muted-foreground">
-                      Pay from your banking app using your invoice number as reference.
-                    </span>
-                  </span>
-                </label>
-                {eftOpen && (
-                  <div className="p-5">
+                    </h2>
+                    <button
+                      type="button"
+                      onClick={() => setEftOpen(false)}
+                      className="text-xs font-semibold text-muted-foreground underline underline-offset-2 hover:text-foreground"
+                    >
+                      Pay by card instead
+                    </button>
+                  </div>
                 <p className="mt-1 text-sm text-muted-foreground">
                   Use your invoice number as the payment reference and email your proof of
                   payment to{" "}
