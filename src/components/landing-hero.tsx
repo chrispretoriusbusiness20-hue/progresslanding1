@@ -123,7 +123,7 @@ export function LandingHero({
                 </h3>
                 <p className="mt-1 text-3xl font-bold text-primary">R8 275</p>
                 <p className="mt-1 text-xs text-muted-foreground">
-                  Mild steel built-in braai — installation on request
+                  Mild steel built-in braai — product only, delivered
                 </p>
               </div>
             </div>
