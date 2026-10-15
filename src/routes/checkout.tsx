@@ -61,6 +61,10 @@ interface CheckoutPayload {
 const formatRand = (n: number) =>
   `R${n.toLocaleString("en-ZA", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
+// Braais are sold product-only, so installation must not be recommended to a
+// customer who ordered one.
+const isBraaiProduct = (name: string) => /braai/i.test(name);
+
 function CheckoutPage() {
   const [payload, setPayload] = useState<CheckoutPayload | null>(null);
   const [loaded, setLoaded] = useState(false);
@@ -68,6 +72,8 @@ function CheckoutPage() {
   const [stitchError, setStitchError] = useState<{ title: string; detail: string } | null>(null);
   const [eftOpen, setEftOpen] = useState(false);
   const stitchFn = useServerFn(createStitchPaymentLink);
+
+  const braaiOrder = !!payload && isBraaiProduct(payload.product);
 
   // sessionStorage is browser-only — read after hydration to avoid SSR mismatch.
   useEffect(() => {
@@ -217,7 +223,9 @@ function CheckoutPage() {
       <div className="border-b border-foreground/15 bg-secondary/40">
         <ul className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-x-6 gap-y-1 px-6 py-2 text-[11px] font-bold uppercase tracking-wider text-foreground">
           <li className="flex items-center gap-1.5"><Truck className="h-3.5 w-3.5" />Delivery included</li>
-          <li className="flex items-center gap-1.5"><Wrench className="h-3.5 w-3.5" />Expert installation</li>
+          {!braaiOrder && (
+            <li className="flex items-center gap-1.5"><Wrench className="h-3.5 w-3.5" />Expert installation</li>
+          )}
           <li className="flex items-center gap-1.5"><ShieldCheck className="h-3.5 w-3.5" />Prices incl. VAT</li>
           <li className="flex items-center gap-1.5"><Lock className="h-3.5 w-3.5" />Secure payment</li>
         </ul>
@@ -292,7 +300,9 @@ function CheckoutPage() {
               <ul className="mt-5 space-y-2 border-t-2 border-foreground/10 pt-4 text-xs text-muted-foreground">
                 <li className="flex items-center gap-2"><Lock className="h-4 w-4 text-foreground" />Secure payment via Stitch</li>
                 <li className="flex items-center gap-2"><Truck className="h-4 w-4 text-foreground" />Delivery from Bellville, Cape Town</li>
-                <li className="flex items-center gap-2"><Wrench className="h-4 w-4 text-foreground" />Expert installation by Progress Installations</li>
+                {!braaiOrder && (
+                  <li className="flex items-center gap-2"><Wrench className="h-4 w-4 text-foreground" />Expert installation by Progress Installations</li>
+                )}
               </ul>
             </section>
             </aside>
