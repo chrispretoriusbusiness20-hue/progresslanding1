@@ -294,6 +294,17 @@ function QuotePage() {
 
   // Pick up a product added from the catalogue ("Add on") and prefill the
   // quote form directly — no copy/paste or quoting modal needed.
+  // Also catch product picks that happened before hydration: the inline
+  // script in __root stores them and dispatches a "select-product" event.
+  useEffect(() => {
+    const onPick = (e: Event) => {
+      const name = (e as CustomEvent<string>).detail;
+      if (name) setProduct(name);
+    };
+    window.addEventListener("select-product", onPick);
+    return () => window.removeEventListener("select-product", onPick);
+  }, []);
+
   useEffect(() => {
     try {
       const selected = sessionStorage.getItem("selectedProduct");
