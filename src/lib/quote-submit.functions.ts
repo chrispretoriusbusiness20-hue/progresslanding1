@@ -475,7 +475,10 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
     // all-inclusive special carries installation pricing (via add-ons).
     const cornerInstallPrice = null;
 
-    const installationEstimate = null;
+    // The Magma Special carries a fixed R6,000 installation (per unit) when the
+    // client chooses Supply & install — must match the checkout total.
+    const installationEstimate: number | null =
+      isSpecial && installEligible ? installBaseForKm(distanceKm) * data.quantity : null;
 
     // All-inclusive SPECIAL: base price covers single-story basic install only;
     // add-ons (double story, corner, granite upgrade) are charged on top.
