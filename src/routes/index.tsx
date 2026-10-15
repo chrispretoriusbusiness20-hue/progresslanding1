@@ -269,6 +269,10 @@ function QuotePage() {
   // "Supply & install" is the recommended option, so it's pre-selected — but
   // the client can still switch to "Product only"; nothing is locked.
   const [installationRequired, setInstallationRequired] = useState(true);
+  // Braais are recommended as product only; switch the default when one is picked.
+  useEffect(() => {
+    setInstallationRequired(!isBraaiProduct(product));
+  }, [product]);
   const [address, setAddress] = useState("");
   
   const [extrasForAccount, setExtrasForAccount] = useState("");
@@ -1156,7 +1160,10 @@ function QuotePage() {
                     onChange={() => setInstallationRequired(true)}
                     className="h-4 w-4 accent-primary"
                   />
-                  Supply &amp; install <span className="text-xs font-semibold text-primary">(recommended)</span>
+                  Supply &amp; install{" "}
+                  {!isBraaiProduct(product) && (
+                    <span className="text-xs font-semibold text-primary">(recommended)</span>
+                  )}
                 </label>
                 <label className="flex items-center gap-2">
                   <input
@@ -1171,6 +1178,9 @@ function QuotePage() {
                     className="h-4 w-4 accent-primary"
                   />
                   Product only (no installation)
+                  {isBraaiProduct(product) && (
+                    <span className="text-xs font-semibold text-primary">(recommended)</span>
+                  )}
                 </label>
               </div>
             </Field>
@@ -1699,9 +1709,13 @@ function BreakdownRow({ label, value, hint }: { label: string; value: string; hi
   );
 }
 
+function isBraaiProduct(name: string): boolean {
+  return /braai/i.test(name);
+}
+
 function flueKitApplies(name: string): boolean {
-  if (isAllInclusiveProduct(name) || /flue\s*kit/i.test(name)) return false;
-  return /fireplace|braai|combustion|insert|stove|grate/i.test(name);
+  if (isAllInclusiveProduct(name) || /flue\s*kit/i.test(name) || isBraaiProduct(name)) return false;
+  return /fireplace|combustion|insert|stove|grate/i.test(name);
 }
 
 function InstantQuote({

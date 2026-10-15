@@ -452,7 +452,8 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
 
     const allInclusive = isAllInclusiveProduct(matched?.name ?? data.product);
     const flueKitIncluded = allInclusive || /flue\s*kit/i.test(matched?.name ?? "") || /flue\s*kit/i.test(data.product);
-    const flueKitPrice = flueKitIncluded || data.flueKitAddOn === false
+    const isBraai = /braai/i.test(matched?.name ?? data.product);
+    const flueKitPrice = flueKitIncluded || isBraai || data.flueKitAddOn === false
       ? null
       : data.storyType === "double" ? 9650 : data.storyType === "single" ? 7650 : null;
 
