@@ -1,4 +1,5 @@
 import { Check, Factory, Flame, MessageCircle, ShieldCheck, Sun, Truck } from "lucide-react";
+import summerVideo from "@/assets/videos/1200-delux-summer.mp4.asset.json";
 
 const PROMISES = [
   "Factory-direct prices — no middleman markups",
@@ -127,13 +128,26 @@ export function LandingHero({
                 </p>
               </div>
             </div>
+            <div className="border-t-2 border-foreground bg-foreground">
+              <video
+                src={summerVideo.url}
+                poster={SUMMER_SPECIAL.image}
+                controls
+                playsInline
+                muted
+                loop
+                preload="metadata"
+                aria-label="1200 De Lux braai video"
+                className="mx-auto aspect-[9/16] max-h-[420px] w-auto"
+              />
+            </div>
             <a
               href="#form"
               data-select-product={SUMMER_SPECIAL.name}
               onClick={() => onSelectProduct?.(SUMMER_SPECIAL.name)}
-              className="flex min-h-12 items-center justify-center gap-2 border-t-2 border-foreground bg-background px-5 py-3 text-xs font-bold uppercase tracking-wider transition hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              className="flex min-h-12 items-center justify-center gap-2 border-t-2 border-foreground bg-accent px-5 py-3 text-xs font-bold uppercase tracking-wider text-accent-foreground transition hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
-              <Sun className="h-4 w-4 shrink-0" aria-hidden="true" /> Get this quote
+              <Sun className="h-4 w-4 shrink-0" aria-hidden="true" /> Order now — go to checkout
             </a>
           </div>
         </div>
