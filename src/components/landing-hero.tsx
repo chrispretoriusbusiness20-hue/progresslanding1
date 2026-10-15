@@ -1,5 +1,6 @@
 import { Check, Factory, Flame, MessageCircle, ShieldCheck, Sun, Truck } from "lucide-react";
 import summerVideo from "@/assets/videos/1200-delux-summer.mp4.asset.json";
+import { STITCH_EXPRESS_URL } from "@/lib/stitch-express";
 
 const PROMISES = [
   "Factory-direct prices — no middleman markups",
@@ -142,12 +143,12 @@ export function LandingHero({
               />
             </div>
             <a
-              href="#form"
-              data-select-product={SUMMER_SPECIAL.name}
-              onClick={() => onSelectProduct?.(SUMMER_SPECIAL.name)}
+              href={STITCH_EXPRESS_URL}
+              target="_blank"
+              rel="noopener noreferrer"
               className="flex min-h-12 items-center justify-center gap-2 border-t-2 border-foreground bg-accent px-5 py-3 text-xs font-bold uppercase tracking-wider text-accent-foreground transition hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
-              <Sun className="h-4 w-4 shrink-0" aria-hidden="true" /> Order now — go to checkout
+              <Sun className="h-4 w-4 shrink-0" aria-hidden="true" /> Order now — pay online
             </a>
           </div>
         </div>
