@@ -10,7 +10,6 @@ import {
   Lock,
   MessageCircle,
   ShieldCheck,
-  ShoppingCart,
   Truck,
   Wrench,
   X,
