@@ -464,9 +464,8 @@ function CheckoutPage() {
                       </button>
                     </div>
                   </div>
-                )}
-                </div>
               )}
+
 
               <p className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
                 <Lock className="h-3.5 w-3.5" /> Secure checkout · Ref{" "}
