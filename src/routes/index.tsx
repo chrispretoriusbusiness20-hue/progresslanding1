@@ -266,12 +266,11 @@ function QuotePage() {
   const [roofType, setRoofType] = useState("");
   const [plateType, setPlateType] = useState<"steel" | "glass" | "granite">("glass");
   const [cornerInstall, setCornerInstall] = useState(false);
-  // "Supply & install" is the recommended option, so it's pre-selected — but
-  // the client can still switch to "Product only"; nothing is locked.
+  // Only the Magma Special is offered as a supply-and-install package; every
+  // other product is product-only and no installation choice is shown.
   const [installationRequired, setInstallationRequired] = useState(true);
-  // Braais are recommended as product only; switch the default when one is picked.
   useEffect(() => {
-    setInstallationRequired(!isBraaiProduct(product));
+    setInstallationRequired(isSpecialProduct(product));
   }, [product]);
   const [address, setAddress] = useState("");
   
