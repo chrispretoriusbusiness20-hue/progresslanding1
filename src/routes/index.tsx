@@ -29,6 +29,7 @@ import { allInclusiveAddOns, isAllInclusiveProduct, isSpecialProduct, specialDis
 
 const QUOTE_APP_URL = "https://fireplacequotes.co.za/";
 import { STITCH_EXPRESS_URL } from "@/lib/stitch-express";
+import { notifyPaymentClick } from "@/lib/payment-click.functions";
 // Quote dropdown mirrors the curated catalogue so every catalogue item is selectable.
 const QUOTE_PRODUCT_IDS = [
   "magma-10kw-closed-combustion-fireplace-incl-flue-kit-special",
@@ -1448,6 +1449,9 @@ function QuotePage() {
 
             <a
               href={STITCH_EXPRESS_URL}
+              onClick={() => {
+                void notifyPaymentClick({ data: { quoteNo: quoteNo ?? undefined, product: `${quantity} × ${product || "—"}`, amount: cartTotalLabel ?? undefined, customer: `${firstName} ${lastName} <${email}>`.trim(), source: "Quote — Pay & get your invoice" } }).catch(() => undefined);
+              }}
               target="_blank"
               rel="noopener noreferrer"
               className="mt-4 flex w-full items-center justify-center gap-2 border-2 border-foreground bg-primary px-5 py-3 text-sm font-bold uppercase tracking-wider text-primary-foreground shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"

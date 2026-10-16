@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 
 import { STITCH_EXPRESS_URL } from "@/lib/stitch-express";
+import { notifyPaymentClick } from "@/lib/payment-click.functions";
 
 
 import progressLogo from "@/assets/progress-header-transparent.png.asset.json";
@@ -226,6 +227,9 @@ function CheckoutPage() {
                 <div id="pay-now">
                   <a
                     href={STITCH_EXPRESS_URL}
+                    onClick={() => {
+                      void notifyPaymentClick({ data: { quoteNo: payload.quoteNo, product: `${payload.quantity} × ${payload.product}`, amount: formatRand(payload.cartTotalNum), customer: `${payload.firstName} ${payload.lastName} <${payload.email}>`, source: "Checkout — Pay now" } }).catch(() => undefined);
+                    }}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex w-full items-center justify-center gap-2 border-2 border-foreground bg-primary px-5 py-4 text-base font-bold uppercase tracking-wider text-primary-foreground shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
