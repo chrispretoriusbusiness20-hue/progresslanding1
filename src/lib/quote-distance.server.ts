@@ -33,4 +33,3 @@ export async function computeDistanceKm(destination: string): Promise<number | n
     return null;
   }
 }
-

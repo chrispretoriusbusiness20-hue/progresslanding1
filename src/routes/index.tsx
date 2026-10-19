@@ -50,8 +50,15 @@ const QUOTE_APP_URL = "https://fireplacequotes.co.za/";
 import { STITCH_EXPRESS_URL } from "@/lib/stitch-express";
 import { notifyPaymentClick } from "@/lib/payment-click.functions";
 const PRODUCT_NAMES = CATALOGUE_PRODUCTS.map((product) => product.name);
-const PRODUCT_PRICE_MAP = new Map(CATALOGUE_PRODUCTS.map((product) => [product.name, product.price]));
-const PRODUCT_IMAGE_MAP = new Map(CATALOGUE_PRODUCTS.map((product) => [product.name, getProductImageUrl({ ...product, productName: product.name })]));
+const PRODUCT_PRICE_MAP = new Map(
+  CATALOGUE_PRODUCTS.map((product) => [product.name, product.price]),
+);
+const PRODUCT_IMAGE_MAP = new Map(
+  CATALOGUE_PRODUCTS.map((product) => [
+    product.name,
+    getProductImageUrl({ ...product, productName: product.name }),
+  ]),
+);
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -228,7 +235,6 @@ function buildWhatsAppMessage(params: {
   return lines.join("\n");
 }
 
-
 function QuotePage() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -321,23 +327,54 @@ function QuotePage() {
   const [distance, setDistance] = useState<{ address: string; km: number | null } | null>(null);
   const [distanceBusy, setDistanceBusy] = useState(false);
   const [distanceError, setDistanceError] = useState(false);
-  const [entryAction, setEntryAction] = useState<"quote_submit" | "estimator_quote" | "finder_quote" | "compare_quote">("quote_submit");
+  const [entryAction, setEntryAction] = useState<
+    "quote_submit" | "estimator_quote" | "finder_quote" | "compare_quote"
+  >("quote_submit");
   useEffect(() => {
-    if (address.trim().length < 3) { setDistance(null); setDistanceBusy(false); setDistanceError(false); return; }
+    if (address.trim().length < 3) {
+      setDistance(null);
+      setDistanceBusy(false);
+      setDistanceError(false);
+      return;
+    }
     let cancelled = false;
     setDistanceBusy(true);
     setDistanceError(false);
     const timer = setTimeout(() => {
-      void resolveDistance({ data: { address: address.trim() } }).then((result) => {
-        if (cancelled) return;
-        setDistance({ address, km: result.distanceKm });
-        setDistanceError(result.distanceKm === null);
-      }).catch(() => { if (!cancelled) { setDistance(null); setDistanceError(true); } }).finally(() => { if (!cancelled) setDistanceBusy(false); });
+      void resolveDistance({ data: { address: address.trim() } })
+        .then((result) => {
+          if (cancelled) return;
+          setDistance({ address, km: result.distanceKm });
+          setDistanceError(result.distanceKm === null);
+        })
+        .catch(() => {
+          if (!cancelled) {
+            setDistance(null);
+            setDistanceError(true);
+          }
+        })
+        .finally(() => {
+          if (!cancelled) setDistanceBusy(false);
+        });
     }, 600);
-    return () => { cancelled = true; clearTimeout(timer); };
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
   }, [address, resolveDistance]);
   const liveDistanceKm = distance?.address === address ? distance.km : null;
-  const pricingSelections = { productName: product, price: PRODUCT_PRICE_MAP.get(product) ?? null, quantity, storyType, flooring, plateType, cornerInstall, installationRequired, flueKitAddOn, distanceKm: liveDistanceKm };
+  const pricingSelections = {
+    productName: product,
+    price: PRODUCT_PRICE_MAP.get(product) ?? null,
+    quantity,
+    storyType,
+    flooring,
+    plateType,
+    cornerInstall,
+    installationRequired,
+    flueKitAddOn,
+    distanceKm: liveDistanceKm,
+  };
 
   const submitFn = useServerFn(submitQuoteRequest);
   const createUploadFn = useServerFn(createQuoteUploadUrl);
@@ -419,7 +456,10 @@ function QuotePage() {
           utmSource: attribution.utmSource,
           utmMedium: attribution.utmMedium,
           utmCampaign: attribution.utmCampaign,
-          attribution, landingPage: window.location.pathname, leadSessionId: getLeadSessionId(), actionType: entryAction,
+          attribution,
+          landingPage: window.location.pathname,
+          leadSessionId: getLeadSessionId(),
+          actionType: entryAction,
         },
       })) as LookupResult;
       setLookup(result);
@@ -648,7 +688,14 @@ function QuotePage() {
   void quoteUrl;
 
   const livePricing = calculateQuotePricing(pricingSelections);
-  const estimatedBreakdown = { total: livePricing.total === null ? null : livePricing.productTotal + (livePricing.installationEstimate ?? 0), productTotal: livePricing.productSubtotal === null ? null : livePricing.productTotal, installTotal: livePricing.installationEstimate ?? 0 };
+  const estimatedBreakdown = {
+    total:
+      livePricing.total === null
+        ? null
+        : livePricing.productTotal + (livePricing.installationEstimate ?? 0),
+    productTotal: livePricing.productSubtotal === null ? null : livePricing.productTotal,
+    installTotal: livePricing.installationEstimate ?? 0,
+  };
 
   const estimatedTotal = estimatedBreakdown.total;
   const estimatedProductTotal = estimatedBreakdown.productTotal;
@@ -661,7 +708,10 @@ function QuotePage() {
   // submit. Until then we assume the base zone so the live total — and the
   // BNPL monthly amount — matches the all-in R23,970 Magma special.
   const BASE_TRANSPORT_DEFAULT = 470;
-  const effectiveTransport = livePricing.transport?.price ?? (matched?.destinationText === address ? transportPrice : null) ?? BASE_TRANSPORT_DEFAULT;
+  const effectiveTransport =
+    livePricing.transport?.price ??
+    (matched?.destinationText === address ? transportPrice : null) ??
+    BASE_TRANSPORT_DEFAULT;
   const effectiveTransportLabel = formatRand(effectiveTransport);
   const cartTotalNum =
     estimatedTotal !== null
@@ -942,7 +992,14 @@ function QuotePage() {
 
       <LandingHero onSelectProduct={setProduct} />
       <PopularPicks onSelectProduct={setProduct} />
-      <FireplaceFinder onSelectProduct={(name) => { setProduct(name); setSubmitted(false); setLookup(null); setEntryAction("finder_quote"); }} />
+      <FireplaceFinder
+        onSelectProduct={(name) => {
+          setProduct(name);
+          setSubmitted(false);
+          setLookup(null);
+          setEntryAction("finder_quote");
+        }}
+      />
       <MobileStickyCta />
       {/* Form */}
       <section id="form" className="bg-background">
@@ -964,12 +1021,33 @@ function QuotePage() {
             </a>
           </div>
 
-          <PriceEstimator names={PRODUCT_NAMES} selections={pricingSelections} onProduct={(name) => { setProduct(name); setSubmitted(false); setLookup(null); }} onStory={setStoryType} address={address} onAddress={setAddress} busy={distanceBusy} error={distanceError} onSend={() => {
-            setEntryAction("estimator_quote");
-            void captureLeadAction("estimator_quote", [product], { customerName: `${firstName} ${lastName}`.trim() || undefined, email: email || undefined, phone: phone || undefined });
-            document.getElementById("quote-details")?.scrollIntoView({ behavior: "smooth", block: "start" });
-          }} />
-          <form id="quote-details"
+          <PriceEstimator
+            names={PRODUCT_NAMES}
+            selections={pricingSelections}
+            onProduct={(name) => {
+              setProduct(name);
+              setSubmitted(false);
+              setLookup(null);
+            }}
+            onStory={setStoryType}
+            address={address}
+            onAddress={setAddress}
+            busy={distanceBusy}
+            error={distanceError}
+            onSend={() => {
+              setEntryAction("estimator_quote");
+              void captureLeadAction("estimator_quote", [product], {
+                customerName: `${firstName} ${lastName}`.trim() || undefined,
+                email: email || undefined,
+                phone: phone || undefined,
+              });
+              document
+                .getElementById("quote-details")
+                ?.scrollIntoView({ behavior: "smooth", block: "start" });
+            }}
+          />
+          <form
+            id="quote-details"
             onSubmit={handleSubmit}
             className="space-y-5 border-2 border-foreground bg-card p-6 shadow-brutal-sm sm:p-8"
           >

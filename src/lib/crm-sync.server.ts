@@ -1,8 +1,7 @@
 // Sends signed quote payloads to the fireplacequotes.co.za CRM webhook.
 // Server-only. Best-effort: failures are logged, never thrown to caller.
 
-const RECEIVER_URL =
-  "https://payxyayggcmdrtepnmwh.supabase.co/functions/v1/ingest-quote-webhook";
+const RECEIVER_URL = "https://payxyayggcmdrtepnmwh.supabase.co/functions/v1/ingest-quote-webhook";
 
 async function hmacHex(secret: string, body: string) {
   const key = await crypto.subtle.importKey(

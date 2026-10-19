@@ -2,7 +2,12 @@ import { createFileRoute } from "@tanstack/react-router";
 import { formatRand } from "@/lib/product-display";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
-import { listQuotes, getQuotePdfUrl, updateQuote, type QuoteRow } from "@/lib/list-quotes.functions";
+import {
+  listQuotes,
+  getQuotePdfUrl,
+  updateQuote,
+  type QuoteRow,
+} from "@/lib/list-quotes.functions";
 import { supabase } from "@/integrations/supabase/client";
 import type { Session } from "@supabase/supabase-js";
 import { LeadActivity } from "@/components/lead-activity";
@@ -11,9 +16,15 @@ export const Route = createFileRoute("/dashboard")({
   head: () => ({
     meta: [
       { title: "Quote leads — Progress Group" },
-      { name: "description", content: "Private Progress Group quote and customer lead management." },
+      {
+        name: "description",
+        content: "Private Progress Group quote and customer lead management.",
+      },
       { property: "og:title", content: "Quote leads — Progress Group" },
-      { property: "og:description", content: "Private Progress Group quote and customer lead management." },
+      {
+        property: "og:description",
+        content: "Private Progress Group quote and customer lead management.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "robots", content: "noindex" },
@@ -28,8 +39,7 @@ export const Route = createFileRoute("/dashboard")({
   notFoundComponent: () => <div className="p-8">Not found.</div>,
 });
 
-const fmtZAR = (n: number | null | undefined) =>
-  n == null ? "—" : formatRand(n);
+const fmtZAR = (n: number | null | undefined) => (n == null ? "—" : formatRand(n));
 
 const fmtDate = (s: string) => {
   const d = new Date(s);
@@ -54,10 +64,15 @@ function SignInGate({ onSession }: { onSession: (s: Session) => void }) {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-6">
-      <form onSubmit={submit} className="w-full max-w-sm space-y-4 rounded-lg border bg-card p-6 shadow-sm">
+      <form
+        onSubmit={submit}
+        className="w-full max-w-sm space-y-4 rounded-lg border bg-card p-6 shadow-sm"
+      >
         <div>
           <h1 className="text-xl font-semibold">Staff sign in</h1>
-          <p className="mt-1 text-xs text-muted-foreground">Access is restricted to Progress Group staff.</p>
+          <p className="mt-1 text-xs text-muted-foreground">
+            Access is restricted to Progress Group staff.
+          </p>
         </div>
         <label className="block text-sm">
           <span className="text-xs font-medium text-muted-foreground">Email</span>
@@ -132,7 +147,9 @@ function DashboardAuthed({ onSignOut }: { onSignOut: () => void }) {
           ? "Your account isn't authorised to view this dashboard."
           : `Failed to load: ${error.message}`}
         <div className="mt-4">
-          <button onClick={onSignOut} className="text-xs text-primary hover:underline">Sign out</button>
+          <button onClick={onSignOut} className="text-xs text-primary hover:underline">
+            Sign out
+          </button>
         </div>
       </div>
     );
@@ -152,7 +169,15 @@ function DashboardContent({ data, onSignOut }: { data: QuoteRow[]; onSignOut: ()
       if (status !== "all" && r.status !== status) return false;
       if (source !== "all" && (r.source ?? "organic") !== source) return false;
       if (!q) return true;
-      return [r.first_name, r.last_name, r.email, r.phone, r.address, r.matched_product, r.product_requested]
+      return [
+        r.first_name,
+        r.last_name,
+        r.email,
+        r.phone,
+        r.address,
+        r.matched_product,
+        r.product_requested,
+      ]
         .filter(Boolean)
         .some((v) => String(v).toLowerCase().includes(q));
     });
@@ -169,8 +194,22 @@ function DashboardContent({ data, onSignOut }: { data: QuoteRow[]; onSignOut: ()
 
   const exportCSV = () => {
     const headers = [
-      "Date","Name","Email","Phone","Address","Product","Qty","Story","Flooring","Corner",
-      "Distance km","Unit ZAR","Transport ZAR","Total ZAR","Source","Status",
+      "Date",
+      "Name",
+      "Email",
+      "Phone",
+      "Address",
+      "Product",
+      "Qty",
+      "Story",
+      "Flooring",
+      "Corner",
+      "Distance km",
+      "Unit ZAR",
+      "Transport ZAR",
+      "Total ZAR",
+      "Source",
+      "Status",
     ];
     const rows = filtered.map((r) => [
       fmtDate(r.created_at),
@@ -297,12 +336,7 @@ function DashboardContent({ data, onSignOut }: { data: QuoteRow[]; onSignOut: ()
           </table>
         </div>
       </div>
-      {editing && (
-        <EditModal
-          row={editing}
-          onClose={() => setEditing(null)}
-        />
-      )}
+      {editing && <EditModal row={editing} onClose={() => setEditing(null)} />}
     </div>
   );
 }
@@ -332,8 +366,8 @@ function Row({ r, onEdit }: { r: QuoteRow; onEdit: () => void }) {
     r.status === "approved"
       ? "bg-green-100 text-green-800"
       : r.status === "rejected"
-      ? "bg-red-100 text-red-800"
-      : "bg-amber-100 text-amber-800";
+        ? "bg-red-100 text-red-800"
+        : "bg-amber-100 text-amber-800";
 
   return (
     <tr className="border-t align-top">
@@ -388,11 +422,7 @@ function Row({ r, onEdit }: { r: QuoteRow; onEdit: () => void }) {
         )}
       </td>
       <td className="px-3 py-3">
-        <button
-          type="button"
-          onClick={onEdit}
-          className="text-xs text-primary hover:underline"
-        >
+        <button type="button" onClick={onEdit} className="text-xs text-primary hover:underline">
           Edit
         </button>
       </td>
@@ -461,19 +491,50 @@ function EditModal({ row, onClose }: { row: QuoteRow; onClose: () => void }) {
       >
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-lg font-semibold">Edit quote</h2>
-          <button onClick={onClose} className="text-muted-foreground hover:text-foreground">✕</button>
+          <button onClick={onClose} className="text-muted-foreground hover:text-foreground">
+            ✕
+          </button>
         </div>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <Field label="First name" value={form.first_name} onChange={(v) => set("first_name", v)} />
+          <Field
+            label="First name"
+            value={form.first_name}
+            onChange={(v) => set("first_name", v)}
+          />
           <Field label="Last name" value={form.last_name} onChange={(v) => set("last_name", v)} />
           <Field label="Email" value={form.email} onChange={(v) => set("email", v)} />
           <Field label="Phone" value={form.phone} onChange={(v) => set("phone", v)} />
           <Field label="Address" value={form.address} onChange={(v) => set("address", v)} full />
-          <Field label="Product" value={form.matched_product} onChange={(v) => set("matched_product", v)} full />
-          <Field label="Qty" type="number" value={String(form.quantity)} onChange={(v) => set("quantity", Number(v))} />
-          <Field label="Unit price (R)" type="number" value={String(form.unit_price_zar)} onChange={(v) => set("unit_price_zar", Number(v))} />
-          <Field label="Transport (R)" type="number" value={String(form.transport_zar)} onChange={(v) => set("transport_zar", Number(v))} />
-          <Field label="Total (R)" type="number" value={String(form.total_zar)} onChange={(v) => set("total_zar", Number(v))} />
+          <Field
+            label="Product"
+            value={form.matched_product}
+            onChange={(v) => set("matched_product", v)}
+            full
+          />
+          <Field
+            label="Qty"
+            type="number"
+            value={String(form.quantity)}
+            onChange={(v) => set("quantity", Number(v))}
+          />
+          <Field
+            label="Unit price (R)"
+            type="number"
+            value={String(form.unit_price_zar)}
+            onChange={(v) => set("unit_price_zar", Number(v))}
+          />
+          <Field
+            label="Transport (R)"
+            type="number"
+            value={String(form.transport_zar)}
+            onChange={(v) => set("transport_zar", Number(v))}
+          />
+          <Field
+            label="Total (R)"
+            type="number"
+            value={String(form.total_zar)}
+            onChange={(v) => set("total_zar", Number(v))}
+          />
           <div>
             <label className="block text-xs font-medium text-muted-foreground">Status</label>
             <select
@@ -489,10 +550,7 @@ function EditModal({ row, onClose }: { row: QuoteRow; onClose: () => void }) {
         </div>
         {err && <div className="mt-3 text-sm text-red-600">{err}</div>}
         <div className="mt-6 flex justify-end gap-2">
-          <button
-            onClick={onClose}
-            className="rounded-md border px-4 py-2 text-sm hover:bg-muted"
-          >
+          <button onClick={onClose} className="rounded-md border px-4 py-2 text-sm hover:bg-muted">
             Cancel
           </button>
           <button
@@ -509,7 +567,11 @@ function EditModal({ row, onClose }: { row: QuoteRow; onClose: () => void }) {
 }
 
 function Field({
-  label, value, onChange, type = "text", full = false,
+  label,
+  value,
+  onChange,
+  type = "text",
+  full = false,
 }: {
   label: string;
   value: string;

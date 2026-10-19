@@ -41,19 +41,13 @@ function resolveProductImage(productName: string): string {
   return best?.image ?? "";
 }
 
-
-
 const MAPS_GATEWAY = "https://connector-gateway.lovable.dev/google_maps";
 const SHEETS_GATEWAY = "https://connector-gateway.lovable.dev/google_sheets/v4";
 const CALENDAR_GATEWAY = "https://connector-gateway.lovable.dev/google_calendar/calendar/v3";
 const QUOTE_SHEET_ID = "1AVvNPoavrAf0ptWt4dUXdA2zmGqNjA70ebPXn-gJgW8";
 const QUOTE_TEAM_EMAIL = "sales@progressgrp.co.za";
-const QUOTE_CC_EMAILS = [
-  "louis@progressgrp.co.za",
-  "chris@progressinstallations.co.za",
-];
-const ORIGIN_ADDRESS =
-  "189 Durban Road, Bellville, Cape Town, 7530, South Africa";
+const QUOTE_CC_EMAILS = ["louis@progressgrp.co.za", "chris@progressinstallations.co.za"];
+const ORIGIN_ADDRESS = "189 Durban Road, Bellville, Cape Town, 7530, South Africa";
 const QUOTE_BUCKET = "quotes";
 const QUOTE_SIGNED_URL_EXPIRES_S = 60 * 60 * 24 * 30; // 30 days
 
@@ -106,12 +100,7 @@ export const emailQuoteFromPath = createServerFn({ method: "POST" })
   .inputValidator(
     z.object({
       to: z.string().trim().email().max(200),
-      path: z
-        .string()
-        .trim()
-        .min(1)
-        .max(500)
-        .regex(QUOTE_PATH_RE, "invalid quote path"),
+      path: z.string().trim().min(1).max(500).regex(QUOTE_PATH_RE, "invalid quote path"),
       clientName: z.string().trim().min(1).max(200).optional(),
       quoteNo: z.string().trim().min(1).max(80).optional(),
       productName: z.string().trim().min(1).max(300).optional(),
@@ -188,8 +177,7 @@ export const emailQuoteFromPath = createServerFn({ method: "POST" })
       const { signAcceptance } = await import("@/lib/accept-quote-sign.server");
       const acceptPayload = `${data.to}|${quoteNo}|${productName}|${clientName}|${data.path}`;
       const acceptSig = signAcceptance(acceptPayload);
-      const origin =
-        process.env.PUBLIC_SITE_URL ?? "https://progressgrp.co.za";
+      const origin = process.env.PUBLIC_SITE_URL ?? "https://progressgrp.co.za";
       const acceptUrl = `${origin}/api/public/accept-quote?to=${encodeURIComponent(data.to)}&quoteNo=${encodeURIComponent(quoteNo)}&product=${encodeURIComponent(productName)}&client=${encodeURIComponent(clientName)}&pdfPath=${encodeURIComponent(data.path)}&sig=${acceptSig}`;
 
       const html = `
@@ -223,7 +211,7 @@ export const emailQuoteFromPath = createServerFn({ method: "POST" })
       });
       return {
         ok: send.success,
-        error: send.success ? null : send.error ?? "Email failed",
+        error: send.success ? null : (send.error ?? "Email failed"),
         downloadUrl: signed.signedUrl,
       };
     } catch (err) {
@@ -234,9 +222,6 @@ export const emailQuoteFromPath = createServerFn({ method: "POST" })
       };
     }
   });
-
-
-
 
 async function createCalendarBooking(args: {
   summary: string;
@@ -251,27 +236,22 @@ async function createCalendarBooking(args: {
   const calKey = process.env.GOOGLE_CALENDAR_API_KEY;
   if (!lovableKey || !calKey) return null;
   try {
-    const res = await fetch(
-      `${CALENDAR_GATEWAY}/calendars/primary/events?sendUpdates=all`,
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${lovableKey}`,
-          "X-Connection-Api-Key": calKey,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          summary: args.summary,
-          description: args.description,
-          location: args.location,
-          start: { dateTime: args.startISO, timeZone: "Africa/Johannesburg" },
-          end: { dateTime: args.endISO, timeZone: "Africa/Johannesburg" },
-          attendees: [
-            { email: args.attendeeEmail, displayName: args.attendeeName },
-          ],
-        }),
+    const res = await fetch(`${CALENDAR_GATEWAY}/calendars/primary/events?sendUpdates=all`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${lovableKey}`,
+        "X-Connection-Api-Key": calKey,
+        "Content-Type": "application/json",
       },
-    );
+      body: JSON.stringify({
+        summary: args.summary,
+        description: args.description,
+        location: args.location,
+        start: { dateTime: args.startISO, timeZone: "Africa/Johannesburg" },
+        end: { dateTime: args.endISO, timeZone: "Africa/Johannesburg" },
+        attendees: [{ email: args.attendeeEmail, displayName: args.attendeeName }],
+      }),
+    });
     if (!res.ok) {
       console.error("Calendar create failed", res.status, await res.text());
       return null;
@@ -308,7 +288,11 @@ type Product = { name: string; price: string | null; url: string; category: stri
 // Price from the full catalogue (same source the quote form uses), with the
 // curated list taking precedence where names overlap (e.g. the Magma SPECIAL).
 const FULL_PRODUCTS = productsFullData as Product[];
-const normName = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+const normName = (s: string) =>
+  s
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
 const curatedByName = new Map((productsData as Product[]).map((p) => [normName(p.name), p]));
 const PRODUCTS: Product[] = [
   ...(productsData as Product[]),
@@ -341,7 +325,6 @@ function matchProduct(query: string): Product | null {
   return best?.product ?? null;
 }
 
-
 function parseRand(price: string | null | undefined): number | null {
   if (!price) return null;
   const cleaned = price.replace(/[^0-9.,]/g, "").replace(/\s/g, "");
@@ -369,8 +352,16 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
       address: z.string().trim().max(300).optional(),
       message: z.string().trim().max(2000).optional(),
       extrasForAccount: z.string().trim().max(2000).optional(),
-      preferredDate: z.string().trim().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
-      preferredTime: z.string().trim().regex(/^\d{2}:\d{2}$/).optional(),
+      preferredDate: z
+        .string()
+        .trim()
+        .regex(/^\d{4}-\d{2}-\d{2}$/)
+        .optional(),
+      preferredTime: z
+        .string()
+        .trim()
+        .regex(/^\d{2}:\d{2}$/)
+        .optional(),
       utmSource: z.string().trim().max(100).optional(),
       utmMedium: z.string().trim().max(100).optional(),
       utmCampaign: z.string().trim().max(200).optional(),
@@ -378,7 +369,9 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
       attribution: attributionSchema.optional(),
       landingPage: z.string().max(500).startsWith("/").optional(),
       leadSessionId: z.string().uuid().optional(),
-      actionType: z.enum(["quote_submit", "estimator_quote", "finder_quote", "compare_quote"]).optional(),
+      actionType: z
+        .enum(["quote_submit", "estimator_quote", "finder_quote", "compare_quote"])
+        .optional(),
     }),
   )
   .handler(async ({ data }) => {
@@ -388,12 +381,28 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
     const { computeDistanceKm } = await import("./quote-distance.server");
     const distanceKm = data.address ? await computeDistanceKm(data.address) : null;
     const pricing = calculateQuotePricing({
-      productName: matched?.name ?? data.product, price: matched?.price ?? null,
-      quantity: data.quantity, storyType: data.storyType ?? "", flueKitAddOn: data.flueKitAddOn !== false,
-      flooring: data.flooring ?? "", plateType: data.plateType ?? "glass", cornerInstall: data.cornerInstall,
-      installationRequired: data.installationRequired, distanceKm,
+      productName: matched?.name ?? data.product,
+      price: matched?.price ?? null,
+      quantity: data.quantity,
+      storyType: data.storyType ?? "",
+      flueKitAddOn: data.flueKitAddOn !== false,
+      flooring: data.flooring ?? "",
+      plateType: data.plateType ?? "glass",
+      cornerInstall: data.cornerInstall,
+      installationRequired: data.installationRequired,
+      distanceKm,
     });
-    const { unitPrice: unitPriceNum, productSubtotal, flueKitPrice, plate, cornerInstallPrice, installationEstimate, installOutOfRange, transport, total: totalPriceNum } = pricing;
+    const {
+      unitPrice: unitPriceNum,
+      productSubtotal,
+      flueKitPrice,
+      plate,
+      cornerInstallPrice,
+      installationEstimate,
+      installOutOfRange,
+      transport,
+      total: totalPriceNum,
+    } = pricing;
 
     const { data: insertedQuote, error: insertError } = await supabaseAdmin
       .from("quote_requests")
@@ -441,14 +450,31 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
 
     if (insertedQuote && data.leadSessionId) {
       await supabaseAdmin.from("lead_events").insert({
-        event_id: data.meta?.eventId ?? crypto.randomUUID(), session_id: data.leadSessionId,
-        action: "quote_submit", page: data.landingPage ?? "/", products: [matched?.name ?? data.product],
-        customer_name: `${data.firstName} ${data.lastName}`, email: data.email, phone: data.phone,
-        quote_id: insertedQuote.id, utm_source: data.utmSource ?? null, utm_medium: data.utmMedium ?? null,
-        utm_campaign: data.utmCampaign ?? null, fbclid: data.attribution?.fbclid ?? data.meta?.fbclid ?? null,
+        event_id: data.meta?.eventId ?? crypto.randomUUID(),
+        session_id: data.leadSessionId,
+        action: "quote_submit",
+        page: data.landingPage ?? "/",
+        products: [matched?.name ?? data.product],
+        customer_name: `${data.firstName} ${data.lastName}`,
+        email: data.email,
+        phone: data.phone,
+        quote_id: insertedQuote.id,
+        utm_source: data.utmSource ?? null,
+        utm_medium: data.utmMedium ?? null,
+        utm_campaign: data.utmCampaign ?? null,
+        fbclid: data.attribution?.fbclid ?? data.meta?.fbclid ?? null,
         gclid: data.attribution?.gclid ?? null,
       });
-      await supabaseAdmin.from("lead_events").update({ customer_name: `${data.firstName} ${data.lastName}`, email: data.email, phone: data.phone, quote_id: insertedQuote.id }).eq("session_id", data.leadSessionId).is("quote_id", null);
+      await supabaseAdmin
+        .from("lead_events")
+        .update({
+          customer_name: `${data.firstName} ${data.lastName}`,
+          email: data.email,
+          phone: data.phone,
+          quote_id: insertedQuote.id,
+        })
+        .eq("session_id", data.leadSessionId)
+        .is("quote_id", null);
     }
 
     if (insertedQuote && data.meta) {
@@ -490,7 +516,14 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
       try {
         const { pushQuoteToCRM } = await import("@/lib/crm-sync.server");
         const sync = await pushQuoteToCRM(insertedQuote);
-        await supabaseAdmin.from("quote_requests").update({ crm_sync_status: sync.ok ? "synced" : "error", crm_synced_at: sync.ok ? new Date().toISOString() : null, crm_sync_error: sync.error ?? null }).eq("id", insertedQuote.id);
+        await supabaseAdmin
+          .from("quote_requests")
+          .update({
+            crm_sync_status: sync.ok ? "synced" : "error",
+            crm_synced_at: sync.ok ? new Date().toISOString() : null,
+            crm_sync_error: sync.error ?? null,
+          })
+          .eq("id", insertedQuote.id);
       } catch (e) {
         console.warn("[quote-submit] CRM push failed", e);
       }
@@ -581,8 +614,7 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
       }
     }
 
-    const esc = (s: string) =>
-      s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
     const fmtR = (n: number) => `R${n.toLocaleString("en-ZA")}`;
     const rows: [string, string][] = [
       ["Customer", `${data.firstName} ${data.lastName}`],
@@ -595,16 +627,41 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
       ["Flooring", data.flooring ?? "—"],
       ["Roofing", data.roofType ?? "—"],
       ["Plate", plate ? `${plate.type} (${fmtR(plate.price)})` : "—"],
-      ["Corner install", data.cornerInstall ? `Yes${cornerInstallPrice ? ` (${fmtR(cornerInstallPrice)})` : ""}` : "No"],
+      [
+        "Corner install",
+        data.cornerInstall
+          ? `Yes${cornerInstallPrice ? ` (${fmtR(cornerInstallPrice)})` : ""}`
+          : "No",
+      ],
       ["Address", data.address ?? "—"],
       ["Distance", distanceKm !== null ? `${Math.round(distanceKm * 10) / 10} km` : "—"],
-      [!data.installationRequired ? "Courier (estimate — confirm & edit before invoicing)" : "Transport", transport ? `${transport.zone} (${fmtR(transport.price)})` : "—"],
+      [
+        !data.installationRequired
+          ? "Courier (estimate — confirm & edit before invoicing)"
+          : "Transport",
+        transport ? `${transport.zone} (${fmtR(transport.price)})` : "—",
+      ],
       ["Unit price", unitPriceNum !== null ? fmtR(unitPriceNum) : "—"],
       ...(flueKitPrice !== null ? [["Flue kit", fmtR(flueKitPrice)] as [string, string]] : []),
-      ["Installation estimate", installationEstimate !== null ? `${fmtR(installationEstimate)} (within Cape Town, first 25 km included, subject to site visit)` : "—"],
+      [
+        "Installation estimate",
+        installationEstimate !== null
+          ? `${fmtR(installationEstimate)} (within Cape Town, first 25 km included, subject to site visit)`
+          : "—",
+      ],
       ["Estimated total", totalPriceNum !== null ? fmtR(totalPriceNum) : "—"],
-      ...(installOutOfRange ? [["Installation", "Outside 300 km — supply only; installation quoted separately"] as [string, string]] : []),
-      ["Preferred date/time", data.preferredDate ? `${data.preferredDate} ${data.preferredTime ?? ""}`.trim() : "—"],
+      ...(installOutOfRange
+        ? [
+            ["Installation", "Outside 300 km — supply only; installation quoted separately"] as [
+              string,
+              string,
+            ],
+          ]
+        : []),
+      [
+        "Preferred date/time",
+        data.preferredDate ? `${data.preferredDate} ${data.preferredTime ?? ""}`.trim() : "—",
+      ],
       ["Booking link", bookingLink ?? "—"],
       ["Message", data.message ?? "—"],
     ];
@@ -655,8 +712,6 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
     // Quotes are auto-approved on submission — no manager approval email needed.
     // The client still needs to explicitly "Accept Quote" before an invoice is issued.
 
-
-
     const { signQuoteSession } = await import("@/lib/quote-session.server");
 
     return {
@@ -677,7 +732,12 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
           }
         : null,
       storyType: data.storyType,
-      storyText: data.storyType === "double" ? "Double story" : data.storyType === "single" ? "Single story" : "",
+      storyText:
+        data.storyType === "double"
+          ? "Double story"
+          : data.storyType === "single"
+            ? "Single story"
+            : "",
       flueKitPrice,
       flooringText: data.flooring ?? "",
       plate,
