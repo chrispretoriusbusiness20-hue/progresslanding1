@@ -227,6 +227,40 @@ function RootComponent() {
     return () => unsub();
   }, [router]);
 
+  useEffect(() => {
+    // Record page visits: one row per path per browser session.
+    const send = (path: string) => {
+      if (typeof window === "undefined") return;
+      const storageKey = `pv:${path}`;
+      try {
+        if (sessionStorage.getItem(storageKey)) return;
+        sessionStorage.setItem(storageKey, "1");
+      } catch {
+        // Storage may be unavailable; still record the visit.
+      }
+      const params = new URLSearchParams(window.location.search);
+      void logPageVisit({
+        data: {
+          path,
+          referrer: document.referrer || undefined,
+          userAgent: navigator.userAgent || undefined,
+          utmSource: params.get("utm_source") || undefined,
+          utmMedium: params.get("utm_medium") || undefined,
+          utmCampaign: params.get("utm_campaign") || undefined,
+        },
+      }).catch(() => undefined);
+    };
+    let lastPath = window.location.pathname + window.location.search;
+    send(lastPath);
+    const unsub = router.subscribe("onResolved", () => {
+      const current = window.location.pathname + window.location.search;
+      if (current === lastPath) return;
+      lastPath = current;
+      send(current);
+    });
+    return () => unsub();
+  }, [router]);
+
   return (
     <QueryClientProvider client={queryClient}>
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
