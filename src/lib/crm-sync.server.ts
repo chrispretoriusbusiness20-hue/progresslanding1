@@ -41,6 +41,11 @@ export type QuoteForCRM = {
   utm_source: string | null;
   utm_medium: string | null;
   utm_campaign: string | null;
+  fbclid?: string | null;
+  gclid?: string | null;
+  landing_page?: string | null;
+  action_type?: string | null;
+  lead_session_id?: string | null;
 };
 
 function quoteNumberFor(q: QuoteForCRM) {
@@ -89,10 +94,17 @@ export async function pushQuoteToCRM(quote: QuoteForCRM): Promise<{ ok: boolean;
       story_type: quote.story_type,
       flooring: quote.flooring,
       corner_install: quote.corner_install,
+      action_type: quote.action_type ?? "quote_submit",
+      page: quote.landing_page ?? "/",
+      session_id: quote.lead_session_id ?? null,
     },
     utm_source: quote.utm_source,
     utm_medium: quote.utm_medium,
     utm_campaign: quote.utm_campaign,
+    fbclid: quote.fbclid ?? null,
+    gclid: quote.gclid ?? null,
+    page: quote.landing_page ?? "/",
+    action_type: quote.action_type ?? "quote_submit",
   };
 
   const body = JSON.stringify(payload);
