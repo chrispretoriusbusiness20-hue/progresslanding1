@@ -41,13 +41,11 @@ function resolveProductImage(productName: string): string {
   return best?.image ?? "";
 }
 
-const MAPS_GATEWAY = "https://connector-gateway.lovable.dev/google_maps";
 const SHEETS_GATEWAY = "https://connector-gateway.lovable.dev/google_sheets/v4";
 const CALENDAR_GATEWAY = "https://connector-gateway.lovable.dev/google_calendar/calendar/v3";
 const QUOTE_SHEET_ID = "1AVvNPoavrAf0ptWt4dUXdA2zmGqNjA70ebPXn-gJgW8";
 const QUOTE_TEAM_EMAIL = "sales@progressgrp.co.za";
 const QUOTE_CC_EMAILS = ["louis@progressgrp.co.za", "chris@progressinstallations.co.za"];
-const ORIGIN_ADDRESS = "189 Durban Road, Bellville, Cape Town, 7530, South Africa";
 const QUOTE_BUCKET = "quotes";
 const QUOTE_SIGNED_URL_EXPIRES_S = 60 * 60 * 24 * 30; // 30 days
 
@@ -325,14 +323,6 @@ function matchProduct(query: string): Product | null {
   return best?.product ?? null;
 }
 
-function parseRand(price: string | null | undefined): number | null {
-  if (!price) return null;
-  const cleaned = price.replace(/[^0-9.,]/g, "").replace(/\s/g, "");
-  const normalized = cleaned.replace(/\.(?=\d{3}(\D|$))/g, "").replace(",", ".");
-  const n = Number.parseFloat(normalized);
-  return Number.isFinite(n) ? n : null;
-}
-
 export const submitQuoteRequest = createServerFn({ method: "POST" })
   .inputValidator(
     z.object({
@@ -394,7 +384,6 @@ export const submitQuoteRequest = createServerFn({ method: "POST" })
     });
     const {
       unitPrice: unitPriceNum,
-      productSubtotal,
       flueKitPrice,
       plate,
       cornerInstallPrice,

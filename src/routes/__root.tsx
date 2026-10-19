@@ -272,23 +272,23 @@ function RootComponent() {
           "select[data-quote-product]",
         )?.value;
         let checkout: {
-          productName?: string;
+          product?: string;
           firstName?: string;
           lastName?: string;
           email?: string;
           phone?: string;
         } = {};
         try {
-          checkout = JSON.parse(sessionStorage.getItem("checkoutData") ?? "{}");
+          checkout = JSON.parse(sessionStorage.getItem("progress_checkout") ?? "{}");
         } catch {
           /* Storage unavailable. */
         }
-        const name = link?.getAttribute("data-payment-product") || checkout.productName || selected;
+        const name = link?.getAttribute("data-payment-product") || selected || checkout.product;
         void captureLeadAction("payment_click", name ? [name] : [], {
           customerName:
             [checkout.firstName, checkout.lastName].filter(Boolean).join(" ") || undefined,
-          email: checkout.email,
-          phone: checkout.phone,
+          email: document.querySelector<HTMLInputElement>('#form input[type="email"]')?.value || checkout.email,
+          phone: document.querySelector<HTMLInputElement>('#form input[type="tel"]')?.value || checkout.phone,
         });
       }
     };

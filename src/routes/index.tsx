@@ -26,7 +26,6 @@ const generateQuotePDF = async (
   return mod.generateQuotePDF(...args);
 };
 
-import { POPULAR_PRODUCTS } from "@/lib/popular-products";
 import { PopularPicks } from "@/components/popular-picks";
 import { FireplaceFinder } from "@/components/fireplace-finder";
 import { PriceEstimator, PriceBreakdown } from "@/components/price-estimator";
@@ -37,7 +36,6 @@ import { getLandingAttribution, getLeadSessionId } from "@/lib/lead-attribution"
 import { captureLeadAction } from "@/lib/lead-events";
 import { decodeProductName, formatRand, parseRand } from "@/lib/product-display";
 import { getProductImageUrl } from "@/lib/product-images";
-import productsFull from "@/data/products-full.json";
 import progressLogo from "@/assets/progress-header-transparent.png.asset.json";
 
 import { AddressAutocomplete } from "@/components/address-autocomplete";
