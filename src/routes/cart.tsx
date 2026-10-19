@@ -1,10 +1,11 @@
+import { getProductImageUrl } from "@/lib/product-images";
+import { formatRand, decodeProductName } from "@/lib/product-display";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import {
   ArrowLeft,
   Check,
-  ImageOff,
   Loader2,
   Minus,
   Plus,
@@ -42,9 +43,6 @@ export const Route = createFileRoute("/cart")({
   }),
   component: CartPage,
 });
-
-const formatRand = (n: number) =>
-  `R${n.toLocaleString("en-ZA", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
 type Step = "cart" | "details";
 
@@ -91,8 +89,10 @@ function CartPage() {
     const next: Partial<Record<keyof Details, string>> = {};
     if (!details.firstName.trim()) next.firstName = "Please enter your first name.";
     if (!details.lastName.trim()) next.lastName = "Please enter your last name.";
-    if (!/^\S+@\S+\.\S+$/.test(details.email.trim())) next.email = "Please enter a valid email address.";
-    if (details.phone.replace(/\D/g, "").length < 9) next.phone = "Please enter a valid phone number.";
+    if (!/^\S+@\S+\.\S+$/.test(details.email.trim()))
+      next.email = "Please enter a valid email address.";
+    if (details.phone.replace(/\D/g, "").length < 9)
+      next.phone = "Please enter a valid phone number.";
     if (details.address.trim().length < 5) next.address = "Please enter your delivery address.";
     setErrors(next);
     return Object.keys(next).length === 0;
@@ -172,7 +172,9 @@ function CartPage() {
       clear();
       await navigate({ to: "/checkout" });
     } catch {
-      setSubmitError("We couldn't place your order. Please check your details and try again, or WhatsApp us.");
+      setSubmitError(
+        "We couldn't place your order. Please check your details and try again, or WhatsApp us.",
+      );
     } finally {
       setSubmitting(false);
     }
@@ -188,37 +190,58 @@ function CartPage() {
     <div className="min-h-screen bg-background text-foreground">
       <div className="border-b-2 border-foreground bg-foreground text-background">
         <ul className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-x-6 gap-y-1 px-4 py-2 text-[11px] font-bold uppercase tracking-widest">
-          <li className="flex items-center gap-1.5"><Truck className="size-3.5" /> Delivery from Bellville</li>
-          <li className="flex items-center gap-1.5"><Wrench className="size-3.5" /> Expert installation</li>
-          <li className="flex items-center gap-1.5"><ShieldCheck className="size-3.5" /> Prices incl. VAT</li>
+          <li className="flex items-center gap-1.5">
+            <Truck className="size-3.5" /> Delivery from Bellville
+          </li>
+          <li className="flex items-center gap-1.5">
+            <Wrench className="size-3.5" /> Expert installation
+          </li>
+          <li className="flex items-center gap-1.5">
+            <ShieldCheck className="size-3.5" /> Prices incl. VAT
+          </li>
         </ul>
       </div>
 
       <header className="border-b-2 border-foreground bg-background">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
-          <a href="https://progressgroup.co.za/" target="_blank" rel="noopener noreferrer" aria-label="Progress Group — visit progressgroup.co.za">
+          <a
+            href="https://progressgroup.co.za/"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Progress Group — visit progressgroup.co.za"
+          >
             <img src={progressLogo.url} alt="Progress Group" className="h-10 w-auto" />
           </a>
-          <Link to="/catalog" className="inline-flex min-h-11 items-center gap-1 text-xs font-bold uppercase tracking-widest text-foreground/70 hover:text-foreground">
+          <Link
+            to="/catalog"
+            className="inline-flex min-h-11 items-center gap-1 text-xs font-bold uppercase tracking-widest text-foreground/70 hover:text-foreground"
+          >
             <ArrowLeft className="size-3" /> Continue shopping
           </Link>
         </div>
       </header>
 
       <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
-        <ol className="mb-8 flex items-center justify-center gap-2 sm:gap-4" aria-label="Checkout progress">
+        <ol
+          className="mb-8 flex items-center justify-center gap-2 sm:gap-4"
+          aria-label="Checkout progress"
+        >
           {steps.map((s, i) => (
             <li key={s.key} className="flex items-center gap-2 sm:gap-4">
               <span
                 aria-current={s.active ? "step" : undefined}
                 className={`flex items-center gap-2 text-xs font-bold uppercase tracking-widest ${s.active || s.done ? "text-foreground" : "text-foreground/40"}`}
               >
-                <span className={`grid size-7 place-items-center border-2 border-foreground ${s.done ? "bg-primary text-primary-foreground" : s.active ? "bg-foreground text-background" : "bg-background"}`}>
+                <span
+                  className={`grid size-7 place-items-center border-2 border-foreground ${s.done ? "bg-primary text-primary-foreground" : s.active ? "bg-foreground text-background" : "bg-background"}`}
+                >
                   {s.done ? <Check className="size-3.5" /> : i + 1}
                 </span>
                 {s.label}
               </span>
-              {i < steps.length - 1 && <span className="h-0.5 w-6 bg-foreground/30 sm:w-12" aria-hidden />}
+              {i < steps.length - 1 && (
+                <span className="h-0.5 w-6 bg-foreground/30 sm:w-12" aria-hidden />
+              )}
             </li>
           ))}
         </ol>
@@ -227,8 +250,13 @@ function CartPage() {
           <section className="mx-auto max-w-md border-2 border-foreground bg-card p-8 text-center shadow-brutal-sm">
             <ShoppingCart className="mx-auto size-10 text-foreground/40" />
             <h1 className="mt-4 font-display text-2xl">Your cart is empty</h1>
-            <p className="mt-2 text-sm text-muted-foreground">Browse our best sellers and tap "Add to cart".</p>
-            <Link to="/catalog" className="mt-6 inline-flex min-h-11 items-center justify-center border-2 border-foreground bg-primary px-6 text-xs font-bold uppercase tracking-wider text-primary-foreground shadow-brutal-sm">
+            <p className="mt-2 text-sm text-muted-foreground">
+              Browse our best sellers and tap "Add to cart".
+            </p>
+            <Link
+              to="/catalog"
+              className="mt-6 inline-flex min-h-11 items-center justify-center border-2 border-foreground bg-primary px-6 text-xs font-bold uppercase tracking-wider text-primary-foreground shadow-brutal-sm"
+            >
               Shop products
             </Link>
           </section>
@@ -244,31 +272,62 @@ function CartPage() {
                       return (
                         <li key={item.id} className="flex gap-4 p-4">
                           <div className="size-20 shrink-0 overflow-hidden border-2 border-foreground bg-background sm:size-24">
-                            {item.image ? (
-                              <img src={item.image} alt={item.name} width={96} height={96} className="size-full object-cover" />
-                            ) : (
-                              <div className="grid size-full place-items-center text-foreground/30"><ImageOff className="size-6" /></div>
-                            )}
+                            <img
+                              src={getProductImageUrl({ ...item, productName: item.name })}
+                              alt={decodeProductName(item.name)}
+                              width={96}
+                              height={96}
+                              className="size-full object-contain"
+                            />
                           </div>
                           <div className="flex min-w-0 flex-1 flex-col gap-2">
                             <div className="flex items-start justify-between gap-2">
-                              <h2 className="font-display text-base leading-tight">{item.name}</h2>
-                              <button type="button" onClick={() => remove(item.id)} aria-label={`Remove ${item.name}`} className="grid size-11 shrink-0 place-items-center text-foreground/60 hover:text-destructive">
+                              <h2 className="font-display text-base leading-tight">
+                                {decodeProductName(item.name)}
+                              </h2>
+                              <button
+                                type="button"
+                                onClick={() => remove(item.id)}
+                                aria-label={`Remove ${item.name}`}
+                                className="grid size-11 shrink-0 place-items-center text-foreground/60 hover:text-destructive"
+                              >
                                 <Trash2 className="size-4" />
                               </button>
                             </div>
                             <div className="flex flex-wrap items-center justify-between gap-2">
                               <div className="flex items-center border-2 border-foreground">
-                                <button type="button" onClick={() => setQuantity(item.id, item.quantity - 1)} disabled={item.quantity <= 1} aria-label="Decrease quantity" className="grid size-11 place-items-center disabled:opacity-40">
+                                <button
+                                  type="button"
+                                  onClick={() => setQuantity(item.id, item.quantity - 1)}
+                                  disabled={item.quantity <= 1}
+                                  aria-label="Decrease quantity"
+                                  className="grid size-11 place-items-center disabled:opacity-40"
+                                >
                                   <Minus className="size-4" />
                                 </button>
-                                <span className="w-8 text-center font-mono font-bold" aria-live="polite">{item.quantity}</span>
-                                <button type="button" onClick={() => setQuantity(item.id, item.quantity + 1)} aria-label="Increase quantity" className="grid size-11 place-items-center">
+                                <span
+                                  className="w-8 text-center font-mono font-bold"
+                                  aria-live="polite"
+                                >
+                                  {item.quantity}
+                                </span>
+                                <button
+                                  type="button"
+                                  onClick={() => setQuantity(item.id, item.quantity + 1)}
+                                  aria-label="Increase quantity"
+                                  className="grid size-11 place-items-center"
+                                >
                                   <Plus className="size-4" />
                                 </button>
                               </div>
                               <p className="font-mono font-bold">
-                                {unit !== null ? formatRand(unit * item.quantity) : <span className="text-xs uppercase tracking-widest text-muted-foreground">Price on request</span>}
+                                {unit !== null ? (
+                                  formatRand(unit * item.quantity)
+                                ) : (
+                                  <span className="text-xs uppercase tracking-widest text-muted-foreground">
+                                    Price on request
+                                  </span>
+                                )}
                               </p>
                             </div>
                           </div>
@@ -287,30 +346,89 @@ function CartPage() {
                   className="border-2 border-foreground bg-card p-5 sm:p-6"
                 >
                   <h1 className="font-display text-3xl">Delivery details</h1>
-                  <p className="mt-1 text-sm text-muted-foreground">All fields are required unless marked optional.</p>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    All fields are required unless marked optional.
+                  </p>
                   <div className="mt-6 grid gap-4 sm:grid-cols-2">
-                    <Field label="First name" id="firstName" value={details.firstName} error={errors.firstName} autoComplete="given-name" onChange={(v) => update("firstName", v)} />
-                    <Field label="Last name" id="lastName" value={details.lastName} error={errors.lastName} autoComplete="family-name" onChange={(v) => update("lastName", v)} />
-                    <Field label="Email" id="email" type="email" value={details.email} error={errors.email} autoComplete="email" onChange={(v) => update("email", v)} />
-                    <Field label="Phone" id="phone" type="tel" value={details.phone} error={errors.phone} autoComplete="tel" onChange={(v) => update("phone", v)} />
+                    <Field
+                      label="First name"
+                      id="firstName"
+                      value={details.firstName}
+                      error={errors.firstName}
+                      autoComplete="given-name"
+                      onChange={(v) => update("firstName", v)}
+                    />
+                    <Field
+                      label="Last name"
+                      id="lastName"
+                      value={details.lastName}
+                      error={errors.lastName}
+                      autoComplete="family-name"
+                      onChange={(v) => update("lastName", v)}
+                    />
+                    <Field
+                      label="Email"
+                      id="email"
+                      type="email"
+                      value={details.email}
+                      error={errors.email}
+                      autoComplete="email"
+                      onChange={(v) => update("email", v)}
+                    />
+                    <Field
+                      label="Phone"
+                      id="phone"
+                      type="tel"
+                      value={details.phone}
+                      error={errors.phone}
+                      autoComplete="tel"
+                      onChange={(v) => update("phone", v)}
+                    />
                   </div>
                   <div className="mt-4">
-                    <label className="text-xs font-bold uppercase tracking-widest">Delivery address</label>
+                    <label className="text-xs font-bold uppercase tracking-widest">
+                      Delivery address
+                    </label>
                     <div className="mt-1">
-                      <AddressAutocomplete value={details.address} onChange={(v: string) => update("address", v)} placeholder="Start typing your address" />
+                      <AddressAutocomplete
+                        value={details.address}
+                        onChange={(v: string) => update("address", v)}
+                        placeholder="Start typing your address"
+                      />
                     </div>
-                    {errors.address && <p className="mt-1 text-sm text-destructive">{errors.address}</p>}
+                    {errors.address && (
+                      <p className="mt-1 text-sm text-destructive">{errors.address}</p>
+                    )}
                   </div>
                   <fieldset className="mt-6">
-                    <legend className="text-xs font-bold uppercase tracking-widest">Installation</legend>
+                    <legend className="text-xs font-bold uppercase tracking-widest">
+                      Installation
+                    </legend>
                     <div className="mt-2 grid gap-2 sm:grid-cols-2">
                       {[
-                        { v: true, title: "Supply & install", hint: "Recommended — Progress Installations will quote and book a date." },
-                        { v: false, title: "Product only", hint: "We deliver, you arrange the installation." },
+                        {
+                          v: true,
+                          title: "Supply & install",
+                          hint: "Recommended — Progress Installations will quote and book a date.",
+                        },
+                        {
+                          v: false,
+                          title: "Product only",
+                          hint: "We deliver, you arrange the installation.",
+                        },
                       ].map((o) => (
-                        <label key={o.title} className={`flex min-h-11 cursor-pointer flex-col border-2 p-3 ${details.installation === o.v ? "border-primary bg-primary/10" : "border-foreground/30"}`}>
+                        <label
+                          key={o.title}
+                          className={`flex min-h-11 cursor-pointer flex-col border-2 p-3 ${details.installation === o.v ? "border-primary bg-primary/10" : "border-foreground/30"}`}
+                        >
                           <span className="flex items-center gap-2 text-sm font-bold">
-                            <input type="radio" name="installation" checked={details.installation === o.v} onChange={() => update("installation", o.v)} className="accent-primary" />
+                            <input
+                              type="radio"
+                              name="installation"
+                              checked={details.installation === o.v}
+                              onChange={() => update("installation", o.v)}
+                              className="accent-primary"
+                            />
                             {o.title}
                           </span>
                           <span className="mt-1 text-xs text-muted-foreground">{o.hint}</span>
@@ -319,16 +437,46 @@ function CartPage() {
                     </div>
                   </fieldset>
                   <div className="mt-4">
-                    <label htmlFor="notes" className="text-xs font-bold uppercase tracking-widest">Notes (optional)</label>
-                    <textarea id="notes" rows={3} maxLength={1500} value={details.notes} onChange={(e) => update("notes", e.target.value)} className="mt-1 w-full border-2 border-foreground/40 bg-background p-3 text-base focus-visible:border-foreground focus-visible:outline-none" />
+                    <label htmlFor="notes" className="text-xs font-bold uppercase tracking-widest">
+                      Notes (optional)
+                    </label>
+                    <textarea
+                      id="notes"
+                      rows={3}
+                      maxLength={1500}
+                      value={details.notes}
+                      onChange={(e) => update("notes", e.target.value)}
+                      className="mt-1 w-full border-2 border-foreground/40 bg-background p-3 text-base focus-visible:border-foreground focus-visible:outline-none"
+                    />
                   </div>
-                  {submitError && <p role="alert" className="mt-4 border-2 border-destructive bg-destructive/10 p-3 text-sm text-destructive">{submitError}</p>}
+                  {submitError && (
+                    <p
+                      role="alert"
+                      className="mt-4 border-2 border-destructive bg-destructive/10 p-3 text-sm text-destructive"
+                    >
+                      {submitError}
+                    </p>
+                  )}
                   <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-between">
-                    <button type="button" onClick={() => setStep("cart")} className="inline-flex min-h-11 items-center justify-center gap-1 border-2 border-foreground/40 px-5 text-xs font-bold uppercase tracking-widest">
+                    <button
+                      type="button"
+                      onClick={() => setStep("cart")}
+                      className="inline-flex min-h-11 items-center justify-center gap-1 border-2 border-foreground/40 px-5 text-xs font-bold uppercase tracking-widest"
+                    >
                       <ArrowLeft className="size-3" /> Back to cart
                     </button>
-                    <button type="submit" disabled={submitting} className="inline-flex min-h-11 items-center justify-center gap-2 border-2 border-foreground bg-primary px-6 text-xs font-bold uppercase tracking-wider text-primary-foreground shadow-brutal-sm disabled:opacity-60">
-                      {submitting ? <><Loader2 className="size-4 animate-spin" /> Placing order…</> : "Continue to payment"}
+                    <button
+                      type="submit"
+                      disabled={submitting}
+                      className="inline-flex min-h-11 items-center justify-center gap-2 border-2 border-foreground bg-primary px-6 text-xs font-bold uppercase tracking-wider text-primary-foreground shadow-brutal-sm disabled:opacity-60"
+                    >
+                      {submitting ? (
+                        <>
+                          <Loader2 className="size-4 animate-spin" /> Placing order…
+                        </>
+                      ) : (
+                        "Continue to payment"
+                      )}
                     </button>
                   </div>
                 </form>
@@ -339,32 +487,53 @@ function CartPage() {
               <div className="border-2 border-foreground bg-card p-5 shadow-brutal-sm lg:sticky lg:top-6">
                 <h2 className="font-display text-xl">Order summary</h2>
                 <dl className="mt-4 space-y-2 text-sm">
-                  <div className="flex justify-between"><dt>Products ({count})</dt><dd className="font-mono">{formatRand(subtotal)}</dd></div>
-                  <div className="flex justify-between text-muted-foreground"><dt>Delivery</dt><dd>Calculated from your address</dd></div>
+                  <div className="flex justify-between">
+                    <dt>Products ({count})</dt>
+                    <dd className="font-mono">{formatRand(subtotal)}</dd>
+                  </div>
+                  <div className="flex justify-between text-muted-foreground">
+                    <dt>Delivery</dt>
+                    <dd>Calculated from your address</dd>
+                  </div>
                   {details.installation && step === "details" && (
-                    <div className="flex justify-between text-muted-foreground"><dt>Installation</dt><dd>Quoted separately</dd></div>
+                    <div className="flex justify-between text-muted-foreground">
+                      <dt>Installation</dt>
+                      <dd>Quoted separately</dd>
+                    </div>
                   )}
                 </dl>
                 <div className="mt-4 flex justify-between border-t-2 border-foreground pt-3 font-display text-lg">
-                  <span>Subtotal</span><span className="font-mono">{formatRand(subtotal)}</span>
+                  <span>Subtotal</span>
+                  <span className="font-mono">{formatRand(subtotal)}</span>
                 </div>
                 <p className="mt-1 text-xs text-muted-foreground">All prices include VAT.</p>
                 {hasPriceOnRequest && (
                   <p className="mt-3 border-2 border-foreground/40 bg-muted p-3 text-xs">
-                    Your cart contains items marked "price on request". These can't be checked out online — our sales team will confirm the price first. Remove them to pay for the rest, or request a quote and we'll price everything together.
+                    Your cart contains items marked "price on request". These can't be checked out
+                    online — our sales team will confirm the price first. Remove them to pay for the
+                    rest, or request a quote and we'll price everything together.
                   </p>
                 )}
                 {step === "cart" && !hasPriceOnRequest && (
-                  <button type="button" onClick={() => setStep("details")} className="mt-5 inline-flex min-h-11 w-full items-center justify-center border-2 border-foreground bg-primary px-6 text-xs font-bold uppercase tracking-wider text-primary-foreground shadow-brutal-sm">
+                  <button
+                    type="button"
+                    onClick={() => setStep("details")}
+                    className="mt-5 inline-flex min-h-11 w-full items-center justify-center border-2 border-foreground bg-primary px-6 text-xs font-bold uppercase tracking-wider text-primary-foreground shadow-brutal-sm"
+                  >
                     Proceed to checkout
                   </button>
                 )}
                 {step === "cart" && hasPriceOnRequest && (
-                  <a href="/#form" className="mt-5 inline-flex min-h-11 w-full items-center justify-center border-2 border-foreground bg-primary px-6 text-xs font-bold uppercase tracking-wider text-primary-foreground shadow-brutal-sm">
+                  <a
+                    href="/#form"
+                    className="mt-5 inline-flex min-h-11 w-full items-center justify-center border-2 border-foreground bg-primary px-6 text-xs font-bold uppercase tracking-wider text-primary-foreground shadow-brutal-sm"
+                  >
                     Request a quote instead
                   </a>
                 )}
-                <p className="mt-4 flex items-center gap-2 text-xs text-muted-foreground"><ShieldCheck className="size-4" /> Secure payment by card or EFT</p>
+                <p className="mt-4 flex items-center gap-2 text-xs text-muted-foreground">
+                  <ShieldCheck className="size-4" /> Secure payment by card or EFT
+                </p>
               </div>
             </aside>
           </div>
@@ -393,7 +562,9 @@ function Field({
 }) {
   return (
     <div>
-      <label htmlFor={id} className="text-xs font-bold uppercase tracking-widest">{label}</label>
+      <label htmlFor={id} className="text-xs font-bold uppercase tracking-widest">
+        {label}
+      </label>
       <input
         id={id}
         type={type}
@@ -404,7 +575,11 @@ function Field({
         onChange={(e) => onChange(e.target.value)}
         className="mt-1 min-h-11 w-full border-2 border-foreground/40 bg-background px-3 text-base focus-visible:border-foreground focus-visible:outline-none"
       />
-      {error && <p id={`${id}-error`} className="mt-1 text-sm text-destructive">{error}</p>}
+      {error && (
+        <p id={`${id}-error`} className="mt-1 text-sm text-destructive">
+          {error}
+        </p>
+      )}
     </div>
   );
 }

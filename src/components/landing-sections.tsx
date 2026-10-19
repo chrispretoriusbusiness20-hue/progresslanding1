@@ -1,3 +1,5 @@
+import summerVideo from "@/assets/videos/1200-delux-summer.mp4.asset.json";
+import { getProductImageUrl } from "@/lib/product-images";
 import { Link } from "@tanstack/react-router";
 import {
   BadgeCheck,
@@ -45,25 +47,78 @@ const TRUST_POINTS = [
 ];
 
 const PROCESS_STEPS = [
-  { n: "01", title: "Choose your fireplace", text: "Browse our catalogue and pick the fireplace or braai that suits your space." },
-  { n: "02", title: "Get expert advice", text: "Not sure what you need? We'll help you size and spec it correctly." },
-  { n: "03", title: "Receive your quote", text: "Fill in the quote form and get a clear, itemised price in seconds." },
-  { n: "04", title: "Professional installation", text: "Our team installs your fireplace or braai safely and neatly." },
-  { n: "05", title: "Light the fire", text: "Sit back and enjoy the warmth of your new fireplace or braai." },
+  {
+    n: "01",
+    title: "Choose your fireplace",
+    text: "Browse our catalogue and pick the fireplace or braai that suits your space.",
+  },
+  {
+    n: "02",
+    title: "Get expert advice",
+    text: "Not sure what you need? We'll help you size and spec it correctly.",
+  },
+  {
+    n: "03",
+    title: "Receive your quote",
+    text: "Fill in the quote form and get a clear, itemised price in seconds.",
+  },
+  {
+    n: "04",
+    title: "Professional installation",
+    text: "Our team installs your fireplace or braai safely and neatly.",
+  },
+  {
+    n: "05",
+    title: "Light the fire",
+    text: "Sit back and enjoy the warmth of your new fireplace or braai.",
+  },
 ];
 
 const WHY_POINTS = [
-  { icon: Flame, title: "Product selection", text: "Guidance on the right fireplace or braai for your home and budget." },
-  { icon: Ruler, title: "Sizing & flue requirements", text: "Correct heat output, flue routing and clearances for your space." },
-  { icon: MapPin, title: "Positioning & planning", text: "Advice on placement, finishing and installation planning." },
-  { icon: ShieldCheck, title: "Safety considerations", text: "Installations done with safety and compliance in mind." },
-  { icon: Truck, title: "Delivery & installation", text: "Delivery from Bellville and professional installation across the Western Cape." },
+  {
+    icon: Flame,
+    title: "Product selection",
+    text: "Guidance on the right fireplace or braai for your home and budget.",
+  },
+  {
+    icon: Ruler,
+    title: "Sizing & flue requirements",
+    text: "Correct heat output, flue routing and clearances for your space.",
+  },
+  {
+    icon: MapPin,
+    title: "Positioning & planning",
+    text: "Advice on placement, finishing and installation planning.",
+  },
+  {
+    icon: ShieldCheck,
+    title: "Safety considerations",
+    text: "Installations done with safety and compliance in mind.",
+  },
+  {
+    icon: Truck,
+    title: "Delivery & installation",
+    text: "Delivery from Bellville — priced by distance. Transport is calculated from our Bellville workshop.",
+  },
 ];
 
 const AREAS = [
-  "Cape Town", "Bellville", "Durbanville", "Constantia", "Claremont", "Newlands",
-  "Rondebosch", "Tokai", "Somerset West", "Stellenbosch", "Paarl", "Milnerton",
-  "Table View", "Northern Suburbs", "Southern Suburbs", "Atlantic Seaboard",
+  "Cape Town",
+  "Bellville",
+  "Durbanville",
+  "Constantia",
+  "Claremont",
+  "Newlands",
+  "Rondebosch",
+  "Tokai",
+  "Somerset West",
+  "Stellenbosch",
+  "Paarl",
+  "Milnerton",
+  "Table View",
+  "Northern Suburbs",
+  "Southern Suburbs",
+  "Atlantic Seaboard",
 ];
 
 const FAQS = [
@@ -122,7 +177,9 @@ export function LandingSections() {
           {TRUST_POINTS.map(({ icon: Icon, label }) => (
             <div key={label} className="flex flex-col items-center gap-3 text-center">
               <Icon className="h-6 w-6 text-primary" aria-hidden />
-              <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-foreground">{label}</p>
+              <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-foreground">
+                {label}
+              </p>
             </div>
           ))}
         </div>
@@ -131,13 +188,30 @@ export function LandingSections() {
       {/* Braai section */}
       <section className="border-t border-foreground/15 bg-muted/40">
         <div className="mx-auto max-w-6xl px-6 py-16 sm:py-20">
-          <p className="font-display text-[10px] uppercase tracking-[0.36em] text-primary">Braais</p>
-          <h2 className="mt-3 max-w-2xl text-3xl sm:text-4xl">The heart of the South African home.</h2>
+          <p className="font-display text-[10px] uppercase tracking-[0.36em] text-primary">
+            Braais
+          </p>
+          <h2 className="mt-3 max-w-2xl text-3xl sm:text-4xl">
+            The heart of the South African home.
+          </h2>
           <p className="mt-4 max-w-2xl text-sm leading-relaxed text-muted-foreground">
             From family weekends to unforgettable entertaining, create an outdoor cooking space
-            designed around the way you live. We supply and install built-in braais, custom
-            braais, boma fire pits and braai accessories.
+            designed around the way you live. We supply and install built-in braais, custom braais,
+            boma fire pits and braai accessories.
           </p>
+          <div className="mt-8 border-y-2 border-foreground bg-linear-to-b from-accent via-accent/40 to-background py-6">
+            <video
+              src={summerVideo.url}
+              poster={getProductImageUrl({ category: "braais" })}
+              controls
+              playsInline
+              muted
+              loop
+              preload="none"
+              aria-label="1200 De Lux braai video"
+              className="mx-auto aspect-[9/16] max-h-[420px] w-auto max-w-full"
+            />
+          </div>
           <div className="mt-8 flex flex-wrap gap-4">
             <Link
               to="/catalog"
@@ -158,8 +232,12 @@ export function LandingSections() {
       {/* Why choose us */}
       <section className="border-t border-foreground/15 bg-background">
         <div className="mx-auto max-w-6xl px-6 py-16 sm:py-20">
-          <p className="font-display text-[10px] uppercase tracking-[0.36em] text-primary">Why choose us</p>
-          <h2 className="mt-3 max-w-2xl text-3xl sm:text-4xl">More than a fireplace. A complete installation.</h2>
+          <p className="font-display text-[10px] uppercase tracking-[0.36em] text-primary">
+            Why choose us
+          </p>
+          <h2 className="mt-3 max-w-2xl text-3xl sm:text-4xl">
+            More than a fireplace. A complete installation.
+          </h2>
           <div className="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
             {WHY_POINTS.map(({ icon: Icon, title, text }) => (
               <div key={title} className="border border-foreground/15 p-6">
@@ -183,7 +261,9 @@ export function LandingSections() {
       {/* Installation process */}
       <section className="border-t border-foreground/15 bg-foreground text-background">
         <div className="mx-auto max-w-6xl px-6 py-16 sm:py-20">
-          <p className="font-display text-[10px] uppercase tracking-[0.36em] text-primary">The process</p>
+          <p className="font-display text-[10px] uppercase tracking-[0.36em] text-primary">
+            The process
+          </p>
           <h2 className="mt-3 text-3xl sm:text-4xl">From idea to first fire.</h2>
           <ol className="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-5">
             {PROCESS_STEPS.map((s) => (
@@ -208,11 +288,16 @@ export function LandingSections() {
       {/* Service areas */}
       <section className="border-t border-foreground/15 bg-background">
         <div className="mx-auto max-w-6xl px-6 py-16 sm:py-20">
-          <p className="font-display text-[10px] uppercase tracking-[0.36em] text-primary">Where we work</p>
-          <h2 className="mt-3 max-w-2xl text-3xl sm:text-4xl">Fireplace & braai installation in Cape Town</h2>
+          <p className="font-display text-[10px] uppercase tracking-[0.36em] text-primary">
+            Where we work
+          </p>
+          <h2 className="mt-3 max-w-2xl text-3xl sm:text-4xl">
+            Fireplace & braai installation in Cape Town
+          </h2>
           <p className="mt-4 max-w-2xl text-sm leading-relaxed text-muted-foreground">
             Based in Bellville, we supply and install fireplaces and braais across the Western Cape.
-            Transport is calculated from our Bellville workshop, so your quote always reflects your area.
+            Transport is calculated from our Bellville workshop, so your quote always reflects your
+            area.
           </p>
           <ul className="mt-8 flex flex-wrap gap-2">
             {AREAS.map((area) => (
@@ -238,7 +323,9 @@ export function LandingSections() {
       {/* FAQ */}
       <section className="border-t border-foreground/15 bg-muted/40">
         <div className="mx-auto max-w-3xl px-6 py-16 sm:py-20">
-          <p className="font-display text-[10px] uppercase tracking-[0.36em] text-primary">Questions</p>
+          <p className="font-display text-[10px] uppercase tracking-[0.36em] text-primary">
+            Questions
+          </p>
           <h2 className="mt-3 text-3xl sm:text-4xl">Frequently asked questions</h2>
           <div className="mt-10 divide-y divide-foreground/15 border-y border-foreground/15">
             {FAQS.map((f) => (

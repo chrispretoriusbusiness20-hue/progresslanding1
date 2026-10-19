@@ -1,10 +1,23 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { CheckCircle2, FileDown, Landmark, Loader2, MessageCircle, ShoppingCart, Sparkles, X } from "lucide-react";
+import {
+  CheckCircle2,
+  FileDown,
+  Landmark,
+  Loader2,
+  MessageCircle,
+  ShoppingCart,
+  Sparkles,
+  X,
+} from "lucide-react";
 import { toast } from "sonner";
 import { getMetaAttribution, newEventId, trackLead } from "@/lib/meta-pixel";
-import { submitQuoteRequest, createQuoteUploadUrl, emailQuoteFromPath } from "@/lib/quote-submit.functions";
+import {
+  submitQuoteRequest,
+  createQuoteUploadUrl,
+  emailQuoteFromPath,
+} from "@/lib/quote-submit.functions";
 import { createPopUploadUrl, notifyProofOfPayment } from "@/lib/pop.functions";
 const generateQuotePDF = async (
   ...args: Parameters<typeof import("@/lib/quote-pdf").generateQuotePDF>
@@ -13,19 +26,23 @@ const generateQuotePDF = async (
   return mod.generateQuotePDF(...args);
 };
 
-import productsData from "@/data/products.json";
+import { POPULAR_PRODUCTS } from "@/lib/popular-products";
+import { PopularPicks } from "@/components/popular-picks";
+import { decodeProductName, formatRand, parseRand } from "@/lib/product-display";
+import { getProductImageUrl } from "@/lib/product-images";
 import productsFull from "@/data/products-full.json";
 import progressLogo from "@/assets/progress-header-transparent.png.asset.json";
-
-
 
 import { AddressAutocomplete } from "@/components/address-autocomplete";
 import { LandingSections } from "@/components/landing-sections";
 import { LandingHero, MobileStickyCta } from "@/components/landing-hero";
 import { checkEmail } from "@/lib/email-typo";
-import { allInclusiveAddOns, isAllInclusiveProduct, isSpecialProduct, specialDiscountFor } from "@/lib/special-discount";
-
-
+import {
+  allInclusiveAddOns,
+  isAllInclusiveProduct,
+  isSpecialProduct,
+  specialDiscountFor,
+} from "@/lib/special-discount";
 
 const QUOTE_APP_URL = "https://fireplacequotes.co.za/";
 import { STITCH_EXPRESS_URL } from "@/lib/stitch-express";
@@ -45,40 +62,52 @@ const QUOTE_PRODUCT_IDS = [
 ];
 type QuoteProduct = { id: string; name: string; price: string; image: string };
 const PRODUCT_LIST = QUOTE_PRODUCT_IDS.map((id) =>
-  (productsFull as { id: string; name: string; price: string; image: string }[]).find((p) => p.id === id),
+  (productsFull as { id: string; name: string; price: string; image: string }[]).find(
+    (p) => p.id === id,
+  ),
 ).filter((p): p is QuoteProduct => Boolean(p));
-void productsData;
+for (const pick of POPULAR_PRODUCTS) {
+  if (!PRODUCT_LIST.some((product) => product.name === pick.name)) {
+    PRODUCT_LIST.push({
+      id: pick.url,
+      name: pick.name,
+      price: pick.price,
+      image: getProductImageUrl({ ...pick, productName: pick.name }),
+    });
+  }
+}
 const PRODUCT_NAMES = PRODUCT_LIST.map((p) => p.name);
 const PRODUCT_PRICE_MAP = new Map(PRODUCT_LIST.map((p) => [p.name, p.price]));
-const PRODUCT_IMAGE_MAP = new Map(PRODUCT_LIST.map((p) => [p.name, p.image]));
+const PRODUCT_IMAGE_MAP = new Map(
+  PRODUCT_LIST.map((p) => [p.name, getProductImageUrl({ image: p.image, productName: p.name })]),
+);
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Request a Quote — The Progress Group" },
+      { title: "Factory-direct braais & fireplaces — Progress Group" },
       {
         name: "description",
         content:
           "Get a quote on fireplaces, braais, lighting and aircons from The Progress Group. Fast, friendly, and tailored to your space.",
       },
-      { property: "og:title", content: "Request a Quote — The Progress Group" },
+      { property: "og:title", content: "Factory-direct braais & fireplaces — Progress Group" },
       {
         property: "og:description",
-        content:
-          "Get a quote on fireplaces, braais, lighting and aircons from The Progress Group.",
+        content: "Get a quote on fireplaces, braais, lighting and aircons from The Progress Group.",
       },
       { property: "og:type", content: "website" },
+      { property: "og:image", content: getProductImageUrl({ category: "braais" }) },
+      { name: "twitter:image", content: getProductImageUrl({ category: "braais" }) },
       { property: "og:url", content: "https://quote-joy-link.lovable.app/" },
       { name: "twitter:card", content: "summary" },
-      { name: "twitter:title", content: "Request a Quote — The Progress Group" },
+      { name: "twitter:title", content: "Factory-direct braais & fireplaces — Progress Group" },
       {
         name: "twitter:description",
         content: "Get a quote on fireplaces, braais, lighting and aircons from The Progress Group.",
       },
     ],
-    links: [
-      { rel: "canonical", href: "https://quote-joy-link.lovable.app/" },
-    ],
+    links: [{ rel: "canonical", href: "https://quote-joy-link.lovable.app/" }],
     scripts: [
       {
         type: "application/ld+json",
@@ -152,22 +181,6 @@ type LookupResult =
     }
   | { match: false };
 
-function parseRand(price: string): number | null {
-  // Handles formats like "R11514,00" or "R 11 514.00"
-  const cleaned = price.replace(/[^0-9.,]/g, "").replace(/\s/g, "");
-  // South African convention: comma is decimal separator
-  const normalized = cleaned.replace(/\.(?=\d{3}(\D|$))/g, "").replace(",", ".");
-  const n = Number.parseFloat(normalized);
-  return Number.isFinite(n) ? n : null;
-}
-
-function formatRand(n: number): string {
-  const fixed = n.toFixed(2);
-  const [whole = "0", decimals = "00"] = fixed.split(".");
-  const grouped = whole.replace(/\B(?=(\d{3})+(?!\d))/g, " ");
-  return `R${grouped},${decimals}`;
-}
-
 function buildQuoteUrl(params: {
   firstName: string;
   lastName: string;
@@ -224,9 +237,7 @@ function buildWhatsAppMessage(params: {
   cta?: string;
 }): string {
   const validity = params.validityDays ?? 10;
-  const cta =
-    params.cta ??
-    "I'd like to proceed. Please send me the invoice and booking details.";
+  const cta = params.cta ?? "I'd like to proceed. Please send me the invoice and booking details.";
 
   const lines = [
     `Hi Progress Group,`,
@@ -252,14 +263,14 @@ function computePlatePrice(type: "steel" | "glass" | "granite", corner: boolean)
   return corner ? 3500 : 2500;
 }
 
-
-
 function QuotePage() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
-  const [product, setProduct] = useState("Magma 10kW Closed Combustion Fireplace incl Flue Kit SPECIAL");
+  const [product, setProduct] = useState(
+    "Magma 10kW Closed Combustion Fireplace incl Flue Kit SPECIAL",
+  );
   const [quantity, setQuantity] = useState(1);
   const [storyType, setStoryType] = useState<"single" | "double" | "">("single");
   const [flueKitAddOn, setFlueKitAddOn] = useState(true);
@@ -274,7 +285,7 @@ function QuotePage() {
     setInstallationRequired(isSpecialProduct(product));
   }, [product]);
   const [address, setAddress] = useState("");
-  
+
   const [extrasForAccount, setExtrasForAccount] = useState("");
 
   const [submitted, setSubmitted] = useState(false);
@@ -283,7 +294,7 @@ function QuotePage() {
   const [popFile, setPopFile] = useState<File | null>(null);
   const [popSending, setPopSending] = useState(false);
   const [popDone, setPopDone] = useState(false);
-  
+
   const [lookup, setLookup] = useState<LookupResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -317,8 +328,6 @@ function QuotePage() {
       /* sessionStorage unavailable */
     }
   }, []);
-
-
 
   useEffect(() => {
     let lastScrollY = window.scrollY;
@@ -388,11 +397,7 @@ function QuotePage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [canContinue, submitted, loading]);
 
-
-  const handleSubmit = async (
-    e?: React.FormEvent | null,
-    opts: { auto?: boolean } = {},
-  ) => {
+  const handleSubmit = async (e?: React.FormEvent | null, opts: { auto?: boolean } = {}) => {
     if (e && typeof e.preventDefault === "function") e.preventDefault();
     if (!canContinue || loading) return;
     const typoCheck = checkEmail(email);
@@ -584,13 +589,12 @@ function QuotePage() {
     }
   };
 
-
   // Derive pricing guidance from the matched catalog entry (if any).
   const matched = lookup?.match ? lookup : null;
   const unitPriceNum = matched?.catalog ? parseRand(matched.catalog.unitPrice) : null;
-  const productSubtotal =
-    unitPriceNum !== null && matched ? unitPriceNum * matched.quantity : null;
-  const flueKitPrice = flueKitAddOn && flueKitApplies(product) ? matched?.flueKitPrice ?? null : null;
+  const productSubtotal = unitPriceNum !== null && matched ? unitPriceNum * matched.quantity : null;
+  const flueKitPrice =
+    flueKitAddOn && flueKitApplies(product) ? (matched?.flueKitPrice ?? null) : null;
   const platePrice = matched?.plate?.price ?? null;
   const cornerInstallPrice = matched?.cornerInstallPrice ?? null;
   const transportPrice = matched?.transportPrice ?? null;
@@ -600,8 +604,21 @@ function QuotePage() {
     ? specialDiscountFor(matched.catalog?.name ?? matched.productRequested, matched.quantity)
     : 0;
   const totalPriceNum =
-    productSubtotal !== null || flueKitPrice !== null || platePrice !== null || cornerInstallPrice !== null || transportPrice !== null || travelFee !== null || installationEstimate !== null
-      ? (productSubtotal ?? 0) + (flueKitPrice ?? 0) + (platePrice ?? 0) + (cornerInstallPrice ?? 0) + (transportPrice ?? 0) + (travelFee ?? 0) + (installationEstimate ?? 0) - specialDiscount
+    productSubtotal !== null ||
+    flueKitPrice !== null ||
+    platePrice !== null ||
+    cornerInstallPrice !== null ||
+    transportPrice !== null ||
+    travelFee !== null ||
+    installationEstimate !== null
+      ? (productSubtotal ?? 0) +
+        (flueKitPrice ?? 0) +
+        (platePrice ?? 0) +
+        (cornerInstallPrice ?? 0) +
+        (transportPrice ?? 0) +
+        (travelFee ?? 0) +
+        (installationEstimate ?? 0) -
+        specialDiscount
       : null;
   const unitPriceLabel = unitPriceNum !== null ? formatRand(unitPriceNum) : null;
   const subtotalLabel = productSubtotal !== null ? formatRand(productSubtotal) : null;
@@ -614,7 +631,8 @@ function QuotePage() {
   // must not fold it in again (it would double-count against the total).
   const installationEstimateTotal = installationEstimate;
 
-  const installationEstimateLabel = installationEstimateTotal !== null ? formatRand(installationEstimateTotal) : null;
+  const installationEstimateLabel =
+    installationEstimateTotal !== null ? formatRand(installationEstimateTotal) : null;
   const specialDiscountLabel = specialDiscount > 0 ? `- ${formatRand(specialDiscount)}` : null;
   const totalPriceLabel = totalPriceNum !== null ? formatRand(totalPriceNum) : null;
 
@@ -656,24 +674,54 @@ function QuotePage() {
     const unitPrice = priceStr ? parseRand(priceStr) : null;
     const subtotal = unitPrice !== null ? unitPrice * quantity : null;
     const allInclusive = isAllInclusiveProduct(product);
-    const flueKit = !(flueKitAddOn && flueKitApplies(product)) ? null : storyType === "double" ? 9650 : storyType === "single" ? 7650 : null;
+    const flueKit = !(flueKitAddOn && flueKitApplies(product))
+      ? null
+      : storyType === "double"
+        ? 9650
+        : storyType === "single"
+          ? 7650
+          : null;
     const isSpecial = isSpecialProduct(product);
-    const needsPlate = !allInclusive && !isSpecial && flooring.length > 0 && !/tile/i.test(flooring);
+    const needsPlate =
+      !allInclusive && !isSpecial && flooring.length > 0 && !/tile/i.test(flooring);
     const plate = needsPlate ? computePlatePrice(plateType, cornerInstall) : null;
     // Catalogue products: installation is quoted on request, so no fixed
     // corner/installation amounts are added to the estimate.
     const corner = null;
     const install = isSpecial && installationRequired ? 6000 * Math.max(quantity, 1) : null;
-    const addOns = allInclusiveAddOns({ productName: product, storyType, cornerInstall, plateType, flooring, installationRequired });
-    const hasAny = subtotal !== null || flueKit !== null || plate !== null || corner !== null || install !== null || addOns.total !== 0;
-    const productTotal = (subtotal ?? 0) + (flueKit ?? 0) + (plate ?? 0) + (corner ?? 0) + addOns.total;
+    const addOns = allInclusiveAddOns({
+      productName: product,
+      storyType,
+      cornerInstall,
+      plateType,
+      flooring,
+      installationRequired,
+    });
+    const hasAny =
+      subtotal !== null ||
+      flueKit !== null ||
+      plate !== null ||
+      corner !== null ||
+      install !== null ||
+      addOns.total !== 0;
+    const productTotal =
+      (subtotal ?? 0) + (flueKit ?? 0) + (plate ?? 0) + (corner ?? 0) + addOns.total;
     const installTotal = install ?? 0;
     return {
       total: hasAny ? productTotal + installTotal : null,
       productTotal: hasAny ? productTotal : null,
       installTotal,
     };
-  }, [product, quantity, storyType, flooring, plateType, cornerInstall, installationRequired, flueKitAddOn]);
+  }, [
+    product,
+    quantity,
+    storyType,
+    flooring,
+    plateType,
+    cornerInstall,
+    installationRequired,
+    flueKitAddOn,
+  ]);
 
   const estimatedTotal = estimatedBreakdown.total;
   const estimatedProductTotal = estimatedBreakdown.productTotal;
@@ -699,21 +747,44 @@ function QuotePage() {
   // belongs to Progress Installations; when installation isn't required the
   // delivery fee rolls into the Progress Group (product) subtotal.
   const progressGroupNum = useMemo(() => {
-    const prod = estimatedProductTotal !== null
-      ? estimatedProductTotal
-      : (productSubtotal ?? 0) + (flueKitPrice ?? 0) + (platePrice ?? 0) + (cornerInstallPrice ?? 0) - specialDiscount;
+    const prod =
+      estimatedProductTotal !== null
+        ? estimatedProductTotal
+        : (productSubtotal ?? 0) +
+          (flueKitPrice ?? 0) +
+          (platePrice ?? 0) +
+          (cornerInstallPrice ?? 0) -
+          specialDiscount;
     if (!installationRequired) return prod + effectiveTransport + (travelFee ?? 0);
     return prod;
-  }, [estimatedProductTotal, productSubtotal, flueKitPrice, platePrice, cornerInstallPrice, specialDiscount, installationRequired, effectiveTransport, travelFee]);
+  }, [
+    estimatedProductTotal,
+    productSubtotal,
+    flueKitPrice,
+    platePrice,
+    cornerInstallPrice,
+    specialDiscount,
+    installationRequired,
+    effectiveTransport,
+    travelFee,
+  ]);
 
   const progressInstallationsNum = useMemo(() => {
     if (!installationRequired) return 0;
     const inst = estimatedTotal !== null ? estimatedInstallTotal : (installationEstimate ?? 0);
     return inst + effectiveTransport + (travelFee ?? 0);
-  }, [installationRequired, estimatedTotal, estimatedInstallTotal, installationEstimate, effectiveTransport, travelFee]);
+  }, [
+    installationRequired,
+    estimatedTotal,
+    estimatedInstallTotal,
+    installationEstimate,
+    effectiveTransport,
+    travelFee,
+  ]);
 
   const progressGroupLabel = progressGroupNum > 0 ? formatRand(progressGroupNum) : null;
-  const progressInstallationsLabel = progressInstallationsNum > 0 ? formatRand(progressInstallationsNum) : null;
+  const progressInstallationsLabel =
+    progressInstallationsNum > 0 ? formatRand(progressInstallationsNum) : null;
 
   // Hand the completed quote to the checkout page so the client can pay there.
   const checkoutPayload = useMemo(() => {
@@ -731,7 +802,20 @@ function QuotePage() {
       progressGroupNum,
       progressInstallationsNum,
     };
-  }, [submitted, quoteNo, quoteSession, cartTotalNum, firstName, lastName, email, product, quantity, installationRequired, progressGroupNum, progressInstallationsNum]);
+  }, [
+    submitted,
+    quoteNo,
+    quoteSession,
+    cartTotalNum,
+    firstName,
+    lastName,
+    email,
+    product,
+    quantity,
+    installationRequired,
+    progressGroupNum,
+    progressInstallationsNum,
+  ]);
 
   const persistCheckout = () => {
     if (!checkoutPayload) return;
@@ -753,7 +837,6 @@ function QuotePage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [checkoutPayload]);
 
-
   const whatsappHref = useMemo(() => {
     const fullName = `${firstName.trim()} ${lastName.trim()}`.trim() || "Customer";
     const price = cartTotalLabel;
@@ -765,8 +848,7 @@ function QuotePage() {
       isEstimate: !submitted,
     });
     return `https://wa.me/27689560320?text=${encodeURIComponent(text)}`;
-  }, [firstName, lastName, quoteNo, product, totalPriceNum, totalPriceLabel, estimatedTotal, submitted]);
-
+  }, [firstName, lastName, quoteNo, product, cartTotalLabel, submitted]);
 
   const [converting, setConverting] = useState(false);
 
@@ -888,15 +970,13 @@ function QuotePage() {
   // option inputs so the quoted configuration/amount cannot be altered.
   const optionsLocked = submitted;
 
-
-
   return (
     <div className="min-h-screen text-foreground">
       {/* Promo strip */}
       <div className="border-b border-foreground/15 bg-foreground text-background">
         <div className="mx-auto flex max-w-6xl items-center justify-center px-6 py-2 text-[10px] font-semibold uppercase tracking-[0.32em]">
           <span className="text-gradient-ember">
-            Magma 001 Special R23 970 · Summer Special: 1200 De Lux Braai R8 275
+            Summer special: 1200 De Lux Braai R8 275 · Magma 001 Special R23 970
           </span>
         </div>
       </div>
@@ -934,16 +1014,16 @@ function QuotePage() {
       </header>
 
       <LandingHero onSelectProduct={setProduct} />
+      <PopularPicks onSelectProduct={setProduct} />
       <MobileStickyCta />
       {/* Form */}
       <section id="form" className="bg-background">
-
         <div className="mx-auto max-w-3xl px-6 py-16 sm:py-20">
           <div className="mb-8">
             <h2 className="text-3xl sm:text-4xl">REQUEST A QUOTE</h2>
             <p className="mt-2 text-sm text-muted-foreground">
-              Fill in your details below. We'll match your product to our catalog and
-              calculate transport so your quote is ready in seconds.
+              Fill in your details below. We'll match your product to our catalog and calculate
+              transport so your quote is ready in seconds.
             </p>
             <a
               href={QUOTE_APP_URL}
@@ -1036,11 +1116,11 @@ function QuotePage() {
                     Select a product…
                   </option>
                   {product && !PRODUCT_NAMES.includes(product) && (
-                    <option value={product}>{product}</option>
+                    <option value={product}>{decodeProductName(product)}</option>
                   )}
                   {PRODUCT_NAMES.map((n) => (
                     <option key={n} value={n}>
-                      {n}
+                      {decodeProductName(n)}
                     </option>
                   ))}
                 </select>
@@ -1062,7 +1142,7 @@ function QuotePage() {
             {product && PRODUCT_IMAGE_MAP.get(product) && (
               <div className="flex items-center gap-4 border-2 border-border bg-card p-3">
                 <img
-                  src={PRODUCT_IMAGE_MAP.get(product)!}
+                  src={PRODUCT_IMAGE_MAP.get(product)}
                   alt={product}
                   className="h-24 w-24 shrink-0 border border-border object-cover sm:h-28 sm:w-28"
                   loading="lazy"
@@ -1073,10 +1153,10 @@ function QuotePage() {
                   <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
                     Selected product
                   </p>
-                  <p className="truncate text-sm font-bold">{product}</p>
+                  <p className="truncate text-sm font-bold">{decodeProductName(product)}</p>
                   {PRODUCT_PRICE_MAP.get(product) && (
                     <p className="mt-1 text-sm font-semibold text-primary">
-                      {PRODUCT_PRICE_MAP.get(product)}
+                      {formatRand(PRODUCT_PRICE_MAP.get(product))}
                     </p>
                   )}
                 </div>
@@ -1114,7 +1194,8 @@ function QuotePage() {
               </Field>
             ) : (
               <p className="text-sm text-muted-foreground">
-                Product only — installation is only available with the Magma 001 Special package (R23 970 all-in).
+                Product only — installation is only available with the Magma 001 Special package
+                (R23 970 all-in).
               </p>
             )}
 
@@ -1165,7 +1246,9 @@ function QuotePage() {
             </Field>
 
             {flooring && !/tile/i.test(flooring) && (
-              <Field label={`Plinth (required for non-tile floors)${cornerInstall ? " — corner pricing" : ""}`}>
+              <Field
+                label={`Plinth (required for non-tile floors)${cornerInstall ? " — corner pricing" : ""}`}
+              >
                 <select
                   value={plateType}
                   onChange={(e) => setPlateType(e.target.value as "steel" | "glass" | "granite")}
@@ -1173,13 +1256,17 @@ function QuotePage() {
                   className="form-input"
                 >
                   <option value="steel">Black Steel (Square) 2mm · R1 500</option>
-                  <option value="glass">Glass {cornerInstall ? "(Corner)" : "(Square)"} 8/10mm · R{cornerInstall ? "3 500" : "2 500"}</option>
-                  <option value="granite">Granite {cornerInstall ? "(Corner)" : "(Square)"} 20mm · R{cornerInstall ? "5 500" : "4 500"}</option>
+                  <option value="glass">
+                    Glass {cornerInstall ? "(Corner)" : "(Square)"} 8/10mm · R
+                    {cornerInstall ? "3 500" : "2 500"}
+                  </option>
+                  <option value="granite">
+                    Granite {cornerInstall ? "(Corner)" : "(Square)"} 20mm · R
+                    {cornerInstall ? "5 500" : "4 500"}
+                  </option>
                 </select>
               </Field>
             )}
-
-
 
             <div className="block">
               <span className="mb-1 block text-[11px] font-semibold uppercase tracking-[0.24em] text-foreground/70">
@@ -1206,7 +1293,6 @@ function QuotePage() {
               </label>
             )}
 
-
             {flueKitApplies(product) && (
               <label className="flex min-h-11 items-center gap-3 border-2 border-border bg-card px-3 py-2 text-sm">
                 <input
@@ -1217,7 +1303,8 @@ function QuotePage() {
                   className="h-4 w-4 accent-primary"
                 />
                 <span>
-                  Add flue kit ({storyType === "double" ? "double story +R9 650" : "single story +R7 650"})
+                  Add flue kit (
+                  {storyType === "double" ? "double story +R9 650" : "single story +R7 650"})
                 </span>
               </label>
             )}
@@ -1234,13 +1321,11 @@ function QuotePage() {
               flueKitAddOn={flueKitAddOn}
             />
 
-
             {error && (
               <p className="border-2 border-destructive bg-destructive/10 px-3 py-2 text-sm text-destructive">
                 {error}
               </p>
             )}
-
 
             <div className="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
               <p className="text-xs text-muted-foreground">
@@ -1260,14 +1345,14 @@ function QuotePage() {
         </div>
       </section>
 
-
       {/* Quote preview */}
       {showQuote && (
         <section id="quote" className="border-t border-border bg-background">
           <div className="mx-auto max-w-6xl px-6 py-16 sm:py-20">
             {emailConfirmed && (
               <div className="mb-6 border-2 border-emerald-500 bg-emerald-500/10 px-3 py-2 text-sm text-emerald-900 dark:text-emerald-200">
-                ✓ Quote email sent successfully to <strong>{emailConfirmed}</strong>. Please check your inbox (and spam folder).
+                ✓ Quote email sent successfully to <strong>{emailConfirmed}</strong>. Please check
+                your inbox (and spam folder).
               </div>
             )}
 
@@ -1286,33 +1371,62 @@ function QuotePage() {
                 </div>
                 <ul className="divide-y divide-foreground/15 text-sm">
                   {subtotalLabel && (
-                    <BreakdownRow label={`${matched.catalog?.name ?? matched.productRequested} × ${matched.quantity}`} value={subtotalLabel} hint={unitPriceLabel ? `${unitPriceLabel} each` : undefined} />
+                    <BreakdownRow
+                      label={`${matched.catalog?.name ?? matched.productRequested} × ${matched.quantity}`}
+                      value={subtotalLabel}
+                      hint={unitPriceLabel ? `${unitPriceLabel} each` : undefined}
+                    />
                   )}
-                  {flueKitLabel && <BreakdownRow label="Flue kit" value={flueKitLabel} hint={matched.storyType === "double" ? "Double story" : "Single story"} />}
-                  {plateLabel && <BreakdownRow label={`${matched.plate?.type === "steel" ? "Black steel" : matched.plate?.type === "granite" ? "Granite" : "Glass"} plinth`} value={plateLabel} />}
-                  {cornerInstallLabel && <BreakdownRow label="Corner installation" value={cornerInstallLabel} />}
-                  {!installationRequired && <BreakdownRow label="Courier" value={effectiveTransportLabel} hint={matched.transportZone ?? "Delivery within ±25 km of Bellville"} />}
+                  {flueKitLabel && (
+                    <BreakdownRow
+                      label="Flue kit"
+                      value={flueKitLabel}
+                      hint={matched.storyType === "double" ? "Double story" : "Single story"}
+                    />
+                  )}
+                  {plateLabel && (
+                    <BreakdownRow
+                      label={`${matched.plate?.type === "steel" ? "Black steel" : matched.plate?.type === "granite" ? "Granite" : "Glass"} plinth`}
+                      value={plateLabel}
+                    />
+                  )}
+                  {cornerInstallLabel && (
+                    <BreakdownRow label="Corner installation" value={cornerInstallLabel} />
+                  )}
+                  {!installationRequired && (
+                    <BreakdownRow
+                      label="Courier"
+                      value={effectiveTransportLabel}
+                      hint={matched.transportZone ?? "Delivery within ±25 km of Bellville"}
+                    />
+                  )}
                   {installationEstimateLabel && (
                     <BreakdownRow
-                       label="Installation estimate"
-                       value={installationEstimateLabel}
-                       hint={matched.storyType === "double"
-                         ? "Within Cape Town · includes core drilling (subject to site visit)"
-                         : "Within Cape Town (subject to site visit)"}
-                     />
-                   )}
-                    {installationRequired && (
-                      <BreakdownRow
-                        label="Transport"
-                        value={effectiveTransportLabel}
-                        hint="Part of installation estimate · first 25 km included in R470, R12/km thereafter"
-                      />
-                    )}
+                      label="Installation estimate"
+                      value={installationEstimateLabel}
+                      hint={
+                        matched.storyType === "double"
+                          ? "Within Cape Town · includes core drilling (subject to site visit)"
+                          : "Within Cape Town (subject to site visit)"
+                      }
+                    />
+                  )}
+                  {installationRequired && (
+                    <BreakdownRow
+                      label="Transport"
+                      value={effectiveTransportLabel}
+                      hint="Part of installation estimate · first 25 km included in R470, R12/km thereafter"
+                    />
+                  )}
                 </ul>
-                 {cartTotalLabel && (
-                   <div className="mt-3 flex items-baseline justify-between border-t-2 border-foreground pt-3">
-                     <span className="text-xs font-bold uppercase tracking-[0.24em] text-foreground">Estimated total</span>
-                     <span className="font-mono text-xl font-bold text-foreground">{cartTotalLabel}</span>
+                {cartTotalLabel && (
+                  <div className="mt-3 flex items-baseline justify-between border-t-2 border-foreground pt-3">
+                    <span className="text-xs font-bold uppercase tracking-[0.24em] text-foreground">
+                      Estimated total
+                    </span>
+                    <span className="font-mono text-xl font-bold text-foreground">
+                      {cartTotalLabel}
+                    </span>
                   </div>
                 )}
               </div>
@@ -1391,7 +1505,6 @@ function QuotePage() {
                 )}
               </div>
             </div>
-
           </div>
         </section>
       )}
@@ -1414,13 +1527,11 @@ function QuotePage() {
                 <p className="font-mono text-2xl font-bold leading-tight text-foreground sm:text-3xl">
                   {cartTotalLabel ?? "—"}
                 </p>
-
               </div>
             </div>
           </div>
         </div>
       )}
-
 
       {/* Proof of payment step — the invoice is only issued once payment is proven */}
       {popOpen && (
@@ -1439,18 +1550,29 @@ function QuotePage() {
             >
               <X className="h-4 w-4" />
             </button>
-            <h2 id="pop-title" className="pr-10 text-lg font-bold uppercase tracking-wide text-foreground">
+            <h2
+              id="pop-title"
+              className="pr-10 text-lg font-bold uppercase tracking-wide text-foreground"
+            >
               Pay &amp; get your invoice
             </h2>
             <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-              We issue the invoice once payment is confirmed. Pay online with Stitch for the
-              fastest option, or pay by EFT and send us your proof of payment below.
+              We issue the invoice once payment is confirmed. Pay online with Stitch for the fastest
+              option, or pay by EFT and send us your proof of payment below.
             </p>
 
             <a
               href={STITCH_EXPRESS_URL}
               onClick={() => {
-                void notifyPaymentClick({ data: { quoteNo: quoteNo ?? undefined, product: `${quantity} × ${product || "—"}`, amount: cartTotalLabel ?? undefined, customer: `${firstName} ${lastName} <${email}>`.trim(), source: "Quote — Pay & get your invoice" } }).catch(() => undefined);
+                void notifyPaymentClick({
+                  data: {
+                    quoteNo: quoteNo ?? undefined,
+                    product: `${quantity} × ${product || "—"}`,
+                    amount: cartTotalLabel ?? undefined,
+                    customer: `${firstName} ${lastName} <${email}>`.trim(),
+                    source: "Quote — Pay & get your invoice",
+                  },
+                }).catch(() => undefined);
               }}
               target="_blank"
               rel="noopener noreferrer"
@@ -1465,10 +1587,11 @@ function QuotePage() {
 
             <div className="mt-4 flex items-center gap-3" aria-hidden="true">
               <span className="h-px flex-1 bg-foreground/20" />
-              <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Or pay by EFT</span>
+              <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                Or pay by EFT
+              </span>
               <span className="h-px flex-1 bg-foreground/20" />
             </div>
-
 
             <div className="mt-4 space-y-3">
               <div className="border-2 border-foreground/20 bg-secondary/30 p-4 text-sm leading-relaxed">
@@ -1487,10 +1610,18 @@ function QuotePage() {
                   <dt className="font-semibold text-foreground">Account no.</dt>
                   <dd className="font-mono">1033186821</dd>
                   <dt className="font-semibold text-foreground">Reference</dt>
-                  <dd>{quoteNo ? (quoteNo.startsWith("INV-") ? quoteNo : `INV-${quoteNo}`) : "Your invoice number"}</dd>
+                  <dd>
+                    {quoteNo
+                      ? quoteNo.startsWith("INV-")
+                        ? quoteNo
+                        : `INV-${quoteNo}`
+                      : "Your invoice number"}
+                  </dd>
                 </dl>
                 <p className="mt-3 flex items-center justify-between border-t-2 border-foreground/10 pt-2 font-mono text-sm">
-                  <span className="font-bold uppercase tracking-wide text-foreground">Progress Group subtotal</span>
+                  <span className="font-bold uppercase tracking-wide text-foreground">
+                    Progress Group subtotal
+                  </span>
                   <span className="font-bold text-foreground">{progressGroupLabel ?? "—"}</span>
                 </p>
               </div>
@@ -1515,8 +1646,12 @@ function QuotePage() {
                     <dd>{quoteNo || "Your quote number"}</dd>
                   </dl>
                   <p className="mt-3 flex items-center justify-between border-t-2 border-foreground/10 pt-2 font-mono text-sm">
-                    <span className="font-bold uppercase tracking-wide text-foreground">Progress Installations total</span>
-                    <span className="font-bold text-foreground">{progressInstallationsLabel ?? "—"}</span>
+                    <span className="font-bold uppercase tracking-wide text-foreground">
+                      Progress Installations total
+                    </span>
+                    <span className="font-bold text-foreground">
+                      {progressInstallationsLabel ?? "—"}
+                    </span>
                   </p>
                 </div>
               )}
@@ -1533,7 +1668,10 @@ function QuotePage() {
               )}
             </div>
 
-            <label htmlFor="pop-file" className="mt-5 block text-xs font-bold uppercase tracking-wider text-foreground">
+            <label
+              htmlFor="pop-file"
+              className="mt-5 block text-xs font-bold uppercase tracking-wider text-foreground"
+            >
               Upload proof of payment (PDF or image, max 10MB)
             </label>
             <input
@@ -1551,7 +1689,11 @@ function QuotePage() {
                 disabled={popSending || !popFile}
                 className="inline-flex items-center justify-center gap-2 border-2 border-foreground bg-primary px-5 py-3 text-sm font-bold uppercase tracking-wider text-primary-foreground shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none disabled:cursor-not-allowed disabled:opacity-60"
               >
-                {popSending ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4" />}
+                {popSending ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <CheckCircle2 className="h-4 w-4" />
+                )}
                 {popSending ? "Sending…" : "Send POP & get invoice"}
               </button>
               <a
@@ -1564,7 +1706,9 @@ function QuotePage() {
                 type="button"
                 onClick={() => {
                   setPopOpen(false);
-                  toast.success("No rush — your quote and our banking details are in your email. Pay by EFT anytime and send your proof of payment to sales@progressgrp.co.za to get your invoice.");
+                  toast.success(
+                    "No rush — your quote and our banking details are in your email. Pay by EFT anytime and send your proof of payment to sales@progressgrp.co.za to get your invoice.",
+                  );
                 }}
                 disabled={popSending}
                 className="inline-flex items-center justify-center gap-2 border-2 border-foreground/30 bg-background px-3 py-3 text-sm font-bold uppercase tracking-wider text-muted-foreground transition hover:border-foreground hover:text-foreground disabled:opacity-60"
@@ -1581,7 +1725,6 @@ function QuotePage() {
           </div>
         </div>
       )}
-
 
       <LandingSections />
 
@@ -1604,21 +1747,61 @@ function QuotePage() {
             </a>
           </div>
           <div>
-            <p className="font-display text-[10px] uppercase tracking-[0.36em] text-primary">Contact</p>
+            <p className="font-display text-[10px] uppercase tracking-[0.36em] text-primary">
+              Contact
+            </p>
             <ul className="mt-4 space-y-2 text-sm text-foreground/80">
-              <li>Installations · <a href="tel:+27875500413" className="hover:text-primary">087 550 0413</a></li>
-              <li>Shopping · <a href="tel:+27219453636" className="hover:text-primary">021 945 3636</a></li>
-              <li>WhatsApp · <a href="tel:+27689560320" className="hover:text-primary">068 956 0320</a></li>
-              <li><a href="mailto:Info@progressgroup.co.za" className="hover:text-primary">Info@progressgroup.co.za</a></li>
+              <li>
+                Installations ·{" "}
+                <a href="tel:+27875500413" className="hover:text-primary">
+                  087 550 0413
+                </a>
+              </li>
+              <li>
+                Shopping ·{" "}
+                <a href="tel:+27219453636" className="hover:text-primary">
+                  021 945 3636
+                </a>
+              </li>
+              <li>
+                WhatsApp ·{" "}
+                <a href="tel:+27689560320" className="hover:text-primary">
+                  068 956 0320
+                </a>
+              </li>
+              <li>
+                <a href="mailto:Info@progressgroup.co.za" className="hover:text-primary">
+                  Info@progressgroup.co.za
+                </a>
+              </li>
               <li>Bellville · Cape Town · South Africa</li>
             </ul>
           </div>
           <div>
-            <p className="font-display text-[10px] uppercase tracking-[0.36em] text-primary">Progress</p>
+            <p className="font-display text-[10px] uppercase tracking-[0.36em] text-primary">
+              Progress
+            </p>
             <ul className="mt-4 space-y-2 text-sm text-foreground/80">
-              <li><a href="https://www.progressgroup.co.za" target="_blank" rel="noopener noreferrer" className="hover:text-primary">progressgroup.co.za</a></li>
-              <li><Link to="/catalog" className="hover:text-primary">The Catalogue</Link></li>
-              <li><Link to="/consultation" className="hover:text-primary">Private Consultation</Link></li>
+              <li>
+                <a
+                  href="https://www.progressgroup.co.za"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-primary"
+                >
+                  progressgroup.co.za
+                </a>
+              </li>
+              <li>
+                <Link to="/catalog" className="hover:text-primary">
+                  The Catalogue
+                </Link>
+              </li>
+              <li>
+                <Link to="/consultation" className="hover:text-primary">
+                  Private Consultation
+                </Link>
+              </li>
             </ul>
           </div>
         </div>
@@ -1678,22 +1861,46 @@ function InstantQuote({
   const subtotal = unitPrice !== null ? unitPrice * quantity : null;
   const allInclusive = isAllInclusiveProduct(productName);
   const flueKitIncluded = allInclusive || /flue\s*kit/i.test(productName);
-  const flueKit = flueKitIncluded || !flueKitAddOn || !flueKitApplies(productName)
-    ? null
-    : storyType === "double" ? 9650 : storyType === "single" ? 7650 : null;
+  const flueKit =
+    flueKitIncluded || !flueKitAddOn || !flueKitApplies(productName)
+      ? null
+      : storyType === "double"
+        ? 9650
+        : storyType === "single"
+          ? 7650
+          : null;
   const isSpecial = isSpecialProduct(productName);
   const needsPlate = !allInclusive && !isSpecial && flooring.length > 0 && !/tile/i.test(flooring);
   const plate = needsPlate ? computePlatePrice(plateType, cornerInstall) : null;
   // Installation for catalogue products is quoted on request — no fixed
   // estimate. Only the all-inclusive special carries installation pricing.
   const corner = null;
-  const installationEstimate = isSpecial && installationRequired ? 6000 * Math.max(quantity, 1) : null;
-  const addOns = allInclusiveAddOns({ productName, storyType, cornerInstall, plateType, flooring, installationRequired });
+  const installationEstimate =
+    isSpecial && installationRequired ? 6000 * Math.max(quantity, 1) : null;
+  const addOns = allInclusiveAddOns({
+    productName,
+    storyType,
+    cornerInstall,
+    plateType,
+    flooring,
+    installationRequired,
+  });
   const specialDiscount = specialDiscountFor(productName, quantity);
   const BASE_TRANSPORT_DEFAULT = 470;
   const total =
-    subtotal !== null || flueKit !== null || plate !== null || corner !== null || installationEstimate !== null
-      ? (subtotal ?? 0) + (flueKit ?? 0) + (plate ?? 0) + (corner ?? 0) + (installationEstimate ?? 0) + addOns.total - specialDiscount + BASE_TRANSPORT_DEFAULT
+    subtotal !== null ||
+    flueKit !== null ||
+    plate !== null ||
+    corner !== null ||
+    installationEstimate !== null
+      ? (subtotal ?? 0) +
+        (flueKit ?? 0) +
+        (plate ?? 0) +
+        (corner ?? 0) +
+        (installationEstimate ?? 0) +
+        addOns.total -
+        specialDiscount +
+        BASE_TRANSPORT_DEFAULT
       : null;
 
   const rows: { label: string; value: number | null; hint?: string }[] = [
@@ -1719,33 +1926,68 @@ function InstantQuote({
     ...(needsPlate
       ? [
           {
-            label: `${plateType === "steel" ? "Black steel" : plateType === "granite" ? "Granite" : "Glass"} plinth${cornerInstall && plateType !== "steel" ? " (corner)" : ""}` as string,
+            label:
+              `${plateType === "steel" ? "Black steel" : plateType === "granite" ? "Granite" : "Glass"} plinth${cornerInstall && plateType !== "steel" ? " (corner)" : ""}` as string,
             value: plate as number | null,
             hint: "Required for non-tile floors" as string,
           },
         ]
       : []),
-    ...(allInclusive ? [] : [{ label: "Corner installation", value: corner, hint: cornerInstall ? "Quoted on request" : "Standard wall" }]),
     ...(allInclusive
-      ? [{ label: "Installation, flue kit & plinth (single story, basic)", value: 0 as number | null, hint: "Included in the special price" as string }]
+      ? []
+      : [
+          {
+            label: "Corner installation",
+            value: corner,
+            hint: cornerInstall ? "Quoted on request" : "Standard wall",
+          },
+        ]),
+    ...(allInclusive
+      ? [
+          {
+            label: "Installation, flue kit & plinth (single story, basic)",
+            value: 0 as number | null,
+            hint: "Included in the special price" as string,
+          },
+        ]
       : []),
     ...(addOns.doubleStorySurcharge !== null
-      ? [{ label: "Double-story surcharge", value: addOns.doubleStorySurcharge as number | null, hint: "Core drilling — not covered by the basic special" as string }]
+      ? [
+          {
+            label: "Double-story surcharge",
+            value: addOns.doubleStorySurcharge as number | null,
+            hint: "Core drilling — not covered by the basic special" as string,
+          },
+        ]
       : []),
     ...(addOns.cornerInstall !== null
-      ? [{ label: "Corner installation add-on", value: addOns.cornerInstall as number | null, hint: "Not covered by the basic special" as string }]
+      ? [
+          {
+            label: "Corner installation add-on",
+            value: addOns.cornerInstall as number | null,
+            hint: "Not covered by the basic special" as string,
+          },
+        ]
       : []),
     ...(addOns.graniteUpgrade !== null
-      ? [{ label: "Granite plinth upgrade", value: addOns.graniteUpgrade as number | null, hint: "Upgrade from the included glass plinth" as string }]
+      ? [
+          {
+            label: "Granite plinth upgrade",
+            value: addOns.graniteUpgrade as number | null,
+            hint: "Upgrade from the included glass plinth" as string,
+          },
+        ]
       : []),
     ...(!allInclusive && installationRequired
       ? [
           {
             label: "Installation",
             value: installationEstimate,
-            hint: installationEstimate !== null ? "Standard installation by Progress Installations" : "Installation on request — Progress Installations will quote after a site assessment",
+            hint:
+              installationEstimate !== null
+                ? "Standard installation by Progress Installations"
+                : "Installation on request — Progress Installations will quote after a site assessment",
           },
-
         ]
       : []),
   ];
@@ -1780,7 +2022,9 @@ function InstantQuote({
                 First 25 km included in R470; R12/km thereafter (calculated on submit)
               </p>
             </div>
-            <span className="shrink-0 font-mono text-sm font-semibold text-foreground">{formatRand(470)}</span>
+            <span className="shrink-0 font-mono text-sm font-semibold text-foreground">
+              {formatRand(470)}
+            </span>
           </li>
         )}
         {!installationRequired && (
@@ -1791,7 +2035,9 @@ function InstantQuote({
                 Delivery within ±25 km of Bellville (calculated on submit)
               </p>
             </div>
-            <span className="shrink-0 font-mono text-sm font-semibold text-foreground">{formatRand(470)}</span>
+            <span className="shrink-0 font-mono text-sm font-semibold text-foreground">
+              {formatRand(470)}
+            </span>
           </li>
         )}
       </ul>
@@ -1812,7 +2058,6 @@ function InstantQuote({
   );
 }
 
-
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <label className="block">
@@ -1823,8 +2068,3 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
     </label>
   );
 }
-
-
-
-
-

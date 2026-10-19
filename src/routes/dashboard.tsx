@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { formatRand } from "@/lib/product-display";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
 import { listQuotes, getQuotePdfUrl, updateQuote, type QuoteRow } from "@/lib/list-quotes.functions";
@@ -8,7 +9,12 @@ import type { Session } from "@supabase/supabase-js";
 export const Route = createFileRoute("/dashboard")({
   head: () => ({
     meta: [
-      { title: "Auto Quote Leads" },
+      { title: "Quote leads — Progress Group" },
+      { name: "description", content: "Private Progress Group quote and customer lead management." },
+      { property: "og:title", content: "Quote leads — Progress Group" },
+      { property: "og:description", content: "Private Progress Group quote and customer lead management." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { name: "robots", content: "noindex" },
     ],
   }),
@@ -22,7 +28,7 @@ export const Route = createFileRoute("/dashboard")({
 });
 
 const fmtZAR = (n: number | null | undefined) =>
-  n == null ? "—" : `R${Number(n).toLocaleString("en-ZA", { maximumFractionDigits: 0 })}`;
+  n == null ? "—" : formatRand(n);
 
 const fmtDate = (s: string) => {
   const d = new Date(s);
