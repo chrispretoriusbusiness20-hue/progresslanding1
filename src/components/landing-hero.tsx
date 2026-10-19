@@ -72,7 +72,7 @@ export function LandingHero({
                 </p>
               </div>
             </div>
-            <Button asChild variant="ghost" className="h-auto rounded-none p-0">
+            <Button asChild variant="ghost" className="h-auto w-full rounded-none p-0">
               <a
                 href={STITCH_EXPRESS_URL}
                 onClick={() => {
@@ -155,7 +155,7 @@ export function LandingHero({
                   <span>R470</span>
                 </li>
               </ul>
-              <Button asChild className="mt-6 h-auto rounded-none p-0">
+              <Button asChild className="mt-6 h-auto w-full rounded-none p-0">
                 <a
                   href="#form"
                   data-select-product={MAGMA_SPECIAL_NAME}

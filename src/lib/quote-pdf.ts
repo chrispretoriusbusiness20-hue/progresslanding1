@@ -1,5 +1,5 @@
 import jsPDF from "jspdf";
-import { formatRand } from "@/lib/product-display";
+import { decodeProductName, formatRand } from "@/lib/product-display";
 import autoTable from "jspdf-autotable";
 import progressLogo from "@/assets/progress-header-transparent.png.asset.json";
 import progressInstallationsLogo from "@/assets/progress-installations-logo.png.asset.json";
@@ -114,7 +114,7 @@ export async function generateQuotePDF(
     const unit = priceIsVatInclusive ? input.unitPrice / 1.15 : input.unitPrice;
     items.push({
       quantity: input.quantity,
-      description: input.productName,
+      description: decodeProductName(input.productName),
       unitPrice: unit,
     });
   }
