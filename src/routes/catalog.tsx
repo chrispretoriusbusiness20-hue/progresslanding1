@@ -7,7 +7,6 @@ import productsData from "@/data/products-full.json";
 import { useFavorites } from "@/hooks/use-favorites";
 import progressLogo from "@/assets/progress-logo.jpeg.asset.json";
 
-
 type Product = {
   id: string;
   name: string;
@@ -60,16 +59,13 @@ export const Route = createFileRoute("/catalog")({
       { property: "og:title", content: "Full Catalog — The Progress Group" },
       {
         property: "og:description",
-        content:
-          "Browse all 700+ Progress Group products and request an instant quote.",
+        content: "Browse all 700+ Progress Group products and request an instant quote.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { property: "og:url", content: "https://quote-joy-link.lovable.app/catalog" },
     ],
-    links: [
-      { rel: "canonical", href: "https://quote-joy-link.lovable.app/catalog" },
-    ],
+    links: [{ rel: "canonical", href: "https://quote-joy-link.lovable.app/catalog" }],
   }),
   component: CatalogPage,
 });
@@ -84,10 +80,18 @@ function CatalogPage() {
   const [query, setQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
-  const { ids: favoriteIds, has: isFavorite, toggle: toggleFavorite, clear: clearFavorites } = useFavorites();
+  const {
+    ids: favoriteIds,
+    has: isFavorite,
+    toggle: toggleFavorite,
+    clear: clearFavorites,
+  } = useFavorites();
 
   const favoriteProducts = useMemo(
-    () => favoriteIds.map((id) => products.find((p) => p.id === id)).filter((p): p is Product => Boolean(p)),
+    () =>
+      favoriteIds
+        .map((id) => products.find((p) => p.id === id))
+        .filter((p): p is Product => Boolean(p)),
     [favoriteIds],
   );
 
@@ -117,10 +121,7 @@ function CatalogPage() {
   const grouped = useMemo<Grouped[]>(() => {
     const q = query.trim().toLowerCase();
     const filtered = products.filter(
-      (p) =>
-        !q ||
-        p.name.toLowerCase().includes(q) ||
-        p.subcategory.toLowerCase().includes(q),
+      (p) => !q || p.name.toLowerCase().includes(q) || p.subcategory.toLowerCase().includes(q),
     );
     return CATEGORY_ORDER.map((cat) => {
       const items = filtered.filter((p) => p.category === cat);
@@ -151,7 +152,9 @@ function CatalogPage() {
 
   const sendFavoritesToQuote = async () => {
     if (favoriteProducts.length === 0) return;
-    const list = favoriteProducts.map((p) => `• ${decodeProductName(p.name)}${p.price ? ` — ${formatRand(p.price)}` : ""}`).join("\n");
+    const list = favoriteProducts
+      .map((p) => `• ${decodeProductName(p.name)}${p.price ? ` — ${formatRand(p.price)}` : ""}`)
+      .join("\n");
     try {
       await navigator.clipboard.writeText(list);
     } catch {
@@ -167,8 +170,6 @@ function CatalogPage() {
       /* ignore */
     }
   };
-
-
 
   return (
     <div className="min-h-screen text-foreground">
@@ -215,8 +216,8 @@ function CatalogPage() {
             </span>
           </h1>
           <p className="mt-6 max-w-2xl text-base text-foreground/75 sm:text-lg">
-            Browse our best sellers — fireplaces and braais.
-            Tap "Add on" on any product and it will be pre-filled in the quote form.
+            Browse our best sellers — fireplaces and braais. Tap "Add on" on any product and it will
+            be pre-filled in the quote form.
           </p>
 
           <p className="mt-8 text-xs uppercase tracking-widest text-muted-foreground">
@@ -350,46 +351,45 @@ function CatalogPage() {
       {/* Grouped grid */}
       <section className="px-6 pb-24 pt-12">
         <div className="mx-auto max-w-6xl space-y-16">
-          {(activeCategory
-            ? grouped.filter((g) => g.category === activeCategory)
-            : grouped
-          ).map((g) => (
-            <div key={g.category} className="scroll-mt-40">
-              <div className="mb-6 flex flex-wrap items-end justify-between gap-4 border-b-2 border-foreground pb-3">
-                <h2 className="font-display text-2xl uppercase tracking-tight sm:text-3xl">
-                  {g.category}
-                </h2>
-                <p className="text-xs font-bold uppercase tracking-widest text-primary">
-                  {g.items.length} {g.items.length === 1 ? "product" : "products"}
-                </p>
-              </div>
+          {(activeCategory ? grouped.filter((g) => g.category === activeCategory) : grouped).map(
+            (g) => (
+              <div key={g.category} className="scroll-mt-40">
+                <div className="mb-6 flex flex-wrap items-end justify-between gap-4 border-b-2 border-foreground pb-3">
+                  <h2 className="font-display text-2xl uppercase tracking-tight sm:text-3xl">
+                    {g.category}
+                  </h2>
+                  <p className="text-xs font-bold uppercase tracking-widest text-primary">
+                    {g.items.length} {g.items.length === 1 ? "product" : "products"}
+                  </p>
+                </div>
 
-              <div className="space-y-10">
-                {g.bySub.map(({ sub, items }) => (
-                  <div key={sub}>
-                    <h3 className="mb-4 text-xs font-bold uppercase tracking-[0.2em] text-foreground/80">
-                      {sub}{" "}
-                      <span className="ml-1 font-normal text-foreground/40">
-                        ({items.length})
-                      </span>
-                    </h3>
-                    <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                      {items.map((p) => (
-                        <ProductCard
-                          key={p.id}
-                          p={p}
-                          isCopied={copiedId === p.id}
-                          isFavorite={isFavorite(p.id)}
-                          onSelect={handleSelect}
-                          onToggleFavorite={toggleFavorite}
-                        />
-                      ))}
+                <div className="space-y-10">
+                  {g.bySub.map(({ sub, items }) => (
+                    <div key={sub}>
+                      <h3 className="mb-4 text-xs font-bold uppercase tracking-[0.2em] text-foreground/80">
+                        {sub}{" "}
+                        <span className="ml-1 font-normal text-foreground/40">
+                          ({items.length})
+                        </span>
+                      </h3>
+                      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                        {items.map((p) => (
+                          <ProductCard
+                            key={p.id}
+                            p={p}
+                            isCopied={copiedId === p.id}
+                            isFavorite={isFavorite(p.id)}
+                            onSelect={handleSelect}
+                            onToggleFavorite={toggleFavorite}
+                          />
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
-            </div>
-          ))}
+            ),
+          )}
 
           {grouped.length === 0 && (
             <div className="border-2 border-foreground bg-card p-12 text-center">
@@ -400,7 +400,6 @@ function CatalogPage() {
           )}
         </div>
       </section>
-
 
       {/* Footer */}
       <footer className="border-t-2 border-foreground bg-background">
@@ -434,7 +433,14 @@ function ProductCard({
   return (
     <article className="flex flex-col overflow-hidden border-2 border-foreground bg-card shadow-brutal-sm transition hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-brutal">
       <div className="relative aspect-square overflow-hidden border-b-2 border-foreground bg-background">
-        <img src={getProductImageUrl({ ...p, productName: p.name })} alt={decodeProductName(p.name)} loading="lazy" width={300} height={300} className="size-full object-contain" />
+        <img
+          src={getProductImageUrl({ ...p, productName: p.name })}
+          alt={decodeProductName(p.name)}
+          loading="lazy"
+          width={300}
+          height={300}
+          className="size-full object-contain"
+        />
         <span
           className={`absolute left-2 top-2 border-2 border-foreground px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest ${
             p.id === SUMMER_SPECIAL_ID
@@ -453,10 +459,16 @@ function ProductCard({
         <button
           type="button"
           onClick={() => onToggleFavorite(p.id)}
-          aria-label={isFavorite ? `Remove ${decodeProductName(p.name)} from favorites` : `Save ${decodeProductName(p.name)} to favorites`}
+          aria-label={
+            isFavorite
+              ? `Remove ${decodeProductName(p.name)} from favorites`
+              : `Save ${decodeProductName(p.name)} to favorites`
+          }
           aria-pressed={isFavorite}
           className={`absolute right-2 top-2 flex h-9 w-9 items-center justify-center border-2 border-foreground shadow-brutal-sm transition hover:-translate-y-0.5 ${
-            isFavorite ? "bg-primary text-primary-foreground" : "bg-background text-foreground/70 hover:text-foreground"
+            isFavorite
+              ? "bg-primary text-primary-foreground"
+              : "bg-background text-foreground/70 hover:text-foreground"
           }`}
         >
           <Heart className={`h-4 w-4 ${isFavorite ? "fill-current" : ""}`} />
@@ -503,5 +515,3 @@ function ProductCard({
     </article>
   );
 }
-
-

@@ -29,7 +29,8 @@ export function getProductImageUrl(opts: {
   productName?: string | null;
 }): string {
   // This old main-site braai image no longer resolves; use its hosted copy.
-  if (opts.image?.includes("/1200-De-Lux-Braai-300x300.jpg")) return absolute(CATEGORY_IMAGES.braais);
+  if (opts.image?.includes("/1200-De-Lux-Braai-300x300.jpg"))
+    return absolute(CATEGORY_IMAGES.braais);
   if (opts.image) return absolute(opts.image);
   const cat = (opts.category ?? "").toLowerCase();
   if (cat && CATEGORY_IMAGES[cat]) return absolute(CATEGORY_IMAGES[cat]);
@@ -39,7 +40,6 @@ export function getProductImageUrl(opts: {
   if (/gas/.test(name)) return absolute(CATEGORY_IMAGES["gas-fireplaces"]);
   if (/pellet/.test(name)) return absolute(CATEGORY_IMAGES["pellet-fireplaces"]);
   if (/biomass/.test(name)) return absolute(CATEGORY_IMAGES.biomass);
-  if (/flue|chimney|accessor/.test(name))
-    return absolute(CATEGORY_IMAGES["flues-and-accessories"]);
+  if (/flue|chimney|accessor/.test(name)) return absolute(CATEGORY_IMAGES["flues-and-accessories"]);
   return absolute(CATEGORY_IMAGES["closed-combustion-fireplaces"]);
 }

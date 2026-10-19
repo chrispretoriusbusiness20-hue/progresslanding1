@@ -36,28 +36,15 @@ export function LandingHero({
           <p className="inline-flex items-center gap-2 border-2 border-foreground bg-accent px-3 py-1 text-[11px] font-bold uppercase tracking-wider">
             <Flame className="h-3.5 w-3.5" /> Summer special — factory direct
           </p>
-          <h1 className="mt-5 text-4xl leading-[1.05] sm:text-5xl lg:text-6xl">
+          <h1 className="mt-5 text-3xl leading-[1.1] sm:text-4xl lg:text-5xl">
             Built-in braais at factory prices — delivered from Bellville.
           </h1>
           <p className="mt-4 max-w-xl text-base text-muted-foreground">
-            Order your 1200 De Lux built-in braai direct from the factory and skip the showroom markup. Product only, VAT included, delivered from Bellville. Transport is priced by distance.
+            Order your 1200 De Lux built-in braai direct from the factory and skip the showroom
+            markup. Product only, VAT included, delivered from Bellville. Transport is priced by
+            distance.
           </p>
-          <ul className="mt-6 space-y-2">
-            {PROMISES.map((p) => (
-              <li key={p} className="flex items-start gap-2 text-sm font-medium">
-                <Check className="mt-0.5 h-4 w-4 shrink-0 text-primary" /> {p}
-              </li>
-            ))}
-          </ul>
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <Button asChild variant="outline" className="h-auto min-h-12 rounded-none border-2 border-foreground px-6 py-3 font-bold">
-              <a href="#form" data-select-product={SUMMER_PRODUCT.name} onClick={() => onSelectProduct?.(SUMMER_PRODUCT.name)}>Get my instant quote</a>
-            </Button>
-            <Button asChild variant="outline" className="h-auto min-h-12 rounded-none border-2 border-foreground px-6 py-3 font-bold">
-              <a href="https://wa.me/27689560320" target="_blank" rel="noopener noreferrer"><MessageCircle />Ask on WhatsApp</a>
-            </Button>
-          </div>
-          <div className="mt-8 overflow-hidden border-2 border-foreground bg-card shadow-brutal-sm">
+          <div className="mt-6 overflow-hidden border-2 border-foreground bg-card shadow-brutal-sm">
             <div className="flex items-center justify-between gap-2 border-b-2 border-foreground bg-accent px-5 py-2.5 text-accent-foreground">
               <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest">
                 <Sun className="h-4 w-4 shrink-0" aria-hidden="true" /> Summer special
@@ -77,23 +64,65 @@ export function LandingHero({
                 <h3 className="text-sm font-bold uppercase tracking-wide sm:text-base">
                   1200 De Lux Built-in Braai
                 </h3>
-                <p className="mt-1 text-3xl font-bold text-primary">{formatRand(SUMMER_PRODUCT.price)}</p>
+                <p className="mt-1 text-3xl font-bold text-primary">
+                  {formatRand(SUMMER_PRODUCT.price)}
+                </p>
                 <p className="mt-1 text-xs text-muted-foreground">
                   Mild steel built-in braai — product only, delivered
                 </p>
               </div>
             </div>
-            <a
-              href={STITCH_EXPRESS_URL}
-              onClick={() => {
-                void notifyPaymentClick({ data: { product: SUMMER_SPECIAL.name, amount: "R8 275,00", source: "Landing — Summer special Order now" } }).catch(() => undefined);
-              }}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex min-h-12 items-center justify-center gap-2 border-t-2 border-foreground bg-accent px-5 py-3 text-xs font-bold uppercase tracking-wider text-accent-foreground transition hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            <Button asChild variant="ghost" className="h-auto rounded-none p-0">
+              <a
+                href={STITCH_EXPRESS_URL}
+                onClick={() => {
+                  void notifyPaymentClick({
+                    data: {
+                      product: SUMMER_SPECIAL.name,
+                      amount: "R8 275,00",
+                      source: "Landing — Summer special Order now",
+                    },
+                  }).catch(() => undefined);
+                }}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex min-h-12 items-center justify-center gap-2 border-t-2 border-foreground bg-accent px-5 py-3 text-xs font-bold uppercase tracking-wider text-accent-foreground transition hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                <Sun className="h-4 w-4 shrink-0" aria-hidden="true" /> Order now — pay online
+              </a>
+            </Button>
+          </div>
+          <ul className="mt-6 space-y-2">
+            {PROMISES.map((p) => (
+              <li key={p} className="flex items-start gap-2 text-sm font-medium">
+                <Check className="mt-0.5 h-4 w-4 shrink-0 text-primary" /> {p}
+              </li>
+            ))}
+          </ul>
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+            <Button
+              asChild
+              variant="outline"
+              className="h-auto min-h-12 rounded-none border-2 border-foreground px-6 py-3 font-bold"
             >
-              <Sun className="h-4 w-4 shrink-0" aria-hidden="true" /> Order now — pay online
-            </a>
+              <a
+                href="#form"
+                data-select-product={SUMMER_PRODUCT.name}
+                onClick={() => onSelectProduct?.(SUMMER_PRODUCT.name)}
+              >
+                Get my instant quote
+              </a>
+            </Button>
+            <Button
+              asChild
+              variant="outline"
+              className="h-auto min-h-12 rounded-none border-2 border-foreground px-6 py-3 font-bold"
+            >
+              <a href="https://wa.me/27689560320" target="_blank" rel="noopener noreferrer">
+                <MessageCircle />
+                Ask on WhatsApp
+              </a>
+            </Button>
           </div>
         </div>
 
@@ -126,18 +155,18 @@ export function LandingHero({
                   <span>R470</span>
                 </li>
               </ul>
-              <a
-                href="#form"
-                data-select-product={MAGMA_SPECIAL_NAME}
-                onClick={() => onSelectProduct?.(MAGMA_SPECIAL_NAME)}
-                className="mt-6 flex min-h-12 items-center justify-center gap-2 border-2 border-foreground bg-primary px-6 py-3 text-sm font-bold uppercase tracking-wider text-primary-foreground transition hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-              >
-                <Flame className="h-4 w-4 shrink-0" aria-hidden="true" /> Claim this special
-              </a>
+              <Button asChild className="mt-6 h-auto rounded-none p-0">
+                <a
+                  href="#form"
+                  data-select-product={MAGMA_SPECIAL_NAME}
+                  onClick={() => onSelectProduct?.(MAGMA_SPECIAL_NAME)}
+                  className="flex min-h-12 items-center justify-center gap-2 border-2 border-foreground bg-primary px-6 py-3 text-sm font-bold uppercase tracking-wider text-primary-foreground transition hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                >
+                  <Flame className="h-4 w-4 shrink-0" aria-hidden="true" /> Claim this special
+                </a>
+              </Button>
             </div>
           </div>
-
-
         </div>
       </div>
       <div className="border-t-2 border-foreground bg-muted">

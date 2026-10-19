@@ -23,7 +23,8 @@ export function FavoritesQuickPickInner() {
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
   const favoriteProducts = useMemo(
-    () => ids.map((id) => products.find((p) => p.id === id)).filter((p): p is Product => Boolean(p)),
+    () =>
+      ids.map((id) => products.find((p) => p.id === id)).filter((p): p is Product => Boolean(p)),
     [ids],
   );
 
@@ -85,9 +86,18 @@ export function FavoritesQuickPickInner() {
       <ul className="divide-y-2 divide-foreground/10">
         {favoriteProducts.map((p) => (
           <li key={p.id} className="flex flex-wrap items-center gap-3 px-4 py-3">
-            <img src={getProductImageUrl({ ...p, productName: p.name })} alt={decodeProductName(p.name)} loading="lazy" width={48} height={48} className="h-12 w-12 border-2 border-foreground object-contain" />
+            <img
+              src={getProductImageUrl({ ...p, productName: p.name })}
+              alt={decodeProductName(p.name)}
+              loading="lazy"
+              width={48}
+              height={48}
+              className="h-12 w-12 border-2 border-foreground object-contain"
+            />
             <div className="min-w-0 flex-1">
-              <p className="truncate font-display text-sm leading-tight">{decodeProductName(p.name)}</p>
+              <p className="truncate font-display text-sm leading-tight">
+                {decodeProductName(p.name)}
+              </p>
               <p className="text-xs text-muted-foreground">
                 {p.subcategory || p.category}
                 {p.price ? ` · ${formatRand(p.price)}` : ""}
