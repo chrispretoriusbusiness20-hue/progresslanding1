@@ -27,6 +27,9 @@ const base = {
   distanceKm: 25,
 };
 describe("landing tool rules", () => {
+  it("finder recommends fireplaces, not fuel consumables", () => {
+    assert.equal(findFireplaces({ size: "small", fuel: "Wood", budget: "low" }, [product("Ethanol Biofuel", "R100", "biomass"), product("Fireplace Pellets", "R200", "biomass")]).length, 0);
+  });
   it("small rooms match at most 10 kW", () => {
     const result = findFireplaces({ size: "small", fuel: "Wood", budget: "low" }, [
       product("Wood 10kW", "R11514,00"),

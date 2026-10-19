@@ -46,7 +46,7 @@ export function findFireplaces(
 ): CatalogueProduct[] {
   return products
     .filter((product) => {
-      if (/\bpellets\b/i.test(product.name)) return false;
+      if (/\bpellets\b|\bbiofuel\b|\bfuel\b/i.test(product.name)) return false;
       if (
         /\bflue\b(?!\s*kit.*special)|accessor|chimney|replacement|spare|cleaner/i.test(
           product.name,
