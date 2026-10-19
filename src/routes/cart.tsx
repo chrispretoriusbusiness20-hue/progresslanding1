@@ -1,10 +1,11 @@
+import { getProductImageUrl } from "@/lib/product-images";
+import { formatRand, decodeProductName } from "@/lib/product-display";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import {
   ArrowLeft,
   Check,
-  ImageOff,
   Loader2,
   Minus,
   Plus,
@@ -42,9 +43,6 @@ export const Route = createFileRoute("/cart")({
   }),
   component: CartPage,
 });
-
-const formatRand = (n: number) =>
-  `R${n.toLocaleString("en-ZA", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
 type Step = "cart" | "details";
 
@@ -244,15 +242,11 @@ function CartPage() {
                       return (
                         <li key={item.id} className="flex gap-4 p-4">
                           <div className="size-20 shrink-0 overflow-hidden border-2 border-foreground bg-background sm:size-24">
-                            {item.image ? (
-                              <img src={item.image} alt={item.name} width={96} height={96} className="size-full object-cover" />
-                            ) : (
-                              <div className="grid size-full place-items-center text-foreground/30"><ImageOff className="size-6" /></div>
-                            )}
+                            <img src={getProductImageUrl({ ...item, productName: item.name })} alt={decodeProductName(item.name)} width={96} height={96} className="size-full object-contain" />
                           </div>
                           <div className="flex min-w-0 flex-1 flex-col gap-2">
                             <div className="flex items-start justify-between gap-2">
-                              <h2 className="font-display text-base leading-tight">{item.name}</h2>
+                              <h2 className="font-display text-base leading-tight">{decodeProductName(item.name)}</h2>
                               <button type="button" onClick={() => remove(item.id)} aria-label={`Remove ${item.name}`} className="grid size-11 shrink-0 place-items-center text-foreground/60 hover:text-destructive">
                                 <Trash2 className="size-4" />
                               </button>

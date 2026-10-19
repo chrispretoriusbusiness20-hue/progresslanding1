@@ -1,6 +1,8 @@
+import { decodeProductName, formatRand } from "@/lib/product-display";
+import { getProductImageUrl } from "@/lib/product-images";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { ArrowLeft, Check, ImageOff, Heart, Sparkles, Trash2 } from "lucide-react";
+import { ArrowLeft, Check, Heart, Sparkles, Trash2 } from "lucide-react";
 import productsData from "@/data/products-full.json";
 import { useFavorites } from "@/hooks/use-favorites";
 import progressLogo from "@/assets/progress-logo.jpeg.asset.json";
@@ -61,6 +63,8 @@ export const Route = createFileRoute("/catalog")({
         content:
           "Browse all 700+ Progress Group products and request an instant quote.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { property: "og:url", content: "https://quote-joy-link.lovable.app/catalog" },
     ],
     links: [
@@ -124,7 +128,7 @@ function CatalogPage() {
       for (const p of items) {
         const sub = p.subcategory || "Other";
         if (!subMap.has(sub)) subMap.set(sub, []);
-        subMap.get(sub)!.push(p);
+        subMap.get(sub)?.push(p);
       }
       const bySub = [...subMap.entries()]
         .sort((a, b) => b[1].length - a[1].length)
@@ -147,7 +151,7 @@ function CatalogPage() {
 
   const sendFavoritesToQuote = async () => {
     if (favoriteProducts.length === 0) return;
-    const list = favoriteProducts.map((p) => `• ${p.name}${p.price ? ` — ${p.price}` : ""}`).join("\n");
+    const list = favoriteProducts.map((p) => `• ${decodeProductName(p.name)}${p.price ? ` — ${formatRand(p.price)}` : ""}`).join("\n");
     try {
       await navigator.clipboard.writeText(list);
     } catch {
@@ -430,18 +434,7 @@ function ProductCard({
   return (
     <article className="flex flex-col overflow-hidden border-2 border-foreground bg-card shadow-brutal-sm transition hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-brutal">
       <div className="relative aspect-square overflow-hidden border-b-2 border-foreground bg-background">
-        {p.image ? (
-          <img
-            src={p.image}
-            alt={p.name}
-            loading="lazy"
-            className="size-full object-cover"
-          />
-        ) : (
-          <div className="grid size-full place-items-center text-foreground/30">
-            <ImageOff className="size-8" />
-          </div>
-        )}
+        <img src={getProductImageUrl({ ...p, productName: p.name })} alt={decodeProductName(p.name)} loading="lazy" width={300} height={300} className="size-full object-contain" />
         <span
           className={`absolute left-2 top-2 border-2 border-foreground px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest ${
             p.id === SUMMER_SPECIAL_ID
@@ -460,7 +453,7 @@ function ProductCard({
         <button
           type="button"
           onClick={() => onToggleFavorite(p.id)}
-          aria-label={isFavorite ? `Remove ${p.name} from favorites` : `Save ${p.name} to favorites`}
+          aria-label={isFavorite ? `Remove ${decodeProductName(p.name)} from favorites` : `Save ${decodeProductName(p.name)} to favorites`}
           aria-pressed={isFavorite}
           className={`absolute right-2 top-2 flex h-9 w-9 items-center justify-center border-2 border-foreground shadow-brutal-sm transition hover:-translate-y-0.5 ${
             isFavorite ? "bg-primary text-primary-foreground" : "bg-background text-foreground/70 hover:text-foreground"
@@ -472,10 +465,10 @@ function ProductCard({
 
       <div className="flex flex-1 flex-col p-4">
         <h3 className="line-clamp-2 font-display text-base leading-tight">
-          {p.name}
+          {decodeProductName(p.name)}
         </h3>
         {p.price ? (
-          <p className="mt-2 font-display text-xl text-primary">{p.price}</p>
+          <p className="mt-2 font-display text-xl text-primary">{formatRand(p.price)}</p>
         ) : (
           <p className="mt-2 text-xs uppercase tracking-widest text-foreground/50">
             Price on request

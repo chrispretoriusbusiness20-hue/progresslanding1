@@ -1,3 +1,5 @@
+import { decodeProductName, formatRand } from "@/lib/product-display";
+import { getProductImageUrl } from "@/lib/product-images";
 import { useMemo, useState } from "react";
 import { Heart, Copy, Check, X, ExternalLink } from "lucide-react";
 import productsData from "@/data/products-full.json";
@@ -47,7 +49,7 @@ export function FavoritesQuickPickInner() {
 
   const copyAll = async () => {
     const list = favoriteProducts
-      .map((p) => `• ${p.name}${p.price ? ` — ${p.price}` : ""}`)
+      .map((p) => `• ${p.name}${p.price ? ` — ${formatRand(p.price)}` : ""}`)
       .join("\n");
     await copy(list);
     setCopied("all");
@@ -83,24 +85,12 @@ export function FavoritesQuickPickInner() {
       <ul className="divide-y-2 divide-foreground/10">
         {favoriteProducts.map((p) => (
           <li key={p.id} className="flex flex-wrap items-center gap-3 px-4 py-3">
-            {p.image ? (
-              <img
-                src={p.image}
-                alt=""
-                loading="lazy"
-                decoding="async"
-                width={48}
-                height={48}
-                className="h-12 w-12 border-2 border-foreground object-cover"
-              />
-            ) : (
-              <div className="h-12 w-12 border-2 border-foreground bg-background" />
-            )}
+            <img src={getProductImageUrl({ ...p, productName: p.name })} alt={decodeProductName(p.name)} loading="lazy" width={48} height={48} className="h-12 w-12 border-2 border-foreground object-contain" />
             <div className="min-w-0 flex-1">
-              <p className="truncate font-display text-sm leading-tight">{p.name}</p>
+              <p className="truncate font-display text-sm leading-tight">{decodeProductName(p.name)}</p>
               <p className="text-xs text-muted-foreground">
                 {p.subcategory || p.category}
-                {p.price ? ` · ${p.price}` : ""}
+                {p.price ? ` · ${formatRand(p.price)}` : ""}
               </p>
             </div>
             <div className="flex items-center gap-1.5">

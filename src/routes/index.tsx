@@ -13,7 +13,10 @@ const generateQuotePDF = async (
   return mod.generateQuotePDF(...args);
 };
 
-import productsData from "@/data/products.json";
+import { POPULAR_PRODUCTS } from "@/lib/popular-products";
+import { PopularPicks } from "@/components/popular-picks";
+import { decodeProductName, formatRand, parseRand } from "@/lib/product-display";
+import { getProductImageUrl } from "@/lib/product-images";
 import productsFull from "@/data/products-full.json";
 import progressLogo from "@/assets/progress-header-transparent.png.asset.json";
 
@@ -47,30 +50,36 @@ type QuoteProduct = { id: string; name: string; price: string; image: string };
 const PRODUCT_LIST = QUOTE_PRODUCT_IDS.map((id) =>
   (productsFull as { id: string; name: string; price: string; image: string }[]).find((p) => p.id === id),
 ).filter((p): p is QuoteProduct => Boolean(p));
-void productsData;
+for (const pick of POPULAR_PRODUCTS) {
+  if (!PRODUCT_LIST.some((product) => product.name === pick.name)) {
+    PRODUCT_LIST.push({ id: pick.url, name: pick.name, price: pick.price, image: getProductImageUrl({ ...pick, productName: pick.name }) });
+  }
+}
 const PRODUCT_NAMES = PRODUCT_LIST.map((p) => p.name);
 const PRODUCT_PRICE_MAP = new Map(PRODUCT_LIST.map((p) => [p.name, p.price]));
-const PRODUCT_IMAGE_MAP = new Map(PRODUCT_LIST.map((p) => [p.name, p.image]));
+const PRODUCT_IMAGE_MAP = new Map(PRODUCT_LIST.map((p) => [p.name, getProductImageUrl({ image: p.image, productName: p.name })]));
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Request a Quote — The Progress Group" },
+      { title: "Factory-direct braais & fireplaces — Progress Group" },
       {
         name: "description",
         content:
           "Get a quote on fireplaces, braais, lighting and aircons from The Progress Group. Fast, friendly, and tailored to your space.",
       },
-      { property: "og:title", content: "Request a Quote — The Progress Group" },
+      { property: "og:title", content: "Factory-direct braais & fireplaces — Progress Group" },
       {
         property: "og:description",
         content:
           "Get a quote on fireplaces, braais, lighting and aircons from The Progress Group.",
       },
       { property: "og:type", content: "website" },
+      { property: "og:image", content: getProductImageUrl({ category: "braais" }) },
+      { name: "twitter:image", content: getProductImageUrl({ category: "braais" }) },
       { property: "og:url", content: "https://quote-joy-link.lovable.app/" },
       { name: "twitter:card", content: "summary" },
-      { name: "twitter:title", content: "Request a Quote — The Progress Group" },
+      { name: "twitter:title", content: "Factory-direct braais & fireplaces — Progress Group" },
       {
         name: "twitter:description",
         content: "Get a quote on fireplaces, braais, lighting and aircons from The Progress Group.",
@@ -151,22 +160,6 @@ type LookupResult =
       teamNotificationError?: string | null;
     }
   | { match: false };
-
-function parseRand(price: string): number | null {
-  // Handles formats like "R11514,00" or "R 11 514.00"
-  const cleaned = price.replace(/[^0-9.,]/g, "").replace(/\s/g, "");
-  // South African convention: comma is decimal separator
-  const normalized = cleaned.replace(/\.(?=\d{3}(\D|$))/g, "").replace(",", ".");
-  const n = Number.parseFloat(normalized);
-  return Number.isFinite(n) ? n : null;
-}
-
-function formatRand(n: number): string {
-  const fixed = n.toFixed(2);
-  const [whole = "0", decimals = "00"] = fixed.split(".");
-  const grouped = whole.replace(/\B(?=(\d{3})+(?!\d))/g, " ");
-  return `R${grouped},${decimals}`;
-}
 
 function buildQuoteUrl(params: {
   firstName: string;
@@ -896,7 +889,7 @@ function QuotePage() {
       <div className="border-b border-foreground/15 bg-foreground text-background">
         <div className="mx-auto flex max-w-6xl items-center justify-center px-6 py-2 text-[10px] font-semibold uppercase tracking-[0.32em]">
           <span className="text-gradient-ember">
-            Magma 001 Special R23 970 · Summer Special: 1200 De Lux Braai R8 275
+            Summer special: 1200 De Lux Braai R8 275 · Magma 001 Special R23 970
           </span>
         </div>
       </div>
@@ -934,6 +927,7 @@ function QuotePage() {
       </header>
 
       <LandingHero onSelectProduct={setProduct} />
+      <PopularPicks onSelectProduct={setProduct} />
       <MobileStickyCta />
       {/* Form */}
       <section id="form" className="bg-background">
@@ -1062,7 +1056,7 @@ function QuotePage() {
             {product && PRODUCT_IMAGE_MAP.get(product) && (
               <div className="flex items-center gap-4 border-2 border-border bg-card p-3">
                 <img
-                  src={PRODUCT_IMAGE_MAP.get(product)!}
+                  src={PRODUCT_IMAGE_MAP.get(product)}
                   alt={product}
                   className="h-24 w-24 shrink-0 border border-border object-cover sm:h-28 sm:w-28"
                   loading="lazy"
@@ -1073,10 +1067,10 @@ function QuotePage() {
                   <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
                     Selected product
                   </p>
-                  <p className="truncate text-sm font-bold">{product}</p>
+                  <p className="truncate text-sm font-bold">{decodeProductName(product)}</p>
                   {PRODUCT_PRICE_MAP.get(product) && (
                     <p className="mt-1 text-sm font-semibold text-primary">
-                      {PRODUCT_PRICE_MAP.get(product)}
+                      {formatRand(PRODUCT_PRICE_MAP.get(product))}
                     </p>
                   )}
                 </div>

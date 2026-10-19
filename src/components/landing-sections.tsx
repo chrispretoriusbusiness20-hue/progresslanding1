@@ -1,3 +1,5 @@
+import summerVideo from "@/assets/videos/1200-delux-summer.mp4.asset.json";
+import { getProductImageUrl } from "@/lib/product-images";
 import { Link } from "@tanstack/react-router";
 import {
   BadgeCheck,
@@ -57,7 +59,7 @@ const WHY_POINTS = [
   { icon: Ruler, title: "Sizing & flue requirements", text: "Correct heat output, flue routing and clearances for your space." },
   { icon: MapPin, title: "Positioning & planning", text: "Advice on placement, finishing and installation planning." },
   { icon: ShieldCheck, title: "Safety considerations", text: "Installations done with safety and compliance in mind." },
-  { icon: Truck, title: "Delivery & installation", text: "Delivery from Bellville and professional installation across the Western Cape." },
+  { icon: Truck, title: "Delivery & installation", text: "Delivery from Bellville — priced by distance. Transport is calculated from our Bellville workshop." },
 ];
 
 const AREAS = [
@@ -138,6 +140,9 @@ export function LandingSections() {
             designed around the way you live. We supply and install built-in braais, custom
             braais, boma fire pits and braai accessories.
           </p>
+          <div className="mt-8 border-y-2 border-foreground bg-linear-to-b from-accent via-accent/40 to-background py-6">
+            <video src={summerVideo.url} poster={getProductImageUrl({ category: "braais" })} controls playsInline muted loop preload="none" aria-label="1200 De Lux braai video" className="mx-auto aspect-[9/16] max-h-[420px] w-auto max-w-full" />
+          </div>
           <div className="mt-8 flex flex-wrap gap-4">
             <Link
               to="/catalog"

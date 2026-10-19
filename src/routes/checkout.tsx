@@ -1,3 +1,4 @@
+import { formatRand, decodeProductName } from "@/lib/product-display";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import {
@@ -54,9 +55,6 @@ interface CheckoutPayload {
   progressGroupNum: number;
   progressInstallationsNum: number;
 }
-
-const formatRand = (n: number) =>
-  `R${n.toLocaleString("en-ZA", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
 // Braais are sold product-only, so installation must not be recommended to a
 // customer who ordered one.
@@ -186,7 +184,7 @@ function CheckoutPage() {
               <dl className="mt-4 space-y-2 text-sm">
                 <div className="flex items-baseline justify-between gap-4">
                   <dt className="text-muted-foreground">
-                    {payload.product}
+                    {decodeProductName(payload.product)}
                     {payload.quantity > 1 ? ` × ${payload.quantity}` : ""}
                   </dt>
                   <dd className="font-mono font-semibold text-foreground">
@@ -228,7 +226,7 @@ function CheckoutPage() {
                   <a
                     href={STITCH_EXPRESS_URL}
                     onClick={() => {
-                      void notifyPaymentClick({ data: { quoteNo: payload.quoteNo, product: `${payload.quantity} × ${payload.product}`, amount: formatRand(payload.cartTotalNum), customer: `${payload.firstName} ${payload.lastName} <${payload.email}>`, source: "Checkout — Pay now" } }).catch(() => undefined);
+                      void notifyPaymentClick({ data: { quoteNo: payload.quoteNo, product: `${payload.quantity} × ${decodeProductName(payload.product)}`, amount: formatRand(payload.cartTotalNum), customer: `${payload.firstName} ${payload.lastName} <${payload.email}>`, source: "Checkout — Pay now" } }).catch(() => undefined);
                     }}
                     target="_blank"
                     rel="noopener noreferrer"
