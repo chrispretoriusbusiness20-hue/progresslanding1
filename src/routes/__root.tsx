@@ -287,8 +287,12 @@ function RootComponent() {
         void captureLeadAction("payment_click", name ? [name] : [], {
           customerName:
             [checkout.firstName, checkout.lastName].filter(Boolean).join(" ") || undefined,
-          email: document.querySelector<HTMLInputElement>('#form input[type="email"]')?.value || checkout.email,
-          phone: document.querySelector<HTMLInputElement>('#form input[type="tel"]')?.value || checkout.phone,
+          email:
+            document.querySelector<HTMLInputElement>('#form input[type="email"]')?.value ||
+            checkout.email,
+          phone:
+            document.querySelector<HTMLInputElement>('#form input[type="tel"]')?.value ||
+            checkout.phone,
         });
       }
     };
