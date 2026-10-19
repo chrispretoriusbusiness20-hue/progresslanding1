@@ -7,6 +7,7 @@ import flueAsset from "@/assets/cat-flue.jpg.asset.json";
 const ORIGIN = "https://www.progressgrp.co.za";
 
 const CATEGORY_IMAGES: Record<string, string> = {
+  braais: "/__l5e/assets-v1/3546c3ee-909c-4c92-aafc-e9c0b629dc95/1200-de-lux-braai.jpg",
   "closed-combustion-fireplaces": closedAsset.url,
   "gas-fireplaces": gasAsset.url,
   "pellet-fireplaces": pelletAsset.url,
@@ -23,13 +24,16 @@ function absolute(url: string): string {
  * Falls back to the closed-combustion image when category is unknown.
  */
 export function getProductImageUrl(opts: {
+  image?: string | null;
   category?: string | null;
   productName?: string | null;
 }): string {
+  if (opts.image) return absolute(opts.image);
   const cat = (opts.category ?? "").toLowerCase();
   if (cat && CATEGORY_IMAGES[cat]) return absolute(CATEGORY_IMAGES[cat]);
 
   const name = (opts.productName ?? "").toLowerCase();
+  if (/braai/.test(name)) return absolute(CATEGORY_IMAGES.braais);
   if (/gas/.test(name)) return absolute(CATEGORY_IMAGES["gas-fireplaces"]);
   if (/pellet/.test(name)) return absolute(CATEGORY_IMAGES["pellet-fireplaces"]);
   if (/biomass/.test(name)) return absolute(CATEGORY_IMAGES.biomass);

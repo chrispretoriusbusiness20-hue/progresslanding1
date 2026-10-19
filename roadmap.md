@@ -1,2 +1,6 @@
 - [x] Catalogue: only 5 featured products + Magma special (images fixed)
 - [x] Rename "Winter Special" badge to "Summer Special"
+- [ ] Compact summer-first hero and relocate braai video
+- [ ] Popular picks, aircon strip and per-product quote selection
+- [ ] Shared product images, decoded names and rand formatting
+- [ ] Verify selections, payment links and mobile layout
