@@ -6,6 +6,7 @@ import { ArrowLeft, Check, Heart, Sparkles, Trash2 } from "lucide-react";
 import productsData from "@/data/products-full.json";
 import { useFavorites } from "@/hooks/use-favorites";
 import progressLogo from "@/assets/progress-logo.jpeg.asset.json";
+import { CompareCheckbox } from "@/components/product-compare";
 
 type Product = {
   id: string;
@@ -488,6 +489,7 @@ function ProductCard({
         )}
 
         <div className="mt-auto flex flex-col gap-2 pt-4">
+          <CompareCheckbox product={p} />
           <Link
             to="/"
             hash="form"

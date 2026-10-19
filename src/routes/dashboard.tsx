@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import { listQuotes, getQuotePdfUrl, updateQuote, type QuoteRow } from "@/lib/list-quotes.functions";
 import { supabase } from "@/integrations/supabase/client";
 import type { Session } from "@supabase/supabase-js";
+import { LeadActivity } from "@/components/lead-activity";
 
 export const Route = createFileRoute("/dashboard")({
   head: () => ({
@@ -227,6 +228,7 @@ function DashboardContent({ data, onSignOut }: { data: QuoteRow[]; onSignOut: ()
           </div>
         </header>
 
+        <LeadActivity />
         <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
           <StatCard label="Total leads" value={stats.total.toString()} />
           <StatCard label="Pending" value={stats.pending.toString()} />
