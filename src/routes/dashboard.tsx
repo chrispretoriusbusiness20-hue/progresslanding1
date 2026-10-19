@@ -8,7 +8,12 @@ import type { Session } from "@supabase/supabase-js";
 export const Route = createFileRoute("/dashboard")({
   head: () => ({
     meta: [
-      { title: "Auto Quote Leads" },
+      { title: "Quote leads — Progress Group" },
+      { name: "description", content: "Private Progress Group quote and customer lead management." },
+      { property: "og:title", content: "Quote leads — Progress Group" },
+      { property: "og:description", content: "Private Progress Group quote and customer lead management." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { name: "robots", content: "noindex" },
     ],
   }),

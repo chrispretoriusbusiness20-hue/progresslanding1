@@ -17,6 +17,8 @@ export const Route = createFileRoute("/contact")({
           "Get in touch with The Progress Group. Send us a message about fireplaces, braais, lighting or aircons and we'll reply by email.",
       },
       { property: "og:title", content: "Contact — The Progress Group" },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       {
         property: "og:description",
         content:

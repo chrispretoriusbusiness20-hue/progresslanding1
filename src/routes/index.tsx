@@ -758,7 +758,7 @@ function QuotePage() {
       isEstimate: !submitted,
     });
     return `https://wa.me/27689560320?text=${encodeURIComponent(text)}`;
-  }, [firstName, lastName, quoteNo, product, totalPriceNum, totalPriceLabel, estimatedTotal, submitted]);
+  }, [firstName, lastName, quoteNo, product, cartTotalLabel, submitted]);
 
 
   const [converting, setConverting] = useState(false);
@@ -1030,11 +1030,11 @@ function QuotePage() {
                     Select a product…
                   </option>
                   {product && !PRODUCT_NAMES.includes(product) && (
-                    <option value={product}>{product}</option>
+                    <option value={product}>{decodeProductName(product)}</option>
                   )}
                   {PRODUCT_NAMES.map((n) => (
                     <option key={n} value={n}>
-                      {n}
+                      {decodeProductName(n)}
                     </option>
                   ))}
                 </select>

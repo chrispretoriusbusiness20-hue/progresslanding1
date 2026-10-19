@@ -35,6 +35,8 @@ export const Route = createFileRoute("/consultation")({
           "Book a private consultation with The Progress Group. Pick a date and time slot and our specialists will confirm your appointment.",
       },
       { property: "og:title", content: "Private Consultation — The Progress Group" },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       {
         property: "og:description",
         content:

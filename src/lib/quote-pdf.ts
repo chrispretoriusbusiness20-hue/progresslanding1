@@ -1,4 +1,5 @@
 import jsPDF from "jspdf";
+import { formatRand } from "@/lib/product-display";
 import autoTable from "jspdf-autotable";
 import progressLogo from "@/assets/progress-header-transparent.png.asset.json";
 import progressInstallationsLogo from "@/assets/progress-installations-logo.png.asset.json";
@@ -38,8 +39,7 @@ export type QuoteInput = {
 };
 
 
-const ZAR = (n: number) =>
-  `R ${n.toLocaleString("en-ZA", { minimumFractionDigits: 2, maximumFractionDigits: 2 }).replace(/,/g, " ").replace(/\.(\d{2})$/, ",$1")}`;
+const ZAR = formatRand;
 
 export function generateQuoteNumber(
   prefix: string = "Q",
