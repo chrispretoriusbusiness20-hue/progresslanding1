@@ -4,3 +4,8 @@
 - [x] Popular picks, aircon strip and per-product quote selection
 - [x] Shared product images, decoded names and rand formatting
 - [x] Verify selections, payment links and mobile layout
+- [ ] Fireplace finder with catalogue-based matching
+- [ ] Instant estimator sharing real quote pricing and delivery
+- [ ] Session attribution, action capture and staff-only latest leads
+- [ ] Compare up to three products across landing and catalogue
+- [ ] Desktop/mobile flow tests; preview only

@@ -236,6 +236,71 @@ export type Database = {
           },
         ]
       }
+      lead_events: {
+        Row: {
+          action: string
+          created_at: string
+          customer_name: string | null
+          email: string | null
+          event_id: string
+          fbclid: string | null
+          gclid: string | null
+          id: string
+          page: string
+          phone: string | null
+          products: string[]
+          quote_id: string | null
+          session_id: string
+          utm_campaign: string | null
+          utm_medium: string | null
+          utm_source: string | null
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          customer_name?: string | null
+          email?: string | null
+          event_id: string
+          fbclid?: string | null
+          gclid?: string | null
+          id?: string
+          page: string
+          phone?: string | null
+          products?: string[]
+          quote_id?: string | null
+          session_id: string
+          utm_campaign?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          customer_name?: string | null
+          email?: string | null
+          event_id?: string
+          fbclid?: string | null
+          gclid?: string | null
+          id?: string
+          page?: string
+          phone?: string | null
+          products?: string[]
+          quote_id?: string | null
+          session_id?: string
+          utm_campaign?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lead_events_quote_id_fkey"
+            columns: ["quote_id"]
+            isOneToOne: false
+            referencedRelation: "quote_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       page_visits: {
         Row: {
           created_at: string
@@ -271,6 +336,7 @@ export type Database = {
       }
       quote_requests: {
         Row: {
+          action_type: string | null
           address: string | null
           approval_note: string | null
           corner_install: boolean
@@ -288,9 +354,12 @@ export type Database = {
           first_name: string
           flooring: string | null
           follow_up_sent_at: string | null
+          gclid: string | null
           id: string
           invoice_sent_at: string | null
+          landing_page: string | null
           last_name: string
+          lead_session_id: string | null
           matched_product: string | null
           message: string | null
           meta_event_id: string | null
@@ -314,6 +383,7 @@ export type Database = {
           utm_source: string | null
         }
         Insert: {
+          action_type?: string | null
           address?: string | null
           approval_note?: string | null
           corner_install?: boolean
@@ -331,9 +401,12 @@ export type Database = {
           first_name: string
           flooring?: string | null
           follow_up_sent_at?: string | null
+          gclid?: string | null
           id?: string
           invoice_sent_at?: string | null
+          landing_page?: string | null
           last_name: string
+          lead_session_id?: string | null
           matched_product?: string | null
           message?: string | null
           meta_event_id?: string | null
@@ -357,6 +430,7 @@ export type Database = {
           utm_source?: string | null
         }
         Update: {
+          action_type?: string | null
           address?: string | null
           approval_note?: string | null
           corner_install?: boolean
@@ -374,9 +448,12 @@ export type Database = {
           first_name?: string
           flooring?: string | null
           follow_up_sent_at?: string | null
+          gclid?: string | null
           id?: string
           invoice_sent_at?: string | null
+          landing_page?: string | null
           last_name?: string
+          lead_session_id?: string | null
           matched_product?: string | null
           message?: string | null
           meta_event_id?: string | null
