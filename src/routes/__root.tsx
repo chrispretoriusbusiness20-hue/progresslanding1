@@ -15,6 +15,9 @@ import { ChatWidget } from "@/components/chat-widget";
 import { Toaster } from "@/components/ui/sonner";
 import { META_PIXEL_ID, META_PIXEL_ID_2, captureFbclid, trackContact, trackPageView } from "@/lib/meta-pixel";
 import { logPageVisit } from "@/lib/page-visit.functions";
+import { ProductCompareProvider } from "@/components/product-compare";
+import { getLandingAttribution } from "@/lib/lead-attribution";
+import { captureLeadAction } from "@/lib/lead-events";
 
 type FbqWindow = Window & {
   fbq?: ((...args: unknown[]) => void) & { queue?: unknown[]; loaded?: boolean; version?: string; push?: unknown };
@@ -190,6 +193,7 @@ function RootComponent() {
 
   useEffect(() => {
     captureFbclid();
+    getLandingAttribution();
     ensureFbqStub();
     const start = () => loadMetaPixel();
     const idle = (window as unknown as { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => void }).requestIdleCallback;
@@ -205,7 +209,25 @@ function RootComponent() {
       const link = (e.target as Element | null)?.closest?.("a[href]");
       const href = link?.getAttribute("href") ?? "";
       if (/^tel:/i.test(href)) trackContact("phone");
-      else if (/wa\.me|whatsapp\.com/i.test(href)) trackContact("whatsapp");
+      else if (/wa\.me|whatsapp\.com/i.test(href)) {
+        trackContact("whatsapp");
+        const selected = document.querySelector<HTMLSelectElement>('select[data-quote-product]')?.value;
+        void captureLeadAction("whatsapp_click", selected ? [selected] : [], {
+          customerName: Array.from(document.querySelectorAll<HTMLInputElement>('#form input[autocomplete="given-name"], #form input[autocomplete="family-name"]')).map((input) => input.value).join(" ").trim() || undefined,
+          email: document.querySelector<HTMLInputElement>('#form input[type="email"]')?.value || undefined,
+          phone: document.querySelector<HTMLInputElement>('#form input[type="tel"]')?.value || undefined,
+        });
+      }
+      if (/express\.stitch\.money\/progress-installations/i.test(href)) {
+        const selected = document.querySelector<HTMLSelectElement>('select[data-quote-product]')?.value;
+        let checkout: { productName?: string; firstName?: string; lastName?: string; email?: string; phone?: string } = {};
+        try { checkout = JSON.parse(sessionStorage.getItem("checkoutData") ?? "{}"); } catch { /* Storage unavailable. */ }
+        const name = link?.getAttribute("data-payment-product") || checkout.productName || selected;
+        void captureLeadAction("payment_click", name ? [name] : [], {
+          customerName: [checkout.firstName, checkout.lastName].filter(Boolean).join(" ") || undefined,
+          email: checkout.email, phone: checkout.phone,
+        });
+      }
     };
     document.addEventListener("click", onClick, true);
     return () => document.removeEventListener("click", onClick, true);
@@ -236,15 +258,15 @@ function RootComponent() {
       } catch {
         // Storage may be unavailable; still record the visit.
       }
-      const params = new URLSearchParams(window.location.search);
+      const attribution = getLandingAttribution();
       void logPageVisit({
         data: {
           path,
           referrer: document.referrer || undefined,
           userAgent: navigator.userAgent || undefined,
-          utmSource: params.get("utm_source") || undefined,
-          utmMedium: params.get("utm_medium") || undefined,
-          utmCampaign: params.get("utm_campaign") || undefined,
+          utmSource: attribution.utmSource,
+          utmMedium: attribution.utmMedium,
+          utmCampaign: attribution.utmCampaign,
         },
       }).catch(() => undefined);
     };
@@ -262,7 +284,7 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <Outlet />
+      <ProductCompareProvider><Outlet /></ProductCompareProvider>
       <ChatWidget />
       <Toaster position="top-center" richColors closeButton />
     </QueryClientProvider>

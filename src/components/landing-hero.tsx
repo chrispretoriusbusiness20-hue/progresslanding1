@@ -75,6 +75,7 @@ export function LandingHero({
             <Button asChild variant="ghost" className="h-auto w-full rounded-none p-0">
               <a
                 href={STITCH_EXPRESS_URL}
+                data-payment-product={SUMMER_PRODUCT.name}
                 onClick={() => {
                   void notifyPaymentClick({
                     data: {
