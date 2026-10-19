@@ -26,60 +26,36 @@ const generateQuotePDF = async (
   return mod.generateQuotePDF(...args);
 };
 
-import { POPULAR_PRODUCTS } from "@/lib/popular-products";
 import { PopularPicks } from "@/components/popular-picks";
+import { FireplaceFinder } from "@/components/fireplace-finder";
+import { PriceEstimator, PriceBreakdown } from "@/components/price-estimator";
+import { calculateQuotePricing, flueKitApplies } from "@/lib/quote-pricing";
+import { CATALOGUE_PRODUCTS } from "@/lib/catalogue-products";
+import { getQuoteDistance } from "@/lib/quote-estimate.functions";
+import { getLandingAttribution, getLeadSessionId } from "@/lib/lead-attribution";
+import { captureLeadAction } from "@/lib/lead-events";
 import { decodeProductName, formatRand, parseRand } from "@/lib/product-display";
 import { getProductImageUrl } from "@/lib/product-images";
-import productsFull from "@/data/products-full.json";
 import progressLogo from "@/assets/progress-header-transparent.png.asset.json";
 
 import { AddressAutocomplete } from "@/components/address-autocomplete";
 import { LandingSections } from "@/components/landing-sections";
 import { LandingHero, MobileStickyCta } from "@/components/landing-hero";
 import { checkEmail } from "@/lib/email-typo";
-import {
-  allInclusiveAddOns,
-  isAllInclusiveProduct,
-  isSpecialProduct,
-  specialDiscountFor,
-} from "@/lib/special-discount";
+import { isSpecialProduct, specialDiscountFor } from "@/lib/special-discount";
 
 const QUOTE_APP_URL = "https://fireplacequotes.co.za/";
 import { STITCH_EXPRESS_URL } from "@/lib/stitch-express";
 import { notifyPaymentClick } from "@/lib/payment-click.functions";
-// Quote dropdown mirrors the curated catalogue so every catalogue item is selectable.
-const QUOTE_PRODUCT_IDS = [
-  "magma-10kw-closed-combustion-fireplace-incl-flue-kit-special",
-  "1200-de-lux-braai-mild-steel",
-  "magma-001-freestanding-fireplace-10kw-progress-group",
-  "a2-magma-002-freestanding-fireplace-10kw",
-  "cubo-700-insert-fireplace-12-5kw",
-  "800-de-lux-304-stainless-steel",
-  "1000-de-lux-braai-mild-steel",
-  "1500-de-lux-braai-mild-steel",
-  "boma-braai",
-  "boma-fire-pits-mosaic",
-];
-type QuoteProduct = { id: string; name: string; price: string; image: string };
-const PRODUCT_LIST = QUOTE_PRODUCT_IDS.map((id) =>
-  (productsFull as { id: string; name: string; price: string; image: string }[]).find(
-    (p) => p.id === id,
-  ),
-).filter((p): p is QuoteProduct => Boolean(p));
-for (const pick of POPULAR_PRODUCTS) {
-  if (!PRODUCT_LIST.some((product) => product.name === pick.name)) {
-    PRODUCT_LIST.push({
-      id: pick.url,
-      name: pick.name,
-      price: pick.price,
-      image: getProductImageUrl({ ...pick, productName: pick.name }),
-    });
-  }
-}
-const PRODUCT_NAMES = PRODUCT_LIST.map((p) => p.name);
-const PRODUCT_PRICE_MAP = new Map(PRODUCT_LIST.map((p) => [p.name, p.price]));
+const PRODUCT_NAMES = CATALOGUE_PRODUCTS.map((product) => product.name);
+const PRODUCT_PRICE_MAP = new Map(
+  CATALOGUE_PRODUCTS.map((product) => [product.name, product.price]),
+);
 const PRODUCT_IMAGE_MAP = new Map(
-  PRODUCT_LIST.map((p) => [p.name, getProductImageUrl({ image: p.image, productName: p.name })]),
+  CATALOGUE_PRODUCTS.map((product) => [
+    product.name,
+    getProductImageUrl({ ...product, productName: product.name }),
+  ]),
 );
 
 export const Route = createFileRoute("/")({
@@ -257,12 +233,6 @@ function buildWhatsAppMessage(params: {
   return lines.join("\n");
 }
 
-function computePlatePrice(type: "steel" | "glass" | "granite", corner: boolean): number {
-  if (type === "steel") return 1500;
-  if (type === "granite") return corner ? 5500 : 4500;
-  return corner ? 3500 : 2500;
-}
-
 function QuotePage() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -351,17 +321,58 @@ function QuotePage() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const [utmSource, setUtmSource] = useState("");
-  const [utmMedium, setUtmMedium] = useState("");
-  const [utmCampaign, setUtmCampaign] = useState("");
-
+  const resolveDistance = useServerFn(getQuoteDistance);
+  const [distance, setDistance] = useState<{ address: string; km: number | null } | null>(null);
+  const [distanceBusy, setDistanceBusy] = useState(false);
+  const [distanceError, setDistanceError] = useState(false);
+  const [entryAction, setEntryAction] = useState<
+    "quote_submit" | "estimator_quote" | "finder_quote" | "compare_quote"
+  >("quote_submit");
   useEffect(() => {
-    if (typeof window === "undefined") return;
-    const params = new URLSearchParams(window.location.search);
-    setUtmSource(params.get("utm_source") ?? "");
-    setUtmMedium(params.get("utm_medium") ?? "");
-    setUtmCampaign(params.get("utm_campaign") ?? "");
-  }, []);
+    if (address.trim().length < 3) {
+      setDistance(null);
+      setDistanceBusy(false);
+      setDistanceError(false);
+      return;
+    }
+    let cancelled = false;
+    setDistanceBusy(true);
+    setDistanceError(false);
+    const timer = setTimeout(() => {
+      void resolveDistance({ data: { address: address.trim() } })
+        .then((result) => {
+          if (cancelled) return;
+          setDistance({ address, km: result.distanceKm });
+          setDistanceError(result.distanceKm === null);
+        })
+        .catch(() => {
+          if (!cancelled) {
+            setDistance(null);
+            setDistanceError(true);
+          }
+        })
+        .finally(() => {
+          if (!cancelled) setDistanceBusy(false);
+        });
+    }, 600);
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
+  }, [address, resolveDistance]);
+  const liveDistanceKm = distance?.address === address ? distance.km : null;
+  const pricingSelections = {
+    productName: product,
+    price: PRODUCT_PRICE_MAP.get(product) ?? null,
+    quantity,
+    storyType,
+    flooring,
+    plateType,
+    cornerInstall,
+    installationRequired,
+    flueKitAddOn,
+    distanceKm: liveDistanceKm,
+  };
 
   const submitFn = useServerFn(submitQuoteRequest);
   const createUploadFn = useServerFn(createQuoteUploadUrl);
@@ -422,6 +433,7 @@ function QuotePage() {
     const warnings: string[] = [];
     try {
       const leadEventId = newEventId();
+      const attribution = getLandingAttribution();
       const result = (await submitFn({
         data: {
           meta: { eventId: leadEventId, ...getMetaAttribution() },
@@ -439,9 +451,13 @@ function QuotePage() {
           cornerInstall,
           installationRequired,
           address: address.trim() || undefined,
-          utmSource: utmSource || undefined,
-          utmMedium: utmMedium || undefined,
-          utmCampaign: utmCampaign || undefined,
+          utmSource: attribution.utmSource,
+          utmMedium: attribution.utmMedium,
+          utmCampaign: attribution.utmCampaign,
+          attribution,
+          landingPage: window.location.pathname,
+          leadSessionId: getLeadSessionId(),
+          actionType: entryAction,
         },
       })) as LookupResult;
       setLookup(result);
@@ -669,59 +685,15 @@ function QuotePage() {
       });
   void quoteUrl;
 
-  const estimatedBreakdown = useMemo(() => {
-    const priceStr = PRODUCT_PRICE_MAP.get(product);
-    const unitPrice = priceStr ? parseRand(priceStr) : null;
-    const subtotal = unitPrice !== null ? unitPrice * quantity : null;
-    const allInclusive = isAllInclusiveProduct(product);
-    const flueKit = !(flueKitAddOn && flueKitApplies(product))
-      ? null
-      : storyType === "double"
-        ? 9650
-        : storyType === "single"
-          ? 7650
-          : null;
-    const isSpecial = isSpecialProduct(product);
-    const needsPlate =
-      !allInclusive && !isSpecial && flooring.length > 0 && !/tile/i.test(flooring);
-    const plate = needsPlate ? computePlatePrice(plateType, cornerInstall) : null;
-    // Catalogue products: installation is quoted on request, so no fixed
-    // corner/installation amounts are added to the estimate.
-    const corner = null;
-    const install = isSpecial && installationRequired ? 6000 * Math.max(quantity, 1) : null;
-    const addOns = allInclusiveAddOns({
-      productName: product,
-      storyType,
-      cornerInstall,
-      plateType,
-      flooring,
-      installationRequired,
-    });
-    const hasAny =
-      subtotal !== null ||
-      flueKit !== null ||
-      plate !== null ||
-      corner !== null ||
-      install !== null ||
-      addOns.total !== 0;
-    const productTotal =
-      (subtotal ?? 0) + (flueKit ?? 0) + (plate ?? 0) + (corner ?? 0) + addOns.total;
-    const installTotal = install ?? 0;
-    return {
-      total: hasAny ? productTotal + installTotal : null,
-      productTotal: hasAny ? productTotal : null,
-      installTotal,
-    };
-  }, [
-    product,
-    quantity,
-    storyType,
-    flooring,
-    plateType,
-    cornerInstall,
-    installationRequired,
-    flueKitAddOn,
-  ]);
+  const livePricing = calculateQuotePricing(pricingSelections);
+  const estimatedBreakdown = {
+    total:
+      livePricing.total === null
+        ? null
+        : livePricing.productTotal + (livePricing.installationEstimate ?? 0),
+    productTotal: livePricing.productSubtotal === null ? null : livePricing.productTotal,
+    installTotal: livePricing.installationEstimate ?? 0,
+  };
 
   const estimatedTotal = estimatedBreakdown.total;
   const estimatedProductTotal = estimatedBreakdown.productTotal;
@@ -734,7 +706,10 @@ function QuotePage() {
   // submit. Until then we assume the base zone so the live total — and the
   // BNPL monthly amount — matches the all-in R23,970 Magma special.
   const BASE_TRANSPORT_DEFAULT = 470;
-  const effectiveTransport = transportPrice ?? BASE_TRANSPORT_DEFAULT;
+  const effectiveTransport =
+    livePricing.transport?.price ??
+    (matched?.destinationText === address ? transportPrice : null) ??
+    BASE_TRANSPORT_DEFAULT;
   const effectiveTransportLabel = formatRand(effectiveTransport);
   const cartTotalNum =
     estimatedTotal !== null
@@ -1015,6 +990,14 @@ function QuotePage() {
 
       <LandingHero onSelectProduct={setProduct} />
       <PopularPicks onSelectProduct={setProduct} />
+      <FireplaceFinder
+        onSelectProduct={(name) => {
+          setProduct(name);
+          setSubmitted(false);
+          setLookup(null);
+          setEntryAction("finder_quote");
+        }}
+      />
       <MobileStickyCta />
       {/* Form */}
       <section id="form" className="bg-background">
@@ -1036,7 +1019,33 @@ function QuotePage() {
             </a>
           </div>
 
+          <PriceEstimator
+            names={PRODUCT_NAMES}
+            selections={pricingSelections}
+            onProduct={(name) => {
+              setProduct(name);
+              setSubmitted(false);
+              setLookup(null);
+            }}
+            onStory={setStoryType}
+            address={address}
+            onAddress={setAddress}
+            busy={distanceBusy}
+            error={distanceError}
+            onSend={() => {
+              setEntryAction("estimator_quote");
+              void captureLeadAction("estimator_quote", [product], {
+                customerName: `${firstName} ${lastName}`.trim() || undefined,
+                email: email || undefined,
+                phone: phone || undefined,
+              });
+              document
+                .getElementById("quote-details")
+                ?.scrollIntoView({ behavior: "smooth", block: "start" });
+            }}
+          />
           <form
+            id="quote-details"
             onSubmit={handleSubmit}
             className="space-y-5 border-2 border-foreground bg-card p-6 shadow-brutal-sm sm:p-8"
           >
@@ -1107,6 +1116,7 @@ function QuotePage() {
             <div className="grid gap-4 sm:grid-cols-[2fr_1fr]">
               <Field label="Product of interest *">
                 <select
+                  data-quote-product
                   value={product}
                   onChange={(e) => setProduct(e.target.value)}
                   required
@@ -1310,16 +1320,7 @@ function QuotePage() {
             )}
 
             {/* Instant quote breakdown — live, no submission required */}
-            <InstantQuote
-              productName={product}
-              quantity={quantity}
-              storyType={storyType}
-              flooring={flooring}
-              plateType={plateType}
-              cornerInstall={cornerInstall}
-              installationRequired={installationRequired}
-              flueKitAddOn={flueKitAddOn}
-            />
+            <PriceBreakdown selections={pricingSelections} busy={distanceBusy} address={address} />
 
             {error && (
               <p className="border-2 border-destructive bg-destructive/10 px-3 py-2 text-sm text-destructive">
@@ -1825,236 +1826,6 @@ function BreakdownRow({ label, value, hint }: { label: string; value: string; hi
       </div>
       <span className="shrink-0 font-mono text-sm font-semibold text-foreground">{value}</span>
     </li>
-  );
-}
-
-function isBraaiProduct(name: string): boolean {
-  return /braai/i.test(name);
-}
-
-function flueKitApplies(name: string): boolean {
-  if (isAllInclusiveProduct(name) || /flue\s*kit/i.test(name) || isBraaiProduct(name)) return false;
-  return /fireplace|combustion|insert|stove|grate/i.test(name);
-}
-
-function InstantQuote({
-  productName,
-  quantity,
-  storyType,
-  flooring,
-  plateType,
-  cornerInstall,
-  installationRequired,
-  flueKitAddOn,
-}: {
-  productName: string;
-  quantity: number;
-  storyType: "single" | "double" | "";
-  flooring: string;
-  plateType: "steel" | "glass" | "granite";
-  cornerInstall: boolean;
-  installationRequired: boolean;
-  flueKitAddOn: boolean;
-}) {
-  const priceStr = PRODUCT_PRICE_MAP.get(productName) ?? null;
-  const unitPrice = priceStr ? parseRand(priceStr) : null;
-  const subtotal = unitPrice !== null ? unitPrice * quantity : null;
-  const allInclusive = isAllInclusiveProduct(productName);
-  const flueKitIncluded = allInclusive || /flue\s*kit/i.test(productName);
-  const flueKit =
-    flueKitIncluded || !flueKitAddOn || !flueKitApplies(productName)
-      ? null
-      : storyType === "double"
-        ? 9650
-        : storyType === "single"
-          ? 7650
-          : null;
-  const isSpecial = isSpecialProduct(productName);
-  const needsPlate = !allInclusive && !isSpecial && flooring.length > 0 && !/tile/i.test(flooring);
-  const plate = needsPlate ? computePlatePrice(plateType, cornerInstall) : null;
-  // Installation for catalogue products is quoted on request — no fixed
-  // estimate. Only the all-inclusive special carries installation pricing.
-  const corner = null;
-  const installationEstimate =
-    isSpecial && installationRequired ? 6000 * Math.max(quantity, 1) : null;
-  const addOns = allInclusiveAddOns({
-    productName,
-    storyType,
-    cornerInstall,
-    plateType,
-    flooring,
-    installationRequired,
-  });
-  const specialDiscount = specialDiscountFor(productName, quantity);
-  const BASE_TRANSPORT_DEFAULT = 470;
-  const total =
-    subtotal !== null ||
-    flueKit !== null ||
-    plate !== null ||
-    corner !== null ||
-    installationEstimate !== null
-      ? (subtotal ?? 0) +
-        (flueKit ?? 0) +
-        (plate ?? 0) +
-        (corner ?? 0) +
-        (installationEstimate ?? 0) +
-        addOns.total -
-        specialDiscount +
-        BASE_TRANSPORT_DEFAULT
-      : null;
-
-  const rows: { label: string; value: number | null; hint?: string }[] = [
-    {
-      label: unitPrice !== null ? `${productName} × ${quantity}` : "Select a product",
-      value: subtotal,
-      hint: unitPrice !== null ? `${formatRand(unitPrice)} each` : undefined,
-    },
-    ...(flueKitIncluded
-      ? []
-      : [
-          {
-            label: "Flue kit",
-            value: flueKit,
-            hint:
-              storyType === ""
-                ? "Choose single or double story"
-                : storyType === "double"
-                  ? "Double story"
-                  : "Single story",
-          },
-        ]),
-    ...(needsPlate
-      ? [
-          {
-            label:
-              `${plateType === "steel" ? "Black steel" : plateType === "granite" ? "Granite" : "Glass"} plinth${cornerInstall && plateType !== "steel" ? " (corner)" : ""}` as string,
-            value: plate as number | null,
-            hint: "Required for non-tile floors" as string,
-          },
-        ]
-      : []),
-    ...(allInclusive
-      ? []
-      : [
-          {
-            label: "Corner installation",
-            value: corner,
-            hint: cornerInstall ? "Quoted on request" : "Standard wall",
-          },
-        ]),
-    ...(allInclusive
-      ? [
-          {
-            label: "Installation, flue kit & plinth (single story, basic)",
-            value: 0 as number | null,
-            hint: "Included in the special price" as string,
-          },
-        ]
-      : []),
-    ...(addOns.doubleStorySurcharge !== null
-      ? [
-          {
-            label: "Double-story surcharge",
-            value: addOns.doubleStorySurcharge as number | null,
-            hint: "Core drilling — not covered by the basic special" as string,
-          },
-        ]
-      : []),
-    ...(addOns.cornerInstall !== null
-      ? [
-          {
-            label: "Corner installation add-on",
-            value: addOns.cornerInstall as number | null,
-            hint: "Not covered by the basic special" as string,
-          },
-        ]
-      : []),
-    ...(addOns.graniteUpgrade !== null
-      ? [
-          {
-            label: "Granite plinth upgrade",
-            value: addOns.graniteUpgrade as number | null,
-            hint: "Upgrade from the included glass plinth" as string,
-          },
-        ]
-      : []),
-    ...(!allInclusive && installationRequired
-      ? [
-          {
-            label: "Installation",
-            value: installationEstimate,
-            hint:
-              installationEstimate !== null
-                ? "Standard installation by Progress Installations"
-                : "Installation on request — Progress Installations will quote after a site assessment",
-          },
-        ]
-      : []),
-  ];
-
-  return (
-    <div className="border-2 border-foreground bg-secondary/30 p-5 sm:p-6">
-      <div className="mb-3 flex items-center justify-between">
-        <span className="inline-block bg-primary px-2 py-1 text-[10px] font-bold uppercase tracking-widest text-primary-foreground">
-          Instant Quote
-        </span>
-        <span className="text-[10px] font-semibold uppercase tracking-[0.24em] text-muted-foreground">
-          Live estimate
-        </span>
-      </div>
-      <ul className="divide-y divide-foreground/15 text-sm">
-        {rows.map((r) => (
-          <li key={r.label} className="flex items-baseline justify-between gap-4 py-2">
-            <div className="min-w-0">
-              <p className="truncate font-semibold text-foreground">{r.label}</p>
-              {r.hint && <p className="text-xs text-muted-foreground">{r.hint}</p>}
-            </div>
-            <span className="shrink-0 font-mono text-sm font-semibold text-foreground">
-              {r.value !== null ? formatRand(r.value) : "—"}
-            </span>
-          </li>
-        ))}
-        {installationRequired && (
-          <li className="flex items-baseline justify-between gap-4 py-2">
-            <div>
-              <p className="font-semibold text-foreground">Transport</p>
-              <p className="text-xs text-muted-foreground">
-                First 25 km included in R470; R12/km thereafter (calculated on submit)
-              </p>
-            </div>
-            <span className="shrink-0 font-mono text-sm font-semibold text-foreground">
-              {formatRand(470)}
-            </span>
-          </li>
-        )}
-        {!installationRequired && (
-          <li className="flex items-baseline justify-between gap-4 py-2">
-            <div>
-              <p className="font-semibold text-foreground">Courier</p>
-              <p className="text-xs text-muted-foreground">
-                Delivery within ±25 km of Bellville (calculated on submit)
-              </p>
-            </div>
-            <span className="shrink-0 font-mono text-sm font-semibold text-foreground">
-              {formatRand(470)}
-            </span>
-          </li>
-        )}
-      </ul>
-      <div className="mt-3 flex items-baseline justify-between border-t-2 border-foreground pt-3">
-        <span className="text-xs font-bold uppercase tracking-[0.24em] text-foreground">
-          Estimated total
-        </span>
-        <span className="font-mono text-xl font-bold text-foreground">
-          {total !== null ? formatRand(total) : "—"}
-        </span>
-      </div>
-      <p className="mt-2 text-[11px] text-muted-foreground">
-        {installationRequired
-          ? "R470 base transport covers the first 25 km from Bellville; R12/km applies beyond that. Final quote confirmed on submit."
-          : "R470 courier within ±25 km of Bellville; further distances quoted on submit."}
-      </p>
-    </div>
   );
 }
 

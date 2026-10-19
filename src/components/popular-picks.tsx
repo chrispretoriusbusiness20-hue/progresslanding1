@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { POPULAR_PRODUCTS } from "@/lib/popular-products";
 import { decodeProductName, formatRand } from "@/lib/product-display";
 import { getProductImageUrl } from "@/lib/product-images";
+import { CompareCheckbox } from "./product-compare";
 
 export function PopularPicks({ onSelectProduct }: { onSelectProduct: (name: string) => void }) {
   return (
@@ -44,6 +45,7 @@ export function PopularPicks({ onSelectProduct }: { onSelectProduct: (name: stri
                     {decodeProductName(product.name)}
                   </h3>
                   <p className="mt-3 text-xl font-bold text-primary">{formatRand(product.price)}</p>
+                  <CompareCheckbox product={product} />
                   <Button
                     asChild
                     className="mt-auto h-auto min-h-11 w-full whitespace-normal rounded-none border-2 border-foreground px-2 py-2 text-xs font-bold shadow-brutal-sm"

@@ -15,6 +15,13 @@
       "when": 1792409674677,
       "tag": "0001_create_page_visits",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1792414915657,
+      "tag": "0002_landing_lead_events_and_attribution",
+      "breakpoints": true
     }
   ]
 }

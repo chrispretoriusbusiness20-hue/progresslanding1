@@ -4,3 +4,9 @@
 - [x] Popular picks, aircon strip and per-product quote selection
 - [x] Shared product images, decoded names and rand formatting
 - [x] Verify selections, payment links and mobile layout
+- [x] Fireplace finder with catalogue-based matching
+- [x] Instant estimator sharing real quote pricing and delivery
+- [x] Session attribution, action capture and staff-only latest leads
+- [x] Compare up to three products across landing and catalogue
+- [x] Desktop/mobile flows, real quote and CRM sync verified; preview only
+- [ ] Verify staff activity list while signed in — blocked: requesting user has no matching staff account/session; sign-in gate and server staff protection verified

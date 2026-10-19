@@ -13,11 +13,25 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { ChatWidget } from "@/components/chat-widget";
 import { Toaster } from "@/components/ui/sonner";
-import { META_PIXEL_ID, META_PIXEL_ID_2, captureFbclid, trackContact, trackPageView } from "@/lib/meta-pixel";
+import {
+  META_PIXEL_ID,
+  META_PIXEL_ID_2,
+  captureFbclid,
+  trackContact,
+  trackPageView,
+} from "@/lib/meta-pixel";
 import { logPageVisit } from "@/lib/page-visit.functions";
+import { ProductCompareProvider } from "@/components/product-compare";
+import { getLandingAttribution } from "@/lib/lead-attribution";
+import { captureLeadAction } from "@/lib/lead-events";
 
 type FbqWindow = Window & {
-  fbq?: ((...args: unknown[]) => void) & { queue?: unknown[]; loaded?: boolean; version?: string; push?: unknown };
+  fbq?: ((...args: unknown[]) => void) & {
+    queue?: unknown[];
+    loaded?: boolean;
+    version?: string;
+    push?: unknown;
+  };
   _fbq?: unknown;
   __metaPixelLoaded?: boolean;
 };
@@ -54,7 +68,6 @@ function loadMetaPixel() {
   w.fbq!("init", META_PIXEL_ID_2);
   w.fbq!("track", "PageView");
 }
-
 
 function NotFoundComponent() {
   return (
@@ -134,15 +147,33 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "The Progress Group — Fireplaces, Braais, Lighting & Aircons" },
-      { name: "description", content: "The Progress Group supplies and installs fireplaces, braais, lighting and aircons across South Africa. Request a tailored quote online." },
+      {
+        name: "description",
+        content:
+          "The Progress Group supplies and installs fireplaces, braais, lighting and aircons across South Africa. Request a tailored quote online.",
+      },
       { name: "author", content: "The Progress Group" },
-      { property: "og:title", content: "The Progress Group — Fireplaces, Braais, Lighting & Aircons" },
-      { property: "og:description", content: "The Progress Group supplies and installs fireplaces, braais, lighting and aircons across South Africa. Request a tailored quote online." },
+      {
+        property: "og:title",
+        content: "The Progress Group — Fireplaces, Braais, Lighting & Aircons",
+      },
+      {
+        property: "og:description",
+        content:
+          "The Progress Group supplies and installs fireplaces, braais, lighting and aircons across South Africa. Request a tailored quote online.",
+      },
       { property: "og:site_name", content: "The Progress Group" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
-      { name: "twitter:title", content: "The Progress Group — Fireplaces, Braais, Lighting & Aircons" },
-      { name: "twitter:description", content: "The Progress Group supplies and installs fireplaces, braais, lighting and aircons across South Africa. Request a tailored quote online." },
+      {
+        name: "twitter:title",
+        content: "The Progress Group — Fireplaces, Braais, Lighting & Aircons",
+      },
+      {
+        name: "twitter:description",
+        content:
+          "The Progress Group supplies and installs fireplaces, braais, lighting and aircons across South Africa. Request a tailored quote online.",
+      },
     ],
     links: [
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -190,14 +221,23 @@ function RootComponent() {
 
   useEffect(() => {
     captureFbclid();
+    getLandingAttribution();
     ensureFbqStub();
     const start = () => loadMetaPixel();
-    const idle = (window as unknown as { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => void }).requestIdleCallback;
+    const idle = (
+      window as unknown as {
+        requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => void;
+      }
+    ).requestIdleCallback;
     if (document.readyState === "complete") {
       if (idle) idle(start, { timeout: 2000 });
       else setTimeout(start, 1);
     } else {
-      window.addEventListener("load", () => (idle ? idle(start, { timeout: 2000 }) : setTimeout(start, 1)), { once: true });
+      window.addEventListener(
+        "load",
+        () => (idle ? idle(start, { timeout: 2000 }) : setTimeout(start, 1)),
+        { once: true },
+      );
     }
 
     // Contact event for WhatsApp / phone links anywhere on the site.
@@ -205,7 +245,56 @@ function RootComponent() {
       const link = (e.target as Element | null)?.closest?.("a[href]");
       const href = link?.getAttribute("href") ?? "";
       if (/^tel:/i.test(href)) trackContact("phone");
-      else if (/wa\.me|whatsapp\.com/i.test(href)) trackContact("whatsapp");
+      else if (/wa\.me|whatsapp\.com/i.test(href)) {
+        trackContact("whatsapp");
+        const selected = document.querySelector<HTMLSelectElement>(
+          "select[data-quote-product]",
+        )?.value;
+        void captureLeadAction("whatsapp_click", selected ? [selected] : [], {
+          customerName:
+            Array.from(
+              document.querySelectorAll<HTMLInputElement>(
+                '#form input[autocomplete="given-name"], #form input[autocomplete="family-name"]',
+              ),
+            )
+              .map((input) => input.value)
+              .join(" ")
+              .trim() || undefined,
+          email:
+            document.querySelector<HTMLInputElement>('#form input[type="email"]')?.value ||
+            undefined,
+          phone:
+            document.querySelector<HTMLInputElement>('#form input[type="tel"]')?.value || undefined,
+        });
+      }
+      if (/express\.stitch\.money\/progress-installations/i.test(href)) {
+        const selected = document.querySelector<HTMLSelectElement>(
+          "select[data-quote-product]",
+        )?.value;
+        let checkout: {
+          product?: string;
+          firstName?: string;
+          lastName?: string;
+          email?: string;
+          phone?: string;
+        } = {};
+        try {
+          checkout = JSON.parse(sessionStorage.getItem("progress_checkout") ?? "{}");
+        } catch {
+          /* Storage unavailable. */
+        }
+        const name = link?.getAttribute("data-payment-product") || selected || checkout.product;
+        void captureLeadAction("payment_click", name ? [name] : [], {
+          customerName:
+            [checkout.firstName, checkout.lastName].filter(Boolean).join(" ") || undefined,
+          email:
+            document.querySelector<HTMLInputElement>('#form input[type="email"]')?.value ||
+            checkout.email,
+          phone:
+            document.querySelector<HTMLInputElement>('#form input[type="tel"]')?.value ||
+            checkout.phone,
+        });
+      }
     };
     document.addEventListener("click", onClick, true);
     return () => document.removeEventListener("click", onClick, true);
@@ -214,7 +303,8 @@ function RootComponent() {
   useEffect(() => {
     // Fire Meta Pixel PageView on every client-side navigation.
     // The initial PageView is sent by the base pixel snippet in <head>.
-    let lastPath = typeof window !== "undefined" ? window.location.pathname + window.location.search : "";
+    let lastPath =
+      typeof window !== "undefined" ? window.location.pathname + window.location.search : "";
     const unsub = router.subscribe("onResolved", () => {
       if (typeof window === "undefined") return;
       const current = window.location.pathname + window.location.search;
@@ -236,15 +326,15 @@ function RootComponent() {
       } catch {
         // Storage may be unavailable; still record the visit.
       }
-      const params = new URLSearchParams(window.location.search);
+      const attribution = getLandingAttribution();
       void logPageVisit({
         data: {
           path,
           referrer: document.referrer || undefined,
           userAgent: navigator.userAgent || undefined,
-          utmSource: params.get("utm_source") || undefined,
-          utmMedium: params.get("utm_medium") || undefined,
-          utmCampaign: params.get("utm_campaign") || undefined,
+          utmSource: attribution.utmSource,
+          utmMedium: attribution.utmMedium,
+          utmCampaign: attribution.utmCampaign,
         },
       }).catch(() => undefined);
     };
@@ -262,7 +352,9 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <Outlet />
+      <ProductCompareProvider>
+        <Outlet />
+      </ProductCompareProvider>
       <ChatWidget />
       <Toaster position="top-center" richColors closeButton />
     </QueryClientProvider>
