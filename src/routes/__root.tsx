@@ -14,6 +14,7 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { ChatWidget } from "@/components/chat-widget";
 import { Toaster } from "@/components/ui/sonner";
 import { META_PIXEL_ID, META_PIXEL_ID_2, captureFbclid, trackContact, trackPageView } from "@/lib/meta-pixel";
+import { logPageVisit } from "@/lib/page-visit.functions";
 
 type FbqWindow = Window & {
   fbq?: ((...args: unknown[]) => void) & { queue?: unknown[]; loaded?: boolean; version?: string; push?: unknown };
