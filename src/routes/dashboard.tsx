@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { formatRand } from "@/lib/product-display";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
 import { listQuotes, getQuotePdfUrl, updateQuote, type QuoteRow } from "@/lib/list-quotes.functions";
@@ -27,7 +28,7 @@ export const Route = createFileRoute("/dashboard")({
 });
 
 const fmtZAR = (n: number | null | undefined) =>
-  n == null ? "—" : `R${Number(n).toLocaleString("en-ZA", { maximumFractionDigits: 0 })}`;
+  n == null ? "—" : formatRand(n);
 
 const fmtDate = (s: string) => {
   const d = new Date(s);
