@@ -46,7 +46,8 @@ export function findFireplaces(
 ): CatalogueProduct[] {
   return products
     .filter((product) => {
-      if (/\bpellets\b|\bflue\b(?!\s*kit.*special)|accessor|chimney|replacement|spare|cleaner/i.test(product.name) && !/fireplace|stove|insert/i.test(product.name)) return false;
+      if (/\bpellets\b/i.test(product.name)) return false;
+      if (/\bflue\b(?!\s*kit.*special)|accessor|chimney|replacement|spare|cleaner/i.test(product.name) && !/fireplace|stove|insert/i.test(product.name)) return false;
       const fuel = productFuel(product);
       if (fuel === "—" || (choices.fuel !== "any" && fuel !== choices.fuel)) return false;
       if (choices.fuel === "Gas" && !/vent[\s-]*free/i.test(product.name)) return false;
