@@ -38,9 +38,14 @@ const FEATURED_IDS = [
   "korg-pellet-fireplace",
   "freestanding-cubo-air-900",
 ];
-const products = FEATURED_IDS.map((id) => allProducts.find((p) => p.id === id)).filter(
-  (p): p is Product => Boolean(p),
-);
+const products = FEATURED_IDS.map((id) => allProducts.find((p) => p.id === id))
+  .filter((p): p is Product => Boolean(p))
+  // Prices follow the curated landing data so catalogue cards always match
+  // the Popular picks cards (e.g. Magma 003 at R17 891, not R18 200).
+  .map((p) => {
+    const curated = curatedByName.get(normalizeName(p.name));
+    return curated?.price ? { ...p, price: curated.price } : p;
+  });
 
 // Build category list dynamically, sorted by item count desc for nicer UX.
 const CATEGORY_ORDER = (() => {
