@@ -4,6 +4,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { ArrowLeft, Check, Heart, Sparkles, Trash2 } from "lucide-react";
 import productsData from "@/data/products-full.json";
+import curatedData from "@/data/products.json";
 import { useFavorites } from "@/hooks/use-favorites";
 import progressLogo from "@/assets/progress-logo.jpeg.asset.json";
 import { CompareCheckbox } from "@/components/product-compare";
@@ -20,26 +21,38 @@ type Product = {
 
 const allProducts = productsData as Product[];
 
-// Curated catalogue — the Magma 001 Special is pinned first as the featured special,
-// followed by the five featured best sellers.
+const normalizeName = (name: string) =>
+  decodeProductName(name)
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
+const curatedByName = new Map(curatedData.map((p) => [normalizeName(p.name), p]));
+
+// Curated catalogue — only the Magma 001 Special (pinned first) and the
+// eight "Popular picks" products from the landing page are listed.
 const MAGMA_SPECIAL_ID = "magma-10kw-closed-combustion-fireplace-incl-flue-kit-special";
-// 1200 De Lux Braai Mild Steel is promoted as the Summer Special at R8 275 (VAT incl.).
+// 1200 De Lux Braai Mild Steel keeps its Summer Special badge.
 const SUMMER_SPECIAL_ID = "1200-de-lux-braai-mild-steel";
 const FEATURED_IDS = [
   MAGMA_SPECIAL_ID,
-  SUMMER_SPECIAL_ID,
+  // Popular picks (match src/lib/popular-products.ts)
+  "1200-de-lux-braai-mild-steel",
   "magma-001-freestanding-fireplace-10kw-progress-group",
-  "a2-magma-002-freestanding-fireplace-10kw",
-  "cubo-700-insert-fireplace-12-5kw",
-  "800-de-lux-304-stainless-steel",
-  "1000-de-lux-braai-mild-steel",
-  "1500-de-lux-braai-mild-steel",
-  "boma-braai",
-  "boma-fire-pits-mosaic",
+  "a3-magma-003-freestanding-fireplace-15kw",
+  "nestor-martin-stanford-9",
+  "pebble-vent-free",
+  "panorama-1000-built-in-gas-fireplace",
+  "korg-pellet-fireplace",
+  "freestanding-cubo-air-900",
 ];
-const products = FEATURED_IDS.map((id) => allProducts.find((p) => p.id === id)).filter(
-  (p): p is Product => Boolean(p),
-);
+const products = FEATURED_IDS.map((id) => allProducts.find((p) => p.id === id))
+  .filter((p): p is Product => Boolean(p))
+  // Prices follow the curated landing data so catalogue cards always match
+  // the Popular picks cards (e.g. Magma 003 at R17 891, not R18 200).
+  .map((p) => {
+    const curated = curatedByName.get(normalizeName(p.name));
+    return curated?.price ? { ...p, price: curated.price } : p;
+  });
 
 // Build category list dynamically, sorted by item count desc for nicer UX.
 const CATEGORY_ORDER = (() => {
@@ -60,7 +73,7 @@ export const Route = createFileRoute("/catalog")({
       { property: "og:title", content: "Full Catalog — The Progress Group" },
       {
         property: "og:description",
-        content: "Browse all 700+ Progress Group products and request an instant quote.",
+        content: "Browse our top picks — fireplaces and braais. Pick a product and request an instant quote.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

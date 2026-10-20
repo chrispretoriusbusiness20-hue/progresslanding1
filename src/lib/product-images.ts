@@ -19,6 +19,13 @@ function absolute(url: string): string {
   return url.startsWith("http") ? url : `${ORIGIN}${url}`;
 }
 
+// Main-site image URLs that return 404, paired with the category image to use instead.
+const DEAD_IMAGES: [RegExp, keyof typeof CATEGORY_IMAGES][] = [
+  [/Magma-003-300x300\.jpg|CUBO-90-Freestanding-300x300\.jpg|STANFORD9-CAM01-300x300\.jpg/, "closed-combustion-fireplaces"],
+  [/PEBBLE-GAS-GRATE-300x300\.png|e6f0c405-e286-11e8-a1f6-00155d0b6110-1-300x300\.jpg/, "gas-fireplaces"],
+  [/4729e057-3347-4696-acc8-72082b24501b-300x300\.jpg/, "pellet-fireplaces"],
+];
+
 /**
  * Get an absolute image URL suitable for use in email templates.
  * Falls back to the closed-combustion image when category is unknown.
@@ -31,7 +38,12 @@ export function getProductImageUrl(opts: {
   // This old main-site braai image no longer resolves; use its hosted copy.
   if (opts.image?.includes("/1200-De-Lux-Braai-300x300.jpg"))
     return absolute(CATEGORY_IMAGES.braais);
-  if (opts.image) return absolute(opts.image);
+  // Old main-site images that 404; fall back to the matching category image.
+  if (opts.image) {
+    const deadCategory = DEAD_IMAGES.find(([pattern]) => pattern.test(opts.image!))?.[1];
+    if (deadCategory) return absolute(CATEGORY_IMAGES[deadCategory]);
+    return absolute(opts.image);
+  }
   const cat = (opts.category ?? "").toLowerCase();
   if (cat && CATEGORY_IMAGES[cat]) return absolute(CATEGORY_IMAGES[cat]);
 
