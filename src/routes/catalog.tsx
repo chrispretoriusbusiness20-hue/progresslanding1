@@ -21,6 +21,13 @@ type Product = {
 
 const allProducts = productsData as Product[];
 
+const normalizeName = (name: string) =>
+  decodeProductName(name)
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
+const curatedByName = new Map(curatedData.map((p) => [normalizeName(p.name), p]));
+
 // Curated catalogue — only the Magma 001 Special (pinned first) and the
 // eight "Popular picks" products from the landing page are listed.
 const MAGMA_SPECIAL_ID = "magma-10kw-closed-combustion-fireplace-incl-flue-kit-special";
