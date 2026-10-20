@@ -73,7 +73,7 @@ export const Route = createFileRoute("/catalog")({
       { property: "og:title", content: "Full Catalog — The Progress Group" },
       {
         property: "og:description",
-        content: "Browse all 700+ Progress Group products and request an instant quote.",
+        content: "Browse our top picks — fireplaces and braais. Pick a product and request an instant quote.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
