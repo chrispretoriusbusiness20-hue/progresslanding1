@@ -20,22 +20,20 @@ type Product = {
 
 const allProducts = productsData as Product[];
 
-// Curated catalogue — the Magma 001 Special is pinned first as the featured special,
-// followed by the five featured best sellers.
+// Curated catalogue — only the Magma 001 Special (pinned first) and the
+// eight "Popular picks" products from the landing page are listed.
 const MAGMA_SPECIAL_ID = "magma-10kw-closed-combustion-fireplace-incl-flue-kit-special";
-// 1200 De Lux Braai Mild Steel is promoted as the Summer Special at R8 275 (VAT incl.).
-const SUMMER_SPECIAL_ID = "1200-de-lux-braai-mild-steel";
 const FEATURED_IDS = [
   MAGMA_SPECIAL_ID,
-  SUMMER_SPECIAL_ID,
+  // Popular picks (match src/lib/popular-products.ts)
+  "1200-de-lux-braai-mild-steel",
   "magma-001-freestanding-fireplace-10kw-progress-group",
-  "a2-magma-002-freestanding-fireplace-10kw",
-  "cubo-700-insert-fireplace-12-5kw",
-  "800-de-lux-304-stainless-steel",
-  "1000-de-lux-braai-mild-steel",
-  "1500-de-lux-braai-mild-steel",
-  "boma-braai",
-  "boma-fire-pits-mosaic",
+  "a3-magma-003-freestanding-fireplace-15kw",
+  "nestor-martin-stanford-9",
+  "pebble-vent-free",
+  "panorama-1000-built-in-gas-fireplace",
+  "korg-pellet-fireplace",
+  "freestanding-cubo-air-900",
 ];
 const products = FEATURED_IDS.map((id) => allProducts.find((p) => p.id === id)).filter(
   (p): p is Product => Boolean(p),
