@@ -231,7 +231,7 @@ function CatalogPage() {
           </h1>
           <p className="mt-6 max-w-2xl text-base text-foreground/75 sm:text-lg">
             Browse our best sellers — fireplaces and braais. Tap "Add on" on any product and it will
-            be pre-filled in the quote form.
+            be added to your quote.
           </p>
 
           <p className="mt-8 text-xs uppercase tracking-widest text-muted-foreground">
@@ -503,20 +503,19 @@ function ProductCard({
 
         <div className="mt-auto flex flex-col gap-2 pt-4">
           <CompareCheckbox product={p} />
-          <Link
-            to="/"
-            hash="form"
+          <button
+            type="button"
             onClick={() => onSelect(p)}
             className="inline-flex min-h-11 items-center justify-center gap-2 border-2 border-foreground bg-primary px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-primary-foreground shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
           >
             {isCopied ? (
               <>
-                <Check className="h-3.5 w-3.5" /> Added — go to quote
+                <Check className="h-3.5 w-3.5" /> Added to quote
               </>
             ) : (
               <>Add on</>
             )}
-          </Link>
+          </button>
           <a
             href={p.url}
             target="_blank"
