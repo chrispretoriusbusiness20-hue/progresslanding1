@@ -230,8 +230,8 @@ function CatalogPage() {
             </span>
           </h1>
           <p className="mt-6 max-w-2xl text-base text-foreground/75 sm:text-lg">
-            Browse our best sellers — fireplaces and braais. Tap "Add on" on any product and it will
-            be added to your quote.
+            Browse our best sellers — fireplaces and braais. Tap "Add on" on any product and it
+            will be added to your quote.
           </p>
 
           <p className="mt-8 text-xs uppercase tracking-widest text-muted-foreground">
@@ -503,8 +503,9 @@ function ProductCard({
 
         <div className="mt-auto flex flex-col gap-2 pt-4">
           <CompareCheckbox product={p} />
-          <button
-            type="button"
+          <Link
+            to="/"
+            hash="form"
             onClick={() => onSelect(p)}
             className="inline-flex min-h-11 items-center justify-center gap-2 border-2 border-foreground bg-primary px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-primary-foreground shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
           >
@@ -515,7 +516,7 @@ function ProductCard({
             ) : (
               <>Add on</>
             )}
-          </button>
+          </Link>
           <a
             href={p.url}
             target="_blank"
