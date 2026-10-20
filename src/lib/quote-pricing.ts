@@ -19,8 +19,8 @@ export type PricingSelections = {
   distanceKm?: number | null;
 };
 export function flueKitApplies(name: string): boolean {
-  if (isAllInclusiveProduct(name) || /flue\s*kit|braai/i.test(name)) return false;
-  return /fireplace|combustion|insert|stove|grate/i.test(name);
+  if (isAllInclusiveProduct(name)) return false;
+  return !/flue\s*kit|braai|vent\s*free/i.test(name);
 }
 export function transportPriceForKm(km: number, installationRequired: boolean) {
   if (!installationRequired) {
