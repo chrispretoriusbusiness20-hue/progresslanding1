@@ -8,3 +8,4 @@
 - Capture session attribution through `lead-attribution.ts` and append validated actions to private `lead_events`; only existing server-verified staff access can list these records.
 - Keep quote CRM handoffs on the existing signed webhook, carrying action/page/session/ad attribution; anonymous click events stay distinct from completed quotes.
 - Mount comparison state once at the root and position its bar above the landing mobile CTA so selections survive navigation without overlapping controls.
+- Render the quote form selection summary from its active pricing selections using the shared calculation, so displayed add-ons match the submitted quote rather than a separate shopping list.
