@@ -28,9 +28,15 @@ export function getProductImageUrl(opts: {
   category?: string | null;
   productName?: string | null;
 }): string {
+  // Old main-site images that no longer resolve; use the category fallback.
+  const deadImage =
+    /Magma-003-300x300\.jpg|CUBO-90-Freestanding-300x300\.jpg|STANFORD9-CAM01-300x300\.jpg/.test(
+      opts.image ?? "",
+    );
   // This old main-site braai image no longer resolves; use its hosted copy.
   if (opts.image?.includes("/1200-De-Lux-Braai-300x300.jpg"))
     return absolute(CATEGORY_IMAGES.braais);
+  if (deadImage) return absolute(CATEGORY_IMAGES["closed-combustion-fireplaces"]);
   if (opts.image) return absolute(opts.image);
   const cat = (opts.category ?? "").toLowerCase();
   if (cat && CATEGORY_IMAGES[cat]) return absolute(CATEGORY_IMAGES[cat]);
