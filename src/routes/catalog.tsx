@@ -24,6 +24,8 @@ const allProducts = productsData as Product[];
 // Curated catalogue — only the Magma 001 Special (pinned first) and the
 // eight "Popular picks" products from the landing page are listed.
 const MAGMA_SPECIAL_ID = "magma-10kw-closed-combustion-fireplace-incl-flue-kit-special";
+// 1200 De Lux Braai Mild Steel keeps its Summer Special badge.
+const SUMMER_SPECIAL_ID = "1200-de-lux-braai-mild-steel";
 const FEATURED_IDS = [
   MAGMA_SPECIAL_ID,
   // Popular picks (match src/lib/popular-products.ts)
