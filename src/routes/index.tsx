@@ -31,7 +31,7 @@ import { FireplaceFinder } from "@/components/fireplace-finder";
 import { PriceEstimator, PriceBreakdown } from "@/components/price-estimator";
 import { QuoteSelectionSummary } from "@/components/quote-selection-summary";
 import { calculateQuotePricing, flueKitApplies } from "@/lib/quote-pricing";
-import { CATALOGUE_PRODUCTS } from "@/lib/catalogue-products";
+import { TOP_PRODUCTS } from "@/lib/popular-products";
 import { getQuoteDistance } from "@/lib/quote-estimate.functions";
 import { getLandingAttribution, getLeadSessionId } from "@/lib/lead-attribution";
 import { captureLeadAction } from "@/lib/lead-events";
@@ -48,12 +48,12 @@ import { isSpecialProduct, specialDiscountFor } from "@/lib/special-discount";
 const QUOTE_APP_URL = "https://fireplacequotes.co.za/";
 import { STITCH_EXPRESS_URL } from "@/lib/stitch-express";
 import { notifyPaymentClick } from "@/lib/payment-click.functions";
-const PRODUCT_NAMES = CATALOGUE_PRODUCTS.map((product) => product.name);
+const PRODUCT_NAMES = TOP_PRODUCTS.map((product) => product.name);
 const PRODUCT_PRICE_MAP = new Map(
-  CATALOGUE_PRODUCTS.map((product) => [product.name, product.price]),
+  TOP_PRODUCTS.map((product) => [product.name, product.price]),
 );
 const PRODUCT_IMAGE_MAP = new Map(
-  CATALOGUE_PRODUCTS.map((product) => [
+  TOP_PRODUCTS.map((product) => [
     product.name,
     getProductImageUrl({ ...product, productName: product.name }),
   ]),
