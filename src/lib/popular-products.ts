@@ -17,3 +17,9 @@ export const POPULAR_PRODUCTS = picks.flatMap(([name, label]) => {
   const product = products.find((item) => item.name === name);
   return product ? [{ ...product, label }] : [];
 });
+
+// Top winning products — the only ones offered in the quote form dropdown.
+export const TOP_PRODUCTS = [
+  ...products.filter((item) => item.name === MAGMA_SPECIAL_NAME),
+  ...POPULAR_PRODUCTS,
+];

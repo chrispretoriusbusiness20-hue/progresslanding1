@@ -31,7 +31,7 @@ import { FireplaceFinder } from "@/components/fireplace-finder";
 import { PriceEstimator, PriceBreakdown } from "@/components/price-estimator";
 import { QuoteSelectionSummary } from "@/components/quote-selection-summary";
 import { calculateQuotePricing, flueKitApplies } from "@/lib/quote-pricing";
-import { CATALOGUE_PRODUCTS } from "@/lib/catalogue-products";
+import { TOP_PRODUCTS } from "@/lib/popular-products";
 import { getQuoteDistance } from "@/lib/quote-estimate.functions";
 import { getLandingAttribution, getLeadSessionId } from "@/lib/lead-attribution";
 import { captureLeadAction } from "@/lib/lead-events";
@@ -48,12 +48,12 @@ import { isSpecialProduct, specialDiscountFor } from "@/lib/special-discount";
 const QUOTE_APP_URL = "https://fireplacequotes.co.za/";
 import { STITCH_EXPRESS_URL } from "@/lib/stitch-express";
 import { notifyPaymentClick } from "@/lib/payment-click.functions";
-const PRODUCT_NAMES = CATALOGUE_PRODUCTS.map((product) => product.name);
+const PRODUCT_NAMES = TOP_PRODUCTS.map((product) => product.name);
 const PRODUCT_PRICE_MAP = new Map(
-  CATALOGUE_PRODUCTS.map((product) => [product.name, product.price]),
+  TOP_PRODUCTS.map((product) => [product.name, product.price]),
 );
 const PRODUCT_IMAGE_MAP = new Map(
-  CATALOGUE_PRODUCTS.map((product) => [
+  TOP_PRODUCTS.map((product) => [
     product.name,
     getProductImageUrl({ ...product, productName: product.name }),
   ]),
@@ -1190,7 +1190,7 @@ function QuotePage() {
               </p>
             )}
 
-            <div className="grid gap-4 sm:grid-cols-2">
+            {(flueKitApplies(product) || installationRequired) && (
               <Field label="Single or double story?">
                 <select
                   value={storyType}
@@ -1202,41 +1202,47 @@ function QuotePage() {
                   <option value="double">Double story</option>
                 </select>
               </Field>
-              <Field label="Flooring type">
-                <select
-                  value={flooring}
-                  onChange={(e) => setFlooring(e.target.value)}
-                  disabled={optionsLocked}
-                  className="form-input"
-                >
-                  <option value="">Select…</option>
-                  <option value="Tile">Tile</option>
-                  <option value="Laminate">Laminate</option>
-                  <option value="Carpet">Carpet</option>
-                  <option value="Wood">Wood</option>
-                  <option value="Concrete">Concrete</option>
-                  <option value="Other">Other</option>
-                </select>
-              </Field>
-            </div>
+            )}
 
-            <Field label="Roofing type">
-              <select
-                value={roofType}
-                onChange={(e) => setRoofType(e.target.value)}
-                className="form-input"
-              >
-                <option value="">Select…</option>
-                <option value="Tile">Tile</option>
-                <option value="IBR / Corrugated">IBR / Corrugated</option>
-                <option value="Slate">Slate</option>
-                <option value="Thatch">Thatch</option>
-                <option value="Flat / Concrete">Flat / Concrete</option>
-                <option value="Other">Other</option>
-              </select>
-            </Field>
+            {installationRequired && (
+              <>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <Field label="Flooring type">
+                    <select
+                      value={flooring}
+                      onChange={(e) => setFlooring(e.target.value)}
+                      disabled={optionsLocked}
+                      className="form-input"
+                    >
+                      <option value="">Select…</option>
+                      <option value="Tile">Tile</option>
+                      <option value="Laminate">Laminate</option>
+                      <option value="Carpet">Carpet</option>
+                      <option value="Wood">Wood</option>
+                      <option value="Concrete">Concrete</option>
+                      <option value="Other">Other</option>
+                    </select>
+                  </Field>
+                  <Field label="Roofing type">
+                    <select
+                      value={roofType}
+                      onChange={(e) => setRoofType(e.target.value)}
+                      className="form-input"
+                    >
+                      <option value="">Select…</option>
+                      <option value="Tile">Tile</option>
+                      <option value="IBR / Corrugated">IBR / Corrugated</option>
+                      <option value="Slate">Slate</option>
+                      <option value="Thatch">Thatch</option>
+                      <option value="Flat / Concrete">Flat / Concrete</option>
+                      <option value="Other">Other</option>
+                    </select>
+                  </Field>
+                </div>
+              </>
+            )}
 
-            {flooring && !/tile/i.test(flooring) && (
+            {installationRequired && flooring && !/tile/i.test(flooring) && (
               <Field
                 label={`Plinth (required for non-tile floors)${cornerInstall ? " — corner pricing" : ""}`}
               >
