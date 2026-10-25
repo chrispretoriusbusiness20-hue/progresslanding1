@@ -9,7 +9,7 @@ const picks = [
   ["Nestor Martin Stanford 9", "Premium wood"],
   ["900mm Drop In Vent Free (Pebbles)", "Gas — no chimney needed"],
   ["Panorama 1000 – Built in Gas Fireplace", "Built-in gas"],
-  ["Korg - Pellet Fireplace", "Pellet stove"],
+  ["Korg - Pellet Fireplace", ""],
   ["FreeStanding CUBO Air - 900", "Statement piece"],
 ] as const;
 
