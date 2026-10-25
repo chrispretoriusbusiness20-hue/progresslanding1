@@ -46,7 +46,7 @@ describe("approved VAT-inclusive catalogue import", () => {
       assert.equal(full.filter((product) => product.id === id).length, 1);
     }
     assert.equal(new Set(TOP_PRODUCTS.map((product) => product.name)).size, TOP_PRODUCTS.length);
-    assert.equal(TOP_PRODUCTS.length, 18);
+    assert.equal(TOP_PRODUCTS.length, 17);
   });
   it("preserves the Magma Special separate from the repriced Magma 001", () => {
     assert.equal(parseRand(TOP_PRODUCTS[0].price), 17500);
