@@ -27,7 +27,7 @@ const allProducts = productsData as Product[];
 const MAGMA_SPECIAL_ID = "magma-10kw-closed-combustion-fireplace-incl-flue-kit-special";
 // 1200 De Lux Braai Mild Steel keeps its Summer Special badge.
 const SUMMER_SPECIAL_ID = "1200-de-lux-braai-mild-steel";
-const products: Product[] = TOP_PRODUCTS.flatMap((curated) => {
+const products: Product[] = IMPORTED_PRODUCTS.flatMap((curated) => {
   const original = allProducts.find(
     (product) => product.id === curated.id || product.url.replace(/\/$/, "") === curated.url.replace(/\/$/, ""),
   );
