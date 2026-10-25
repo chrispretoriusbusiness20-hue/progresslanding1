@@ -15,3 +15,4 @@
 - [x] Verify enquiry submission, saved contact/town and mobile/desktop panels
 - [x] Match and import thirteen approved products without duplicating existing records
 - [x] Verify catalogue prices, categories, unpriced enquiry CTAs and selections
+- [ ] Add instant catalogue PDF quote downloads and verify prices and PDF layout

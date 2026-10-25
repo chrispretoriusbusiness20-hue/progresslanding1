@@ -1,6 +1,7 @@
 # Project architecture
 
 - Use `src/lib/product-display.ts` for browser-safe rand formatting and product-name decoding, keeping catalogue and quote presentation consistent.
+- Generate instant catalogue PDFs client-side from approved product records as product-only quotations; extract included VAT rather than adding VAT, and leave unknown prices/delivery unconfirmed without creating an order or invoice.
 - Use `src/lib/product-images.ts` for product image resolution and category fallbacks so every product renderer has a usable image.
 - Define landing popular picks by exact names from `products.json` in `src/lib/popular-products.ts`; include those records in the quote dropdown so card selections remain selectable.
 - Keep estimator, live quote and submitted quote calculations in `src/lib/quote-pricing.ts` and Bellville distance lookup in `quote-distance.server.ts` so amounts cannot diverge.
