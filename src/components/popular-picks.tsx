@@ -49,7 +49,7 @@ export function PopularPicks() {
                   </h3>
                   <p className="mt-3 text-xl font-bold text-primary">{formatRand(product.price)}</p>
                   <CompareCheckbox product={product} />
-                  <ProductEnquiryButton product={product.name} className="mt-auto" />
+                  <BuildQuoteButton product={product.name} className="mt-auto" />
                 </div>
               </article>
             ))}

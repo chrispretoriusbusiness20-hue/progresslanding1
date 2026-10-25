@@ -461,8 +461,7 @@ function ProductCard({
 
         <div className="mt-auto flex flex-col gap-2 pt-4">
           <CompareCheckbox product={p} />
-          <CatalogueQuoteButton product={p.name} />
-          <ProductEnquiryButton product={p.name} />
+          <BuildQuoteButton product={p.name} />
           <a
             href={p.url}
             target="_blank"

@@ -150,7 +150,7 @@ export function ProductCompareProvider({ children }: { children: ReactNode }) {
                   <th className="p-3">Enquiry</th>
                   {products.map((product) => (
                     <td key={product.name} className="border-l border-border p-3">
-                      <ProductEnquiryButton product={product.name} />
+                      <BuildQuoteButton product={product.name} label="Build your quote" />
                     </td>
                   ))}
                 </tr>
