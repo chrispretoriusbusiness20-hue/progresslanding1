@@ -30,9 +30,15 @@ const base = {
 describe("landing tool rules", () => {
   it("old comparison selections exclude products outside the top picks", () => {
     const restored = restoreTopComparisons(["Catalina Cast Iron", TOP_PRODUCTS[0].name]);
-    assert.deepEqual(restored.map((item) => item.name), [TOP_PRODUCTS[0].name]);
+    assert.deepEqual(
+      restored.map((item) => item.name),
+      [TOP_PRODUCTS[0].name],
+    );
     assert.equal(getTopProduct("Catalina Cast Iron"), undefined);
-    assert.equal(calculateQuotePricing({ ...base, price: restored[0].price }).productSubtotal, 17500);
+    assert.equal(
+      calculateQuotePricing({ ...base, price: restored[0].price }).productSubtotal,
+      17500,
+    );
   });
   it("finder recommendations from the top picks always have a quote price", () => {
     const found = findFireplaces({ size: "small", fuel: "Wood", budget: "low" }, TOP_PRODUCTS);
@@ -42,10 +48,21 @@ describe("landing tool rules", () => {
       assert.equal(calculateQuotePricing({ ...base, price: item.price }).productSubtotal, 11514);
     }
   });
-  for (const name of ["Stainless Steel Flue Clamp", "Rubber Roof Sleeve", "T-Piece Stainless Steel", "Ethanol Biofuel", "IQ PORTABLE"]) {
+  for (const name of [
+    "Stainless Steel Flue Clamp",
+    "Rubber Roof Sleeve",
+    "T-Piece Stainless Steel",
+    "Ethanol Biofuel",
+    "IQ PORTABLE",
+  ]) {
     it(`${name} never receives the R7650 flue-kit charge`, () => {
       assert.equal(flueKitApplies(name), false);
-      const quote = calculateQuotePricing({ ...base, productName: name, price: "R100", installationRequired: false });
+      const quote = calculateQuotePricing({
+        ...base,
+        productName: name,
+        price: "R100",
+        installationRequired: false,
+      });
       assert.equal(quote.flueKitPrice, null);
       assert.equal(quote.total, 570);
     });
@@ -54,7 +71,10 @@ describe("landing tool rules", () => {
     it(`${name} retains the single and double storey flue kit`, () => {
       assert.equal(flueKitApplies(name), true);
       assert.equal(calculateQuotePricing({ ...base, productName: name }).flueKitPrice, 7650);
-      assert.equal(calculateQuotePricing({ ...base, productName: name, storyType: "double" }).flueKitPrice, 9650);
+      assert.equal(
+        calculateQuotePricing({ ...base, productName: name, storyType: "double" }).flueKitPrice,
+        9650,
+      );
     });
   }
   it("finder recommends fireplaces, not fuel consumables", () => {
