@@ -11,3 +11,5 @@
 - [x] Desktop/mobile flows, real quote and CRM sync verified; preview only
 - [ ] Verify staff activity list while signed in — blocked: requesting user has no matching staff account/session; sign-in gate and server staff protection verified
 - [x] Verify monitoring fixes: top-pick comparison restoration and category-based flue-kit eligibility
+- [ ] Product card enquiry panels with validated name, phone, optional town and logged WhatsApp handoff
+- [ ] Verify enquiry submission and mobile/desktop panels
