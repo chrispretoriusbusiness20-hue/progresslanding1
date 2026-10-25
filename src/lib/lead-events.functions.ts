@@ -21,6 +21,7 @@ export const recordLeadEvent = createServerFn({ method: "POST" })
         customer_name: data.customerName || null,
         email: data.email || null,
         phone: data.phone || null,
+        town: data.town || null,
         utm_source: data.utmSource || null,
         utm_medium: data.utmMedium || null,
         utm_campaign: data.utmCampaign || null,

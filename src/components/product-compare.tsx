@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
-import { Link, useRouterState } from "@tanstack/react-router";
+import { useRouterState } from "@tanstack/react-router";
 import { Columns3, RotateCcw } from "lucide-react";
 import { Button } from "./ui/button";
 import { Checkbox } from "./ui/checkbox";
@@ -13,7 +13,7 @@ import {
 } from "@/lib/catalogue-products";
 import { decodeProductName, formatRand } from "@/lib/product-display";
 import { getProductImageUrl } from "@/lib/product-images";
-import { captureLeadAction } from "@/lib/lead-events";
+import { ProductEnquiryButton } from "./product-enquiry";
 import { getTopProduct, restoreTopComparisons } from "@/lib/popular-products";
 
 const CompareContext = createContext<{
@@ -147,26 +147,10 @@ export function ProductCompareProvider({ children }: { children: ReactNode }) {
                   </tr>
                 ))}
                 <tr className="border-t border-border">
-                  <th className="p-3">Quote</th>
+                  <th className="p-3">Enquiry</th>
                   {products.map((product) => (
                     <td key={product.name} className="border-l border-border p-3">
-                      <Button asChild className="min-h-11 w-full rounded-none">
-                        <Link
-                          to="/"
-                          hash="form"
-                          data-select-product={product.name}
-                          onClick={() => {
-                            sessionStorage.setItem("selectedProduct", product.name);
-                            window.dispatchEvent(
-                              new CustomEvent("select-product", { detail: product.name }),
-                            );
-                            void captureLeadAction("compare_quote", [product.name]);
-                            setOpen(false);
-                          }}
-                        >
-                          Get a quote
-                        </Link>
-                      </Button>
+                      <ProductEnquiryButton product={product.name} />
                     </td>
                   ))}
                 </tr>

@@ -50,6 +50,7 @@ export function LeadActivity() {
                     {event.customer_name || "Anonymous visitor"}
                     <div>{event.email}</div>
                     <div>{event.phone}</div>
+                    {event.town && <div>{event.town}</div>}
                   </td>
                   <td className="p-3">
                     {event.action.replaceAll("_", " ")}

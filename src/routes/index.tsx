@@ -990,16 +990,9 @@ function QuotePage() {
         </div>
       </header>
 
-      <LandingHero onSelectProduct={setProduct} />
-      <PopularPicks onSelectProduct={setProduct} />
-      <FireplaceFinder
-        onSelectProduct={(name) => {
-          setProduct(name);
-          setSubmitted(false);
-          setLookup(null);
-          setEntryAction("finder_quote");
-        }}
-      />
+      <LandingHero />
+      <PopularPicks />
+      <FireplaceFinder />
       <MobileStickyCta />
       {/* Form */}
       <section id="form" className="bg-background">
@@ -1022,11 +1015,7 @@ function QuotePage() {
           </div>
 
           <QuickEnquiry
-            name={firstName}
-            phone={phone}
             product={product}
-            onName={setFirstName}
-            onPhone={setPhone}
             onProduct={setProduct}
           />
           <PriceEstimator

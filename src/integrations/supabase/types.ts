@@ -251,6 +251,7 @@ export type Database = {
           products: string[]
           quote_id: string | null
           session_id: string
+          town: string | null
           utm_campaign: string | null
           utm_medium: string | null
           utm_source: string | null
@@ -269,6 +270,7 @@ export type Database = {
           products?: string[]
           quote_id?: string | null
           session_id: string
+          town?: string | null
           utm_campaign?: string | null
           utm_medium?: string | null
           utm_source?: string | null
@@ -287,6 +289,7 @@ export type Database = {
           products?: string[]
           quote_id?: string | null
           session_id?: string
+          town?: string | null
           utm_campaign?: string | null
           utm_medium?: string | null
           utm_source?: string | null

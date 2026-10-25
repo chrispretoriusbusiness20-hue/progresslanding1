@@ -8,6 +8,7 @@ import curatedData from "@/data/products.json";
 import { useFavorites } from "@/hooks/use-favorites";
 import progressLogo from "@/assets/progress-logo.jpeg.asset.json";
 import { CompareCheckbox } from "@/components/product-compare";
+import { ProductEnquiryButton } from "@/components/product-enquiry";
 
 type Product = {
   id: string;
@@ -73,7 +74,8 @@ export const Route = createFileRoute("/catalog")({
       { property: "og:title", content: "Full Catalog — The Progress Group" },
       {
         property: "og:description",
-        content: "Browse our top picks — fireplaces and braais. Pick a product and request an instant quote.",
+        content:
+          "Browse our top picks — fireplaces and braais. Pick a product and request an instant quote.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -93,7 +95,6 @@ type Grouped = {
 function CatalogPage() {
   const [query, setQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
-  const [copiedId, setCopiedId] = useState<string | null>(null);
   const {
     ids: favoriteIds,
     has: isFavorite,
@@ -153,16 +154,6 @@ function CatalogPage() {
   }, [query]);
 
   const totalShown = grouped.reduce((n, g) => n + g.items.length, 0);
-
-  const handleSelect = (p: Product) => {
-    setCopiedId(p.id);
-    try {
-      sessionStorage.setItem("selectedProduct", p.name);
-      if (p.price) sessionStorage.setItem("selectedProductPrice", p.price);
-    } catch {
-      /* sessionStorage unavailable */
-    }
-  };
 
   const sendFavoritesToQuote = async () => {
     if (favoriteProducts.length === 0) return;
@@ -230,8 +221,8 @@ function CatalogPage() {
             </span>
           </h1>
           <p className="mt-6 max-w-2xl text-base text-foreground/75 sm:text-lg">
-            Browse our best sellers — fireplaces and braais. Tap "Add on" on any product and it
-            will be added to your quote.
+            Browse our best sellers — fireplaces and braais. Tap "Add on" on any product and it will
+            be added to your quote.
           </p>
 
           <p className="mt-8 text-xs uppercase tracking-widest text-muted-foreground">
@@ -321,9 +312,7 @@ function CatalogPage() {
                     <ProductCard
                       key={p.id}
                       p={p}
-                      isCopied={copiedId === p.id}
                       isFavorite={isFavorite(p.id)}
-                      onSelect={handleSelect}
                       onToggleFavorite={toggleFavorite}
                     />
                   ))}
@@ -349,9 +338,7 @@ function CatalogPage() {
                     <ProductCard
                       key={p.id}
                       p={p}
-                      isCopied={copiedId === p.id}
                       isFavorite={isFavorite(p.id)}
-                      onSelect={handleSelect}
                       onToggleFavorite={toggleFavorite}
                     />
                   ))}
@@ -391,9 +378,7 @@ function CatalogPage() {
                           <ProductCard
                             key={p.id}
                             p={p}
-                            isCopied={copiedId === p.id}
                             isFavorite={isFavorite(p.id)}
-                            onSelect={handleSelect}
                             onToggleFavorite={toggleFavorite}
                           />
                         ))}
@@ -433,15 +418,11 @@ function CatalogPage() {
 
 function ProductCard({
   p,
-  isCopied,
   isFavorite,
-  onSelect,
   onToggleFavorite,
 }: {
   p: Product;
-  isCopied: boolean;
   isFavorite: boolean;
-  onSelect: (p: Product) => void;
   onToggleFavorite: (id: string) => void;
 }) {
   return (
@@ -503,20 +484,7 @@ function ProductCard({
 
         <div className="mt-auto flex flex-col gap-2 pt-4">
           <CompareCheckbox product={p} />
-          <Link
-            to="/"
-            hash="form"
-            onClick={() => onSelect(p)}
-            className="inline-flex min-h-11 items-center justify-center gap-2 border-2 border-foreground bg-primary px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-primary-foreground shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
-          >
-            {isCopied ? (
-              <>
-                <Check className="h-3.5 w-3.5" /> Added to quote
-              </>
-            ) : (
-              <>Add on</>
-            )}
-          </Link>
+          <ProductEnquiryButton product={p.name} />
           <a
             href={p.url}
             target="_blank"
