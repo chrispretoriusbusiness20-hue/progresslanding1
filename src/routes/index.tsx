@@ -28,9 +28,8 @@ const generateQuotePDF = async (
 
 import { PopularPicks } from "@/components/popular-picks";
 import { FireplaceFinder } from "@/components/fireplace-finder";
-import { PriceEstimator, PriceBreakdown } from "@/components/price-estimator";
+import { PriceBreakdown } from "@/components/price-estimator";
 import { QuoteSelectionSummary } from "@/components/quote-selection-summary";
-import { QuickEnquiry } from "@/components/quick-enquiry";
 import { calculateQuotePricing, flueKitApplies } from "@/lib/quote-pricing";
 import { TOP_PRODUCTS, getTopProduct } from "@/lib/popular-products";
 import { getQuoteDistance } from "@/lib/quote-estimate.functions";
@@ -1003,46 +1002,8 @@ function QuotePage() {
               Fill in your details below. We'll match your product to our catalog and calculate
               transport so your quote is ready in seconds.
             </p>
-            <a
-              href={QUOTE_APP_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-4 inline-flex items-center gap-2 border-2 border-foreground bg-accent px-4 py-2 text-xs font-bold uppercase tracking-wider text-foreground shadow-brutal-sm transition hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
-            >
-              <Sparkles className="h-3.5 w-3.5" />
-              Build your quote
-            </a>
           </div>
 
-          <QuickEnquiry
-            product={product}
-            onProduct={setProduct}
-          />
-          <PriceEstimator
-            names={PRODUCT_NAMES}
-            selections={pricingSelections}
-            onProduct={(name) => {
-              setProduct(name);
-              setSubmitted(false);
-              setLookup(null);
-            }}
-            onStory={setStoryType}
-            address={address}
-            onAddress={setAddress}
-            busy={distanceBusy}
-            error={distanceError}
-            onSend={() => {
-              setEntryAction("estimator_quote");
-              void captureLeadAction("estimator_quote", [product], {
-                customerName: `${firstName} ${lastName}`.trim() || undefined,
-                email: email || undefined,
-                phone: phone || undefined,
-              });
-              document
-                .getElementById("quote-details")
-                ?.scrollIntoView({ behavior: "smooth", block: "start" });
-            }}
-          />
           <form
             id="quote-details"
             onSubmit={handleSubmit}
