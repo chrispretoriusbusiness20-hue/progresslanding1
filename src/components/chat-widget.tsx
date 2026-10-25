@@ -4,7 +4,7 @@ export function ChatWidget() {
       href="https://wa.me/27689560320"
       target="_blank"
       rel="noopener noreferrer"
-      className="fixed bottom-40 right-3 z-40 flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-xl transition-transform hover:scale-105 sm:bottom-20 sm:right-5"
+      className="fixed bottom-40 right-3 z-40 flex min-h-12 items-center gap-2 rounded-full border-2 border-foreground bg-primary px-3 py-2 text-xs font-bold uppercase tracking-wide text-primary-foreground shadow-brutal-sm transition-transform hover:scale-105 sm:bottom-20 sm:right-5 sm:text-sm"
       aria-label="Chat on WhatsApp"
     >
       <svg viewBox="0 0 24 24" fill="currentColor" className="h-7 w-7">
