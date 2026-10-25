@@ -18,7 +18,7 @@ export function PopularPicks() {
             Popular picks
           </h2>
           <div className="mt-8 grid grid-cols-2 gap-4 lg:grid-cols-4">
-            {POPULAR_PRODUCTS.map((product) => (
+            {LANDING_GRID_PRODUCTS.map((product) => (
               <article
                 key={product.url}
                 className="flex min-w-0 flex-col overflow-hidden border-2 border-foreground bg-card shadow-brutal-sm"
