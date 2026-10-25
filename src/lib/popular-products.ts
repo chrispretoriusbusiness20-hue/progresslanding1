@@ -59,7 +59,9 @@ const landingGridNames = [
   "Boma",
 ] as const;
 
-export const LANDING_GRID_PRODUCTS = landingGridNames.flatMap((name) => {
+type GridProduct = (typeof products)[number] & { label?: string };
+
+export const LANDING_GRID_PRODUCTS: GridProduct[] = landingGridNames.flatMap((name) => {
   const pick = POPULAR_PRODUCTS.find((product) => product.name === name);
   if (pick) return [pick];
   const product = products.find((item) => item.name === name);
