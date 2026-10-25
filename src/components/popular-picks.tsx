@@ -4,7 +4,7 @@ import { LANDING_GRID_PRODUCTS } from "@/lib/popular-products";
 import { decodeProductName, formatRand } from "@/lib/product-display";
 import { getProductImageUrl } from "@/lib/product-images";
 import { CompareCheckbox } from "./product-compare";
-import { ProductEnquiryButton } from "./product-enquiry";
+import { BuildQuoteButton } from "./build-quote-button";
 
 export function PopularPicks() {
   return (

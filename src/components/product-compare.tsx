@@ -13,7 +13,7 @@ import {
 } from "@/lib/catalogue-products";
 import { decodeProductName, formatRand } from "@/lib/product-display";
 import { getProductImageUrl } from "@/lib/product-images";
-import { ProductEnquiryButton } from "./product-enquiry";
+import { BuildQuoteButton } from "./build-quote-button";
 import { getTopProduct, restoreTopComparisons } from "@/lib/popular-products";
 
 const CompareContext = createContext<{
