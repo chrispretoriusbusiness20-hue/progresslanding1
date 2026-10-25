@@ -3,7 +3,9 @@ import { z } from "zod";
 import { getTopProduct } from "./popular-products";
 
 const hasNoControlCharacters = (text: string) =>
-  Array.from(text).every((character) => character.charCodeAt(0) >= 32 && character.charCodeAt(0) !== 127);
+  Array.from(text).every(
+    (character) => character.charCodeAt(0) >= 32 && character.charCodeAt(0) !== 127,
+  );
 
 export const quickEnquirySchema = z.object({
   name: z
@@ -26,12 +28,7 @@ export const quickEnquirySchema = z.object({
     .string()
     .max(200)
     .refine((name) => Boolean(getTopProduct(name)), "Choose a top-pick product"),
-  town: z
-    .string()
-    .trim()
-    .max(100)
-    .refine(hasNoControlCharacters, "Enter a valid town")
-    .default(""),
+  town: z.string().trim().max(100).refine(hasNoControlCharacters, "Enter a valid town").default(""),
 });
 
 export function buildQuickEnquiryUrl(name: string, phone: string, product: string, town = "") {
