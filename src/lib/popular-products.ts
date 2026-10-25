@@ -23,3 +23,12 @@ export const TOP_PRODUCTS = [
   ...products.filter((item) => item.name === MAGMA_SPECIAL_NAME),
   ...POPULAR_PRODUCTS,
 ];
+
+export function getTopProduct(name: unknown) {
+  return TOP_PRODUCTS.find((product) => product.name === name);
+}
+
+export function restoreTopComparisons(names: unknown) {
+  if (!Array.isArray(names)) return [];
+  return TOP_PRODUCTS.filter((product) => names.includes(product.name)).slice(0, 3);
+}

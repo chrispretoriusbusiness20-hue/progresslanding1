@@ -7,7 +7,8 @@ import {
   flueRequirement,
   type CatalogueProduct,
 } from "./catalogue-products";
-import { calculateQuotePricing, transportPriceForKm } from "./quote-pricing";
+import { calculateQuotePricing, flueKitApplies, transportPriceForKm } from "./quote-pricing";
+import { TOP_PRODUCTS, getTopProduct, restoreTopComparisons } from "./popular-products";
 import { mergeAttribution } from "./lead-attribution";
 const product = (
   name: string,
@@ -27,6 +28,55 @@ const base = {
   distanceKm: 25,
 };
 describe("landing tool rules", () => {
+  it("old comparison selections exclude products outside the top picks", () => {
+    const restored = restoreTopComparisons(["Catalina Cast Iron", TOP_PRODUCTS[0].name]);
+    assert.deepEqual(
+      restored.map((item) => item.name),
+      [TOP_PRODUCTS[0].name],
+    );
+    assert.equal(getTopProduct("Catalina Cast Iron"), undefined);
+    assert.equal(
+      calculateQuotePricing({ ...base, price: restored[0].price }).productSubtotal,
+      17500,
+    );
+  });
+  it("finder recommendations from the top picks always have a quote price", () => {
+    const found = findFireplaces({ size: "small", fuel: "Wood", budget: "low" }, TOP_PRODUCTS);
+    assert.ok(found.length > 0);
+    for (const item of found) {
+      assert.ok(getTopProduct(item.name));
+      assert.equal(calculateQuotePricing({ ...base, price: item.price }).productSubtotal, 11514);
+    }
+  });
+  for (const name of [
+    "Stainless Steel Flue Clamp",
+    "Rubber Roof Sleeve",
+    "T-Piece Stainless Steel",
+    "Ethanol Biofuel",
+    "IQ PORTABLE",
+  ]) {
+    it(`${name} never receives the R7650 flue-kit charge`, () => {
+      assert.equal(flueKitApplies(name), false);
+      const quote = calculateQuotePricing({
+        ...base,
+        productName: name,
+        price: "R100",
+        installationRequired: false,
+      });
+      assert.equal(quote.flueKitPrice, null);
+      assert.equal(quote.total, 570);
+    });
+  }
+  for (const name of ["Catalina Cast Iron", "Air Cubo Single Sided - 700"]) {
+    it(`${name} retains the single and double storey flue kit`, () => {
+      assert.equal(flueKitApplies(name), true);
+      assert.equal(calculateQuotePricing({ ...base, productName: name }).flueKitPrice, 7650);
+      assert.equal(
+        calculateQuotePricing({ ...base, productName: name, storyType: "double" }).flueKitPrice,
+        9650,
+      );
+    });
+  }
   it("finder recommends fireplaces, not fuel consumables", () => {
     assert.equal(
       findFireplaces({ size: "small", fuel: "Wood", budget: "low" }, [

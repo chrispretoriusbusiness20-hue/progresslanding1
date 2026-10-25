@@ -31,7 +31,7 @@ import { FireplaceFinder } from "@/components/fireplace-finder";
 import { PriceEstimator, PriceBreakdown } from "@/components/price-estimator";
 import { QuoteSelectionSummary } from "@/components/quote-selection-summary";
 import { calculateQuotePricing, flueKitApplies } from "@/lib/quote-pricing";
-import { TOP_PRODUCTS } from "@/lib/popular-products";
+import { TOP_PRODUCTS, getTopProduct } from "@/lib/popular-products";
 import { getQuoteDistance } from "@/lib/quote-estimate.functions";
 import { getLandingAttribution, getLeadSessionId } from "@/lib/lead-attribution";
 import { captureLeadAction } from "@/lib/lead-events";
@@ -281,7 +281,7 @@ function QuotePage() {
   useEffect(() => {
     const onPick = (e: Event) => {
       const name = (e as CustomEvent<string>).detail;
-      if (name) setProduct(name);
+      if (getTopProduct(name)) setProduct(name);
     };
     window.addEventListener("select-product", onPick);
     return () => window.removeEventListener("select-product", onPick);
@@ -291,7 +291,7 @@ function QuotePage() {
     try {
       const selected = sessionStorage.getItem("selectedProduct");
       if (selected) {
-        setProduct(selected);
+        if (getTopProduct(selected)) setProduct(selected);
         sessionStorage.removeItem("selectedProduct");
         sessionStorage.removeItem("selectedProductPrice");
       }
