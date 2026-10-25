@@ -161,7 +161,7 @@ function ConsultationPage() {
     <main className="min-h-screen bg-background px-6 py-20">
       <div className="mx-auto max-w-xl">
         <div className="flex items-center justify-between">
-          <p className="font-display text-[10px] uppercase tracking-[0.36em] text-primary">
+          <p className="font-display text-[10px] uppercase tracking-[0.36em] text-primary-deep">
             The Progress Group
           </p>
           <Link

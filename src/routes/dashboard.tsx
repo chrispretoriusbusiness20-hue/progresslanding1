@@ -147,7 +147,7 @@ function DashboardAuthed({ onSignOut }: { onSignOut: () => void }) {
           ? "Your account isn't authorised to view this dashboard."
           : `Failed to load: ${error.message}`}
         <div className="mt-4">
-          <button onClick={onSignOut} className="text-xs text-primary hover:underline">
+          <button onClick={onSignOut} className="text-xs text-primary-deep hover:underline">
             Sign out
           </button>
         </div>
@@ -379,7 +379,7 @@ function Row({ r, onEdit }: { r: QuoteRow; onEdit: () => void }) {
         {r.address && <div className="text-xs text-muted-foreground">{r.address}</div>}
       </td>
       <td className="px-3 py-3">
-        <a href={`mailto:${r.email}`} className="block text-primary hover:underline">
+        <a href={`mailto:${r.email}`} className="block text-primary-deep hover:underline">
           {r.email}
         </a>
         <a href={`tel:${r.phone}`} className="block text-xs text-muted-foreground hover:underline">
@@ -413,7 +413,7 @@ function Row({ r, onEdit }: { r: QuoteRow; onEdit: () => void }) {
                 alert(`Could not open PDF: ${(e as Error).message}`);
               }
             }}
-            className="text-xs text-primary hover:underline"
+            className="text-xs text-primary-deep hover:underline"
           >
             View
           </button>
@@ -422,7 +422,7 @@ function Row({ r, onEdit }: { r: QuoteRow; onEdit: () => void }) {
         )}
       </td>
       <td className="px-3 py-3">
-        <button type="button" onClick={onEdit} className="text-xs text-primary hover:underline">
+        <button type="button" onClick={onEdit} className="text-xs text-primary-deep hover:underline">
           Edit
         </button>
       </td>

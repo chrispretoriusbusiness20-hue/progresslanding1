@@ -979,11 +979,11 @@ function QuotePage() {
             />
           </a>
           <div className="mt-3 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs font-semibold tracking-wide text-foreground/80">
-            <a href="tel:+27875500413" className="hover:text-primary transition-colors">
+            <a href="tel:+27875500413" className="hover:text-primary-deep transition-colors">
               Installations: 087 550 0413
             </a>
             <span className="text-foreground/20 hidden sm:inline">|</span>
-            <a href="tel:+27219453636" className="hover:text-primary transition-colors">
+            <a href="tel:+27219453636" className="hover:text-primary-deep transition-colors">
               Shopping: 021 945 3636
             </a>
           </div>
@@ -1167,7 +1167,7 @@ function QuotePage() {
                       className="h-4 w-4 accent-primary"
                     />
                     Product only{" "}
-                    <span className="text-xs font-semibold text-primary">(recommended)</span>
+                    <span className="text-xs font-semibold text-primary-deep">(recommended)</span>
                   </label>
                   <label className="flex items-center gap-2">
                     <input
@@ -1733,19 +1733,19 @@ function QuotePage() {
             </a>
           </div>
           <div>
-            <p className="font-display text-[10px] uppercase tracking-[0.36em] text-primary">
+            <p className="font-display text-[10px] uppercase tracking-[0.36em] text-primary-deep">
               Contact
             </p>
             <ul className="mt-4 space-y-2 text-sm text-foreground/80">
               <li>
                 Installations ·{" "}
-                <a href="tel:+27875500413" className="hover:text-primary">
+                <a href="tel:+27875500413" className="hover:text-primary-deep">
                   087 550 0413
                 </a>
               </li>
               <li>
                 Shopping ·{" "}
-                <a href="tel:+27219453636" className="hover:text-primary">
+                <a href="tel:+27219453636" className="hover:text-primary-deep">
                   021 945 3636
                 </a>
               </li>
@@ -1755,13 +1755,13 @@ function QuotePage() {
                   href="https://wa.me/27689560320"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="hover:text-primary"
+                  className="hover:text-primary-deep"
                 >
                   068 956 0320
                 </a>
               </li>
               <li>
-                <a href="mailto:Info@progressgroup.co.za" className="hover:text-primary">
+                <a href="mailto:Info@progressgroup.co.za" className="hover:text-primary-deep">
                   Info@progressgroup.co.za
                 </a>
               </li>
@@ -1769,7 +1769,7 @@ function QuotePage() {
             </ul>
           </div>
           <div>
-            <p className="font-display text-[10px] uppercase tracking-[0.36em] text-primary">
+            <p className="font-display text-[10px] uppercase tracking-[0.36em] text-primary-deep">
               Progress
             </p>
             <ul className="mt-4 space-y-2 text-sm text-foreground/80">
@@ -1778,18 +1778,18 @@ function QuotePage() {
                   href="https://www.progressgroup.co.za"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="hover:text-primary"
+                  className="hover:text-primary-deep"
                 >
                   progressgroup.co.za
                 </a>
               </li>
               <li>
-                <Link to="/catalog" className="hover:text-primary">
+                <Link to="/catalog" className="hover:text-primary-deep">
                   The Catalogue
                 </Link>
               </li>
               <li>
-                <Link to="/consultation" className="hover:text-primary">
+                <Link to="/consultation" className="hover:text-primary-deep">
                   Private Consultation
                 </Link>
               </li>

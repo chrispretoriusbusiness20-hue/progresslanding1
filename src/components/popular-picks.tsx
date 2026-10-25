@@ -47,7 +47,7 @@ export function PopularPicks() {
                   <h3 className={`${product.label ? "mt-3" : ""} break-words text-base leading-snug`}>
                     {decodeProductName(product.name)}
                   </h3>
-                  <p className="mt-3 text-xl font-bold text-primary">{formatRand(product.price)}</p>
+                  <p className="mt-3 text-xl font-bold text-primary-deep">{formatRand(product.price)}</p>
                   <CompareCheckbox product={product} />
                   <BuildQuoteButton product={product.name} className="mt-auto" />
                 </div>
@@ -60,7 +60,7 @@ export function PopularPicks() {
         <div className="mx-auto flex max-w-6xl flex-col items-start gap-6 px-6 py-8 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h2 className="flex items-start gap-3 text-2xl">
-              <Sun className="mt-1 size-6 shrink-0 text-primary" />
+              <Sun className="mt-1 size-6 shrink-0 text-primary-deep" />
               Beat the heat — aircon supply &amp; installation
             </h2>
             <p className="mt-3 text-base text-muted-foreground">

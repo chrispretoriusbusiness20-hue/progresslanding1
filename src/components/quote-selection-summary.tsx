@@ -51,7 +51,7 @@ export function QuoteSelectionSummary({
             {decodeProductName(selections.productName)}
           </p>
           <p className="mt-2 text-sm text-muted-foreground">Quantity: {selections.quantity}</p>
-          <p className="mt-2 text-base font-semibold text-primary">
+          <p className="mt-2 text-base font-semibold text-primary-deep">
             {formatRand(pricing.productSubtotal)}
           </p>
           {/flue\s*kit/i.test(selections.productName) && (

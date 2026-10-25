@@ -61,7 +61,7 @@ export function LandingHero() {
                 <h3 className="text-sm font-bold uppercase tracking-wide sm:text-base">
                   1200 De Lux Built-in Braai
                 </h3>
-                <p className="mt-1 text-3xl font-bold text-primary">
+                <p className="mt-1 text-3xl font-bold text-primary-deep">
                   {formatRand(SUMMER_PRODUCT.price)}
                 </p>
                 <p className="mt-1 text-xs text-muted-foreground">
@@ -93,7 +93,7 @@ export function LandingHero() {
           <ul className="mt-6 space-y-2">
             {PROMISES.map((p) => (
               <li key={p} className="flex items-start gap-2 text-sm font-medium">
-                <Check className="mt-0.5 h-4 w-4 shrink-0 text-primary" /> {p}
+                <Check className="mt-0.5 h-4 w-4 shrink-0 text-primary-deep" /> {p}
               </li>
             ))}
           </ul>
@@ -150,7 +150,7 @@ export function LandingHero() {
         <ul className="mx-auto flex max-w-6xl flex-wrap justify-center gap-x-8 gap-y-2 px-6 py-3 text-xs font-semibold">
           {STATS.map(({ icon: Icon, label }) => (
             <li key={label} className="flex items-center gap-2">
-              <Icon className="h-4 w-4 text-primary" />
+              <Icon className="h-4 w-4 text-primary-deep" />
               {label}
             </li>
           ))}
