@@ -8,7 +8,6 @@ import {
   Loader2,
   MessageCircle,
   ShoppingCart,
-  Sparkles,
   X,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -34,7 +33,6 @@ import { calculateQuotePricing, flueKitApplies } from "@/lib/quote-pricing";
 import { TOP_PRODUCTS, getTopProduct } from "@/lib/popular-products";
 import { getQuoteDistance } from "@/lib/quote-estimate.functions";
 import { getLandingAttribution, getLeadSessionId } from "@/lib/lead-attribution";
-import { captureLeadAction } from "@/lib/lead-events";
 import { decodeProductName, formatRand, parseRand } from "@/lib/product-display";
 import { getProductImageUrl } from "@/lib/product-images";
 import progressLogo from "@/assets/progress-header-transparent.png.asset.json";
