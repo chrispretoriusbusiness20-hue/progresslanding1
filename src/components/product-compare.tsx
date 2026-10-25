@@ -13,7 +13,7 @@ import {
 } from "@/lib/catalogue-products";
 import { decodeProductName, formatRand } from "@/lib/product-display";
 import { getProductImageUrl } from "@/lib/product-images";
-import { ProductEnquiryButton } from "./product-enquiry";
+import { BuildQuoteButton } from "./build-quote-button";
 import { getTopProduct, restoreTopComparisons } from "@/lib/popular-products";
 
 const CompareContext = createContext<{
@@ -150,7 +150,7 @@ export function ProductCompareProvider({ children }: { children: ReactNode }) {
                   <th className="p-3">Enquiry</th>
                   {products.map((product) => (
                     <td key={product.name} className="border-l border-border p-3">
-                      <ProductEnquiryButton product={product.name} />
+                      <BuildQuoteButton product={product.name} label="Build your quote" />
                     </td>
                   ))}
                 </tr>

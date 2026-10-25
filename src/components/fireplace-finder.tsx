@@ -6,7 +6,7 @@ import { findFireplaces, productKw, type FinderChoices } from "@/lib/catalogue-p
 import { TOP_PRODUCTS } from "@/lib/popular-products";
 import { decodeProductName, formatRand } from "@/lib/product-display";
 import { getProductImageUrl } from "@/lib/product-images";
-import { ProductEnquiryButton } from "./product-enquiry";
+import { BuildQuoteButton } from "./build-quote-button";
 
 export function FireplaceFinder() {
   const [step, setStep] = useState(0);
@@ -135,7 +135,7 @@ export function FireplaceFinder() {
                         {formatRand(product.price)}
                       </p>
                       <CompareCheckbox product={product} />
-                      <ProductEnquiryButton product={product.name} className="mt-auto" />
+                      <BuildQuoteButton product={product.name} className="mt-auto" />
                     </div>
                   </article>
                 ))}

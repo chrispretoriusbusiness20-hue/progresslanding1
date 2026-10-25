@@ -4,7 +4,7 @@ import { LANDING_GRID_PRODUCTS } from "@/lib/popular-products";
 import { decodeProductName, formatRand } from "@/lib/product-display";
 import { getProductImageUrl } from "@/lib/product-images";
 import { CompareCheckbox } from "./product-compare";
-import { ProductEnquiryButton } from "./product-enquiry";
+import { BuildQuoteButton } from "./build-quote-button";
 
 export function PopularPicks() {
   return (
@@ -49,7 +49,7 @@ export function PopularPicks() {
                   </h3>
                   <p className="mt-3 text-xl font-bold text-primary">{formatRand(product.price)}</p>
                   <CompareCheckbox product={product} />
-                  <ProductEnquiryButton product={product.name} className="mt-auto" />
+                  <BuildQuoteButton product={product.name} className="mt-auto" />
                 </div>
               </article>
             ))}

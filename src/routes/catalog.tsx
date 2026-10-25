@@ -8,8 +8,7 @@ import { IMPORTED_PRODUCTS } from "@/lib/popular-products";
 import { useFavorites } from "@/hooks/use-favorites";
 import progressLogo from "@/assets/progress-logo.jpeg.asset.json";
 import { CompareCheckbox } from "@/components/product-compare";
-import { ProductEnquiryButton } from "@/components/product-enquiry";
-import { CatalogueQuoteButton } from "@/components/catalogue-quote-button";
+import { BuildQuoteButton } from "@/components/build-quote-button";
 
 type Product = {
   id: string;
@@ -462,8 +461,7 @@ function ProductCard({
 
         <div className="mt-auto flex flex-col gap-2 pt-4">
           <CompareCheckbox product={p} />
-          <CatalogueQuoteButton product={p.name} />
-          <ProductEnquiryButton product={p.name} />
+          <BuildQuoteButton product={p.name} />
           <a
             href={p.url}
             target="_blank"
