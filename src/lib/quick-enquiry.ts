@@ -2,13 +2,16 @@ import { decodeProductName } from "./product-display";
 import { z } from "zod";
 import { getTopProduct } from "./popular-products";
 
+const hasNoControlCharacters = (text: string) =>
+  Array.from(text).every((character) => character.charCodeAt(0) >= 32 && character.charCodeAt(0) !== 127);
+
 export const quickEnquirySchema = z.object({
   name: z
     .string()
     .trim()
     .min(1, "Enter your name")
     .max(80)
-    .regex(/^[^\u0000-\u001f\u007f]+$/, "Enter a valid name"),
+    .refine(hasNoControlCharacters, "Enter a valid name"),
   phone: z
     .string()
     .trim()
@@ -27,7 +30,7 @@ export const quickEnquirySchema = z.object({
     .string()
     .trim()
     .max(100)
-    .regex(/^[^\u0000-\u001f\u007f]*$/, "Enter a valid town")
+    .refine(hasNoControlCharacters, "Enter a valid town")
     .default(""),
 });
 
