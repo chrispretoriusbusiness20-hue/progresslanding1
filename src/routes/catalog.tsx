@@ -4,7 +4,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { ArrowLeft, Check, Heart, Sparkles, Trash2 } from "lucide-react";
 import productsData from "@/data/products-full.json";
-import { TOP_PRODUCTS } from "@/lib/popular-products";
+import { IMPORTED_PRODUCTS } from "@/lib/popular-products";
 import { useFavorites } from "@/hooks/use-favorites";
 import progressLogo from "@/assets/progress-logo.jpeg.asset.json";
 import { CompareCheckbox } from "@/components/product-compare";
@@ -27,7 +27,7 @@ const allProducts = productsData as Product[];
 const MAGMA_SPECIAL_ID = "magma-10kw-closed-combustion-fireplace-incl-flue-kit-special";
 // 1200 De Lux Braai Mild Steel keeps its Summer Special badge.
 const SUMMER_SPECIAL_ID = "1200-de-lux-braai-mild-steel";
-const products: Product[] = TOP_PRODUCTS.flatMap((curated) => {
+const products: Product[] = IMPORTED_PRODUCTS.flatMap((curated) => {
   const original = allProducts.find(
     (product) => product.id === curated.id || product.url.replace(/\/$/, "") === curated.url.replace(/\/$/, ""),
   );
