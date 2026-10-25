@@ -25,14 +25,16 @@ export const leadEventSchema = attributionSchema
     email: z.string().email().max(200).optional(),
     phone: z.string().max(40).optional(),
     town: z.string().trim().max(100).optional(),
+    enquiryRequests: z.array(z.string().max(40)).max(11).optional(),
   })
   .superRefine((event, context) => {
-    if (event.town === undefined) return;
+    if (event.town === undefined && event.enquiryRequests === undefined) return;
     const enquiry = quickEnquirySchema.safeParse({
       name: event.customerName,
       phone: event.phone,
       product: event.products[0],
       town: event.town,
+      requests: event.enquiryRequests,
     });
     if (event.action !== "whatsapp_click" || event.products.length !== 1 || !enquiry.success) {
       context.addIssue({ code: z.ZodIssueCode.custom, message: "Invalid product enquiry" });

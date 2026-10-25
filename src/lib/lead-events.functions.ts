@@ -22,6 +22,7 @@ export const recordLeadEvent = createServerFn({ method: "POST" })
         email: data.email || null,
         phone: data.phone || null,
         town: data.town || null,
+        enquiry_requests: data.enquiryRequests || null,
         utm_source: data.utmSource || null,
         utm_medium: data.utmMedium || null,
         utm_campaign: data.utmCampaign || null,

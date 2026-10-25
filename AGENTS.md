@@ -12,3 +12,4 @@
 - Mount comparison state once at the root and position its bar above the landing mobile CTA so selections survive navigation without overlapping controls.
 - Render the quote form selection summary from its active pricing selections using the shared calculation, so displayed add-ons match the submitted quote rather than a separate shopping list.
 - Use the shared product enquiry form on cards and the inline quick enquiry; validate its schema on both client and server, persist the WhatsApp action including optional town before navigating, and never count it as a completed quote.
+- Keep enquiry request eligibility and message labels in `enquiry-options.ts`; validate selected requests against the active product category and log them without altering quote pricing.
