@@ -252,9 +252,9 @@ function QuotePage() {
   const [cornerInstall, setCornerInstall] = useState(false);
   // Only the Magma Special is offered as a supply-and-install package; every
   // other product is product-only and no installation choice is shown.
-  const [installationRequired, setInstallationRequired] = useState(true);
+  const [installationRequired, setInstallationRequired] = useState(false);
   useEffect(() => {
-    setInstallationRequired(isSpecialProduct(product));
+    setInstallationRequired(false);
   }, [product]);
   const [address, setAddress] = useState("");
 
@@ -1154,18 +1154,7 @@ function QuotePage() {
 
             {isSpecialProduct(product) ? (
               <Field label="Does the client need installation?">
-                <div className="flex gap-4 text-sm text-foreground">
-                  <label className="flex items-center gap-2">
-                    <input
-                      type="radio"
-                      name="installationRequired"
-                      checked={installationRequired}
-                      onChange={() => setInstallationRequired(true)}
-                      className="h-4 w-4 accent-primary"
-                    />
-                    Supply & install{" "}
-                    <span className="text-xs font-semibold text-primary">(recommended)</span>
-                  </label>
+                <div className="flex flex-wrap gap-4 text-sm text-foreground">
                   <label className="flex items-center gap-2">
                     <input
                       type="radio"
@@ -1177,7 +1166,18 @@ function QuotePage() {
                       }}
                       className="h-4 w-4 accent-primary"
                     />
-                    Product only (no installation)
+                    Product only{" "}
+                    <span className="text-xs font-semibold text-primary">(recommended)</span>
+                  </label>
+                  <label className="flex items-center gap-2">
+                    <input
+                      type="radio"
+                      name="installationRequired"
+                      checked={installationRequired}
+                      onChange={() => setInstallationRequired(true)}
+                      className="h-4 w-4 accent-primary"
+                    />
+                    Add on: supply &amp; install
                   </label>
                 </div>
               </Field>
