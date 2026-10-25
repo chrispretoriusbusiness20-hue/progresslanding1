@@ -15,3 +15,4 @@
 - Use the shared product enquiry form on cards and the inline quick enquiry; validate its schema on both client and server, persist the WhatsApp action including optional town before navigating, and never count it as a completed quote.
 - Keep enquiry request eligibility and message labels in `enquiry-options.ts`; validate selected requests against the active product category and log them without altering quote pricing.
 - Route every product-tile quote CTA through one shared component that reuses the root product-selection hand-off and the client-side catalogue PDF generator, so the quote form and the downloaded document always describe the same product.
+- Keep controls labelled WhatsApp on `wa.me` links and only genuine phone controls on `tel:` links, so a WhatsApp contact never places a call.
