@@ -17,7 +17,7 @@ export interface QuoteEmailData {
   paymentTerms?: string;
   /** Optional extra HTML inserted before the signature (e.g. a summary table). */
   extraHtml?: string;
-  /** Headline color accent. Defaults to brand orange. */
+  /** Headline color accent. Defaults to brand deep yellow. */
   accent?: string;
 }
 
