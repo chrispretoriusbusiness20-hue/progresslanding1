@@ -119,7 +119,7 @@ export function LandingHero() {
               <p className="text-2xl font-bold uppercase sm:text-3xl">Off-season deal</p>
             </div>
             <div className="p-6 sm:p-8">
-              <h2 className="text-3xl leading-tight">Factory direct — installation included</h2>
+              <h2 className="text-3xl leading-tight">Factory direct and installation included</h2>
               <p className="mt-4 text-xs font-bold uppercase tracking-wider text-muted-foreground">
                 One all-in special price
               </p>
