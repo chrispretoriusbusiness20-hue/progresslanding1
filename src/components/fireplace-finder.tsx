@@ -6,9 +6,9 @@ import { findFireplaces, productKw, type FinderChoices } from "@/lib/catalogue-p
 import { TOP_PRODUCTS } from "@/lib/popular-products";
 import { decodeProductName, formatRand } from "@/lib/product-display";
 import { getProductImageUrl } from "@/lib/product-images";
-import { captureLeadAction } from "@/lib/lead-events";
+import { ProductEnquiryButton } from "./product-enquiry";
 
-export function FireplaceFinder({ onSelectProduct }: { onSelectProduct: (name: string) => void }) {
+export function FireplaceFinder() {
   const [step, setStep] = useState(0);
   const [size, setSize] = useState<FinderChoices["size"]>("small");
   const [fuel, setFuel] = useState<FinderChoices["fuel"]>("any");
@@ -135,18 +135,7 @@ export function FireplaceFinder({ onSelectProduct }: { onSelectProduct: (name: s
                         {formatRand(product.price)}
                       </p>
                       <CompareCheckbox product={product} />
-                      <Button asChild className="mt-auto min-h-11 rounded-none">
-                        <a
-                          href="#form"
-                          data-select-product={product.name}
-                          onClick={() => {
-                            onSelectProduct(product.name);
-                            void captureLeadAction("finder_quote", [product.name]);
-                          }}
-                        >
-                          Get a quote
-                        </a>
-                      </Button>
+                      <ProductEnquiryButton product={product.name} className="mt-auto" />
                     </div>
                   </article>
                 ))}

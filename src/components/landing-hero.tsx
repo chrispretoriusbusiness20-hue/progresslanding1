@@ -5,6 +5,7 @@ import { formatRand } from "@/lib/product-display";
 import { getProductImageUrl } from "@/lib/product-images";
 import { STITCH_EXPRESS_URL } from "@/lib/stitch-express";
 import { notifyPaymentClick } from "@/lib/payment-click.functions";
+import { ProductEnquiryButton } from "./product-enquiry";
 
 const PROMISES = [
   "Factory-direct prices — no middleman markups",
@@ -24,11 +25,7 @@ const SUMMER_SPECIAL = {
   image: "/__l5e/assets-v1/3546c3ee-909c-4c92-aafc-e9c0b629dc95/1200-de-lux-braai.jpg",
 };
 
-export function LandingHero({
-  onSelectProduct,
-}: {
-  onSelectProduct?: (productName: string) => void;
-}) {
+export function LandingHero() {
   return (
     <section className="border-b-2 border-foreground bg-background">
       <div className="mx-auto grid max-w-6xl gap-10 px-6 py-12 sm:py-16 lg:grid-cols-[1.2fr_1fr] lg:items-start">
@@ -101,19 +98,7 @@ export function LandingHero({
             ))}
           </ul>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <Button
-              asChild
-              variant="outline"
-              className="h-auto min-h-12 rounded-none border-2 border-foreground px-6 py-3 font-bold"
-            >
-              <a
-                href="#quick-enquiry"
-                data-select-product={SUMMER_PRODUCT.name}
-                onClick={() => onSelectProduct?.(SUMMER_PRODUCT.name)}
-              >
-                Enquire now
-              </a>
-            </Button>
+            <ProductEnquiryButton product={SUMMER_PRODUCT.name} />
             <Button
               asChild
               variant="outline"
@@ -156,16 +141,7 @@ export function LandingHero({
                   <span>R470</span>
                 </li>
               </ul>
-              <Button asChild className="mt-6 h-auto w-full rounded-none p-0">
-                <a
-                  href="#form"
-                  data-select-product={MAGMA_SPECIAL_NAME}
-                  onClick={() => onSelectProduct?.(MAGMA_SPECIAL_NAME)}
-                  className="flex min-h-12 items-center justify-center gap-2 border-2 border-foreground bg-primary px-6 py-3 text-sm font-bold uppercase tracking-wider text-primary-foreground transition hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                >
-                  <Flame className="h-4 w-4 shrink-0" aria-hidden="true" /> Claim this special
-                </a>
-              </Button>
+              <ProductEnquiryButton product={MAGMA_SPECIAL_NAME} className="mt-6" />
             </div>
           </div>
         </div>
