@@ -5,7 +5,7 @@
 - Define landing popular picks by exact names from `products.json` in `src/lib/popular-products.ts`; include those records in the quote dropdown so card selections remain selectable.
 - Keep estimator, live quote and submitted quote calculations in `src/lib/quote-pricing.ts` and Bellville distance lookup in `quote-distance.server.ts` so amounts cannot diverge.
 - Use the merged catalogue module for finder specs and comparisons; unknown specs remain unknown rather than inferred beyond names/categories.
-- Offer only the top winning products (`TOP_PRODUCTS` in `src/lib/popular-products.ts`) in every customer-facing picker, including restored comparisons and stored quote selections, so nothing selectable sits outside the priced curated list.
+- Share the approved `TOP_PRODUCTS` list (popular picks plus explicitly imported products) across catalogue, enquiries and quote pickers; preserve nullable prices so new cards cannot lose pricing or become delivery-only payments.
 - Resolve flue-kit eligibility from catalogue fireplace categories, excluding bundled kits, braais and vent-free models; only use explicit fireplace names for unknown records so accessories and unrelated goods never gain a kit charge.
 - Capture session attribution through `lead-attribution.ts` and append validated actions to private `lead_events`; only existing server-verified staff access can list these records.
 - Keep quote CRM handoffs on the existing signed webhook, carrying action/page/session/ad attribution; anonymous click events stay distinct from completed quotes.
