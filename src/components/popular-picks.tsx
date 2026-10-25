@@ -44,7 +44,7 @@ export function PopularPicks() {
                       {product.label}
                     </span>
                   )}
-                  <h3 className="mt-3 break-words text-base leading-snug">
+                  <h3 className={`${product.label ? "mt-3" : ""} break-words text-base leading-snug`}>
                     {decodeProductName(product.name)}
                   </h3>
                   <p className="mt-3 text-xl font-bold text-primary">{formatRand(product.price)}</p>
