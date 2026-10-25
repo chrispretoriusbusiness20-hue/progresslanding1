@@ -152,7 +152,7 @@ export function AddressAutocomplete({ value, onChange, placeholder, className, d
           }
         }}
         placeholder={placeholder}
-        className={className}
+        className={`${className ?? ""} pr-11`}
         autoComplete="street-address"
         name="street-address"
 
@@ -166,10 +166,10 @@ export function AddressAutocomplete({ value, onChange, placeholder, className, d
           onClick={useMyLocation}
           disabled={locating || disabled}
           title="Use my current location"
-          className="absolute inset-y-0 right-2 my-auto inline-flex h-7 items-center gap-1 rounded px-2 text-xs text-muted-foreground hover:text-foreground disabled:opacity-50"
+          aria-label={locating ? "Locating…" : "Use my location"}
+          className="absolute inset-y-0 right-1.5 my-auto inline-flex h-8 w-8 items-center justify-center rounded bg-background text-muted-foreground hover:text-foreground disabled:opacity-50"
         >
-          {locating ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <MapPin className="h-3.5 w-3.5" />}
-          <span className="hidden sm:inline">{locating ? "Locating…" : "Use my location"}</span>
+          {locating ? <Loader2 className="h-4 w-4 animate-spin" /> : <MapPin className="h-4 w-4" />}
         </button>
       </div>
       {locError && <p className="mt-1 text-xs text-destructive">{locError}</p>}
