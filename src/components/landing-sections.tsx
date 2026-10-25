@@ -261,14 +261,14 @@ export function LandingSections() {
       {/* Installation process */}
       <section className="border-t border-foreground/15 bg-foreground text-background">
         <div className="mx-auto max-w-6xl px-6 py-16 sm:py-20">
-          <p className="font-display text-[10px] uppercase tracking-[0.36em] text-primary-deep">
+          <p className="font-display text-[10px] uppercase tracking-[0.36em] text-primary">
             The process
           </p>
           <h2 className="mt-3 text-3xl sm:text-4xl">From idea to first fire.</h2>
           <ol className="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-5">
             {PROCESS_STEPS.map((s) => (
               <li key={s.n} className="border-t border-background/25 pt-4">
-                <p className="font-display text-2xl text-primary-deep">{s.n}</p>
+                <p className="font-display text-2xl text-primary">{s.n}</p>
                 <h3 className="mt-2 text-xs font-bold uppercase tracking-[0.18em]">{s.title}</h3>
                 <p className="mt-2 text-xs leading-relaxed text-background/70">{s.text}</p>
               </li>
