@@ -39,10 +39,12 @@ export function PopularPicks() {
                   />
                 </a>
                 <div className="flex flex-1 flex-col items-start p-3 sm:p-4">
-                  <span className="border border-foreground bg-accent px-2 py-1 text-[10px] font-bold leading-normal text-accent-foreground">
-                    {product.label}
-                  </span>
-                  <h3 className="mt-3 break-words text-base leading-snug">
+                  {product.label && (
+                    <span className="border border-foreground bg-accent px-2 py-1 text-[10px] font-bold leading-normal text-accent-foreground">
+                      {product.label}
+                    </span>
+                  )}
+                  <h3 className={`${product.label ? "mt-3" : ""} break-words text-base leading-snug`}>
                     {decodeProductName(product.name)}
                   </h3>
                   <p className="mt-3 text-xl font-bold text-primary">{formatRand(product.price)}</p>
