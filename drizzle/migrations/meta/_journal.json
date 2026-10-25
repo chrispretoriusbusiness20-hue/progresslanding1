@@ -29,6 +29,13 @@
       "when": 1792914429191,
       "tag": "0003_add_enquiry_town",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1792914670861,
+      "tag": "0004_add_enquiry_requests",
+      "breakpoints": true
     }
   ]
 }

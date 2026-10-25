@@ -242,6 +242,7 @@ export type Database = {
           created_at: string
           customer_name: string | null
           email: string | null
+          enquiry_requests: string[] | null
           event_id: string
           fbclid: string | null
           gclid: string | null
@@ -261,6 +262,7 @@ export type Database = {
           created_at?: string
           customer_name?: string | null
           email?: string | null
+          enquiry_requests?: string[] | null
           event_id: string
           fbclid?: string | null
           gclid?: string | null
@@ -280,6 +282,7 @@ export type Database = {
           created_at?: string
           customer_name?: string | null
           email?: string | null
+          enquiry_requests?: string[] | null
           event_id?: string
           fbclid?: string | null
           gclid?: string | null
