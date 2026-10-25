@@ -30,6 +30,7 @@ import { PopularPicks } from "@/components/popular-picks";
 import { FireplaceFinder } from "@/components/fireplace-finder";
 import { PriceEstimator, PriceBreakdown } from "@/components/price-estimator";
 import { QuoteSelectionSummary } from "@/components/quote-selection-summary";
+import { QuickEnquiry } from "@/components/quick-enquiry";
 import { calculateQuotePricing, flueKitApplies } from "@/lib/quote-pricing";
 import { TOP_PRODUCTS, getTopProduct } from "@/lib/popular-products";
 import { getQuoteDistance } from "@/lib/quote-estimate.functions";
@@ -1004,7 +1005,7 @@ function QuotePage() {
       <section id="form" className="bg-background">
         <div className="mx-auto max-w-3xl px-6 py-16 sm:py-20">
           <div className="mb-8">
-            <h2 className="text-3xl sm:text-4xl">REQUEST A QUOTE</h2>
+            <h2 className="text-3xl sm:text-4xl">Enquire or get a quote</h2>
             <p className="mt-2 text-sm text-muted-foreground">
               Fill in your details below. We'll match your product to our catalog and calculate
               transport so your quote is ready in seconds.
@@ -1020,6 +1021,14 @@ function QuotePage() {
             </a>
           </div>
 
+          <QuickEnquiry
+            name={firstName}
+            phone={phone}
+            product={product}
+            onName={setFirstName}
+            onPhone={setPhone}
+            onProduct={setProduct}
+          />
           <PriceEstimator
             names={PRODUCT_NAMES}
             selections={pricingSelections}

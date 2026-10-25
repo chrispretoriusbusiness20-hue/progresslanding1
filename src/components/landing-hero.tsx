@@ -107,11 +107,11 @@ export function LandingHero({
               className="h-auto min-h-12 rounded-none border-2 border-foreground px-6 py-3 font-bold"
             >
               <a
-                href="#form"
+                href="#quick-enquiry"
                 data-select-product={SUMMER_PRODUCT.name}
                 onClick={() => onSelectProduct?.(SUMMER_PRODUCT.name)}
               >
-                Get my instant quote
+                Enquire now
               </a>
             </Button>
             <Button
