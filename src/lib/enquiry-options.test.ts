@@ -22,7 +22,7 @@ describe("optional enquiry requests", () => {
   });
   it("wood and pellet fireplaces offer all fire requests", () => {
     assert.deepEqual(ids("Magma 001", "closed-combustion-fireplaces"), fireRequests);
-    assert.deepEqual(ids("Korg", "pellet-fireplaces"), fireRequests);
+    assert.deepEqual(ids("Sample Pellet Stove", "pellet-fireplaces"), fireRequests);
   });
   it("gas braais, fireplaces and grates additionally offer both gas requests", () => {
     for (const [name, category] of [
