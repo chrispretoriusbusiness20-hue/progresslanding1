@@ -1,6 +1,6 @@
 import { MessageCircle, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { POPULAR_PRODUCTS } from "@/lib/popular-products";
+import { LANDING_GRID_PRODUCTS } from "@/lib/popular-products";
 import { decodeProductName, formatRand } from "@/lib/product-display";
 import { getProductImageUrl } from "@/lib/product-images";
 import { CompareCheckbox } from "./product-compare";
