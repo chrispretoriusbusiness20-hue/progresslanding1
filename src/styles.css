@@ -35,6 +35,7 @@
   --color-popover: var(--popover);
   --color-popover-foreground: var(--popover-foreground);
   --color-primary: var(--primary);
+  --color-primary-deep: var(--primary-deep);
   --color-primary-foreground: var(--primary-foreground);
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
@@ -73,10 +74,11 @@
   --popover: oklch(0.97 0.01 90);
   --popover-foreground: oklch(0.13 0.01 60);
   /* Signature Progress deep yellow */
-  --primary: oklch(0.548 0.112 90.2);
-  --primary-foreground: oklch(0.99 0.01 90);
-  --primary-glow: oklch(0.795 0.162 86);
-  --ember: oklch(0.548 0.112 90.2);
+  --primary: oklch(0.795 0.162 86);
+  --primary-foreground: oklch(0.178 0.02 77.9);
+  --primary-deep: oklch(0.548 0.112 90.2);
+  --primary-glow: oklch(0.861 0.173 91.9);
+  --ember: oklch(0.795 0.162 86);
   --secondary: oklch(0.95 0.01 90);
   --secondary-foreground: oklch(0.13 0.01 60);
   --muted: oklch(0.95 0.01 90);
