@@ -35,6 +35,10 @@ export const TOP_PRODUCTS = [
     (item) => IMPORTED_PRODUCT_IDS.some((id) => id === item.id) && !existingPickNames.has(item.name),
   ),
 ];
+// The catalogue page shows only the products the user imported.
+export const IMPORTED_PRODUCTS = products.filter((item) =>
+  (IMPORTED_PRODUCT_IDS as readonly string[]).includes(item.id),
+);
 
 export function getTopProduct(name: unknown) {
   return TOP_PRODUCTS.find((product) => product.name === name);
