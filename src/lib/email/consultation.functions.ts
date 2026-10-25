@@ -38,7 +38,7 @@ export const bookConsultation = createServerFn({ method: "POST" })
 
     const teamHtml = `
       <div style="font-family:Arial,sans-serif;color:#111;max-width:600px">
-        <h2 style="margin:0 0 12px;color:#dd7400">New private consultation request</h2>
+        <h2 style="margin:0 0 12px;color:#8a6d00">New private consultation request</h2>
         <table style="border-collapse:collapse;width:100%;font-size:14px">
           <tr><td style="padding:8px;border:1px solid #eee;background:#fafafa;width:140px;font-weight:600">Name</td><td style="padding:8px;border:1px solid #eee">${esc(data.name)}</td></tr>
           <tr><td style="padding:8px;border:1px solid #eee;background:#fafafa;font-weight:600">Email</td><td style="padding:8px;border:1px solid #eee">${esc(data.email)}</td></tr>
@@ -54,7 +54,7 @@ export const bookConsultation = createServerFn({ method: "POST" })
 
     const clientHtml = `
       <div style="font-family:Arial,sans-serif;color:#111;max-width:600px">
-        <h2 style="margin:0 0 12px;color:#dd7400">Your consultation request has been received</h2>
+        <h2 style="margin:0 0 12px;color:#8a6d00">Your consultation request has been received</h2>
         <p>Hi ${esc(data.name.split(" ")[0] || data.name)},</p>
         <p>Thank you for requesting a private consultation with The Progress Group. We've received your preferred slot below and one of our specialists will be in touch shortly to confirm.</p>
         <table style="border-collapse:collapse;width:100%;font-size:14px;margin:12px 0">

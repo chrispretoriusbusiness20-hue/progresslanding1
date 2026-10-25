@@ -35,7 +35,7 @@ export function buildQuoteEmailHtml(data: QuoteEmailData): string {
     viewLabel = "View your quote",
     paymentTerms = "Full payment on order.",
     extraHtml,
-    accent = "#dd7400",
+    accent = "#8a6d00",
   } = data;
 
   const introLine =

@@ -73,7 +73,7 @@ function readEvent(payload: unknown): { reference: string | null; state: string;
 function confirmationHtml(name: string, reference: string, amountLabel: string): string {
   return `
     <div style="font-family:Arial,Helvetica,sans-serif;color:#1a1a1a;max-width:600px">
-      <h2 style="margin:0 0 12px;color:#dd7400">Payment received</h2>
+      <h2 style="margin:0 0 12px;color:#8a6d00">Payment received</h2>
       <p>Hi ${name},</p>
       <p>Thank you — we've received your payment${amountLabel ? ` of <strong>${amountLabel}</strong>` : ""} for <strong>${reference}</strong>.</p>
       <p>Your order is now confirmed. Our team will contact you to arrange delivery and, where applicable, confirm your installation date.</p>

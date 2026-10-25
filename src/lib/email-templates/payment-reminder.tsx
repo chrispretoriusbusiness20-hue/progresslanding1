@@ -40,7 +40,7 @@ export const template = {
 
 const main = { backgroundColor: '#ffffff', fontFamily: 'Arial, sans-serif', color: '#111' }
 const container = { padding: '24px', maxWidth: '640px' }
-const h1 = { fontSize: '22px', fontWeight: 700, margin: '0 0 16px', color: '#dd7400' }
+const h1 = { fontSize: '22px', fontWeight: 700, margin: '0 0 16px', color: '#8a6d00' }
 const text = { fontSize: '15px', lineHeight: '1.6', margin: '0 0 12px' }
 const muted = { fontSize: '13px', lineHeight: '1.6', color: '#555', margin: '0 0 8px' }
 const hr = { borderColor: '#eee', margin: '24px 0' }

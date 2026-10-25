@@ -17,18 +17,18 @@ function buildFollowUpHtml(args: {
   const pdfButton = args.pdfUrl
     ? `<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:24px 0">
          <tr><td>
-           <a href="${esc(args.pdfUrl)}" style="display:inline-block;background:#dd7400;color:#fff;padding:12px 22px;border-radius:4px;text-decoration:none;font-weight:600">View your quote (PDF)</a>
+           <a href="${esc(args.pdfUrl)}" style="display:inline-block;background:#8a6d00;color:#fff;padding:12px 22px;border-radius:4px;text-decoration:none;font-weight:600">View your quote (PDF)</a>
          </td></tr>
        </table>`
     : "";
   return `
     <div style="font-family:Arial,sans-serif;color:#111;max-width:600px">
-      <h2 style="margin:0 0 12px;color:#dd7400">Just following up on your quote</h2>
+      <h2 style="margin:0 0 12px;color:#8a6d00">Just following up on your quote</h2>
       <p>${greeting},</p>
       <p>We noticed you requested a quote from <strong>Progress Group</strong> for <strong>${esc(args.productName || "your selection")}</strong> a couple of days ago, and wanted to check in.</p>
       <p>If you'd like to move forward, simply reply to this email or click below to view your quote again. We're also happy to answer any questions or adjust the quote if your requirements have changed.</p>
       ${pdfButton}
-      <p style="margin-top:24px">Kind regards,<br/><strong>The Progress Group Sales Team</strong><br/><a href="mailto:${SALES_EMAIL}" style="color:#dd7400;text-decoration:none">${SALES_EMAIL}</a></p>
+      <p style="margin-top:24px">Kind regards,<br/><strong>The Progress Group Sales Team</strong><br/><a href="mailto:${SALES_EMAIL}" style="color:#8a6d00;text-decoration:none">${SALES_EMAIL}</a></p>
     </div>`;
 }
 

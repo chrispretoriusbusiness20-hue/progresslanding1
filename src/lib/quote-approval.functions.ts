@@ -296,7 +296,7 @@ export const requestManagerApproval = createServerFn({ method: "POST" })
     const subject = `Your Quote - ${quoteNumber(q.id)}`;
     const html = `
       <div style="font-family:Arial,sans-serif;color:#111;max-width:600px">
-        <h2 style="margin:0 0 12px;color:#dd7400">Approval requested</h2>
+        <h2 style="margin:0 0 12px;color:#8a6d00">Approval requested</h2>
         <p>The quote below is pending approval. Reply to this email with <em>"I approve"</em> to confirm, or open the dashboard to review and approve/reject with a note.</p>
         ${summaryHtml(q)}
         ${signature()}

@@ -92,13 +92,13 @@ export const Route = createFileRoute("/api/public/approve-invoice")({
         }
 
         const downloadBtn = invoicePdfUrl
-          ? `<a href="${esc(invoicePdfUrl)}" style="display:inline-block;background:#dd7400;color:#fff;padding:14px 26px;border-radius:4px;text-decoration:none;font-weight:600">Download invoice (PDF)</a>`
+          ? `<a href="${esc(invoicePdfUrl)}" style="display:inline-block;background:#8a6d00;color:#fff;padding:14px 26px;border-radius:4px;text-decoration:none;font-weight:600">Download invoice (PDF)</a>`
           : `<p style="color:#888;font-size:14px">Your invoice PDF will follow shortly.</p>`;
 
         const clientHtml = `
           <div style="font-family:Arial,sans-serif;color:#111;max-width:640px">
-            <div style="border-bottom:2px solid #dd7400;padding-bottom:18px;margin-bottom:24px">
-              <div style="font-family:'Playfair Display',Georgia,serif;font-size:26px;color:#dd7400;font-weight:700">INVOICE APPROVED</div>
+            <div style="border-bottom:2px solid #8a6d00;padding-bottom:18px;margin-bottom:24px">
+              <div style="font-family:'Playfair Display',Georgia,serif;font-size:26px;color:#8a6d00;font-weight:700">INVOICE APPROVED</div>
               <div style="color:#666;font-size:13px;margin-top:4px">Progress Group</div>
             </div>
             <h2 style="margin:0 0 8px;font-family:'Playfair Display',Georgia,serif">Hi ${esc(client || "there")},</h2>
@@ -110,10 +110,10 @@ export const Route = createFileRoute("/api/public/approve-invoice")({
               <tr><td style="padding:6px 10px;border:1px solid #eee;background:#fafafa;font-weight:600">Quote Ref</td><td style="padding:6px 10px;border:1px solid #eee">${esc(quoteNo)}</td></tr>
               <tr><td style="padding:6px 10px;border:1px solid #eee;background:#fafafa;font-weight:600">Product</td><td style="padding:6px 10px;border:1px solid #eee">${esc(product)}</td></tr>
             </table>
-            <div style="margin:18px 0;padding:14px 18px;background:#fff7ed;border-left:4px solid #dd7400;color:#7c2d12;font-size:13px;line-height:1.6">
+            <div style="margin:18px 0;padding:14px 18px;background:#fefce8;border-left:4px solid #8a6d00;color:#713f12;font-size:13px;line-height:1.6">
               <strong>Payment terms:</strong> Full payment on order.<br/>
               <strong>EFT details:</strong> Our banking details are included on the attached invoice PDF.<br/>
-              <strong>Proof of payment:</strong> Please email your POP to <a href="mailto:sales@progressgrp.co.za" style="color:#dd7400;font-weight:600">sales@progressgrp.co.za</a> so we can confirm and schedule your order.
+              <strong>Proof of payment:</strong> Please email your POP to <a href="mailto:sales@progressgrp.co.za" style="color:#8a6d00;font-weight:600">sales@progressgrp.co.za</a> so we can confirm and schedule your order.
             </div>
             <div style="margin:24px 0">${downloadBtn}</div>
             <p style="color:#888;margin-top:24px;font-size:13px">— The Progress Group Team</p>
@@ -178,7 +178,7 @@ export const Route = createFileRoute("/api/public/approve-invoice")({
           `Approved ${invoiceNo}`,
           `<h2 style="color:#15803d;margin:0 0 12px;font-family:'Playfair Display',Georgia,serif">Invoice approved</h2>
            <p style="color:#444">Invoice <strong>${esc(invoiceNo)}</strong> has been emailed to <strong>${esc(to)}</strong>.</p>
-           ${invoicePdfUrl ? `<p style="margin-top:18px"><a href="${esc(invoicePdfUrl)}" style="color:#dd7400;font-weight:600">Open invoice PDF</a></p>` : ""}`,
+           ${invoicePdfUrl ? `<p style="margin-top:18px"><a href="${esc(invoicePdfUrl)}" style="color:#8a6d00;font-weight:600">Open invoice PDF</a></p>` : ""}`,
         );
       },
     },

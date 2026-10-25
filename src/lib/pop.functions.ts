@@ -113,7 +113,7 @@ export const notifyProofOfPayment = createServerFn({ method: "POST" })
         templateName: "pop-received",
         html: `
           <div style="font-family:Arial,sans-serif;color:#111;max-width:600px">
-            <h2 style="margin:0 0 12px;color:#dd7400">Proof of payment received</h2>
+            <h2 style="margin:0 0 12px;color:#8a6d00">Proof of payment received</h2>
             <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="font-size:14px;line-height:1.6">
               <tr><td><strong>Client</strong></td><td style="padding-left:12px">${esc(clientName)}</td></tr>
               <tr><td><strong>Email</strong></td><td style="padding-left:12px">${esc(data.email)}</td></tr>
@@ -122,7 +122,7 @@ export const notifyProofOfPayment = createServerFn({ method: "POST" })
               ${data.amount ? `<tr><td><strong>Amount</strong></td><td style="padding-left:12px">${esc(data.amount)}</td></tr>` : ""}
             </table>
             <p style="margin:20px 0">
-              <a href="${esc(signed.signedUrl)}" style="display:inline-block;background:#dd7400;color:#fff;padding:12px 20px;border-radius:4px;text-decoration:none;font-weight:bold">View proof of payment</a>
+              <a href="${esc(signed.signedUrl)}" style="display:inline-block;background:#8a6d00;color:#fff;padding:12px 20px;border-radius:4px;text-decoration:none;font-weight:bold">View proof of payment</a>
             </p>
           </div>
         `,
@@ -136,7 +136,7 @@ export const notifyProofOfPayment = createServerFn({ method: "POST" })
         templateName: "pop-confirmation",
         html: `
           <div style="font-family:Arial,sans-serif;color:#111;max-width:600px">
-            <h2 style="margin:0 0 12px;color:#dd7400">Thank you — we've received your proof of payment</h2>
+            <h2 style="margin:0 0 12px;color:#8a6d00">Thank you — we've received your proof of payment</h2>
             <p>Hi ${esc(clientName)},</p>
             <p>We've received your proof of payment${invoiceNo ? ` for invoice <strong>${esc(invoiceNo)}</strong>` : ""}. Our team will confirm the payment and contact you to arrange delivery or installation.</p>
             <p style="margin-top:24px">Kind regards,<br/>Progress Group</p>

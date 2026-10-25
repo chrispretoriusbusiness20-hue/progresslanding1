@@ -369,7 +369,7 @@ function CheckoutPage() {
                       </p>
 
                       {payload.installationRequired && payload.progressInstallationsNum > 0 && (
-                        <p className="border-2 border-amber-500 bg-amber-50 px-4 py-2 text-xs font-semibold text-amber-900">
+                        <p className="border-2 border-yellow-600 bg-yellow-50 px-4 py-2 text-xs font-semibold text-yellow-900">
                           ⚠ Two separate EFT payments are required — one to Progress Group and one
                           to Progress Installations. Please use the correct reference for each.
                         </p>
