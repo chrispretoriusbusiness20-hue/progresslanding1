@@ -196,9 +196,11 @@ export function ProductEnquiryForm({
 export function ProductEnquiryButton({
   product,
   className = "",
+  label = "Enquire Now",
 }: {
   product: string;
   className?: string;
+  label?: string;
 }) {
   const [open, setOpen] = useState(false);
   return (
@@ -207,7 +209,7 @@ export function ProductEnquiryButton({
         onClick={() => setOpen(true)}
         className={`h-auto min-h-11 w-full whitespace-normal rounded-none border-2 border-foreground px-2 py-3 text-xs font-bold shadow-brutal-sm ${className}`}
       >
-        Enquire Now
+        {label}
       </Button>
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="w-[calc(100%-32px)] max-w-sm max-h-[90dvh] overflow-y-auto rounded-none border-2 border-foreground shadow-brutal p-6">

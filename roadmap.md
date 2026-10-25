@@ -13,3 +13,5 @@
 - [x] Verify monitoring fixes: top-pick comparison restoration and category-based flue-kit eligibility
 - [x] Product card enquiry panels with validated name, phone, optional town and logged WhatsApp handoff
 - [x] Verify enquiry submission, saved contact/town and mobile/desktop panels
+- [x] Match and import thirteen approved products without duplicating existing records
+- [x] Verify catalogue prices, categories, unpriced enquiry CTAs and selections

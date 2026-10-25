@@ -45,7 +45,7 @@ describe("landing tool rules", () => {
     assert.ok(found.length > 0);
     for (const item of found) {
       assert.ok(getTopProduct(item.name));
-      assert.equal(calculateQuotePricing({ ...base, price: item.price }).productSubtotal, 11514);
+      assert.equal(calculateQuotePricing({ ...base, price: item.price }).productSubtotal, 12090);
     }
   });
   for (const name of [

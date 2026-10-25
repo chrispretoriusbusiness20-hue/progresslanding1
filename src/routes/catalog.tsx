@@ -4,7 +4,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { ArrowLeft, Check, Heart, Sparkles, Trash2 } from "lucide-react";
 import productsData from "@/data/products-full.json";
-import curatedData from "@/data/products.json";
+import { TOP_PRODUCTS } from "@/lib/popular-products";
 import { useFavorites } from "@/hooks/use-favorites";
 import progressLogo from "@/assets/progress-logo.jpeg.asset.json";
 import { CompareCheckbox } from "@/components/product-compare";
@@ -22,38 +22,16 @@ type Product = {
 
 const allProducts = productsData as Product[];
 
-const normalizeName = (name: string) =>
-  decodeProductName(name)
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, " ")
-    .trim();
-const curatedByName = new Map(curatedData.map((p) => [normalizeName(p.name), p]));
-
-// Curated catalogue — only the Magma 001 Special (pinned first) and the
-// eight "Popular picks" products from the landing page are listed.
+// Catalogue cards and customer selections share the approved product records.
 const MAGMA_SPECIAL_ID = "magma-10kw-closed-combustion-fireplace-incl-flue-kit-special";
 // 1200 De Lux Braai Mild Steel keeps its Summer Special badge.
 const SUMMER_SPECIAL_ID = "1200-de-lux-braai-mild-steel";
-const FEATURED_IDS = [
-  MAGMA_SPECIAL_ID,
-  // Popular picks (match src/lib/popular-products.ts)
-  "1200-de-lux-braai-mild-steel",
-  "magma-001-freestanding-fireplace-10kw-progress-group",
-  "a3-magma-003-freestanding-fireplace-15kw",
-  "nestor-martin-stanford-9",
-  "pebble-vent-free",
-  "panorama-1000-built-in-gas-fireplace",
-  "korg-pellet-fireplace",
-  "freestanding-cubo-air-900",
-];
-const products = FEATURED_IDS.map((id) => allProducts.find((p) => p.id === id))
-  .filter((p): p is Product => Boolean(p))
-  // Prices follow the curated landing data so catalogue cards always match
-  // the Popular picks cards (e.g. Magma 003 at R17 891, not R18 200).
-  .map((p) => {
-    const curated = curatedByName.get(normalizeName(p.name));
-    return curated?.price ? { ...p, price: curated.price } : p;
-  });
+const products: Product[] = TOP_PRODUCTS.flatMap((curated) => {
+  const original = allProducts.find(
+    (product) => product.id === curated.id || product.url.replace(/\/$/, "") === curated.url.replace(/\/$/, ""),
+  );
+  return original ? [{ ...original, name: curated.name, price: curated.price }] : [];
+});
 
 // Build category list dynamically, sorted by item count desc for nicer UX.
 const CATEGORY_ORDER = (() => {
@@ -477,14 +455,13 @@ function ProductCard({
         {p.price ? (
           <p className="mt-2 font-display text-xl text-primary">{formatRand(p.price)}</p>
         ) : (
-          <p className="mt-2 text-xs uppercase tracking-widest text-foreground/50">
-            Price on request
-          </p>
+          null
         )}
+        {p.price && <p className="text-xs text-foreground/50">Incl. VAT</p>}
 
         <div className="mt-auto flex flex-col gap-2 pt-4">
           <CompareCheckbox product={p} />
-          <ProductEnquiryButton product={p.name} />
+          <ProductEnquiryButton product={p.name} label={p.price === null ? "Get a Quote" : "Enquire Now"} />
           <a
             href={p.url}
             target="_blank"

@@ -4,7 +4,9 @@
     "price": "R8275,00",
     "image": "https://progressgroup.co.za/wp-content/uploads/2023/06/1200-De-Lux-Braai-300x300.jpg",
     "url": "https://progressgroup.co.za/product/1200-de-lux-braai-mild-steel/",
-    "category": "braais"
+    "category": "braais",
+    "id": "1200-de-lux-braai-mild-steel",
+    "subcategory": "Mild Steel Braais"
   },
   {
     "name": "Magma 10kW Closed Combustion Fireplace incl Flue Kit SPECIAL",
@@ -15,22 +17,30 @@
   },
   {
     "name": "Magma 001 Freestanding Fireplace 10kW",
-    "price": "R11514,00",
+    "price": "R12090,00",
     "image": "https://progressgrp.co.za/__l5e/assets-v1/98ffa1c8-86ed-41ca-8711-8d948e47ae13/magma-001.jpg",
     "url": "https://progressgroup.co.za/product/magma-001-freestanding-fireplace-10kw-progress-group/",
-    "category": "closed-combustion-fireplaces"
+    "category": "closed-combustion-fireplaces",
+    "id": "magma-001-freestanding-fireplace-10kw-progress-group",
+    "subcategory": "Closed Combustion Fireplaces"
   },
   {
     "name": "Magma 002 Freestanding Fireplace 10kW",
-    "price": "R14918,00",
+    "price": "R15664,00",
     "url": "https://progressgroup.co.za/product/a2-magma-002-freestanding-fireplace-10kw/",
-    "category": "closed-combustion-fireplaces"
+    "category": "closed-combustion-fireplaces",
+    "id": "a2-magma-002-freestanding-fireplace-10kw",
+    "subcategory": "Closed Combustion Fireplaces",
+    "image": "https://progressgroup.co.za/__l5e/assets-v1/5fa8b796-7c6c-47a4-a281-28185d97cfa3/magma-002.jpg"
   },
   {
     "name": "Magma 003 Freestanding Fireplace 15kW",
-    "price": "R17891,00",
+    "price": "R18786,00",
     "url": "https://progressgroup.co.za/product/a3-magma-003-freestanding-fireplace-15kw/",
-    "category": "closed-combustion-fireplaces"
+    "category": "closed-combustion-fireplaces",
+    "id": "a3-magma-003-freestanding-fireplace-15kw",
+    "subcategory": "Closed Combustion Fireplaces",
+    "image": "https://progressgroup.co.za/wp-content/uploads/2023/06/Magma-003-300x300.jpg"
   },
   {
     "name": "FreeStanding CUBO Air - 700",
@@ -280,9 +290,12 @@
   },
   {
     "name": "900 Built In Verto",
-    "price": "R15988,00",
+    "price": null,
     "url": "https://progressgroup.co.za/product/built-in-verto/",
-    "category": "gas-fireplaces"
+    "category": "gas-fireplaces",
+    "id": "built-in-verto",
+    "subcategory": "Gas Fireplaces",
+    "image": "https://progressgroup.co.za/wp-content/uploads/2023/06/built-in-Gas-vent-free-fireplace-1200mm-300x300.jpg"
   },
   {
     "name": "Panorama 1000 \u2013 Built in Gas Fireplace",
@@ -370,9 +383,12 @@
   },
   {
     "name": "900mm Drop In Vent Free (Pebbles)",
-    "price": "R8115,00",
+    "price": "R8521,00",
     "url": "https://progressgroup.co.za/product/pebble-vent-free/",
-    "category": "gas-fireplaces"
+    "category": "gas-fireplaces",
+    "id": "pebble-vent-free",
+    "subcategory": "Gas Fireplaces",
+    "image": "https://progressgroup.co.za/wp-content/uploads/2023/06/PEBBLE-GAS-GRATE-300x300.png"
   },
   {
     "name": "Picture Fireplace Plain back",
@@ -433,5 +449,68 @@
     "price": "R300,00",
     "url": "https://progressgroup.co.za/product/t-piece-bracket-stainless-steel/",
     "category": "flues-and-accessories"
+  },
+  {
+    "id": "900mm-double-wall-patio-braai-2",
+    "name": "800mm Double Wall Patio Braai",
+    "price": "R12122,00",
+    "image": "https://progressgroup.co.za/wp-content/uploads/2023/06/800mm-Single-Wall-Patio-Braai-300x300.jpg",
+    "url": "https://progressgroup.co.za/product/900mm-double-wall-patio-braai-2/",
+    "category": "braais",
+    "subcategory": "Patio Braais"
+  },
+  {
+    "id": "1200-de-lux-430-stainless-steel",
+    "name": "1200 De Lux 430 Stainless Steel",
+    "price": "R15976,00",
+    "image": "https://progressgroup.co.za/wp-content/uploads/2023/06/1200-De-Lux-430-Stainless-Steel-300x300.jpg",
+    "url": "https://progressgroup.co.za/product/1200-de-lux-430-stainless-steel/",
+    "category": "braais",
+    "subcategory": "Stainless Steel Braais"
+  },
+  {
+    "id": "1500-built-in-combo-braai-mild-steel",
+    "name": "1500 Built-In Combo Braai Mild Steel",
+    "price": "R19754,00",
+    "image": "https://progressgroup.co.za/wp-content/uploads/2024/12/1500-Combination-Braai.1-300x300.jpg",
+    "url": "https://progressgroup.co.za/product/1500-built-in-combo-braai-mild-steel/",
+    "category": "braais",
+    "subcategory": "Combo Braais"
+  },
+  {
+    "id": "lava-magma-vented-gas-fireplace-rear-flue-entry",
+    "name": "Magma Vented Gas Fireplace \u2013 Rear flue entry",
+    "price": "R12973,00",
+    "image": "https://lavafires.co.za/wp-content/uploads/Freestanding-Gas-1000-x-618px-ratio.jpg",
+    "url": "https://progressgroup.co.za/product/lava-magma-vented-gas-fireplace-rear-flue-entry",
+    "category": "gas-fireplaces",
+    "subcategory": "Gas Fireplaces"
+  },
+  {
+    "id": "cubo-700-insert-fireplace-12-5kw",
+    "name": "CUBO 700 Insert Fireplace 12.5kW",
+    "price": "R23846,00",
+    "image": "https://lavafires.co.za/wp-content/uploads/CUBO-700-Closed-Combustion-Insert-Fireplace.jpg",
+    "url": "https://progressgroup.co.za/product/cubo-700-insert-fireplace-12-5kw",
+    "category": "insert-fireplaces",
+    "subcategory": "Insert Fireplaces"
+  },
+  {
+    "id": "700-contractors-braai",
+    "name": "700 Contractors Braai",
+    "price": null,
+    "image": null,
+    "url": "https://progressgroup.co.za/product-category/braais/",
+    "category": "braais",
+    "subcategory": "Contractors Braais"
+  },
+  {
+    "id": "boma",
+    "name": "Boma",
+    "price": "R10695,00",
+    "image": "/__l5e/assets-v1/7b998c96-7b78-47ac-8fb7-1e912428bdc6/boma-braai.png",
+    "url": "https://progressgroup.co.za/product-category/outdoor/",
+    "category": "outdoor",
+    "subcategory": "Boma"
   }
 ]

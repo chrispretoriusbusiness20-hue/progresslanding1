@@ -18,10 +18,22 @@ export const POPULAR_PRODUCTS = picks.flatMap(([name, label]) => {
   return product ? [{ ...product, label }] : [];
 });
 
-// Top winning products — the only ones offered in the quote form dropdown.
+export const IMPORTED_PRODUCT_IDS = [
+  "700-contractors-braai", "900mm-double-wall-patio-braai-2",
+  "1200-de-lux-braai-mild-steel", "1200-de-lux-430-stainless-steel",
+  "1500-built-in-combo-braai-mild-steel", "magma-001-freestanding-fireplace-10kw-progress-group",
+  "a2-magma-002-freestanding-fireplace-10kw", "a3-magma-003-freestanding-fireplace-15kw",
+  "pebble-vent-free", "built-in-verto", "lava-magma-vented-gas-fireplace-rear-flue-entry",
+  "cubo-700-insert-fireplace-12-5kw", "boma",
+] as const;
+const existingPickNames = new Set(POPULAR_PRODUCTS.map((product) => product.name));
+// One approved selection list keeps new catalogue cards priced in quotes too.
 export const TOP_PRODUCTS = [
   ...products.filter((item) => item.name === MAGMA_SPECIAL_NAME),
   ...POPULAR_PRODUCTS,
+  ...products.filter(
+    (item) => IMPORTED_PRODUCT_IDS.some((id) => id === item.id) && !existingPickNames.has(item.name),
+  ),
 ];
 
 export function getTopProduct(name: unknown) {
