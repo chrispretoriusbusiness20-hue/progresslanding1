@@ -5,7 +5,13 @@ import type { LeadEventInput } from "./lead-events-schema";
 export function captureLeadAction(
   action: LeadEventInput["action"],
   products: string[] = [],
-  contact: { customerName?: string; email?: string; phone?: string; town?: string } = {},
+  contact: {
+    customerName?: string;
+    email?: string;
+    phone?: string;
+    town?: string;
+    enquiryRequests?: string[];
+  } = {},
 ) {
   const eventId = crypto.randomUUID();
   return recordLeadEvent({

@@ -1,0 +1,2 @@
+ALTER TABLE public.lead_events ADD COLUMN IF NOT EXISTS enquiry_requests text[];
+COMMENT ON COLUMN public.lead_events.enquiry_requests IS 'Optional validated product-category enquiry request identifiers; not priced quote add-ons.';
