@@ -1751,7 +1751,12 @@ function QuotePage() {
               </li>
               <li>
                 WhatsApp ·{" "}
-                <a href="tel:+27689560320" className="hover:text-primary">
+                <a
+                  href="https://wa.me/27689560320"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-primary"
+                >
                   068 956 0320
                 </a>
               </li>
