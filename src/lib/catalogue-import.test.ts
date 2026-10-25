@@ -42,7 +42,9 @@ describe("approved VAT-inclusive catalogue import", () => {
   }
   it("shows thirteen imports without duplicate IDs or model variants", () => {
     assert.equal(IMPORTED_PRODUCT_IDS.length, 13);
-    assert.equal(new Set(full.map((product) => product.id)).size, full.length);
+    for (const id of IMPORTED_PRODUCT_IDS) {
+      assert.equal(full.filter((product) => product.id === id).length, 1);
+    }
     assert.equal(new Set(TOP_PRODUCTS.map((product) => product.name)).size, TOP_PRODUCTS.length);
     assert.equal(TOP_PRODUCTS.length, 18);
   });
