@@ -995,8 +995,8 @@ function QuotePage() {
       <FireplaceFinder />
       <MobileStickyCta />
       {/* Form */}
-      <section id="form" className="bg-background">
-        <div className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 sm:py-20">
+      <section id="form" className="scroll-mt-36 bg-background">
+        <div className="mx-auto w-full max-w-3xl px-4 py-16 sm:px-6 sm:py-20">
           <div className="mb-8">
             <h2 className="text-3xl sm:text-4xl">Enquire or get a quote</h2>
             <p className="mt-2 text-sm text-muted-foreground">
