@@ -3,6 +3,7 @@ import { ArrowLeft, Flame, MessageCircle, RotateCcw } from "lucide-react";
 import { Button } from "./ui/button";
 import { CompareCheckbox } from "./product-compare";
 import { findFireplaces, productKw, type FinderChoices } from "@/lib/catalogue-products";
+import { TOP_PRODUCTS } from "@/lib/popular-products";
 import { decodeProductName, formatRand } from "@/lib/product-display";
 import { getProductImageUrl } from "@/lib/product-images";
 import { captureLeadAction } from "@/lib/lead-events";
@@ -12,7 +13,9 @@ export function FireplaceFinder({ onSelectProduct }: { onSelectProduct: (name: s
   const [size, setSize] = useState<FinderChoices["size"]>("small");
   const [fuel, setFuel] = useState<FinderChoices["fuel"]>("any");
   const [budget, setBudget] = useState<FinderChoices["budget"]>("low");
-  const results = step === 3 ? findFireplaces({ size, fuel, budget }) : [];
+  // Only the top winning products are offered, so the finder never recommends
+  // a model the quote form can't price.
+  const results = step === 3 ? findFireplaces({ size, fuel, budget }, TOP_PRODUCTS) : [];
   const options =
     step === 0
       ? [
