@@ -252,9 +252,9 @@ function QuotePage() {
   const [cornerInstall, setCornerInstall] = useState(false);
   // Only the Magma Special is offered as a supply-and-install package; every
   // other product is product-only and no installation choice is shown.
-  const [installationRequired, setInstallationRequired] = useState(true);
-  useEffect(() => {
-    setInstallationRequired(isSpecialProduct(product));
+  const [installationRequired, setInstallationRequired] = useState(false);
+...
+    setInstallationRequired(false);
   }, [product]);
   const [address, setAddress] = useState("");
 
