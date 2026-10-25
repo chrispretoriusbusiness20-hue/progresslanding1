@@ -39,6 +39,35 @@ export const IMPORTED_PRODUCTS = products.filter((item) =>
   (IMPORTED_PRODUCT_IDS as readonly string[]).some((id) => id === item.id),
 );
 
+// The landing grid shows every approved pick and imported product, in the order the owner listed.
+const landingGridNames = [
+  "1200 De Lux Built-in Braai Mild Steel",
+  "Magma 001 Freestanding Fireplace 10kW",
+  "Magma 003 Freestanding Fireplace 15kW",
+  "Nestor Martin Stanford 9",
+  "900mm Drop In Vent Free (Pebbles)",
+  "Panorama 1000 – Built in Gas Fireplace",
+  "FreeStanding CUBO Air - 900",
+  "Magma 002 Freestanding Fireplace 10kW",
+  "900 Built In Verto",
+  "800mm Double Wall Patio Braai",
+  "1200 De Lux 430 Stainless Steel",
+  "1500 Built-In Combo Braai Mild Steel",
+  "Magma Vented Gas Fireplace – Rear flue entry",
+  "CUBO 700 Insert Fireplace 12.5kW",
+  "700 Contractors Braai",
+  "Boma",
+] as const;
+
+type GridProduct = (typeof products)[number] & { label?: string };
+
+export const LANDING_GRID_PRODUCTS: GridProduct[] = landingGridNames.flatMap((name) => {
+  const pick = POPULAR_PRODUCTS.find((product) => product.name === name);
+  if (pick) return [pick];
+  const product = products.find((item) => item.name === name);
+  return product ? [{ ...product }] : [];
+});
+
 export function getTopProduct(name: unknown) {
   return TOP_PRODUCTS.find((product) => product.name === name);
 }
