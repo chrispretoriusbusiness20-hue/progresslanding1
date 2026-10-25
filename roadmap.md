@@ -10,3 +10,4 @@
 - [x] Compare up to three products across landing and catalogue
 - [x] Desktop/mobile flows, real quote and CRM sync verified; preview only
 - [ ] Verify staff activity list while signed in — blocked: requesting user has no matching staff account/session; sign-in gate and server staff protection verified
+- [ ] Verify monitoring fixes: top-pick comparison restoration and category-based flue-kit eligibility

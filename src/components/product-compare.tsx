@@ -5,7 +5,6 @@ import { Button } from "./ui/button";
 import { Checkbox } from "./ui/checkbox";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "./ui/dialog";
 import {
-  CATALOGUE_PRODUCTS,
   flueRequirement,
   nextCompareSelection,
   productFuel,
@@ -15,6 +14,7 @@ import {
 import { decodeProductName, formatRand } from "@/lib/product-display";
 import { getProductImageUrl } from "@/lib/product-images";
 import { captureLeadAction } from "@/lib/lead-events";
+import { getTopProduct, restoreTopComparisons } from "@/lib/popular-products";
 
 const CompareContext = createContext<{
   products: CatalogueProduct[];
@@ -43,22 +43,16 @@ export function ProductCompareProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     try {
       const names: unknown = JSON.parse(sessionStorage.getItem("progress_compare") ?? "[]");
-      if (Array.isArray(names))
-        setProducts(
-          names
-            .flatMap((name) => {
-              const product = CATALOGUE_PRODUCTS.find((item) => item.name === name);
-              return product ? [product] : [];
-            })
-            .slice(0, 3),
-        );
+      setProducts(restoreTopComparisons(names));
     } catch {
       /* Storage unavailable. */
     }
   }, []);
   const toggle = (product: CatalogueProduct) =>
     setProducts((selected) => {
-      const next = nextCompareSelection(selected, product);
+      const currentProduct = getTopProduct(product.name);
+      if (!currentProduct) return selected;
+      const next = nextCompareSelection(selected, currentProduct);
       try {
         sessionStorage.setItem("progress_compare", JSON.stringify(next.map((item) => item.name)));
       } catch {

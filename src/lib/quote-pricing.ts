@@ -5,6 +5,11 @@ import {
   specialDiscountFor,
 } from "./special-discount";
 import { parseRand } from "./product-display";
+import { CATALOGUE_PRODUCTS } from "./catalogue-products";
+
+const productCategories = new Map(
+  CATALOGUE_PRODUCTS.map((product) => [product.name, product.category]),
+);
 
 export type PricingSelections = {
   productName: string;
@@ -20,7 +25,11 @@ export type PricingSelections = {
 };
 export function flueKitApplies(name: string): boolean {
   if (isAllInclusiveProduct(name)) return false;
-  return !/flue\s*kit|braai|vent\s*free/i.test(name);
+  if (/flue[\s-]*kit|braai|vent[\s-]*free/i.test(name)) return false;
+  const category = productCategories.get(name);
+  if (category) return /^(closed[\s-]*combustion|insert|wood|pellet|gas)[\s-]*fireplaces$/i.test(category);
+  if (/flue|chimney|accessor|fuel|pellets|sleeve|clamp|air[\s-]*condition/i.test(name)) return false;
+  return /fireplace|combustion|insert|stove|grate/i.test(name);
 }
 export function transportPriceForKm(km: number, installationRequired: boolean) {
   if (!installationRequired) {
