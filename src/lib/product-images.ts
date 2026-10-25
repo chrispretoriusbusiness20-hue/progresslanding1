@@ -21,6 +21,7 @@ function absolute(url: string): string {
 
 // Main-site image URLs that return 404, paired with the category image to use instead.
 const DEAD_IMAGES: [RegExp, keyof typeof CATEGORY_IMAGES][] = [
+  [/800mm-Single-Wall-Patio-Braai-300x300\.jpg|1200-De-Lux-430-Stainless-Steel-300x300\.jpg|1500-Combination-Braai\.1-300x300\.jpg/, "braais"],
   [/Magma-003-300x300\.jpg|CUBO-90-Freestanding-300x300\.jpg|STANFORD9-CAM01-300x300\.jpg/, "closed-combustion-fireplaces"],
   [/PEBBLE-GAS-GRATE-300x300\.png|e6f0c405-e286-11e8-a1f6-00155d0b6110-1-300x300\.jpg/, "gas-fireplaces"],
   [/4729e057-3347-4696-acc8-72082b24501b-300x300\.jpg/, "pellet-fireplaces"],
@@ -40,7 +41,8 @@ export function getProductImageUrl(opts: {
     return absolute(CATEGORY_IMAGES.braais);
   // Old main-site images that 404; fall back to the matching category image.
   if (opts.image) {
-    const deadCategory = DEAD_IMAGES.find(([pattern]) => pattern.test(opts.image!))?.[1];
+    const image = opts.image;
+    const deadCategory = DEAD_IMAGES.find(([pattern]) => pattern.test(image))?.[1];
     if (deadCategory) return absolute(CATEGORY_IMAGES[deadCategory]);
     return absolute(opts.image);
   }
