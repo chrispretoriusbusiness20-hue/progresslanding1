@@ -79,7 +79,7 @@ const container = { padding: '24px', maxWidth: '640px' }
 const h1 = { fontSize: '20px', fontWeight: 700, margin: '0 0 4px' }
 const text = { fontSize: '14px', margin: '12px 0' }
 const muted = { fontSize: '13px', color: '#555', margin: '0 0 16px' }
-const link = { color: '#dd7400', fontWeight: 600 }
+const link = { color: '#8a6d00', fontWeight: 600 }
 const tableStyle = { borderCollapse: 'collapse' as const, width: '100%', marginTop: '8px' }
 const tdLabel = {
   padding: '6px 10px',

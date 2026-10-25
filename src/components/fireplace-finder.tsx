@@ -44,7 +44,7 @@ export function FireplaceFinder() {
       <div className="mx-auto max-w-6xl px-6 py-12">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
-            <p className="mb-2 flex items-center gap-2 text-sm font-semibold text-primary">
+            <p className="mb-2 flex items-center gap-2 text-sm font-semibold text-primary-deep">
               <Flame className="size-4" />
               Find your fire
             </p>
@@ -131,7 +131,7 @@ export function FireplaceFinder() {
                         Heat output:{" "}
                         {productKw(product.name) === null ? "—" : `${productKw(product.name)} kW`}
                       </p>
-                      <p className="my-3 text-xl font-bold text-primary">
+                      <p className="my-3 text-xl font-bold text-primary-deep">
                         {formatRand(product.price)}
                       </p>
                       <CompareCheckbox product={product} />

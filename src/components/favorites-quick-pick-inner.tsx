@@ -61,9 +61,9 @@ export function FavoritesQuickPickInner() {
     <div className="mb-8 border-2 border-foreground bg-accent/20 shadow-brutal-sm">
       <div className="flex flex-wrap items-center justify-between gap-3 border-b-2 border-foreground bg-background px-4 py-3">
         <div className="flex items-center gap-2">
-          <Heart className="h-4 w-4 fill-primary text-primary" />
+          <Heart className="h-4 w-4 fill-primary text-primary-deep" />
           <span className="font-display text-sm uppercase tracking-wider">Your favorites</span>
-          <span className="text-xs font-bold uppercase tracking-widest text-primary">
+          <span className="text-xs font-bold uppercase tracking-widest text-primary-deep">
             ({favoriteProducts.length})
           </span>
         </div>

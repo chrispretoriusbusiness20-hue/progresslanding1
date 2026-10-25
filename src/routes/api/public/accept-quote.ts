@@ -37,7 +37,7 @@ export const Route = createFileRoute("/api/public/accept-quote")({
         if (!sig || !verifyAcceptance(payload, sig)) {
           return htmlPage(
             "Invalid link",
-            `<h2 style="color:#dd7400;margin:0 0 12px">Invalid acceptance link</h2><p style="color:#444">This link could not be verified. Please contact us if you need help.</p>`,
+            `<h2 style="color:#8a6d00;margin:0 0 12px">Invalid acceptance link</h2><p style="color:#444">This link could not be verified. Please contact us if you need help.</p>`,
           );
         }
 
@@ -113,8 +113,8 @@ export const Route = createFileRoute("/api/public/accept-quote")({
 
         // Show client a "pending approval" page.
         const pendingBody = `
-          <div style="border-bottom:2px solid #dd7400;padding-bottom:18px;margin-bottom:24px">
-            <div style="font-family:'Playfair Display',Georgia,serif;font-size:28px;color:#dd7400;font-weight:700">Request received</div>
+          <div style="border-bottom:2px solid #8a6d00;padding-bottom:18px;margin-bottom:24px">
+            <div style="font-family:'Playfair Display',Georgia,serif;font-size:28px;color:#8a6d00;font-weight:700">Request received</div>
             <div style="color:#666;font-size:13px;margin-top:4px">Progress Group</div>
           </div>
           <h2 style="margin:0 0 12px;color:#111;font-family:'Playfair Display',Georgia,serif">Thank you${client ? `, ${esc(client.split(" ")[0])}` : ""}!</h2>
@@ -124,7 +124,7 @@ export const Route = createFileRoute("/api/public/accept-quote")({
           <p style="color:#444;font-size:15px;line-height:1.6">
             Once approved, your official invoice (Invoice No <strong>${esc(invoiceNo)}</strong>) will be emailed to <strong>${esc(to)}</strong> with banking details and next steps.
           </p>
-          <div style="margin:18px 0;padding:14px 18px;background:#fff7ed;border-left:4px solid #dd7400;color:#7c2d12;font-size:13px;line-height:1.6">
+          <div style="margin:18px 0;padding:14px 18px;background:#fefce8;border-left:4px solid #8a6d00;color:#713f12;font-size:13px;line-height:1.6">
             <strong>Status:</strong> Pending sales admin approval.
           </div>
           <p style="color:#888;margin-top:32px;font-size:13px">— The Progress Group Team</p>

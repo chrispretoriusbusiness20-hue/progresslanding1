@@ -102,7 +102,7 @@ export function PriceEstimator({
       className="mb-12 border-y-2 border-foreground bg-muted/40 py-8"
     >
       <div className="flex items-center gap-3">
-        <Calculator className="size-6 text-primary" />
+        <Calculator className="size-6 text-primary-deep" />
         <h2 id="estimator-heading" className="text-2xl sm:text-3xl">
           Instant price estimator
         </h2>

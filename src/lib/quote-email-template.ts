@@ -17,7 +17,7 @@ export interface QuoteEmailData {
   paymentTerms?: string;
   /** Optional extra HTML inserted before the signature (e.g. a summary table). */
   extraHtml?: string;
-  /** Headline color accent. Defaults to brand orange. */
+  /** Headline color accent. Defaults to brand deep yellow. */
   accent?: string;
 }
 
@@ -35,7 +35,7 @@ export function buildQuoteEmailHtml(data: QuoteEmailData): string {
     viewLabel = "View your quote",
     paymentTerms = "Full payment on order.",
     extraHtml,
-    accent = "#dd7400",
+    accent = "#8a6d00",
   } = data;
 
   const introLine =

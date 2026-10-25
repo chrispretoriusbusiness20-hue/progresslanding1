@@ -89,10 +89,10 @@ const main = { backgroundColor: '#ffffff', fontFamily: 'Arial, sans-serif', colo
 const container = { padding: '24px', maxWidth: '640px' }
 const h1 = { fontSize: '22px', fontWeight: 700, margin: '0 0 16px' }
 const text = { fontSize: '15px', lineHeight: '1.6', margin: '0 0 12px' }
-const notice = { fontSize: '14px', lineHeight: '1.6', margin: '0 0 16px', padding: '12px 16px', backgroundColor: '#fff7ed', borderLeft: '4px solid #dd7400', color: '#7c2d12' }
+const notice = { fontSize: '14px', lineHeight: '1.6', margin: '0 0 16px', padding: '12px 16px', backgroundColor: '#fefce8', borderLeft: '4px solid #8a6d00', color: '#713f12' }
 const muted = { fontSize: '13px', lineHeight: '1.6', color: '#555', margin: '0 0 8px' }
 const button = {
-  backgroundColor: '#dd7400',
+  backgroundColor: '#8a6d00',
   color: '#ffffff',
   padding: '12px 22px',
   borderRadius: '4px',

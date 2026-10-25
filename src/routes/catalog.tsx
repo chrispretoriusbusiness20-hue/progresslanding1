@@ -241,7 +241,7 @@ function CatalogPage() {
                     }`}
                   >
                     {g.category}{" "}
-                    <span className={isActive ? "text-primary-foreground/70" : "text-primary"}>
+                    <span className={isActive ? "text-primary-foreground/70" : "text-primary-deep"}>
                       ({g.items.length})
                     </span>
                   </button>
@@ -260,11 +260,11 @@ function CatalogPage() {
               <div>
                 <div className="mb-6 flex flex-wrap items-end justify-between gap-4 border-b-2 border-foreground pb-3">
                   <div className="flex items-center gap-3">
-                    <Heart className="h-5 w-5 fill-primary text-primary" />
+                    <Heart className="h-5 w-5 fill-primary text-primary-deep" />
                     <h2 className="font-display text-2xl uppercase tracking-tight sm:text-3xl">
                       Your Favorites
                     </h2>
-                    <span className="text-xs font-bold uppercase tracking-widest text-primary">
+                    <span className="text-xs font-bold uppercase tracking-widest text-primary-deep">
                       ({favoriteProducts.length})
                     </span>
                   </div>
@@ -302,12 +302,12 @@ function CatalogPage() {
               <div>
                 <div className="mb-6 flex flex-wrap items-end justify-between gap-4 border-b-2 border-foreground pb-3">
                   <div className="flex items-center gap-3">
-                    <Sparkles className="h-5 w-5 text-primary" />
+                    <Sparkles className="h-5 w-5 text-primary-deep" />
                     <h2 className="font-display text-2xl uppercase tracking-tight sm:text-3xl">
                       Recommended For You
                     </h2>
                   </div>
-                  <p className="text-xs font-bold uppercase tracking-widest text-primary">
+                  <p className="text-xs font-bold uppercase tracking-widest text-primary-deep">
                     Based on your favorites
                   </p>
                 </div>
@@ -337,7 +337,7 @@ function CatalogPage() {
                   <h2 className="font-display text-2xl uppercase tracking-tight sm:text-3xl">
                     {g.category}
                   </h2>
-                  <p className="text-xs font-bold uppercase tracking-widest text-primary">
+                  <p className="text-xs font-bold uppercase tracking-widest text-primary-deep">
                     {g.items.length} {g.items.length === 1 ? "product" : "products"}
                   </p>
                 </div>
@@ -453,7 +453,7 @@ function ProductCard({
           {decodeProductName(p.name)}
         </h3>
         {p.price ? (
-          <p className="mt-2 font-display text-xl text-primary">{formatRand(p.price)}</p>
+          <p className="mt-2 font-display text-xl text-primary-deep">{formatRand(p.price)}</p>
         ) : (
           null
         )}

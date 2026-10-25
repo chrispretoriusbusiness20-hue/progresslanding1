@@ -22,7 +22,7 @@ function buildHtml(q: QuoteRow): string {
   const product = q.matched_product ?? q.product_requested ?? "Fireplace";
   const total = q.total_zar != null ? `R${Number(q.total_zar).toLocaleString("en-ZA")}` : "—";
   return `<!doctype html><html><body style="font-family:Inter,Arial,sans-serif;color:#111;max-width:640px;margin:0 auto;padding:24px">
-    <h2 style="font-family:'Playfair Display',Georgia,serif;color:#dd7400;margin:0 0 12px">Your Progress Group Fireplace Quote</h2>
+    <h2 style="font-family:'Playfair Display',Georgia,serif;color:#8a6d00;margin:0 0 12px">Your Progress Group Fireplace Quote</h2>
     <p>Hi ${q.first_name},</p>
     <p>Please find your quote for <strong>${product}</strong> attached.</p>
     <p>Total: <strong>${total}</strong></p>

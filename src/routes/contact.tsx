@@ -134,7 +134,7 @@ function ContactPage() {
             <button
               type="button"
               onClick={() => setSent(false)}
-              className="mt-6 text-sm font-medium text-primary hover:underline"
+              className="mt-6 text-sm font-medium text-primary-deep hover:underline"
             >
               Send another message
             </button>

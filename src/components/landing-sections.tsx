@@ -31,7 +31,7 @@ function WhatsAppCta() {
       href={WHATSAPP_URL}
       target="_blank"
       rel="noopener noreferrer"
-      className="inline-flex items-center justify-center gap-2 border border-foreground/25 px-8 py-3 text-xs font-bold uppercase tracking-[0.28em] text-foreground transition-colors hover:border-primary hover:text-primary"
+      className="inline-flex items-center justify-center gap-2 border border-foreground/25 px-8 py-3 text-xs font-bold uppercase tracking-[0.28em] text-foreground transition-colors hover:border-primary hover:text-primary-deep"
     >
       <MessageCircle className="h-4 w-4" aria-hidden />
       WhatsApp us
@@ -176,7 +176,7 @@ export function LandingSections() {
         <div className="mx-auto grid max-w-6xl grid-cols-2 gap-8 px-6 py-12 sm:grid-cols-4">
           {TRUST_POINTS.map(({ icon: Icon, label }) => (
             <div key={label} className="flex flex-col items-center gap-3 text-center">
-              <Icon className="h-6 w-6 text-primary" aria-hidden />
+              <Icon className="h-6 w-6 text-primary-deep" aria-hidden />
               <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-foreground">
                 {label}
               </p>
@@ -188,7 +188,7 @@ export function LandingSections() {
       {/* Braai section */}
       <section className="border-t border-foreground/15 bg-muted/40">
         <div className="mx-auto max-w-6xl px-6 py-16 sm:py-20">
-          <p className="font-display text-[10px] uppercase tracking-[0.36em] text-primary">
+          <p className="font-display text-[10px] uppercase tracking-[0.36em] text-primary-deep">
             Braais
           </p>
           <h2 className="mt-3 max-w-2xl text-3xl sm:text-4xl">
@@ -221,7 +221,7 @@ export function LandingSections() {
             </Link>
             <a
               href="#form"
-              className="inline-flex items-center justify-center border border-foreground/25 px-8 py-3 text-xs font-bold uppercase tracking-[0.28em] text-foreground transition-colors hover:border-primary hover:text-primary"
+              className="inline-flex items-center justify-center border border-foreground/25 px-8 py-3 text-xs font-bold uppercase tracking-[0.28em] text-foreground transition-colors hover:border-primary hover:text-primary-deep"
             >
               Request a custom quote
             </a>
@@ -232,7 +232,7 @@ export function LandingSections() {
       {/* Why choose us */}
       <section className="border-t border-foreground/15 bg-background">
         <div className="mx-auto max-w-6xl px-6 py-16 sm:py-20">
-          <p className="font-display text-[10px] uppercase tracking-[0.36em] text-primary">
+          <p className="font-display text-[10px] uppercase tracking-[0.36em] text-primary-deep">
             Why choose us
           </p>
           <h2 className="mt-3 max-w-2xl text-3xl sm:text-4xl">
@@ -241,7 +241,7 @@ export function LandingSections() {
           <div className="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
             {WHY_POINTS.map(({ icon: Icon, title, text }) => (
               <div key={title} className="border border-foreground/15 p-6">
-                <Icon className="h-5 w-5 text-primary" aria-hidden />
+                <Icon className="h-5 w-5 text-primary-deep" aria-hidden />
                 <h3 className="mt-4 text-sm font-bold uppercase tracking-[0.18em]">{title}</h3>
                 <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{text}</p>
               </div>
@@ -249,7 +249,7 @@ export function LandingSections() {
             <div className="flex items-center justify-center border border-primary/40 p-6">
               <a
                 href="#form"
-                className="text-xs font-bold uppercase tracking-[0.28em] text-primary hover:underline"
+                className="text-xs font-bold uppercase tracking-[0.28em] text-primary-deep hover:underline"
               >
                 Plan my fireplace →
               </a>
@@ -288,7 +288,7 @@ export function LandingSections() {
       {/* Service areas */}
       <section className="border-t border-foreground/15 bg-background">
         <div className="mx-auto max-w-6xl px-6 py-16 sm:py-20">
-          <p className="font-display text-[10px] uppercase tracking-[0.36em] text-primary">
+          <p className="font-display text-[10px] uppercase tracking-[0.36em] text-primary-deep">
             Where we work
           </p>
           <h2 className="mt-3 max-w-2xl text-3xl sm:text-4xl">
@@ -312,7 +312,7 @@ export function LandingSections() {
           <div className="mt-8">
             <a
               href="#form"
-              className="inline-flex items-center justify-center border border-foreground/25 px-8 py-3 text-xs font-bold uppercase tracking-[0.28em] text-foreground transition-colors hover:border-primary hover:text-primary"
+              className="inline-flex items-center justify-center border border-foreground/25 px-8 py-3 text-xs font-bold uppercase tracking-[0.28em] text-foreground transition-colors hover:border-primary hover:text-primary-deep"
             >
               Check availability in your area
             </a>
@@ -323,7 +323,7 @@ export function LandingSections() {
       {/* FAQ */}
       <section className="border-t border-foreground/15 bg-muted/40">
         <div className="mx-auto max-w-3xl px-6 py-16 sm:py-20">
-          <p className="font-display text-[10px] uppercase tracking-[0.36em] text-primary">
+          <p className="font-display text-[10px] uppercase tracking-[0.36em] text-primary-deep">
             Questions
           </p>
           <h2 className="mt-3 text-3xl sm:text-4xl">Frequently asked questions</h2>
@@ -332,7 +332,7 @@ export function LandingSections() {
               <details key={f.q} className="group py-5">
                 <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-sm font-bold uppercase tracking-[0.12em] text-foreground [&::-webkit-details-marker]:hidden">
                   {f.q}
-                  <span className="text-primary transition-transform group-open:rotate-45">+</span>
+                  <span className="text-primary-deep transition-transform group-open:rotate-45">+</span>
                 </summary>
                 <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{f.a}</p>
               </details>

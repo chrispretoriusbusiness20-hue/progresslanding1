@@ -53,7 +53,7 @@ const codeStyle = {
   fontFamily: 'Courier, monospace',
   fontSize: '22px',
   fontWeight: 700,
-  color: '#dd7400',
+  color: '#8a6d00',
   margin: '0 0 30px',
 }
 const footer = { fontSize: '13px', color: '#777777', margin: '28px 0 0', lineHeight: '1.5' }
