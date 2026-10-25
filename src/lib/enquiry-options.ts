@@ -19,6 +19,15 @@ export function getEnquiryOptions(product: { name: string; category: string }) {
   const description = `${category} ${product.name.toLowerCase()}`;
   const gas = /\bgas\b/.test(description);
   const outdoor = /\bboma\b|\bpatio\b|\boutdoor\b/.test(description);
-  const fire = /braai|fireplace|fire-pit|fire pit|closed-combustion|pellet|biomass|gas-grate|gas grate/.test(description);
-  return ENQUIRY_OPTIONS.filter((option) => option.group === "all" || (option.group === "fire" && fire) || (option.group === "gas" && gas) || (option.group === "outdoor" && outdoor));
+  const fire =
+    /braai|fireplace|fire-pit|fire pit|closed-combustion|pellet|biomass|gas-grate|gas grate/.test(
+      description,
+    );
+  return ENQUIRY_OPTIONS.filter(
+    (option) =>
+      option.group === "all" ||
+      (option.group === "fire" && fire) ||
+      (option.group === "gas" && gas) ||
+      (option.group === "outdoor" && outdoor),
+  );
 }

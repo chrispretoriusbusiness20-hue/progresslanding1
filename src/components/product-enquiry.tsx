@@ -24,14 +24,22 @@ export function ProductEnquiryForm({
   const [requests, setRequests] = useState<string[]>([]);
   const currentProduct = getTopProduct(product);
   const options = currentProduct ? getEnquiryOptions(currentProduct) : [];
-  const activeRequests = requests.filter((request) => options.some((option) => option.id === request));
+  const activeRequests = requests.filter((request) =>
+    options.some((option) => option.id === request),
+  );
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [pending, setPending] = useState(false);
   const [failure, setFailure] = useState("");
   const submit = async (event: FormEvent) => {
     event.preventDefault();
     if (pending) return;
-    const result = quickEnquirySchema.safeParse({ name, phone, product, town, requests: activeRequests });
+    const result = quickEnquirySchema.safeParse({
+      name,
+      phone,
+      product,
+      town,
+      requests: activeRequests,
+    });
     if (!result.success) {
       setErrors(
         Object.fromEntries(
@@ -135,13 +143,34 @@ export function ProductEnquiryForm({
       <fieldset className="border-t border-border pt-4">
         <legend className="px-1 text-sm font-semibold">Anything else? (optional)</legend>
         <div className="space-y-1">
-          {options.map((option) => <label key={option.id} className="flex min-h-11 cursor-pointer items-start gap-3 py-2 text-sm leading-snug" htmlFor={`${id}-${option.id}`}>
-            <Checkbox id={`${id}-${option.id}`} className="mt-0.5 shrink-0 rounded-none border-foreground" checked={activeRequests.includes(option.id)} onCheckedChange={(checked) => setRequests((previous) => checked === true ? [...previous.filter((request) => request !== option.id), option.id] : previous.filter((request) => request !== option.id))} />
-            <span>{option.label}</span>
-          </label>)}
+          {options.map((option) => (
+            <label
+              key={option.id}
+              className="flex min-h-11 cursor-pointer items-start gap-3 py-2 text-sm leading-snug"
+              htmlFor={`${id}-${option.id}`}
+            >
+              <Checkbox
+                id={`${id}-${option.id}`}
+                className="mt-0.5 shrink-0 rounded-none border-foreground"
+                checked={activeRequests.includes(option.id)}
+                onCheckedChange={(checked) =>
+                  setRequests((previous) =>
+                    checked === true
+                      ? [...previous.filter((request) => request !== option.id), option.id]
+                      : previous.filter((request) => request !== option.id),
+                  )
+                }
+              />
+              <span>{option.label}</span>
+            </label>
+          ))}
         </div>
       </fieldset>
-      {errors.requests && <p role="alert" className="text-sm text-destructive">{errors.requests}</p>}
+      {errors.requests && (
+        <p role="alert" className="text-sm text-destructive">
+          {errors.requests}
+        </p>
+      )}
       {errors.product && (
         <p role="alert" className="text-sm text-destructive">
           {errors.product}
