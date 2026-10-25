@@ -3,10 +3,32 @@ import { z } from "zod";
 import { getTopProduct } from "./popular-products";
 
 export const quickEnquirySchema = z.object({
-  name: z.string().trim().min(1, "Enter your name").max(80).regex(/^[^\u0000-\u001f\u007f]+$/, "Enter a valid name"),
-  phone: z.string().trim().min(7, "Enter a valid phone number").max(25).regex(/^\+?[\d ()-]+$/, "Enter a valid phone number").refine((phone) => phone.replace(/\D/g, "").length >= 7 && phone.replace(/\D/g, "").length <= 15, "Enter a valid phone number"),
-  product: z.string().max(200).refine((name) => Boolean(getTopProduct(name)), "Choose a top-pick product"),
-  town: z.string().trim().max(100).regex(/^[^\u0000-\u001f\u007f]*$/, "Enter a valid town").default(""),
+  name: z
+    .string()
+    .trim()
+    .min(1, "Enter your name")
+    .max(80)
+    .regex(/^[^\u0000-\u001f\u007f]+$/, "Enter a valid name"),
+  phone: z
+    .string()
+    .trim()
+    .min(7, "Enter a valid phone number")
+    .max(25)
+    .regex(/^\+?[\d ()-]+$/, "Enter a valid phone number")
+    .refine(
+      (phone) => phone.replace(/\D/g, "").length >= 7 && phone.replace(/\D/g, "").length <= 15,
+      "Enter a valid phone number",
+    ),
+  product: z
+    .string()
+    .max(200)
+    .refine((name) => Boolean(getTopProduct(name)), "Choose a top-pick product"),
+  town: z
+    .string()
+    .trim()
+    .max(100)
+    .regex(/^[^\u0000-\u001f\u007f]*$/, "Enter a valid town")
+    .default(""),
 });
 
 export function buildQuickEnquiryUrl(name: string, phone: string, product: string, town = "") {

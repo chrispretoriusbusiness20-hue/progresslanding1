@@ -74,7 +74,8 @@ export const Route = createFileRoute("/catalog")({
       { property: "og:title", content: "Full Catalog — The Progress Group" },
       {
         property: "og:description",
-        content: "Browse our top picks — fireplaces and braais. Pick a product and request an instant quote.",
+        content:
+          "Browse our top picks — fireplaces and braais. Pick a product and request an instant quote.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -220,8 +221,8 @@ function CatalogPage() {
             </span>
           </h1>
           <p className="mt-6 max-w-2xl text-base text-foreground/75 sm:text-lg">
-            Browse our best sellers — fireplaces and braais. Tap "Add on" on any product and it
-            will be added to your quote.
+            Browse our best sellers — fireplaces and braais. Tap "Add on" on any product and it will
+            be added to your quote.
           </p>
 
           <p className="mt-8 text-xs uppercase tracking-widest text-muted-foreground">
@@ -311,9 +312,7 @@ function CatalogPage() {
                     <ProductCard
                       key={p.id}
                       p={p}
-
                       isFavorite={isFavorite(p.id)}
-
                       onToggleFavorite={toggleFavorite}
                     />
                   ))}
@@ -339,9 +338,7 @@ function CatalogPage() {
                     <ProductCard
                       key={p.id}
                       p={p}
-
                       isFavorite={isFavorite(p.id)}
-
                       onToggleFavorite={toggleFavorite}
                     />
                   ))}
@@ -381,9 +378,7 @@ function CatalogPage() {
                           <ProductCard
                             key={p.id}
                             p={p}
-
                             isFavorite={isFavorite(p.id)}
-
                             onToggleFavorite={toggleFavorite}
                           />
                         ))}
