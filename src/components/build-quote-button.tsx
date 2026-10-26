@@ -8,10 +8,12 @@ export function BuildQuoteButton({
   product,
   className = "",
   label = "Build your own quote",
+  onClick,
 }: {
   product: string;
   className?: string;
   label?: string;
+  onClick?: () => void;
 }) {
   return (
     <Button
@@ -22,6 +24,7 @@ export function BuildQuoteButton({
         to="/"
         hash="form"
         data-select-product={product}
+        onClick={onClick}
         className="flex items-center justify-center gap-2"
       >
         <PencilRuler className="size-4" />
