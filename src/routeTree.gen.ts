@@ -23,6 +23,7 @@ import { Route as ApiPublicApproveInvoiceRouteImport } from './routes/api/public
 import { Route as ApiPublicBackfillCrmRouteImport } from './routes/api/public/backfill-crm'
 import { Route as ApiPublicBackfillSentRouteImport } from './routes/api/public/backfill-sent'
 import { Route as ApiPublicStitchWebhookRouteImport } from './routes/api/public/stitch-webhook'
+import { Route as LovableEmailEventsRouteImport } from './routes/lovable/email/events'
 import { Route as LovableEmailSuppressionRouteImport } from './routes/lovable/email/suppression'
 import { Route as ApiPublicCronPaymentReminderRouteImport } from './routes/api/public/cron/payment-reminder'
 import { Route as ApiPublicCronQuoteFollowUpRouteImport } from './routes/api/public/cron/quote-follow-up'
@@ -102,6 +103,11 @@ const ApiPublicStitchWebhookRoute = ApiPublicStitchWebhookRouteImport.update({
   path: '/api/public/stitch-webhook',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LovableEmailEventsRoute = LovableEmailEventsRouteImport.update({
+  id: '/lovable/email/events',
+  path: '/lovable/email/events',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LovableEmailSuppressionRoute = LovableEmailSuppressionRouteImport.update({
   id: '/lovable/email/suppression',
   path: '/lovable/email/suppression',
@@ -163,6 +169,7 @@ export interface FileRoutesByFullPath {
   '/api/public/backfill-crm': typeof ApiPublicBackfillCrmRoute
   '/api/public/backfill-sent': typeof ApiPublicBackfillSentRoute
   '/api/public/stitch-webhook': typeof ApiPublicStitchWebhookRoute
+  '/lovable/email/events': typeof LovableEmailEventsRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/api/public/cron/payment-reminder': typeof ApiPublicCronPaymentReminderRoute
   '/api/public/cron/quote-follow-up': typeof ApiPublicCronQuoteFollowUpRoute
@@ -187,6 +194,7 @@ export interface FileRoutesByTo {
   '/api/public/backfill-crm': typeof ApiPublicBackfillCrmRoute
   '/api/public/backfill-sent': typeof ApiPublicBackfillSentRoute
   '/api/public/stitch-webhook': typeof ApiPublicStitchWebhookRoute
+  '/lovable/email/events': typeof LovableEmailEventsRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/api/public/cron/payment-reminder': typeof ApiPublicCronPaymentReminderRoute
   '/api/public/cron/quote-follow-up': typeof ApiPublicCronQuoteFollowUpRoute
@@ -212,6 +220,7 @@ export interface FileRoutesById {
   '/api/public/backfill-crm': typeof ApiPublicBackfillCrmRoute
   '/api/public/backfill-sent': typeof ApiPublicBackfillSentRoute
   '/api/public/stitch-webhook': typeof ApiPublicStitchWebhookRoute
+  '/lovable/email/events': typeof LovableEmailEventsRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/api/public/cron/payment-reminder': typeof ApiPublicCronPaymentReminderRoute
   '/api/public/cron/quote-follow-up': typeof ApiPublicCronQuoteFollowUpRoute
@@ -238,6 +247,7 @@ export interface FileRouteTypes {
     | '/api/public/backfill-crm'
     | '/api/public/backfill-sent'
     | '/api/public/stitch-webhook'
+    | '/lovable/email/events'
     | '/lovable/email/suppression'
     | '/api/public/cron/payment-reminder'
     | '/api/public/cron/quote-follow-up'
@@ -262,6 +272,7 @@ export interface FileRouteTypes {
     | '/api/public/backfill-crm'
     | '/api/public/backfill-sent'
     | '/api/public/stitch-webhook'
+    | '/lovable/email/events'
     | '/lovable/email/suppression'
     | '/api/public/cron/payment-reminder'
     | '/api/public/cron/quote-follow-up'
@@ -286,6 +297,7 @@ export interface FileRouteTypes {
     | '/api/public/backfill-crm'
     | '/api/public/backfill-sent'
     | '/api/public/stitch-webhook'
+    | '/lovable/email/events'
     | '/lovable/email/suppression'
     | '/api/public/cron/payment-reminder'
     | '/api/public/cron/quote-follow-up'
@@ -311,6 +323,7 @@ export interface RootRouteChildren {
   ApiPublicBackfillCrmRoute: typeof ApiPublicBackfillCrmRoute
   ApiPublicBackfillSentRoute: typeof ApiPublicBackfillSentRoute
   ApiPublicStitchWebhookRoute: typeof ApiPublicStitchWebhookRoute
+  LovableEmailEventsRoute: typeof LovableEmailEventsRoute
   LovableEmailSuppressionRoute: typeof LovableEmailSuppressionRoute
   ApiPublicCronPaymentReminderRoute: typeof ApiPublicCronPaymentReminderRoute
   ApiPublicCronQuoteFollowUpRoute: typeof ApiPublicCronQuoteFollowUpRoute
@@ -421,6 +434,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicStitchWebhookRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/lovable/email/events': {
+      id: '/lovable/email/events'
+      path: '/lovable/email/events'
+      fullPath: '/lovable/email/events'
+      preLoaderRoute: typeof LovableEmailEventsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/lovable/email/suppression': {
       id: '/lovable/email/suppression'
       path: '/lovable/email/suppression'
@@ -495,6 +515,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicBackfillCrmRoute: ApiPublicBackfillCrmRoute,
   ApiPublicBackfillSentRoute: ApiPublicBackfillSentRoute,
   ApiPublicStitchWebhookRoute: ApiPublicStitchWebhookRoute,
+  LovableEmailEventsRoute: LovableEmailEventsRoute,
   LovableEmailSuppressionRoute: LovableEmailSuppressionRoute,
   ApiPublicCronPaymentReminderRoute: ApiPublicCronPaymentReminderRoute,
   ApiPublicCronQuoteFollowUpRoute: ApiPublicCronQuoteFollowUpRoute,
