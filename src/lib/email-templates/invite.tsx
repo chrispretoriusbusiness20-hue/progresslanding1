@@ -24,7 +24,9 @@ export const InviteEmail = ({
   confirmationUrl,
 }: InviteEmailProps) => (
   <Html lang="en" dir="ltr">
-    <Head />
+    <Head>
+      <style>{darkModeCss}</style>
+    </Head>
     <Preview>You've been invited to join {siteName}</Preview>
     <Body style={main}>
       <Container style={container}>
@@ -37,7 +39,7 @@ export const InviteEmail = ({
           . Click the button below to accept the invitation and create your
           account.
         </Text>
-        <Button style={button} href={confirmationUrl}>
+        <Button className="dm-btn" style={button} href={confirmationUrl}>
           Accept Invitation
         </Button>
         <Text style={footer}>
@@ -51,29 +53,36 @@ export const InviteEmail = ({
 
 export default InviteEmail
 
-const main = { backgroundColor: '#ffffff', fontFamily: 'Inter, Arial, sans-serif', color: '#1a1a1a' }
-const container = { padding: '24px', maxWidth: '640px' }
+const main = { backgroundColor: '#ffffff', fontFamily: 'Arial, sans-serif' }
+const container = { padding: '20px 25px' }
 const h1 = {
-  fontSize: '24px',
-  fontWeight: 700,
-  color: '#1a1a1a',
-  fontFamily: 'Playfair Display, Georgia, serif',
+  fontSize: '22px',
+  fontWeight: 'bold' as const,
+  color: '#000000',
   margin: '0 0 20px',
 }
 const text = {
-  fontSize: '15px',
-  color: '#444444',
-  lineHeight: '1.6',
-  margin: '0 0 16px',
+  fontSize: '14px',
+  color: '#55575d',
+  lineHeight: '1.5',
+  margin: '0 0 25px',
 }
-const link = { color: '#8a6d00', textDecoration: 'underline' }
+const link = { color: 'inherit', textDecoration: 'underline' }
 const button = {
-  backgroundColor: '#8a6d00',
+  backgroundColor: '#000000',
   color: '#ffffff',
   fontSize: '14px',
-  borderRadius: '4px',
-  padding: '12px 24px',
+  border: '1px solid #000000',
+  borderRadius: '8px',
+  padding: '12px 20px',
   textDecoration: 'none',
-  fontWeight: 600,
 }
-const footer = { fontSize: '13px', color: '#777777', margin: '28px 0 0', lineHeight: '1.5' }
+const footer = { fontSize: '12px', color: '#999999', margin: '30px 0 0' }
+// Rendered as a text child, which React may HTML-escape: keep this CSS free of >, &, and quotes.
+const darkModeCss = `
+  @media (prefers-color-scheme: dark) {
+    .dm-btn { background-color: #ffffff !important; color: #000000 !important; }
+  }
+  [data-ogsc] .dm-btn { background-color: #ffffff !important; color: #000000 !important; }
+  [data-ogsb] .dm-btn { background-color: #ffffff !important; color: #000000 !important; }
+`
