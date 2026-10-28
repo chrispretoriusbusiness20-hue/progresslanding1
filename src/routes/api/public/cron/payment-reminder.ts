@@ -24,7 +24,7 @@ export const Route = createFileRoute("/api/public/cron/payment-reminder")({
         }
 
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-        const { sendInternalEmail } = await import("@/lib/email/send-internal.server");
+        const { sendTemplateEmail } = await import("@/lib/email-templates/send-email");
 
         const now = Date.now();
         const { data: rows, error } = await supabaseAdmin
@@ -52,23 +52,41 @@ export const Route = createFileRoute("/api/public/cron/payment-reminder")({
           if (/^test$/i.test(String(latest.first_name ?? ""))) continue;
 
           const total = Number(latest.total_zar);
-          const send = await sendInternalEmail({
-            templateName: "payment-reminder",
-            recipientEmail: email,
-            idempotencyKey: `payment-reminder-${latest.id}`,
-            templateData: {
-              clientName: latest.first_name ?? "there",
-              productName: latest.matched_product ?? latest.product_requested ?? "your selection",
-              totalLabel: Number.isFinite(total) && total > 0 ? formatRand(total) : "",
-            },
-          });
-          if (send.ok || send.reason === "email_suppressed") {
+          const templateName = "payment-reminder";
+          let status: string;
+          try {
+            const send = await sendTemplateEmail(templateName, email, {
+              idempotencyKey: `payment-reminder-${latest.id}`,
+              templateData: {
+                clientName: latest.first_name ?? "there",
+                productName: latest.matched_product ?? latest.product_requested ?? "your selection",
+                totalLabel: Number.isFinite(total) && total > 0 ? formatRand(total) : "",
+              },
+            });
+            status = send.sent ? "sent" : "suppressed";
+          } catch (err) {
+            status = "failed";
+            const { error: logError } = await supabaseAdmin.from("email_send_log").insert({
+              template_name: templateName,
+              recipient_email: email,
+              status: "failed",
+              error_message: err instanceof Error ? err.message : "Send failed",
+            });
+            if (logError) console.error("Failed to log email send", logError.code);
+          }
+          if (status !== "failed") {
+            const { error: logError } = await supabaseAdmin.from("email_send_log").insert({
+              template_name: templateName,
+              recipient_email: email,
+              status,
+            });
+            if (logError) console.error("Failed to log email send", logError.code);
             await supabaseAdmin
               .from("quote_requests")
               .update({ payment_reminder_sent_at: new Date().toISOString() })
               .in("id", list.map((r) => r.id));
           }
-          results.push({ email, status: send.ok ? "sent" : send.reason ?? send.error ?? "failed" });
+          results.push({ email, status });
         }
 
         return new Response(JSON.stringify({ ok: true, processed: results.length, results }), {
