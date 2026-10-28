@@ -9,7 +9,7 @@ import { EmailChangeEmail } from '@/lib/email-templates/email-change'
 import { ReauthenticationEmail } from '@/lib/email-templates/reauthentication'
 
 // Configuration
-const SITE_NAME = "progressgrp"
+const SITE_NAME = "Progress Group"
 const SENDER_DOMAIN = "notify.progressgrp.co.za"
 const ROOT_DOMAIN = "progressgrp.co.za"
 const FROM_DOMAIN = "progressgrp.co.za"
@@ -23,7 +23,7 @@ export const Route = createFileRoute("/lovable/email/auth/webhook")({
       POST: ({ request }) => {
         const handler = createAuthEmailHandler({
           apiKey: process.env['LOVABLE_API_KEY']!,
-          from: { name: SITE_NAME, address: `noreply@${FROM_DOMAIN}` },
+          from: { name: SITE_NAME, address: `sales@${FROM_DOMAIN}` },
           senderDomain: SENDER_DOMAIN,
           sendUrl: process.env['LOVABLE_SEND_URL'],
           emails: {
