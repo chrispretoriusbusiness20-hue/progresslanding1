@@ -17,21 +17,17 @@ import { Route as ConsultationRouteImport } from './routes/consultation'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
-import { Route as EmailUnsubscribeRouteImport } from './routes/email/unsubscribe'
 import { Route as ApiPublicAcceptQuoteRouteImport } from './routes/api/public/accept-quote'
 import { Route as ApiPublicApproveInvoiceRouteImport } from './routes/api/public/approve-invoice'
 import { Route as ApiPublicBackfillCrmRouteImport } from './routes/api/public/backfill-crm'
 import { Route as ApiPublicBackfillSentRouteImport } from './routes/api/public/backfill-sent'
 import { Route as ApiPublicStitchWebhookRouteImport } from './routes/api/public/stitch-webhook'
 import { Route as LovableEmailEventsRouteImport } from './routes/lovable/email/events'
-import { Route as LovableEmailSuppressionRouteImport } from './routes/lovable/email/suppression'
 import { Route as ApiPublicCronPaymentReminderRouteImport } from './routes/api/public/cron/payment-reminder'
 import { Route as ApiPublicCronQuoteFollowUpRouteImport } from './routes/api/public/cron/quote-follow-up'
 import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
 import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
-import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
-import { Route as LovableEmailTransactionalSendRouteImport } from './routes/lovable/email/transactional/send'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -73,11 +69,6 @@ const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
-const EmailUnsubscribeRoute = EmailUnsubscribeRouteImport.update({
-  id: '/email/unsubscribe',
-  path: '/email/unsubscribe',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ApiPublicAcceptQuoteRoute = ApiPublicAcceptQuoteRouteImport.update({
   id: '/api/public/accept-quote',
   path: '/api/public/accept-quote',
@@ -108,11 +99,6 @@ const LovableEmailEventsRoute = LovableEmailEventsRouteImport.update({
   path: '/lovable/email/events',
   getParentRoute: () => rootRouteImport,
 } as any)
-const LovableEmailSuppressionRoute = LovableEmailSuppressionRouteImport.update({
-  id: '/lovable/email/suppression',
-  path: '/lovable/email/suppression',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ApiPublicCronPaymentReminderRoute =
   ApiPublicCronPaymentReminderRouteImport.update({
     id: '/api/public/cron/payment-reminder',
@@ -135,22 +121,10 @@ const LovableEmailAuthWebhookRoute = LovableEmailAuthWebhookRouteImport.update({
   path: '/lovable/email/auth/webhook',
   getParentRoute: () => rootRouteImport,
 } as any)
-const LovableEmailQueueProcessRoute =
-  LovableEmailQueueProcessRouteImport.update({
-    id: '/lovable/email/queue/process',
-    path: '/lovable/email/queue/process',
-    getParentRoute: () => rootRouteImport,
-  } as any)
 const LovableEmailTransactionalPreviewRoute =
   LovableEmailTransactionalPreviewRouteImport.update({
     id: '/lovable/email/transactional/preview',
     path: '/lovable/email/transactional/preview',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const LovableEmailTransactionalSendRoute =
-  LovableEmailTransactionalSendRouteImport.update({
-    id: '/lovable/email/transactional/send',
-    path: '/lovable/email/transactional/send',
     getParentRoute: () => rootRouteImport,
   } as any)
 
@@ -163,21 +137,17 @@ export interface FileRoutesByFullPath {
   '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/api/public/accept-quote': typeof ApiPublicAcceptQuoteRoute
   '/api/public/approve-invoice': typeof ApiPublicApproveInvoiceRoute
   '/api/public/backfill-crm': typeof ApiPublicBackfillCrmRoute
   '/api/public/backfill-sent': typeof ApiPublicBackfillSentRoute
   '/api/public/stitch-webhook': typeof ApiPublicStitchWebhookRoute
   '/lovable/email/events': typeof LovableEmailEventsRoute
-  '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/api/public/cron/payment-reminder': typeof ApiPublicCronPaymentReminderRoute
   '/api/public/cron/quote-follow-up': typeof ApiPublicCronQuoteFollowUpRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
-  '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
-  '/lovable/email/transactional/send': typeof LovableEmailTransactionalSendRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -188,21 +158,17 @@ export interface FileRoutesByTo {
   '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/api/public/accept-quote': typeof ApiPublicAcceptQuoteRoute
   '/api/public/approve-invoice': typeof ApiPublicApproveInvoiceRoute
   '/api/public/backfill-crm': typeof ApiPublicBackfillCrmRoute
   '/api/public/backfill-sent': typeof ApiPublicBackfillSentRoute
   '/api/public/stitch-webhook': typeof ApiPublicStitchWebhookRoute
   '/lovable/email/events': typeof LovableEmailEventsRoute
-  '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/api/public/cron/payment-reminder': typeof ApiPublicCronPaymentReminderRoute
   '/api/public/cron/quote-follow-up': typeof ApiPublicCronQuoteFollowUpRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
-  '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
-  '/lovable/email/transactional/send': typeof LovableEmailTransactionalSendRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -214,21 +180,17 @@ export interface FileRoutesById {
   '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/api/public/accept-quote': typeof ApiPublicAcceptQuoteRoute
   '/api/public/approve-invoice': typeof ApiPublicApproveInvoiceRoute
   '/api/public/backfill-crm': typeof ApiPublicBackfillCrmRoute
   '/api/public/backfill-sent': typeof ApiPublicBackfillSentRoute
   '/api/public/stitch-webhook': typeof ApiPublicStitchWebhookRoute
   '/lovable/email/events': typeof LovableEmailEventsRoute
-  '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/api/public/cron/payment-reminder': typeof ApiPublicCronPaymentReminderRoute
   '/api/public/cron/quote-follow-up': typeof ApiPublicCronQuoteFollowUpRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
-  '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
-  '/lovable/email/transactional/send': typeof LovableEmailTransactionalSendRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -241,21 +203,17 @@ export interface FileRouteTypes {
     | '/contact'
     | '/dashboard'
     | '/sitemap.xml'
-    | '/email/unsubscribe'
     | '/api/public/accept-quote'
     | '/api/public/approve-invoice'
     | '/api/public/backfill-crm'
     | '/api/public/backfill-sent'
     | '/api/public/stitch-webhook'
     | '/lovable/email/events'
-    | '/lovable/email/suppression'
     | '/api/public/cron/payment-reminder'
     | '/api/public/cron/quote-follow-up'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
-    | '/lovable/email/queue/process'
     | '/lovable/email/transactional/preview'
-    | '/lovable/email/transactional/send'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -266,21 +224,17 @@ export interface FileRouteTypes {
     | '/contact'
     | '/dashboard'
     | '/sitemap.xml'
-    | '/email/unsubscribe'
     | '/api/public/accept-quote'
     | '/api/public/approve-invoice'
     | '/api/public/backfill-crm'
     | '/api/public/backfill-sent'
     | '/api/public/stitch-webhook'
     | '/lovable/email/events'
-    | '/lovable/email/suppression'
     | '/api/public/cron/payment-reminder'
     | '/api/public/cron/quote-follow-up'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
-    | '/lovable/email/queue/process'
     | '/lovable/email/transactional/preview'
-    | '/lovable/email/transactional/send'
   id:
     | '__root__'
     | '/'
@@ -291,21 +245,17 @@ export interface FileRouteTypes {
     | '/contact'
     | '/dashboard'
     | '/sitemap.xml'
-    | '/email/unsubscribe'
     | '/api/public/accept-quote'
     | '/api/public/approve-invoice'
     | '/api/public/backfill-crm'
     | '/api/public/backfill-sent'
     | '/api/public/stitch-webhook'
     | '/lovable/email/events'
-    | '/lovable/email/suppression'
     | '/api/public/cron/payment-reminder'
     | '/api/public/cron/quote-follow-up'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
-    | '/lovable/email/queue/process'
     | '/lovable/email/transactional/preview'
-    | '/lovable/email/transactional/send'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -317,21 +267,17 @@ export interface RootRouteChildren {
   ContactRoute: typeof ContactRoute
   DashboardRoute: typeof DashboardRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
-  EmailUnsubscribeRoute: typeof EmailUnsubscribeRoute
   ApiPublicAcceptQuoteRoute: typeof ApiPublicAcceptQuoteRoute
   ApiPublicApproveInvoiceRoute: typeof ApiPublicApproveInvoiceRoute
   ApiPublicBackfillCrmRoute: typeof ApiPublicBackfillCrmRoute
   ApiPublicBackfillSentRoute: typeof ApiPublicBackfillSentRoute
   ApiPublicStitchWebhookRoute: typeof ApiPublicStitchWebhookRoute
   LovableEmailEventsRoute: typeof LovableEmailEventsRoute
-  LovableEmailSuppressionRoute: typeof LovableEmailSuppressionRoute
   ApiPublicCronPaymentReminderRoute: typeof ApiPublicCronPaymentReminderRoute
   ApiPublicCronQuoteFollowUpRoute: typeof ApiPublicCronQuoteFollowUpRoute
   LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
   LovableEmailAuthWebhookRoute: typeof LovableEmailAuthWebhookRoute
-  LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
   LovableEmailTransactionalPreviewRoute: typeof LovableEmailTransactionalPreviewRoute
-  LovableEmailTransactionalSendRoute: typeof LovableEmailTransactionalSendRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -392,13 +338,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/email/unsubscribe': {
-      id: '/email/unsubscribe'
-      path: '/email/unsubscribe'
-      fullPath: '/email/unsubscribe'
-      preLoaderRoute: typeof EmailUnsubscribeRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/api/public/accept-quote': {
       id: '/api/public/accept-quote'
       path: '/api/public/accept-quote'
@@ -441,13 +380,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LovableEmailEventsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/lovable/email/suppression': {
-      id: '/lovable/email/suppression'
-      path: '/lovable/email/suppression'
-      fullPath: '/lovable/email/suppression'
-      preLoaderRoute: typeof LovableEmailSuppressionRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/api/public/cron/payment-reminder': {
       id: '/api/public/cron/payment-reminder'
       path: '/api/public/cron/payment-reminder'
@@ -476,25 +408,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LovableEmailAuthWebhookRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/lovable/email/queue/process': {
-      id: '/lovable/email/queue/process'
-      path: '/lovable/email/queue/process'
-      fullPath: '/lovable/email/queue/process'
-      preLoaderRoute: typeof LovableEmailQueueProcessRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/lovable/email/transactional/preview': {
       id: '/lovable/email/transactional/preview'
       path: '/lovable/email/transactional/preview'
       fullPath: '/lovable/email/transactional/preview'
       preLoaderRoute: typeof LovableEmailTransactionalPreviewRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/lovable/email/transactional/send': {
-      id: '/lovable/email/transactional/send'
-      path: '/lovable/email/transactional/send'
-      fullPath: '/lovable/email/transactional/send'
-      preLoaderRoute: typeof LovableEmailTransactionalSendRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -509,21 +427,17 @@ const rootRouteChildren: RootRouteChildren = {
   ContactRoute: ContactRoute,
   DashboardRoute: DashboardRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
-  EmailUnsubscribeRoute: EmailUnsubscribeRoute,
   ApiPublicAcceptQuoteRoute: ApiPublicAcceptQuoteRoute,
   ApiPublicApproveInvoiceRoute: ApiPublicApproveInvoiceRoute,
   ApiPublicBackfillCrmRoute: ApiPublicBackfillCrmRoute,
   ApiPublicBackfillSentRoute: ApiPublicBackfillSentRoute,
   ApiPublicStitchWebhookRoute: ApiPublicStitchWebhookRoute,
   LovableEmailEventsRoute: LovableEmailEventsRoute,
-  LovableEmailSuppressionRoute: LovableEmailSuppressionRoute,
   ApiPublicCronPaymentReminderRoute: ApiPublicCronPaymentReminderRoute,
   ApiPublicCronQuoteFollowUpRoute: ApiPublicCronQuoteFollowUpRoute,
   LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
   LovableEmailAuthWebhookRoute: LovableEmailAuthWebhookRoute,
-  LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,
   LovableEmailTransactionalPreviewRoute: LovableEmailTransactionalPreviewRoute,
-  LovableEmailTransactionalSendRoute: LovableEmailTransactionalSendRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
